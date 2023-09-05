@@ -90,6 +90,9 @@ public abstract class AbstractTable extends JPanel {
         valueTable.setDefaultRenderer(Object.class, tableCellRenderer);
         // 表头居中
         valueTable.getTableHeader().setDefaultRenderer(tableCellRenderer);
+        // 禁止表头拖动、选中
+        valueTable.getTableHeader().setReorderingAllowed(false);
+        valueTable.getTableHeader().setResizingAllowed(false);
 
         scrollPane = new JBScrollPane(valueTable);
         scrollPane.setPreferredSize(PREFERRED_DIMENSION);
