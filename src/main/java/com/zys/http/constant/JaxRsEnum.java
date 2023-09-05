@@ -14,7 +14,7 @@ import static com.zys.http.constant.HttpEnum.ParamUsage;
 public interface JaxRsEnum {
 
     @Description("JaxRs 请求路径")
-    String PathAnnoClass = "javax.ws.rs.Path";
+    String PATH_ANNO_CLASS = "javax.ws.rs.Path";
 
     @Getter
     @AllArgsConstructor

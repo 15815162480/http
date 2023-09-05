@@ -39,9 +39,6 @@ public class EnvAddOrEditDialog extends DialogWrapper {
     @Description("数据表格")
     private final EnvAddOrEditTable envAddOrEditTable;
 
-    @Description("默认宽度")
-    private static final int PREFERRED_WIDTH = 300;
-
     @Description("添加/修改后方便刷新数据")
     private final EnvShowTable envShowTable;
 
@@ -87,7 +84,6 @@ public class EnvAddOrEditDialog extends DialogWrapper {
         gbc.weightx = 1.0;
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         configNameTF = new JTextField();
-        // configNameTF.setMinimumSize(PREFERRED_WIDTH);
         configNameTF.setToolTipText("输入配置名");
         first.add(configNameTF, gbc);
 
@@ -100,7 +96,6 @@ public class EnvAddOrEditDialog extends DialogWrapper {
         // IP/HOST
         gbc.gridy = 2;
         hostTF = new JTextField();
-        // hostTF.setPreferredWidth(PREFERRED_WIDTH);
         hostTF.setToolTipText("输入 ip:port 或域名");
         first.add(hostTF, gbc);
 

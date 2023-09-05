@@ -4,6 +4,8 @@ import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.http.*;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,6 +21,7 @@ import static com.zys.http.constant.HttpEnum.HttpMethod;
  * @author zys
  * @since 2023-08-20
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class HttpClient {
 
     private static final int TIME_OUT = 10_000;

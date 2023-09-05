@@ -34,6 +34,7 @@ public abstract class AbstractTable extends JPanel {
     @Getter
     @Description("数据展示表格")
     protected JBTable valueTable;
+
     @Description("表格所在区域")
     private JBScrollPane scrollPane;
 
@@ -57,6 +58,7 @@ public abstract class AbstractTable extends JPanel {
         this.httpPropertyTool = HttpPropertyTool.getInstance(this.project);
     }
 
+    @Description("子类需要自己调用")
     protected void init() {
         initToolbar();
         initTable();
