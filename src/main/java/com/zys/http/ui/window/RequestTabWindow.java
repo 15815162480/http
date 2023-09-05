@@ -17,7 +17,7 @@ import jdk.jfr.Description;
  */
 @Description("请求标签页面")
 public class RequestTabWindow extends SimpleToolWindowPanel {
-    private final Project project;
+    private final transient Project project;
 
     public RequestTabWindow(Project project) {
         super(true, true);
