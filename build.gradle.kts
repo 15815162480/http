@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     id("java")
     id("org.jetbrains.kotlin.jvm") version "1.8.22"
@@ -5,10 +7,16 @@ plugins {
 }
 
 group = "com.zys"
-version = "1.0-SNAPSHOT"
+version = "1.0"
 
 repositories {
     mavenCentral()
+}
+
+dependencies {
+    compileOnly("org.projectlombok:lombok:1.18.24")
+    annotationProcessor("org.projectlombok:lombok:1.18.24")
+    implementation("cn.hutool:hutool-all:5.8.11")
 }
 
 // Configure Gradle IntelliJ Plugin
@@ -23,17 +31,24 @@ intellij {
 tasks {
     // Set the JVM compatibility versions
     withType<JavaCompile> {
-        sourceCompatibility = "17"
-        targetCompatibility = "17"
+        options.encoding = Charsets.UTF_8.name()
+        sourceCompatibility = JavaVersion.VERSION_17.toString()
+        targetCompatibility = JavaVersion.VERSION_17.toString()
     }
-    withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-        kotlinOptions.jvmTarget = "17"
+    withType<KotlinCompile> {
+        kotlinOptions.jvmTarget = JavaVersion.VERSION_17.toString()
+    }
+
+    withType<JavaExec> {
+        systemProperty("file.encoding", Charsets.UTF_8.name())
     }
 
     patchPluginXml {
         sinceBuild.set("222")
         untilBuild.set("232.*")
     }
+
+
 
     signPlugin {
         certificateChain.set(System.getenv("CERTIFICATE_CHAIN"))
