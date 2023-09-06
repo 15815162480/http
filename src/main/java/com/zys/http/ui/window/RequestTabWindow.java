@@ -7,7 +7,9 @@ import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.SimpleToolWindowPanel;
 import com.zys.http.action.EnvAction;
+import com.zys.http.action.TestAction;
 import com.zys.http.ui.dialog.EnvShowDialog;
+import com.zys.http.ui.icon.HttpIcons;
 import com.zys.http.ui.window.panel.RequestPanel;
 import jdk.jfr.Description;
 
@@ -37,6 +39,14 @@ public class RequestTabWindow extends SimpleToolWindowPanel {
         EnvAction envAction = new EnvAction();
         envAction.setAction(e -> new EnvShowDialog(project).show());
         http.add(envAction);
+        http.add(new TestAction(HttpIcons.REQUEST));
+        http.add(new TestAction(HttpIcons.GET));
+        http.add(new TestAction(HttpIcons.POST));
+        http.add(new TestAction(HttpIcons.PUT));
+        http.add(new TestAction(HttpIcons.DELETE));
+        http.add(new TestAction(HttpIcons.PATCH));
+        http.add(new TestAction(HttpIcons.HEADER));
+        http.add(new TestAction(HttpIcons.OPTIONS));
         ActionToolbar topToolBar = ActionManager.getInstance().createActionToolbar(ActionPlaces.TOOLBAR, http, true);
         topToolBar.setTargetComponent(this);
         setToolbar(topToolBar.getComponent());
