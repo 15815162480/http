@@ -20,7 +20,6 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 
 /**
  * @author zys
@@ -53,7 +52,6 @@ public class EnvShowTable extends AbstractTable {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     protected @Nullable ActionToolbar initActionToolbar() {
         DefaultActionGroup group = new DefaultActionGroup();
         AddAction addAction = new AddAction("添加", "添加");
@@ -63,10 +61,9 @@ public class EnvShowTable extends AbstractTable {
         RemoveAction removeAction = new RemoveAction("删除", "删除");
         removeAction.setAction(event -> {
             DefaultTableModel model = (DefaultTableModel) valueTable.getModel();
-            Vector<String> selectedRowData = model.getDataVector().get(valueTable.getSelectedRow());
-            httpPropertyTool.removeHttpConfig(selectedRowData.get(0));
-            model.getDataVector().remove(selectedRowData);
-            valueTable.repaint();
+            int selectedRow = valueTable.getSelectedRow();
+            httpPropertyTool.removeHttpConfig((String) model.getValueAt(selectedRow, 0));
+            model.removeRow(selectedRow);
         });
         removeAction.setEnabled(false);
         group.add(removeAction);
@@ -74,8 +71,7 @@ public class EnvShowTable extends AbstractTable {
         EditAction editAction = new EditAction("编辑", "编辑");
         editAction.setAction(event -> {
             DefaultTableModel model = (DefaultTableModel) valueTable.getModel();
-            Vector<String> selectedRowData = model.getDataVector().get(valueTable.getSelectedRow());
-            String envName = selectedRowData.get(0);
+            String envName = (String) model.getValueAt(valueTable.getSelectedRow(), 0);
             new EnvAddOrEditDialog(project, false, envName, this).show();
         });
         editAction.setEnabled(false);
@@ -86,16 +82,14 @@ public class EnvShowTable extends AbstractTable {
     @Override
     protected @NotNull TableModelListener initTableModelListener() {
         return e -> {
-            if (e.getType() == TableModelEvent.DELETE) {
-                DefaultTableModel model = (DefaultTableModel) e.getSource();
-                if (model.getRowCount() <= 0) {
-                    getToolbar().getActions().forEach(v -> {
-                        if (v instanceof CustomAction c && !(v instanceof AddAction)) {
-                            c.setEnabled(valueTable.getSelectedRow() != -1);
-                        }
-                    });
-                }
+            if (e.getType() != TableModelEvent.DELETE || ((DefaultTableModel) e.getSource()).getRowCount() > 0) {
+                return;
             }
+            getToolbar().getActions().forEach(v -> {
+                if (v instanceof CustomAction c && !(v instanceof AddAction)) {
+                    c.setEnabled(false);
+                }
+            });
         };
     }
 }

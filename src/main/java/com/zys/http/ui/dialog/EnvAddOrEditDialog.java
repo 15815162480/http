@@ -15,8 +15,10 @@ import jdk.jfr.Description;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.Map;
+import java.util.Objects;
 
 import static com.zys.http.constant.HttpEnum.Protocol;
 
@@ -42,10 +44,14 @@ public class EnvAddOrEditDialog extends DialogWrapper {
     @Description("添加/修改后方便刷新数据")
     private final EnvShowTable envShowTable;
 
+    @Description("是否是添加")
+    private final boolean isAdd;
+
     public EnvAddOrEditDialog(@NotNull Project project, boolean isAdd, String selectEnv, EnvShowTable envShowTable) {
         super(project, true);
         envAddOrEditTable = new EnvAddOrEditTable(project, isAdd, selectEnv);
         this.envShowTable = envShowTable;
+        this.isAdd = isAdd;
         init();
         getRootPane().setMinimumSize(new Dimension(500, 400));
         setTitle(isAdd ? "添加环境配置" : "修改环境配置");
@@ -139,18 +145,26 @@ public class EnvAddOrEditDialog extends DialogWrapper {
             // TODO 弹窗提示
             return;
         }
+        String host = hostTF.getText();
+        Protocol protocol = (Protocol) protocolCB.getSelectedItem();
+        protocol = Objects.isNull(protocol) ? Protocol.HTTP : protocol;
         Map<String, String> header = envAddOrEditTable.buildHttpHeader();
+
         HttpConfig httpConfig = new HttpConfig();
         httpConfig.setHeaders(header);
-        httpConfig.setHostValue(hostTF.getText());
+        httpConfig.setHostValue(host);
         httpConfig.setProtocol((Protocol) protocolCB.getSelectedItem());
-        httpPropertyTool.putHttpConfig(configName, httpConfig);
-        super.doOKAction();
-    }
 
-    @Override
-    protected void dispose() {
-        envShowTable.getValueTable().setModel(envShowTable.initTableModel());
-        super.dispose();
+        httpPropertyTool.putHttpConfig(configName, httpConfig);
+        DefaultTableModel model = (DefaultTableModel) envShowTable.getValueTable().getModel();
+        if (isAdd) {
+            model.addRow(new String[]{configName, protocol.toString(), host});
+        } else {
+            int selectedRow = envShowTable.getValueTable().getSelectedRow();
+            model.setValueAt(protocol.toString(), selectedRow, 1);
+            model.setValueAt(host, selectedRow, 2);
+        }
+
+        super.doOKAction();
     }
 }

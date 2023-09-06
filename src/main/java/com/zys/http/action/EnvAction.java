@@ -1,6 +1,6 @@
 package com.zys.http.action;
 
-import com.intellij.icons.AllIcons;
+import com.zys.http.ui.icon.HttpIcons;
 
 /**
  * @author zhou ys
@@ -8,8 +8,6 @@ import com.intellij.icons.AllIcons;
  */
 public class EnvAction extends CustomAction {
     public EnvAction() {
-        super("环境列表", "Env", AllIcons.Nodes.Enum);
+        super("环境列表", "Env", HttpIcons.ENVIRONMENT);
     }
-
-
 }

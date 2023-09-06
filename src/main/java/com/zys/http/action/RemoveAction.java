@@ -1,6 +1,6 @@
 package com.zys.http.action;
 
-import com.intellij.icons.AllIcons;
+import com.zys.http.ui.icon.HttpIcons;
 
 /**
  * @author zys
@@ -8,6 +8,6 @@ import com.intellij.icons.AllIcons;
  */
 public class RemoveAction extends CustomAction {
     public RemoveAction(String text, String description) {
-        super(text, description, AllIcons.General.Remove);
+        super(text, description, HttpIcons.REMOVE);
     }
 }

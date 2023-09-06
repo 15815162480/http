@@ -16,4 +16,7 @@
         />
         <projectService serviceImplementation="com.zys.http.service.HttpService"/>
     </extensions>
+    <actions>
+        <action class="com.zys.http.action.EnvAction" icon="AllIcons.Nodes.Enum"/>
+    </actions>
 </idea-plugin>
