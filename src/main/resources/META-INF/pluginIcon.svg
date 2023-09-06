@@ -5,8 +5,8 @@
             <stop offset="100%" style="stop-color: blue;" />
         </linearGradient>
     </defs>
-    <text x="0" y="16" font-family="Arial, sans-serif" font-size="16" fill="url(#gradient)">H</text>
-    <text x="11" y="16" font-family="Arial, sans-serif" font-size="16" fill="url(#gradient)">T</text>
-    <text x="21" y="16" font-family="Arial, sans-serif" font-size="16" fill="url(#gradient)">T</text>
-    <text x="30" y="16" font-family="Arial, sans-serif" font-size="16" fill="url(#gradient)">P</text>
+    <text x="13.5" y="16" font-family="Arial, sans-serif" alignment-baseline="middle" text-anchor="middle" font-size="30" fill="url(#gradient)">H</text>
+    <text x="31.5" y="16" font-family="Arial, sans-serif" alignment-baseline="middle" text-anchor="middle" font-size="30" fill="url(#gradient)">T</text>
+    <text x="49.5" y="16" font-family="Arial, sans-serif" alignment-baseline="middle" text-anchor="middle" font-size="30" fill="url(#gradient)">T</text>
+    <text x="66.5" y="16" font-family="Arial, sans-serif" alignment-baseline="middle" text-anchor="middle" font-size="30" fill="url(#gradient)">P</text>
 </svg>
