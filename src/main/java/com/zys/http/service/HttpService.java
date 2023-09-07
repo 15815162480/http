@@ -23,7 +23,6 @@ public class HttpService implements PersistentStateComponent<HttpService.State> 
     private State state = new State();
 
     @Override
-    @SuppressWarnings("ClassEscapesDefinedScope")
     public void loadState(@NotNull State state) {
         this.state = state;
     }
@@ -54,7 +53,7 @@ public class HttpService implements PersistentStateComponent<HttpService.State> 
     }
 
     @Data
-    static class State {
+    public static class State {
         private String selectedEnv;
         private Map<String, HttpConfig> httpConfigs = new LinkedHashMap<>();
     }

@@ -110,7 +110,7 @@ public class EnvAddOrEditDialog extends DialogWrapper {
         gbc.gridx = 0;
         first.add(headerPanel(), gbc);
 
-        // 工具栏
+        // 表格
         gbc.gridy = 4;
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         gbc.fill = GridBagConstraints.BOTH;

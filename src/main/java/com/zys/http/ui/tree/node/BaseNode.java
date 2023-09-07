@@ -1,4 +1,4 @@
-package com.zys.http.entity.tree;
+package com.zys.http.ui.tree.node;
 
 import com.jetbrains.rd.util.reactive.ISource;
 import jdk.jfr.Description;
