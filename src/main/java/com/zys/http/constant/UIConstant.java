@@ -1,6 +1,7 @@
 package com.zys.http.constant;
 
 import com.intellij.ui.JBColor;
+import jdk.jfr.Description;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -12,5 +13,6 @@ import java.awt.*;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class UIConstant {
-    public static final JBColor LINE_COLOR = new JBColor(JBColor.darkGray, new Color(30, 31, 34));
+    @Description("目前仅适配暗黑模式, 如需适配 light 调整第一个参数, 目前仅在表格和表格上方工具栏")
+    public static final JBColor BORDER_COLOR = new JBColor(JBColor.darkGray, new Color(30, 31, 34));
 }

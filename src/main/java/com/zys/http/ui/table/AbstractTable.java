@@ -96,7 +96,7 @@ public abstract class AbstractTable extends JPanel {
 
         scrollPane = new JBScrollPane(valueTable);
         scrollPane.setPreferredSize(PREFERRED_DIMENSION);
-        scrollPane.setBorder(JBUI.Borders.customLine(UIConstant.LINE_COLOR, 1, 1, 1, 1));
+        scrollPane.setBorder(JBUI.Borders.customLine(UIConstant.BORDER_COLOR, 1, 1, 1, 1));
 
         // 单元格失去焦点事件
         StringWithNewLinesCellEditor editor = new StringWithNewLinesCellEditor();
@@ -126,7 +126,7 @@ public abstract class AbstractTable extends JPanel {
         }
         toolbar.setTargetComponent(this);
         JComponent component = toolbar.getComponent();
-        component.setBorder(JBUI.Borders.customLine(UIConstant.LINE_COLOR, 1, 1, 0, 1));
+        component.setBorder(JBUI.Borders.customLine(UIConstant.BORDER_COLOR, 1, 1, 0, 1));
         component.setOpaque(true);
     }
 

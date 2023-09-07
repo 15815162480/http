@@ -13,7 +13,7 @@ import java.util.Map;
  * @since 2023-08-16
  */
 @Description("http 配置工具类")
-public final class HttpPropertyTool {
+public class HttpPropertyTool {
 
     private final HttpService httpService;
 
