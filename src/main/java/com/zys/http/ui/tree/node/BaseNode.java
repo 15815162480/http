@@ -36,12 +36,13 @@ public abstract class BaseNode<T extends NodeData> extends DefaultMutableTreeNod
 
     @Override
     public void add(@NotNull MutableTreeNode newChild) {
-        if (newChild instanceof BaseNode<?>) {
-            addNode(((BaseNode<?>) newChild));
+        if (newChild instanceof BaseNode<? extends NodeData>) {
+            addNode(((BaseNode<? extends NodeData>) newChild));
         }
     }
 
-    private void addNode(@NotNull BaseNode<?> newChild) {
+    @Description("添加子节点")
+    private void addNode(@NotNull BaseNode<? extends NodeData> newChild) {
         super.add(newChild);
     }
 
@@ -49,7 +50,7 @@ public abstract class BaseNode<T extends NodeData> extends DefaultMutableTreeNod
         return value.getNodeName();
     }
 
-    public @NotNull SimpleTextAttributes getTextAttributes(){
+    public @NotNull SimpleTextAttributes getTextAttributes() {
         return SimpleTextAttributes.REGULAR_ATTRIBUTES;
     }
 }

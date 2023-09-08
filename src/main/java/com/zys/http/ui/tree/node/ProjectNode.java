@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
  */
 @Description("项目结点, 一般为根结点")
 public class ProjectNode extends BaseNode<ProjectNodeData> {
-    protected ProjectNode(@NotNull ProjectNodeData value) {
+    public ProjectNode(@NotNull ProjectNodeData value) {
         super(value);
     }
 }
