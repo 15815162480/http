@@ -1,4 +1,4 @@
-package com.zys.http.util;
+package com.zys.http.tool;
 
 import com.intellij.psi.*;
 import com.intellij.psi.impl.PsiClassImplUtil;

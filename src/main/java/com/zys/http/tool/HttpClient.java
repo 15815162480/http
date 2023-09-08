@@ -1,4 +1,4 @@
-package com.zys.http.util;
+package com.zys.http.tool;
 
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.http.*;

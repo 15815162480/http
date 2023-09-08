@@ -1,4 +1,4 @@
-package com.zys.http.util;
+package com.zys.http.tool;
 
 import com.intellij.openapi.project.Project;
 import com.zys.http.entity.HttpConfig;

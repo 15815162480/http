@@ -9,7 +9,7 @@ import com.intellij.util.ui.JBUI;
 import com.zys.http.action.AddAction;
 import com.zys.http.action.CustomAction;
 import com.zys.http.constant.UIConstant;
-import com.zys.http.util.HttpPropertyTool;
+import com.zys.http.tool.HttpPropertyTool;
 import jdk.jfr.Description;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;

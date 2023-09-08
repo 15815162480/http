@@ -10,7 +10,7 @@ import com.intellij.util.ui.JBUI;
 import com.zys.http.entity.HttpConfig;
 import com.zys.http.ui.table.EnvAddOrEditTable;
 import com.zys.http.ui.table.EnvShowTable;
-import com.zys.http.util.HttpPropertyTool;
+import com.zys.http.tool.HttpPropertyTool;
 import jdk.jfr.Description;
 import org.jetbrains.annotations.NotNull;
 
