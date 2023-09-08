@@ -1,9 +1,10 @@
 package com.zys.http.ui.tree.node;
 
-import com.jetbrains.rd.util.reactive.ISource;
+import com.intellij.ui.SimpleTextAttributes;
+import com.zys.http.entity.tree.NodeData;
 import jdk.jfr.Description;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,13 +16,13 @@ import javax.swing.tree.MutableTreeNode;
  * @author zhou ys
  * @since 2023-09-05
  */
-@Data
+@Getter
 @Description("树形结构数据的结点")
 @EqualsAndHashCode(callSuper = true)
-public abstract class BaseNode<T> extends DefaultMutableTreeNode implements ISource<T> {
+public abstract class BaseNode<T extends NodeData> extends DefaultMutableTreeNode {
 
     @NotNull
-    private transient T value;
+    private final transient T value;
 
     protected BaseNode(@NotNull T value) {
         super(value);
@@ -30,7 +31,7 @@ public abstract class BaseNode<T> extends DefaultMutableTreeNode implements ISou
 
     @Nullable
     public Icon getIcon(boolean selected) {
-        return null;
+        return value.getNodeIcon();
     }
 
     @Override
@@ -42,5 +43,13 @@ public abstract class BaseNode<T> extends DefaultMutableTreeNode implements ISou
 
     private void addNode(@NotNull BaseNode<?> newChild) {
         super.add(newChild);
+    }
+
+    public @NotNull String getFragment() {
+        return value.getNodeName();
+    }
+
+    public @NotNull SimpleTextAttributes getTextAttributes(){
+        return SimpleTextAttributes.REGULAR_ATTRIBUTES;
     }
 }

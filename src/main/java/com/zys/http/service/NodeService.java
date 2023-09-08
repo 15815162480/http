@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
  * @since 2023-09-07
  */
 @Getter
-@State(name = "Node", storages = @Storage("httpService.xml"))
+@State(name = "NodeConfig", storages = @Storage("httpService.xml"))
 public class NodeService implements PersistentStateComponent<NodeService.State> {
 
     private State state = new State();
@@ -34,5 +34,8 @@ public class NodeService implements PersistentStateComponent<NodeService.State> 
 
         @Description("是否展示控制结点")
         private Boolean showController;
+
+        @Description("是否在点击后才进行扫描接口(接口较多的情况下建议开启)")
+        private Boolean isLazy;
     }
 }

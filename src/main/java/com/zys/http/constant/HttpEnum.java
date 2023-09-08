@@ -40,7 +40,7 @@ public interface HttpEnum {
 
 
     enum HttpMethod {
-        GET, POST, PUT, DELETE, PATCH;
+        REQUEST, GET, POST, PUT, DELETE, PATCH;
     }
 
     enum Protocol {
