@@ -24,15 +24,13 @@ import static com.zys.http.constant.HttpEnum.HttpMethod;
 @EqualsAndHashCode(callSuper = true)
 public class RequestPanel extends JBSplitter {
 
-
     private TopPart topPart;
     private BottomPart bottomPart;
     private final transient Project project;
 
     public RequestPanel(Project project) {
-        super(true, Window.class.getName(), 0.5F);
+        super(true, Window.class.getName(), 0.6F);
         this.project = project;
-        // this.setFirstComponent(new HttpApiTreePanel(project));
         this.setFirstComponent(new TopPart(project));
         this.setSecondComponent(new BottomPart());
     }
@@ -60,9 +58,9 @@ public class RequestPanel extends JBSplitter {
             sendRequestBtn = new JXButton("发送");
 
             GridBagConstraints gbc = new GridBagConstraints();
-            gbc.fill = GridBagConstraints.BOTH; // 设置填充方式为水平和垂直填充
-            gbc.weightx = 1.0; // 设置水平拉伸权重为1.0
-            gbc.weighty = 1.0; // 设置垂直拉伸权重为1.0
+            gbc.fill = GridBagConstraints.BOTH;
+            gbc.weightx = 1.0;
+            gbc.weighty = 1.0;
             gbc.gridwidth = GridBagConstraints.REMAINDER;
             add(new HttpApiTreePanel(project), gbc);
 
