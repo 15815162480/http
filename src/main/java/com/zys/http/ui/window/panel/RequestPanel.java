@@ -1,6 +1,9 @@
 package com.zys.http.ui.window.panel;
 
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
+import com.intellij.ui.JBSplitter;
+import com.zys.http.ui.tree.HttpApiTreePanel;
 import jdk.jfr.Description;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -19,17 +22,19 @@ import static com.zys.http.constant.HttpEnum.HttpMethod;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class RequestPanel extends JPanel {
+public class RequestPanel extends JBSplitter {
+
 
     private TopPart topPart;
     private BottomPart bottomPart;
+    private final transient Project project;
 
-    public RequestPanel() {
-        setLayout(new BorderLayout(0, 0));
-        this.topPart = new TopPart();
-        this.bottomPart = new BottomPart();
-        add(topPart, BorderLayout.NORTH);
-        add(bottomPart, BorderLayout.CENTER);
+    public RequestPanel(Project project) {
+        super(true, Window.class.getName(), 0.5F);
+        this.project = project;
+        // this.setFirstComponent(new HttpApiTreePanel(project));
+        this.setFirstComponent(new TopPart(project));
+        this.setSecondComponent(new BottomPart());
     }
 
     @Data
@@ -47,17 +52,27 @@ public class RequestPanel extends JPanel {
         @Description("设置的IP/HOST")
         private String hostValue = "";
 
-        public TopPart() {
-            setLayout(new GridBagLayout());
+        public TopPart(Project project) {
             // 初始化所有组件
+            setLayout(new GridBagLayout());
             initHttpMethodOption();
             initHostOption();
             sendRequestBtn = new JXButton("发送");
 
             GridBagConstraints gbc = new GridBagConstraints();
+            gbc.fill = GridBagConstraints.BOTH; // 设置填充方式为水平和垂直填充
+            gbc.weightx = 1.0; // 设置水平拉伸权重为1.0
+            gbc.weighty = 1.0; // 设置垂直拉伸权重为1.0
+            gbc.gridwidth = GridBagConstraints.REMAINDER;
+            add(new HttpApiTreePanel(project), gbc);
+
+            gbc.weightx = 0;
+            gbc.weighty = 0;
+            gbc.gridwidth = 1;
+            gbc.fill = GridBagConstraints.HORIZONTAL;
+            gbc.gridy = 1;
             add(httpMethodComboBox, gbc);
             gbc.gridx = 1;
-            gbc.fill = GridBagConstraints.HORIZONTAL;
             gbc.weightx = 1.0;
             gbc.gridwidth = 1;
             add(hostTextField, gbc);

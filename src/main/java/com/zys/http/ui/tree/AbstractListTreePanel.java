@@ -6,9 +6,11 @@ import com.intellij.ui.components.JBScrollPane;
 import com.intellij.util.ui.JBUI;
 import com.zys.http.entity.tree.NodeData;
 import com.zys.http.ui.tree.node.BaseNode;
+import com.zys.http.ui.tree.render.HttpApiTreeCellRenderer;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
+import javax.swing.tree.DefaultTreeModel;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -27,6 +29,7 @@ public abstract class AbstractListTreePanel extends JBScrollPane implements Tree
         this.tree.setRootVisible(true);
         this.tree.setShowsRootHandles(false);
         this.setViewportView(tree);
+        this.tree.setCellRenderer(new HttpApiTreeCellRenderer());
 
         // 添加节点选择监听器
         tree.addTreeSelectionListener(e -> {
@@ -48,5 +51,9 @@ public abstract class AbstractListTreePanel extends JBScrollPane implements Tree
               // TODO 添加鼠标单击事件
             }
         });
+    }
+
+    protected final DefaultTreeModel getTreeModel() {
+        return (DefaultTreeModel) tree.getModel();
     }
 }

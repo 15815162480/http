@@ -25,7 +25,7 @@ public class NodeData {
     private String description;
 
     @Description("是否展示")
-    private boolean isShow;
+    private boolean isShow = true;
 
     @Description("下级列表")
     private List<? extends NodeData> children;

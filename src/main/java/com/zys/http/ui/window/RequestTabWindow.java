@@ -54,6 +54,6 @@ public class RequestTabWindow extends SimpleToolWindowPanel {
 
     @Description("初始化顶部工具栏")
     private void requestPanel() {
-        setContent(new RequestPanel());
+        setContent(new RequestPanel(project));
     }
 }
