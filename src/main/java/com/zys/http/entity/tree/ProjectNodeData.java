@@ -9,7 +9,8 @@ import jdk.jfr.Description;
  */
 @Description("树形列表项目结点")
 public class ProjectNodeData extends NodeData {
-    public ProjectNodeData() {
+    public ProjectNodeData(String nodeName) {
+        super(nodeName);
         this.setNodeIcon(HttpIcons.MODULE);
     }
 }

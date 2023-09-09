@@ -32,6 +32,10 @@ public interface SpringEnum {
         REST_CONTROLLER("org.springframework.web.bind.annotation.RestController");
 
         private final String clazz;
+
+        public String getShortClassName() {
+            return clazz.substring(clazz.lastIndexOf('.') + 1);
+        }
     }
 
     @Getter

@@ -10,7 +10,8 @@ import com.zys.http.ui.icon.HttpIcons;
 public class ClassNodeData extends NodeData {
     private PsiClass psiClass;
 
-    public ClassNodeData() {
+    public ClassNodeData(String nodeName) {
+        super(nodeName);
         this.setNodeIcon(HttpIcons.CLASS);
     }
 }

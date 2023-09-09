@@ -2,7 +2,6 @@ package com.zys.http.entity.tree;
 
 import jdk.jfr.Description;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import javax.swing.*;
 import java.util.List;
@@ -12,7 +11,6 @@ import java.util.List;
  * @since 2023-09-07
  */
 @Data
-@NoArgsConstructor
 public class NodeData {
 
     @Description("结点显示的内容")
@@ -24,9 +22,10 @@ public class NodeData {
     @Description("鼠标悬浮在结点上展示的内容")
     private String description;
 
-    @Description("是否展示")
-    private boolean isShow = true;
-
     @Description("下级列表")
     private List<? extends NodeData> children;
+
+    protected NodeData(String nodeName) {
+        this.nodeName = nodeName;
+    }
 }

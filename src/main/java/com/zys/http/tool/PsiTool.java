@@ -18,7 +18,7 @@ import java.util.stream.Stream;
  * @author zhou ys
  * @since 2023-09-07
  */
-@Description("读取项目的文件工具类")
+@Description("读取项目的文件 Psi 工具类")
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class PsiTool {
 

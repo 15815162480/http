@@ -3,9 +3,9 @@ package com.zys.http.ui.tree;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiMethod;
 import com.intellij.ui.treeStructure.SimpleTree;
-import com.zys.http.constant.HttpEnum;
-import com.zys.http.entity.tree.*;
-import com.zys.http.ui.tree.node.*;
+import com.zys.http.tool.TreeTool;
+import com.zys.http.ui.tree.node.MethodNode;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,37 +20,10 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
 
     private final transient Map<PsiMethod, MethodNode> methodNodes = new HashMap<>();
 
-    public HttpApiTreePanel(Project project) {
+    public HttpApiTreePanel(@NotNull Project project) {
         super(new SimpleTree());
         this.project = project;
-
-        ProjectNodeData data = new ProjectNodeData();
-        data.setNodeName("Project");
-        ProjectNode root = new ProjectNode(data);
-
-        ModuleNodeData nodeData = new ModuleNodeData();
-        nodeData.setNodeName("Module");
-        ModuleNode moduleNode = new ModuleNode(nodeData);
-
-        PackageNodeData packageNodeData = new PackageNodeData();
-        packageNodeData.setNodeName("Package");
-        PackageNode packageNode = new PackageNode(packageNodeData);
-
-        ClassNodeData classNodeData = new ClassNodeData();
-        classNodeData.setNodeName("Class");
-        ClassNode classNode = new ClassNode(classNodeData);
-
-        for (HttpEnum.HttpMethod value : HttpEnum.HttpMethod.values()) {
-            MethodNodeData methodNodeData = new MethodNodeData(value);
-            methodNodeData.setNodeName(value.name());
-            MethodNode methodNode = new MethodNode(methodNodeData);
-            classNode.add(methodNode);
-        }
-
-        packageNode.add(classNode);
-        moduleNode.add(packageNode);
-        root.add(moduleNode);
-        super.getTreeModel().setRoot(root);
+        super.getTreeModel().setRoot(TreeTool.createTreeRootNode(project));
     }
 
     @Override

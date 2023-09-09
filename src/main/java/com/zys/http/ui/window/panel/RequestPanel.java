@@ -8,6 +8,7 @@ import jdk.jfr.Description;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.jdesktop.swingx.JXButton;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
@@ -28,7 +29,7 @@ public class RequestPanel extends JBSplitter {
     private BottomPart bottomPart;
     private final transient Project project;
 
-    public RequestPanel(Project project) {
+    public RequestPanel(@NotNull Project project) {
         super(true, Window.class.getName(), 0.6F);
         this.project = project;
         this.setFirstComponent(new TopPart(project));
@@ -50,7 +51,7 @@ public class RequestPanel extends JBSplitter {
         @Description("设置的IP/HOST")
         private String hostValue = "";
 
-        public TopPart(Project project) {
+        public TopPart(@NotNull Project project) {
             // 初始化所有组件
             setLayout(new GridBagLayout());
             initHttpMethodOption();

@@ -8,6 +8,10 @@
     <description>测试4040404040404004040400404040404004400404040400404040</description>
 
     <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.java</depends>
+    <depends>com.intellij.properties</depends>
+    <depends>org.jetbrains.plugins.yaml</depends>
+    <depends>org.jetbrains.kotlin</depends>
 
     <extensions defaultExtensionNs="com.intellij">
         <toolWindow id="http" secondary="true" anchor="right"

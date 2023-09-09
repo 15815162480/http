@@ -7,7 +7,8 @@ import com.zys.http.ui.icon.HttpIcons;
  * @since 2023-09-08
  */
 public class ModuleNodeData extends NodeData {
-    public ModuleNodeData() {
+    public ModuleNodeData(String nodeName) {
+        super(nodeName);
         this.setNodeIcon(HttpIcons.MODULE);
     }
 }

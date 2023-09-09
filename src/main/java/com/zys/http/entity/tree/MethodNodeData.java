@@ -22,7 +22,8 @@ public class MethodNodeData extends NodeData {
 
     private final HttpEnum.HttpMethod httpMethod;
 
-    public MethodNodeData(HttpEnum.HttpMethod httpMethod) {
+    public MethodNodeData(HttpEnum.HttpMethod httpMethod, String nodeName) {
+        super(nodeName);
         this.httpMethod = httpMethod;
         this.setNodeIcon(HttpIcons.getHttpMethodIcon(httpMethod));
     }

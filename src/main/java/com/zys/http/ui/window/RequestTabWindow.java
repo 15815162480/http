@@ -23,8 +23,8 @@ public class RequestTabWindow extends SimpleToolWindowPanel {
 
     public RequestTabWindow(Project project) {
         super(true, true);
-        init();
         this.project = project;
+        init();
     }
 
     @Description("初始化")
