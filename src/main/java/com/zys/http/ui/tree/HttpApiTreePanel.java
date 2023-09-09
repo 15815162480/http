@@ -3,7 +3,7 @@ package com.zys.http.ui.tree;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiMethod;
 import com.intellij.ui.treeStructure.SimpleTree;
-import com.zys.http.tool.TreeTool;
+import com.zys.http.tool.PsiTool;
 import com.zys.http.ui.tree.node.MethodNode;
 import org.jetbrains.annotations.NotNull;
 
@@ -23,7 +23,7 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
     public HttpApiTreePanel(@NotNull Project project) {
         super(new SimpleTree());
         this.project = project;
-        super.getTreeModel().setRoot(TreeTool.createTreeRootNode(project));
+        super.getTreeModel().setRoot(PsiTool.buildHttpApiTreeNodeData(project));
     }
 
     @Override

@@ -2,7 +2,6 @@ package com.zys.http.ui.dialog;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
-import com.zys.http.tool.ProjectTool;
 import com.zys.http.ui.table.EnvShowTable;
 import jdk.jfr.Description;
 import org.jetbrains.annotations.NotNull;
@@ -30,7 +29,6 @@ public class EnvShowDialog extends DialogWrapper {
         setCancelButtonText("取消");
         setOKButtonText("确定");
         setAutoAdjustable(true);
-        ProjectTool.getModules(project);
     }
 
     @Override

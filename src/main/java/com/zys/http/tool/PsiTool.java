@@ -1,7 +1,20 @@
 package com.zys.http.tool;
 
+import com.intellij.openapi.module.Module;
+import com.intellij.openapi.module.ModuleManager;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.psi.*;
 import com.intellij.psi.impl.PsiClassImplUtil;
+import com.intellij.psi.impl.java.stubs.index.JavaAnnotationIndex;
+import com.intellij.psi.search.GlobalSearchScope;
+import com.zys.http.constant.SpringEnum;
+import com.zys.http.entity.tree.ModuleNodeData;
+import com.zys.http.entity.tree.NodeData;
+import com.zys.http.entity.tree.ProjectNodeData;
+import com.zys.http.ui.tree.node.BaseNode;
+import com.zys.http.ui.tree.node.ModuleNode;
+import com.zys.http.ui.tree.node.ProjectNode;
 import jdk.jfr.Description;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -24,6 +37,83 @@ public class PsiTool {
 
     private static final String GETTER_PREFIX = "get";
     private static final String SETTER_PREFIX = "set";
+
+
+    // ====================================模块==========================================
+
+    @Description("构建出树形结构的模块目录层级")
+    private static Map<String, List<String>> buildModuleLayer(@NotNull Project project) {
+        // 1 获取当前项目名
+        String projectName = project.getName();
+
+        // 2 将当前所有模块名存到 Map<String, List<String/Module>> 中<当前模块名,子模块名列表>
+        Map<String, List<String>> moduleClassMap = new HashMap<>();
+
+        // 3 遍历所有的模块时, 去获取父级模块的名称
+        Module[] modules = ModuleManager.getInstance(project).getModules();
+        for (Module module : modules) {
+
+            // 如果父级模块的名称与项目名称一致, 说明是一级模块
+            String parentName = ModuleRootManager.getInstance(module).getContentRoots()[0].getParent().getName();
+            if (parentName.equals("Project")) {
+                continue;
+            }
+            // .......
+            String moduleName = module.getName();
+
+            List<String> subModuleNames = moduleClassMap.computeIfAbsent(parentName, k -> new ArrayList<>());
+            subModuleNames.add(moduleName);
+            if (projectName.equals(parentName)) {
+                moduleClassMap.put(moduleName, new ArrayList<>());
+            }
+        }
+
+        return moduleClassMap;
+    }
+
+    @Description("构建请求树形结构结点数据")
+    public static ProjectNode buildHttpApiTreeNodeData(@NotNull Project project) {
+        // TODO 线程异步处理构建数据
+        String projectName = project.getName();
+        ProjectNode root = new ProjectNode(new ProjectNodeData(projectName));
+        childNodes(projectName, buildModuleLayer(project)).forEach(root::add);
+        return root;
+    }
+
+    private static List<BaseNode<? extends NodeData>> childNodes(String name, @NotNull Map<String, List<String>> modules) {
+        List<String> subModuleNames = modules.get(name);
+        if (subModuleNames == null || subModuleNames.isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<BaseNode<? extends NodeData>> moduleNodes = new ArrayList<>();
+        for (String childName : subModuleNames) {
+            ModuleNodeData nodeData = new ModuleNodeData(childName);
+            ModuleNode moduleNode = new ModuleNode(nodeData);
+            List<BaseNode<? extends NodeData>> childrenNodes = childNodes(childName, modules);
+            childrenNodes.forEach(moduleNode::add);
+            moduleNodes.add(moduleNode);
+        }
+        return moduleNodes;
+    }
+
+
+    @Description("获取指定模块中所有的 Controller")
+    public static List<PsiClass> getModuleController(Project project, Module module) {
+        Optional<GlobalSearchScope> globalSearchScope = Optional.of(module)
+                .map(Module::getModuleScope);
+        return Stream.concat(
+                        globalSearchScope.map(moduleScope -> JavaAnnotationIndex.getInstance().get(SpringEnum.Controller.CONTROLLER.getShortClassName(), project, moduleScope))
+                                .orElse(new ArrayList<>()).stream(),
+                        globalSearchScope.map(moduleScope -> JavaAnnotationIndex.getInstance().get(SpringEnum.Controller.REST_CONTROLLER.getShortClassName(), project, moduleScope))
+                                .orElse(new ArrayList<>()).stream())
+                .map(PsiElement::getParent)
+                .map(PsiModifierList.class::cast)
+                .map(PsiModifierList::getParent)
+                .filter(PsiClass.class::isInstance)
+                .map(PsiClass.class::cast)
+                .toList();
+
+    }
 
 
     public static @NotNull List<PsiClass> getAllPsiClass(@NotNull PsiClass psiClass) {
