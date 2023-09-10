@@ -42,17 +42,13 @@ public class PsiTool {
     // ====================================模块==========================================
 
     @Description("构建出树形结构的模块目录层级")
-    private static Map<String, List<String>> buildModuleLayer(@NotNull Project project) {
-        // 1 获取当前项目名
-        String projectName = project.getName();
-
-        // 2 将当前所有模块名存到 Map<String, List<String/Module>> 中<当前模块名,子模块名列表>
+    public static Map<String, List<String>> buildModuleLayer(@NotNull Project project) {
+        // 1 将当前所有模块名存到 Map<String, List<String/Module>> 中<当前模块名,子模块名列表>
         Map<String, List<String>> moduleClassMap = new HashMap<>();
 
-        // 3 遍历所有的模块时, 去获取父级模块的名称
+        // 2 遍历所有的模块时, 去获取父级模块的名称
         Module[] modules = ModuleManager.getInstance(project).getModules();
         for (Module module : modules) {
-
             // 如果父级模块的名称与项目名称一致, 说明是一级模块
             String parentName = ModuleRootManager.getInstance(module).getContentRoots()[0].getParent().getName();
             if (parentName.equals("Project")) {
@@ -61,10 +57,14 @@ public class PsiTool {
             // .......
             String moduleName = module.getName();
 
-            List<String> subModuleNames = moduleClassMap.computeIfAbsent(parentName, k -> new ArrayList<>());
-            subModuleNames.add(moduleName);
-            if (projectName.equals(parentName)) {
-                moduleClassMap.put(moduleName, new ArrayList<>());
+            List<String> list = moduleClassMap.get(parentName);
+
+            if (Objects.isNull(list)) {
+                list = new ArrayList<>();
+                list.add(moduleName);
+                moduleClassMap.put(parentName, list);
+            } else {
+                list.add(moduleName);
             }
         }
 
@@ -80,9 +80,10 @@ public class PsiTool {
         return root;
     }
 
+
     private static List<BaseNode<? extends NodeData>> childNodes(String name, @NotNull Map<String, List<String>> modules) {
         List<String> subModuleNames = modules.get(name);
-        if (subModuleNames == null || subModuleNames.isEmpty()) {
+        if (subModuleNames == null) {
             return Collections.emptyList();
         }
         List<BaseNode<? extends NodeData>> moduleNodes = new ArrayList<>();
@@ -96,6 +97,16 @@ public class PsiTool {
         return moduleNodes;
     }
 
+    @Description("根据模块名获取指定模块")
+    public static Module getModuleByName(Project project, String moduleName) {
+        Module[] modules = ModuleManager.getInstance(project).getModules();
+        for (Module module : modules) {
+            if (module.getName().equals(moduleName)) {
+                return module;
+            }
+        }
+        return null;
+    }
 
     @Description("获取指定模块中所有的 Controller")
     public static List<PsiClass> getModuleController(Project project, Module module) {

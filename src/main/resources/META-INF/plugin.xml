@@ -1,23 +1,22 @@
 <idea-plugin>
-    <id>com.zys.http</id>
+  <id>com.zys.http</id>
 
-    <name>Http</name>
+  <name>Http</name>
 
-    <vendor email="1083734160@qq.com" url="">zys</vendor>
+  <vendor email="1083734160@qq.com" url="">zys</vendor>
 
-    <description>测试4040404040404004040400404040404004400404040400404040</description>
+  <description>测试4040404040404004040400404040404004400404040400404040</description>
 
-    <depends>com.intellij.modules.platform</depends>
-    <depends>com.intellij.modules.java</depends>
-    <depends>com.intellij.properties</depends>
-    <depends>org.jetbrains.plugins.yaml</depends>
-    <depends>org.jetbrains.kotlin</depends>
+  <depends>com.intellij.modules.platform</depends>
+  <depends>com.intellij.modules.java</depends>
+  <depends>com.intellij.properties</depends>
+  <depends>org.jetbrains.plugins.yaml</depends>
+  <depends>org.jetbrains.kotlin</depends>
 
-    <extensions defaultExtensionNs="com.intellij">
-        <toolWindow id="http" secondary="true" anchor="right"
-                    factoryClass="com.zys.http.HttpMainWindowFactory"
-                    icon="AllIcons.Toolwindows.WebToolWindow"
-        />
-        <projectService serviceImplementation="com.zys.http.service.HttpService"/>
-    </extensions>
+  <extensions defaultExtensionNs="com.intellij">
+    <toolWindow id="http" secondary="true" anchor="right" icon="AllIcons.Toolwindows.WebToolWindow"
+                doNotActivateOnStart="true" factoryClass="com.zys.http.HttpMainWindowFactory"
+    />
+    <projectService serviceImplementation="com.zys.http.service.HttpService"/>
+  </extensions>
 </idea-plugin>

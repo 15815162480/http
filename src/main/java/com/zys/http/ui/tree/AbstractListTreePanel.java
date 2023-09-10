@@ -19,7 +19,7 @@ import java.awt.event.MouseEvent;
  * @since 2023-09-05
  */
 public abstract class AbstractListTreePanel extends JBScrollPane implements TreeExpander {
-    private final JTree tree;
+    protected final JTree tree;
 
     protected AbstractListTreePanel(@NotNull final JTree tree) {
         this.tree = tree;
@@ -27,7 +27,7 @@ public abstract class AbstractListTreePanel extends JBScrollPane implements Tree
         this.setBorder(new CustomLineBorder(JBUI.insetsTop(1)));
 
         this.tree.setRootVisible(true);
-        this.tree.setShowsRootHandles(false);
+        this.tree.setShowsRootHandles(true);
         this.setViewportView(tree);
         this.tree.setCellRenderer(new HttpApiTreeCellRenderer());
 
@@ -55,5 +55,15 @@ public abstract class AbstractListTreePanel extends JBScrollPane implements Tree
 
     protected final DefaultTreeModel getTreeModel() {
         return (DefaultTreeModel) tree.getModel();
+    }
+
+    @Override
+    public boolean canExpand() {
+        return true;
+    }
+
+    @Override
+    public boolean canCollapse() {
+        return true;
     }
 }
