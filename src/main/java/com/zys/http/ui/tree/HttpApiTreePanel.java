@@ -81,11 +81,11 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
                     if (Objects.nonNull(commonPackageNode)) {
                         addChildPackageNodeWhenHasSubPackage(qualifiedName, classCommonPackagePrefix, psiClass, commonPackageNode);
                     } else {
-                        currentNode.add(new ClassNode(new ClassNodeData(psiClass.getName())));
+                        currentNode.add(new ClassNode(new ClassNodeData(psiClass)));
                     }
                 }
             } else {
-                currentNode.add(new ClassNode(new ClassNodeData(psiClass.getName())));
+                currentNode.add(new ClassNode(new ClassNodeData(psiClass)));
             }
         }
     }
@@ -93,9 +93,9 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
     @Description("添加子结点, 没有子包时")
     private void addChildPackageNode(PackageNode commonPackageNode, DefaultMutableTreeNode currentNode, PsiClass psiClass) {
         if (Objects.nonNull(commonPackageNode)) {
-            commonPackageNode.add(new ClassNode(new ClassNodeData(psiClass.getName())));
+            commonPackageNode.add(new ClassNode(new ClassNodeData(psiClass)));
         } else {
-            currentNode.add(new ClassNode(new ClassNodeData(psiClass.getName())));
+            currentNode.add(new ClassNode(new ClassNodeData(psiClass)));
         }
     }
 
@@ -105,10 +105,10 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
         DefaultMutableTreeNode treeNode = findNodeByContent(commonPackageNode, qualifiedName);
         if (Objects.isNull(treeNode)) {
             PackageNode restPackageNode = new PackageNode(new PackageNodeData(qualifiedName));
-            restPackageNode.add(new ClassNode(new ClassNodeData(psiClass.getName())));
+            restPackageNode.add(new ClassNode(new ClassNodeData(psiClass)));
             commonPackageNode.add(restPackageNode);
         } else {
-            treeNode.add(new ClassNode(new ClassNodeData(psiClass.getName())));
+            treeNode.add(new ClassNode(new ClassNodeData(psiClass)));
         }
     }
 
