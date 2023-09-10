@@ -76,14 +76,10 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
                 qualifiedName = qualifiedName.substring(0, qualifiedName.lastIndexOf('.'));
                 if (qualifiedName.equals(classCommonPackagePrefix)) {
                     // 如果相同直接添加当前类
-                    if (Objects.nonNull(commonPackageNode)) {
-                        commonPackageNode.add(new ClassNode(new ClassNodeData(psiClass.getName())));
-                    } else {
-                        currentNode.add(new ClassNode(new ClassNodeData(psiClass.getName())));
-                    }
+                    addChildPackageNode(commonPackageNode, currentNode, psiClass);
                 } else {
                     if (Objects.nonNull(commonPackageNode)) {
-                        addChildPackageNode(qualifiedName, classCommonPackagePrefix, psiClass, commonPackageNode);
+                        addChildPackageNodeWhenHasSubPackage(qualifiedName, classCommonPackagePrefix, psiClass, commonPackageNode);
                     } else {
                         currentNode.add(new ClassNode(new ClassNodeData(psiClass.getName())));
                     }
@@ -94,7 +90,17 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
         }
     }
 
-    private void addChildPackageNode(@NotNull String qualifiedName, @NotNull String classCommonPackagePrefix, PsiClass psiClass, PackageNode commonPackageNode) {
+    @Description("添加子结点, 没有子包时")
+    private void addChildPackageNode(PackageNode commonPackageNode, DefaultMutableTreeNode currentNode, PsiClass psiClass) {
+        if (Objects.nonNull(commonPackageNode)) {
+            commonPackageNode.add(new ClassNode(new ClassNodeData(psiClass.getName())));
+        } else {
+            currentNode.add(new ClassNode(new ClassNodeData(psiClass.getName())));
+        }
+    }
+
+    @Description("添加包结点, 当有子包时")
+    private void addChildPackageNodeWhenHasSubPackage(@NotNull String qualifiedName, @NotNull String classCommonPackagePrefix, PsiClass psiClass, PackageNode commonPackageNode) {
         qualifiedName = qualifiedName.substring(classCommonPackagePrefix.length() + 1);
         DefaultMutableTreeNode treeNode = findNodeByContent(commonPackageNode, qualifiedName);
         if (Objects.isNull(treeNode)) {
