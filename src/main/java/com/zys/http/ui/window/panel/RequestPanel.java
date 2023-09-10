@@ -3,6 +3,8 @@ package com.zys.http.ui.window.panel;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.ui.JBSplitter;
+import com.intellij.util.ui.JBUI;
+import com.zys.http.constant.UIConstant;
 import com.zys.http.ui.tree.HttpApiTreePanel;
 import jdk.jfr.Description;
 import lombok.Data;
@@ -56,6 +58,7 @@ public class RequestPanel extends JBSplitter {
             setLayout(new GridBagLayout());
             initHttpMethodOption();
             initHostOption();
+            setBorder(JBUI.Borders.customLineTop(UIConstant.BORDER_COLOR));
             sendRequestBtn = new JXButton("发送");
 
             GridBagConstraints gbc = new GridBagConstraints();

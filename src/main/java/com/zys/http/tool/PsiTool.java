@@ -1,9 +1,13 @@
 package com.zys.http.tool;
 
+import com.intellij.lang.properties.psi.PropertiesFile;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
+import com.intellij.openapi.module.ResourceFileUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ModuleRootManager;
+import com.intellij.openapi.util.Pair;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
 import com.intellij.psi.impl.PsiClassImplUtil;
 import com.intellij.psi.impl.java.stubs.index.JavaAnnotationIndex;
@@ -21,6 +25,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.yaml.YAMLUtil;
+import org.jetbrains.yaml.psi.YAMLFile;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -38,6 +44,11 @@ public class PsiTool {
     private static final String GETTER_PREFIX = "get";
     private static final String SETTER_PREFIX = "set";
 
+    @Description("SpringBoot 项目的配置文件")
+    private static final String[] APPLICATION_FILE_NAMES = {
+            "bootstrap.properties", "bootstrap.yml", "application.properties", "application.yml"
+    };
+
 
     // ====================================模块==========================================
 
@@ -54,7 +65,6 @@ public class PsiTool {
             if (parentName.equals("Project")) {
                 continue;
             }
-            // .......
             String moduleName = module.getName();
 
             List<String> list = moduleClassMap.get(parentName);
@@ -76,21 +86,22 @@ public class PsiTool {
         // TODO 线程异步处理构建数据
         String projectName = project.getName();
         ProjectNode root = new ProjectNode(new ProjectNodeData(projectName));
-        childNodes(projectName, buildModuleLayer(project)).forEach(root::add);
+        childNodes(project, projectName, buildModuleLayer(project)).forEach(root::add);
         return root;
     }
 
 
-    private static List<BaseNode<? extends NodeData>> childNodes(String name, @NotNull Map<String, List<String>> modules) {
+    private static List<BaseNode<? extends NodeData>> childNodes(@NotNull Project project, String name, @NotNull Map<String, List<String>> modules) {
         List<String> subModuleNames = modules.get(name);
         if (subModuleNames == null) {
             return Collections.emptyList();
         }
         List<BaseNode<? extends NodeData>> moduleNodes = new ArrayList<>();
         for (String childName : subModuleNames) {
-            ModuleNodeData nodeData = new ModuleNodeData(childName);
+            String contextPath = getContextPath(project, Objects.requireNonNull(getModuleByName(project, childName)));
+            ModuleNodeData nodeData = new ModuleNodeData(childName, contextPath);
             ModuleNode moduleNode = new ModuleNode(nodeData);
-            List<BaseNode<? extends NodeData>> childrenNodes = childNodes(childName, modules);
+            List<BaseNode<? extends NodeData>> childrenNodes = childNodes(project, childName, modules);
             childrenNodes.forEach(moduleNode::add);
             moduleNodes.add(moduleNode);
         }
@@ -183,6 +194,42 @@ public class PsiTool {
         }
         return new ArrayList<>(map.values());
     }
+
+
+    @Description("获取模块的 context-path")
+    public static String getContextPath(@NotNull Project project, @NotNull Module module) {
+        // 1 获取 SpringBoot 中有的配置文件
+        PsiFile psiFile = getSpringApplicationFile(project, module);
+        if (Objects.isNull(psiFile)) {
+            return "";
+        }
+        // 如果是 yaml 文件
+        if (psiFile instanceof YAMLFile yamlFile) {
+            Pair<PsiElement, String> value = YAMLUtil.getValue(yamlFile, "server", "servlet");
+            if (value != null) {
+                PsiElement first = value.getFirst();
+                String text = first.getText(); // 获取到 server.servlet.context-path, 内容: context-path: /
+                return text.split(":")[1].trim();
+            }
+        }
+        if (psiFile instanceof PropertiesFile propertiesFile) {
+            return propertiesFile.getNamesMap().get("server.servlet.context-path");
+        }
+
+        return "";
+    }
+
+    public static PsiFile getSpringApplicationFile(@NotNull Project project, @NotNull Module module) {
+        PsiManager psiManager = PsiManager.getInstance(project);
+        for (String applicationFileName : APPLICATION_FILE_NAMES) {
+            VirtualFile file = ResourceFileUtil.findResourceFileInDependents(module, applicationFileName);
+            if (Objects.nonNull(file)) {
+                return psiManager.findFile(file);
+            }
+        }
+        return null;
+    }
+
 
     @Description("方法名是否以 get 或 set 开头")
     private static boolean methodNameStartWithGetOrSet(String name) {

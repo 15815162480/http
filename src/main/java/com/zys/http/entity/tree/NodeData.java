@@ -4,7 +4,6 @@ import jdk.jfr.Description;
 import lombok.Data;
 
 import javax.swing.*;
-import java.util.List;
 
 /**
  * @author zhou ys
@@ -21,9 +20,6 @@ public class NodeData {
 
     @Description("鼠标悬浮在结点上展示的内容")
     private String description;
-
-    @Description("下级列表")
-    private List<? extends NodeData> children;
 
     protected NodeData(String nodeName) {
         this.nodeName = nodeName;

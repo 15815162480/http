@@ -9,10 +9,7 @@ import com.zys.http.entity.tree.ClassNodeData;
 import com.zys.http.entity.tree.NodeData;
 import com.zys.http.entity.tree.PackageNodeData;
 import com.zys.http.tool.PsiTool;
-import com.zys.http.ui.tree.node.BaseNode;
-import com.zys.http.ui.tree.node.ClassNode;
-import com.zys.http.ui.tree.node.MethodNode;
-import com.zys.http.ui.tree.node.PackageNode;
+import com.zys.http.ui.tree.node.*;
 import jdk.jfr.Description;
 import org.jetbrains.annotations.NotNull;
 
@@ -69,6 +66,7 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
     }
 
     private void initPackageAndClassNode(DefaultMutableTreeNode currentNode, List<PsiClass> controller, String classCommonPackagePrefix, PackageNode commonPackageNode) {
+        String contextPath = ((ModuleNode) currentNode).getValue().getContextPath();
         for (PsiClass psiClass : controller) {
             String qualifiedName = psiClass.getQualifiedName();
             if (qualifiedName != null && classCommonPackagePrefix != null) {
@@ -79,36 +77,37 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
                     addChildPackageNode(commonPackageNode, currentNode, psiClass);
                 } else {
                     if (Objects.nonNull(commonPackageNode)) {
-                        addChildPackageNodeWhenHasSubPackage(qualifiedName, classCommonPackagePrefix, psiClass, commonPackageNode);
+                        addChildPackageNodeWhenHasSubPackage(qualifiedName, classCommonPackagePrefix, psiClass, commonPackageNode, contextPath);
                     } else {
-                        currentNode.add(new ClassNode(new ClassNodeData(psiClass)));
+                        currentNode.add(new ClassNode(new ClassNodeData(psiClass, contextPath)));
                     }
                 }
             } else {
-                currentNode.add(new ClassNode(new ClassNodeData(psiClass)));
+                currentNode.add(new ClassNode(new ClassNodeData(psiClass, contextPath)));
             }
         }
     }
 
     @Description("添加子结点, 没有子包时")
     private void addChildPackageNode(PackageNode commonPackageNode, DefaultMutableTreeNode currentNode, PsiClass psiClass) {
+        String contextPath = ((ModuleNode) currentNode).getValue().getContextPath();
         if (Objects.nonNull(commonPackageNode)) {
-            commonPackageNode.add(new ClassNode(new ClassNodeData(psiClass)));
+            commonPackageNode.add(new ClassNode(new ClassNodeData(psiClass, contextPath)));
         } else {
-            currentNode.add(new ClassNode(new ClassNodeData(psiClass)));
+            currentNode.add(new ClassNode(new ClassNodeData(psiClass, contextPath)));
         }
     }
 
     @Description("添加包结点, 当有子包时")
-    private void addChildPackageNodeWhenHasSubPackage(@NotNull String qualifiedName, @NotNull String classCommonPackagePrefix, PsiClass psiClass, PackageNode commonPackageNode) {
+    private void addChildPackageNodeWhenHasSubPackage(@NotNull String qualifiedName, @NotNull String classCommonPackagePrefix, PsiClass psiClass, PackageNode commonPackageNode, String contextPath) {
         qualifiedName = qualifiedName.substring(classCommonPackagePrefix.length() + 1);
         DefaultMutableTreeNode treeNode = findNodeByContent(commonPackageNode, qualifiedName);
         if (Objects.isNull(treeNode)) {
             PackageNode restPackageNode = new PackageNode(new PackageNodeData(qualifiedName));
-            restPackageNode.add(new ClassNode(new ClassNodeData(psiClass)));
+            restPackageNode.add(new ClassNode(new ClassNodeData(psiClass, contextPath)));
             commonPackageNode.add(restPackageNode);
         } else {
-            treeNode.add(new ClassNode(new ClassNodeData(psiClass)));
+            treeNode.add(new ClassNode(new ClassNodeData(psiClass, contextPath)));
         }
     }
 

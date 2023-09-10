@@ -12,11 +12,15 @@ import lombok.Getter;
 @Getter
 @EqualsAndHashCode(callSuper = true)
 public class ClassNodeData extends NodeData {
+
+    private final String contextPath;
+
     private final PsiClass psiClass;
 
-    public ClassNodeData(PsiClass psiClass) {
+    public ClassNodeData(PsiClass psiClass, String contextPath) {
         super(psiClass.getName());
         this.psiClass = psiClass;
+        this.contextPath = contextPath;
         this.setNodeIcon(HttpIcons.CLASS);
     }
 }
