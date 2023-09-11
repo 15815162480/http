@@ -16,6 +16,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author zys
@@ -30,20 +31,26 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
     public HttpApiTreePanel(@NotNull Project project) {
         super(new SimpleTree());
         this.project = project;
-        initModuleNodes();
-        initPackageAndClassNodes();
-        initMethodNodes();
+        initNodes();
     }
 
-    @Description("初始化项目模块节点")
-    private void initModuleNodes() {
+    private void initNodes() {
         String projectName = project.getName();
         String contextPath = Arrays.stream(ModuleManager.getInstance(project).getModules())
                 .filter(o -> projectName.equals(o.getName()))
                 .map(o -> PsiTool.getContextPath(project, o)).findFirst().orElse("");
         ModuleNode root = new ModuleNode(new ModuleNodeData(projectName, contextPath));
-        initModuleNodes(project, projectName, PsiTool.buildModuleLayer(project)).forEach(root::add);
         super.getTreeModel().setRoot(root);
+        initModuleNodes();
+        initPackageNodes();
+        initClassNodes();
+        initMethodNodes();
+    }
+
+    @Description("初始化项目模块节点")
+    private void initModuleNodes() {
+        DefaultMutableTreeNode root = (DefaultMutableTreeNode) super.getTreeModel().getRoot();
+        initModuleNodes(project, project.getName(), PsiTool.buildModuleLayer(project)).forEach(root::add);
     }
 
     @Description("初始化项目模块节点")
@@ -64,21 +71,14 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
         return moduleNodes;
     }
 
-    @Description("初始化包名和类节点")
-    private void initPackageAndClassNodes() {
+    @Description("初始化包结点")
+    private void initPackageNodes() {
         List<DefaultMutableTreeNode> allLeafNodes = getAllLeafNodes();
         for (DefaultMutableTreeNode node : allLeafNodes) {
             String nodeName = ((BaseNode<? extends NodeData>) node).getValue().getNodeName();
             List<PsiClass> controller = PsiTool.getModuleController(project, PsiTool.getModuleByName(project, nodeName));
-            if (!controller.isEmpty()) {
-                String classCommonPackagePrefix = getClassCommonPackagePrefix(controller.stream().map(PsiClass::getQualifiedName).toList());
-                PackageNode commonPackageNode = null;
-                if (CharSequenceUtil.isNotEmpty(classCommonPackagePrefix)) {
-                    commonPackageNode = new PackageNode(new PackageNodeData(classCommonPackagePrefix.substring(0, classCommonPackagePrefix.length() - 1)));
-                    node.add(commonPackageNode);
-                }
-                initPackageAndClassNodes(node, controller, classCommonPackagePrefix, commonPackageNode);
-            } else {
+            if (controller.isEmpty()) {
+                // 说明模块没有使用 @Controller 和 @RestController
                 TreeNode parent = node.getParent();
                 if (!node.isRoot()) {
                     getTreeModel().removeNodeFromParent(node);
@@ -86,53 +86,103 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
                 if (parent != null && parent.isLeaf()) {
                     getTreeModel().removeNodeFromParent((MutableTreeNode) parent);
                 }
+                continue;
             }
-        }
-    }
+            List<String> classNames = controller.stream().map(PsiClass::getQualifiedName).toList();
+            String classCommonPackagePrefix = getClassCommonPackagePrefix(classNames);
+            PackageNode commonPackageNode;
+            if (CharSequenceUtil.isNotEmpty(classCommonPackagePrefix)) {
+                if (classCommonPackagePrefix.endsWith(".")) {
+                    classCommonPackagePrefix = classCommonPackagePrefix.substring(0, classCommonPackagePrefix.length() - 1);
+                }
 
-    private void initPackageAndClassNodes(DefaultMutableTreeNode currentNode, List<PsiClass> controller, String classCommonPackagePrefix, PackageNode commonPackageNode) {
-        String contextPath = ((ModuleNode) currentNode).getValue().getContextPath();
-        for (PsiClass psiClass : controller) {
-            String qualifiedName = psiClass.getQualifiedName();
-            if (qualifiedName != null && classCommonPackagePrefix != null) {
-                // 先把当前类名移除掉
-                qualifiedName = qualifiedName.substring(0, qualifiedName.lastIndexOf('.'));
-                if (qualifiedName.equals(classCommonPackagePrefix)) {
-                    // 如果相同直接添加当前类
-                    addChildPackageNode(commonPackageNode, currentNode, psiClass);
-                } else {
-                    if (Objects.nonNull(commonPackageNode)) {
-                        addChildPackageNodeWhenHasSubPackage(qualifiedName, classCommonPackagePrefix, psiClass, commonPackageNode, contextPath);
-                    } else {
-                        currentNode.add(new ClassNode(new ClassNodeData(psiClass, contextPath)));
+                commonPackageNode = new PackageNode(new PackageNodeData(classCommonPackagePrefix, nodeName));
+                node.add(commonPackageNode);
+
+                String finalClassCommonPackagePrefix = classCommonPackagePrefix;
+                Map<String, List<String>> map = classNames.stream()
+                        .map(o -> o.substring(0, o.lastIndexOf(".")))
+                        .map(o -> o.substring(finalClassCommonPackagePrefix.length()))
+                        .filter(o -> !o.isEmpty())
+                        .collect(Collectors.groupingBy(o -> o));
+                for (List<String> value : map.values()) {
+                    if (value.isEmpty()) {
+                        continue;
+                    }
+                    if (value.size() == 1) {
+                        String a = value.get(0);
+                        a = a.startsWith(".") ? a.substring(1) : a;
+                        if (!a.trim().isEmpty()) {
+                            commonPackageNode.add(new PackageNode(new PackageNodeData(a, nodeName)));
+                        }
+                    }
+                    String commonPrefix = getCommonPrefix(value).trim();
+                    if (!commonPrefix.isEmpty()) {
+                        commonPrefix = commonPrefix.startsWith(".") ? commonPrefix.substring(1) : commonPrefix;
+                        if (Objects.isNull(findNodeByContent((BaseNode<? extends NodeData>) node, commonPrefix))) {
+                            PackageNodeData nodeData = new PackageNodeData(commonPrefix, nodeName);
+                            PackageNode packageNode = new PackageNode(nodeData);
+                            if (value.get(0).length() > commonPrefix.length()) {
+                                String rest = value.get(0);
+                                rest = rest.startsWith(".") ? rest.substring(1) : rest;
+                                rest = rest.substring(commonPrefix.length());
+                                if (!rest.isEmpty()) {
+                                    PackageNodeData restNodeData = new PackageNodeData(rest, nodeName);
+                                    packageNode.add(new PackageNode(restNodeData));
+                                }
+
+                            }
+                            commonPackageNode.add(packageNode);
+                        }
                     }
                 }
-            } else {
-                currentNode.add(new ClassNode(new ClassNodeData(psiClass, contextPath)));
             }
         }
     }
 
-    @Description("添加包/类结点, 没有子包时")
-    private void addChildPackageNode(PackageNode commonPackageNode, DefaultMutableTreeNode currentNode, PsiClass psiClass) {
-        String contextPath = ((ModuleNode) currentNode).getValue().getContextPath();
-        if (Objects.nonNull(commonPackageNode)) {
-            commonPackageNode.add(new ClassNode(new ClassNodeData(psiClass, contextPath)));
-        } else {
-            currentNode.add(new ClassNode(new ClassNodeData(psiClass, contextPath)));
+    @Description("初始化类结点")
+    private void initClassNodes() {
+        List<DefaultMutableTreeNode> allLeafNodes = getAllLeafNodes();
+        for (DefaultMutableTreeNode node : allLeafNodes) {
+            String moduleName = ((PackageNode) node).getValue().getModuleName();
+            String nodeName = ((PackageNode) node).getValue().getNodeName();
+            List<PsiClass> controller = PsiTool.getModuleController(project, PsiTool.getModuleByName(project, moduleName));
+            if (controller.isEmpty()) {
+                continue;
+            }
+            for (PsiClass psiClass : controller) {
+                String qualifiedName = psiClass.getQualifiedName();
+                if (CharSequenceUtil.isEmpty(qualifiedName)) {
+                    continue;
+                }
+                qualifiedName = qualifiedName.substring(0, qualifiedName.lastIndexOf('.'));
+                String contextPath = PsiTool.getContextPath(project, Objects.requireNonNull(PsiTool.getModuleByName(project, moduleName)));
+                ClassNodeData classNodeData = new ClassNodeData(psiClass, contextPath, PsiTool.getControllerPath(psiClass));
+                if (qualifiedName.endsWith(nodeName)) {
+                    node.add(new ClassNode(classNodeData));
+                } else {
+                    DefaultMutableTreeNode treeNode = findNodeByContent((BaseNode<? extends NodeData>) super.getTreeModel().getRoot(), qualifiedName);
+                    if (Objects.nonNull(treeNode)) {
+                        treeNode.add(new ClassNode(classNodeData));
+                    }
+                }
+            }
         }
     }
 
-    @Description("添加包结点, 当有子包时")
-    private void addChildPackageNodeWhenHasSubPackage(@NotNull String qualifiedName, @NotNull String classCommonPackagePrefix, PsiClass psiClass, PackageNode commonPackageNode, String contextPath) {
-        qualifiedName = qualifiedName.substring(classCommonPackagePrefix.length() + 1);
-        DefaultMutableTreeNode treeNode = findNodeByContent(commonPackageNode, qualifiedName);
-        if (Objects.isNull(treeNode)) {
-            PackageNode restPackageNode = new PackageNode(new PackageNodeData(qualifiedName));
-            restPackageNode.add(new ClassNode(new ClassNodeData(psiClass, contextPath)));
-            commonPackageNode.add(restPackageNode);
-        } else {
-            treeNode.add(new ClassNode(new ClassNodeData(psiClass, contextPath)));
+    @Description("初始化方法结点")
+    private void initMethodNodes() {
+        List<DefaultMutableTreeNode> classNodes = getAllLeafNodes();
+        if (classNodes.size() == 1 && !(classNodes.get(0) instanceof ClassNode)) {
+            // 说明当前项目没有引用 SpringBoot 项目
+            return;
+        }
+        for (DefaultMutableTreeNode classNode : classNodes) {
+            ClassNode node = (ClassNode) classNode;
+            ClassNodeData value = node.getValue();
+            PsiClass psiClass = value.getPsiClass();
+            List<MethodNodeData> mappingMethods = PsiTool.getMappingMethods(psiClass, value.getContextPath(), PsiTool.getControllerPath(psiClass));
+            mappingMethods.forEach(o -> classNode.add(new MethodNode(o)));
         }
     }
 
@@ -166,23 +216,6 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
             }
         }
         return commonPrefix;
-    }
-
-
-    @Description("初始化方法结点")
-    private void initMethodNodes() {
-        List<DefaultMutableTreeNode> classNodes = getAllLeafNodes();
-        if (classNodes.size() == 1 && !(classNodes.get(0) instanceof ClassNode)) {
-            // 说明当前项目没有引用 SpringBoot 项目
-            return;
-        }
-        for (DefaultMutableTreeNode classNode : classNodes) {
-            ClassNode node = (ClassNode) classNode;
-            ClassNodeData value = node.getValue();
-            PsiClass psiClass = value.getPsiClass();
-            List<MethodNodeData> mappingMethods = PsiTool.getMappingMethods(psiClass, value.getContextPath(), PsiTool.getControllerPath(psiClass));
-            mappingMethods.forEach(o -> classNode.add(new MethodNode(o)));
-        }
     }
 
     @Description("根据节点展示内容找到指定结点")

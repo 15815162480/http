@@ -17,10 +17,13 @@ public class ClassNodeData extends NodeData {
 
     private final PsiClass psiClass;
 
-    public ClassNodeData(PsiClass psiClass, String contextPath) {
+    private final String classPath;
+
+    public ClassNodeData(PsiClass psiClass, String contextPath, String classPath) {
         super(psiClass.getName());
         this.psiClass = psiClass;
         this.contextPath = contextPath;
         this.setNodeIcon(HttpIcons.CLASS);
+        this.classPath = classPath;
     }
 }

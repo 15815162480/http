@@ -5,7 +5,6 @@ import com.intellij.ui.components.JBScrollPane;
 import com.intellij.util.ui.JBUI;
 import com.zys.http.entity.tree.NodeData;
 import com.zys.http.ui.tree.node.BaseNode;
-import com.zys.http.ui.tree.node.ClassNode;
 import com.zys.http.ui.tree.render.HttpApiTreeCellRenderer;
 import org.jetbrains.annotations.NotNull;
 
@@ -38,20 +37,18 @@ public abstract class AbstractListTreePanel extends JBScrollPane implements Tree
                 return;
             }
             Object component = tree.getLastSelectedPathComponent();
-            if (!(component instanceof BaseNode<? extends NodeData>)) {
+            if (!(component instanceof BaseNode<? extends NodeData> selectedNode)) {
                 return;
             }
-            BaseNode<? extends NodeData> selectedNode = (BaseNode<? extends NodeData>) component;
-            if (selectedNode instanceof ClassNode c){
-                System.out.println("context-path: " + c.getValue().getContextPath());
-            }
+
+            System.out.println("context-path: " + selectedNode.getValue().getNodeName());
             // TODO 对选中的节点进行处理
         });
 
         tree.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-              // TODO 添加鼠标单击事件
+                // TODO 添加鼠标单击事件
             }
         });
     }
