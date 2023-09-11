@@ -1,13 +1,12 @@
 package com.zys.http.ui.tree;
 
 import cn.hutool.core.text.CharSequenceUtil;
+import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiMethod;
 import com.intellij.ui.treeStructure.SimpleTree;
-import com.zys.http.entity.tree.ClassNodeData;
-import com.zys.http.entity.tree.NodeData;
-import com.zys.http.entity.tree.PackageNodeData;
+import com.zys.http.entity.tree.*;
 import com.zys.http.tool.PsiTool;
 import com.zys.http.ui.tree.node.*;
 import jdk.jfr.Description;
@@ -31,28 +30,54 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
     public HttpApiTreePanel(@NotNull Project project) {
         super(new SimpleTree());
         this.project = project;
-        super.getTreeModel().setRoot(PsiTool.buildHttpApiTreeNodeData(project));
-        initTreeNode();
+        initModuleNodes();
+        initPackageAndClassNodes();
+        initMethodNodes();
     }
 
-    @Override
-    public void collapseAll() {
-
+    @Description("初始化项目模块节点")
+    private void initModuleNodes() {
+        String projectName = project.getName();
+        String contextPath = Arrays.stream(ModuleManager.getInstance(project).getModules())
+                .filter(o -> projectName.equals(o.getName()))
+                .map(o -> PsiTool.getContextPath(project, o)).findFirst().orElse("");
+        ModuleNode root = new ModuleNode(new ModuleNodeData(projectName, contextPath));
+        initModuleNodes(project, projectName, PsiTool.buildModuleLayer(project)).forEach(root::add);
+        super.getTreeModel().setRoot(root);
     }
 
-    private void initTreeNode() {
+    @Description("初始化项目模块节点")
+    private List<BaseNode<? extends NodeData>> initModuleNodes(@NotNull Project project, String name, @NotNull Map<String, List<String>> modules) {
+        List<String> subModuleNames = modules.get(name);
+        if (Objects.isNull(subModuleNames)) {
+            return Collections.emptyList();
+        }
+        List<BaseNode<? extends NodeData>> moduleNodes = new ArrayList<>();
+        for (String childName : subModuleNames) {
+            String contextPath = PsiTool.getContextPath(project, Objects.requireNonNull(PsiTool.getModuleByName(project, childName)));
+            ModuleNodeData nodeData = new ModuleNodeData(childName, contextPath);
+            ModuleNode moduleNode = new ModuleNode(nodeData);
+            List<BaseNode<? extends NodeData>> childrenNodes = initModuleNodes(project, childName, modules);
+            childrenNodes.forEach(moduleNode::add);
+            moduleNodes.add(moduleNode);
+        }
+        return moduleNodes;
+    }
+
+    @Description("初始化包名和类节点")
+    private void initPackageAndClassNodes() {
         List<DefaultMutableTreeNode> allLeafNodes = getAllLeafNodes();
         for (DefaultMutableTreeNode node : allLeafNodes) {
             String nodeName = ((BaseNode<? extends NodeData>) node).getValue().getNodeName();
             List<PsiClass> controller = PsiTool.getModuleController(project, PsiTool.getModuleByName(project, nodeName));
             if (!controller.isEmpty()) {
-                String classCommonPackagePrefix = getClassCommonPackagePrefix(controller);
+                String classCommonPackagePrefix = getClassCommonPackagePrefix(controller.stream().map(PsiClass::getQualifiedName).toList());
                 PackageNode commonPackageNode = null;
                 if (CharSequenceUtil.isNotEmpty(classCommonPackagePrefix)) {
-                    commonPackageNode = new PackageNode(new PackageNodeData(classCommonPackagePrefix));
+                    commonPackageNode = new PackageNode(new PackageNodeData(classCommonPackagePrefix.substring(0, classCommonPackagePrefix.length() - 1)));
                     node.add(commonPackageNode);
                 }
-                initPackageAndClassNode(node, controller, classCommonPackagePrefix, commonPackageNode);
+                initPackageAndClassNodes(node, controller, classCommonPackagePrefix, commonPackageNode);
             } else {
                 TreeNode parent = node.getParent();
                 if (!node.isRoot()) {
@@ -65,7 +90,7 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
         }
     }
 
-    private void initPackageAndClassNode(DefaultMutableTreeNode currentNode, List<PsiClass> controller, String classCommonPackagePrefix, PackageNode commonPackageNode) {
+    private void initPackageAndClassNodes(DefaultMutableTreeNode currentNode, List<PsiClass> controller, String classCommonPackagePrefix, PackageNode commonPackageNode) {
         String contextPath = ((ModuleNode) currentNode).getValue().getContextPath();
         for (PsiClass psiClass : controller) {
             String qualifiedName = psiClass.getQualifiedName();
@@ -88,7 +113,7 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
         }
     }
 
-    @Description("添加子结点, 没有子包时")
+    @Description("添加包/类结点, 没有子包时")
     private void addChildPackageNode(PackageNode commonPackageNode, DefaultMutableTreeNode currentNode, PsiClass psiClass) {
         String contextPath = ((ModuleNode) currentNode).getValue().getContextPath();
         if (Objects.nonNull(commonPackageNode)) {
@@ -111,19 +136,23 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
         }
     }
 
-
     @Description("获取类的公共包名")
-    private String getClassCommonPackagePrefix(List<PsiClass> psiClassList) {
+    private String getClassCommonPackagePrefix(List<String> psiClassList) {
         if (psiClassList.isEmpty()) {
-            return null;
+            return "";
         }
-        List<String> packageNames = psiClassList.stream().map(PsiClass::getQualifiedName).filter(Objects::nonNull)
+        List<String> packageNames = psiClassList.stream().filter(Objects::nonNull)
                 .map(v -> v.substring(0, v.lastIndexOf('.'))).toList();
+        return getCommonPrefix(packageNames);
+    }
 
+    private String getCommonPrefix(List<String> packageNames) {
+        if (packageNames.isEmpty()) {
+            return "";
+        }
         if (packageNames.size() == 1) {
             return packageNames.get(0);
         }
-
         String commonPrefix = packageNames.get(0);
         for (int i = 1; i < packageNames.size(); i++) {
             String currentString = packageNames.get(i);
@@ -137,6 +166,23 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
             }
         }
         return commonPrefix;
+    }
+
+
+    @Description("初始化方法结点")
+    private void initMethodNodes() {
+        List<DefaultMutableTreeNode> classNodes = getAllLeafNodes();
+        if (classNodes.size() == 1 && !(classNodes.get(0) instanceof ClassNode)) {
+            // 说明当前项目没有引用 SpringBoot 项目
+            return;
+        }
+        for (DefaultMutableTreeNode classNode : classNodes) {
+            ClassNode node = (ClassNode) classNode;
+            ClassNodeData value = node.getValue();
+            PsiClass psiClass = value.getPsiClass();
+            List<MethodNodeData> mappingMethods = PsiTool.getMappingMethods(psiClass, value.getContextPath(), PsiTool.getControllerPath(psiClass));
+            mappingMethods.forEach(o -> classNode.add(new MethodNode(o)));
+        }
     }
 
     @Description("根据节点展示内容找到指定结点")
@@ -158,17 +204,17 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
     private List<DefaultMutableTreeNode> getAllLeafNodes() {
         List<DefaultMutableTreeNode> leafNodes = new ArrayList<>();
         DefaultMutableTreeNode root = (DefaultMutableTreeNode) super.getTreeModel().getRoot();
-        addLeafNodes(root, leafNodes);
+        getAllLeafNodes(root, leafNodes);
         return leafNodes;
     }
 
-    private void addLeafNodes(DefaultMutableTreeNode node, List<DefaultMutableTreeNode> leafNodes) {
+    private void getAllLeafNodes(DefaultMutableTreeNode node, List<DefaultMutableTreeNode> leafNodes) {
         if (node.isLeaf()) {
             leafNodes.add(node);
         } else {
             for (int i = 0; i < node.getChildCount(); i++) {
                 DefaultMutableTreeNode childNode = (DefaultMutableTreeNode) node.getChildAt(i);
-                addLeafNodes(childNode, leafNodes);
+                getAllLeafNodes(childNode, leafNodes);
             }
         }
     }

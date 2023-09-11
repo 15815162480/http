@@ -69,4 +69,9 @@ public abstract class AbstractListTreePanel extends JBScrollPane implements Tree
     public boolean canCollapse() {
         return true;
     }
+
+    @Override
+    public void collapseAll() {
+
+    }
 }
