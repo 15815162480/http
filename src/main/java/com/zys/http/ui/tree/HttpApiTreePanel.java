@@ -6,7 +6,6 @@ import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiMethod;
 import com.intellij.ui.treeStructure.SimpleTree;
 import com.zys.http.entity.tree.*;
 import com.zys.http.tool.PsiTool;
@@ -14,7 +13,6 @@ import com.zys.http.ui.tree.node.*;
 import jdk.jfr.Description;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.tree.DefaultMutableTreeNode;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -26,30 +24,26 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
 
     private final transient Project project;
 
-    private final transient Map<PsiMethod, MethodNode> methodNodes = new HashMap<>();
     private final transient Map<String, ModuleNode> moduleNodeMap = new HashMap<>();
-    private final transient Map<String, PackageNode> packageNodeMap = new HashMap<>();
 
     public HttpApiTreePanel(@NotNull Project project) {
         super(new SimpleTree());
         this.project = project;
-        initNodes();
     }
 
-    private void initNodes() {
-        initModuleNodes();
+    public ModuleNode initNodes() {
+        return initModuleNodes();
     }
 
     @Description("初始化模块结点")
-    private void initModuleNodes() {
+    private ModuleNode initModuleNodes() {
         Module[] modules = ModuleManager.getInstance(project).getSortedModules();
         String contextPath = PsiTool.getContextPath(project, modules[0]);
         ModuleNode root = new ModuleNode(new ModuleNodeData(modules[0].getName(), contextPath));
-        getTreeModel().setRoot(root);
         if (modules.length == 1) {
             moduleNodeMap.put(modules[0].getName(), root);
             initPackageNodes(root, modules[0]);
-            return;
+            return root;
         }
 
         for (Module module : modules) {
@@ -70,6 +64,7 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
             }
             initPackageNodes(moduleNode, module);
         }
+        return root;
     }
 
     @Description("初始化包结点")
@@ -176,37 +171,8 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
         return commonPrefix;
     }
 
-    @Description("根据节点展示内容找到指定结点")
-    private DefaultMutableTreeNode findNodeByContent(BaseNode<? extends NodeData> node, String targetContent) {
-        if (node.getFragment().equals(targetContent)) {
-            return node;
-        }
-        for (int i = 0; i < node.getChildCount(); i++) {
-            BaseNode<? extends NodeData> childNode = (BaseNode<? extends NodeData>) node.getChildAt(i);
-            DefaultMutableTreeNode foundNode = findNodeByContent(childNode, targetContent);
-            if (foundNode != null) {
-                return foundNode;
-            }
-        }
-        return null;
-    }
 
-    @Description("获取所有的叶子节点")
-    private List<DefaultMutableTreeNode> getAllLeafNodes() {
-        List<DefaultMutableTreeNode> leafNodes = new ArrayList<>();
-        DefaultMutableTreeNode root = (DefaultMutableTreeNode) super.getTreeModel().getRoot();
-        getAllLeafNodes(root, leafNodes);
-        return leafNodes;
-    }
-
-    private void getAllLeafNodes(DefaultMutableTreeNode node, List<DefaultMutableTreeNode> leafNodes) {
-        if (node.isLeaf()) {
-            leafNodes.add(node);
-        } else {
-            for (int i = 0; i < node.getChildCount(); i++) {
-                DefaultMutableTreeNode childNode = (DefaultMutableTreeNode) node.getChildAt(i);
-                getAllLeafNodes(childNode, leafNodes);
-            }
-        }
+    public void render(ModuleNode root) {
+        super.getTreeModel().setRoot(root);
     }
 }

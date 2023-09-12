@@ -7,6 +7,7 @@ import com.intellij.openapi.wm.ToolWindowFactory;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
 import com.zys.http.ui.window.RequestTabWindow;
+import com.zys.http.ui.window.panel.RequestPanel;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -17,7 +18,7 @@ public class HttpMainWindowFactory implements ToolWindowFactory, DumbAware {
     @Override
     public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
         ContentFactory contentFactory = ContentFactory.getInstance();
-        Content content = contentFactory.createContent(new RequestTabWindow(project), "", false);
+        Content content = contentFactory.createContent(new RequestTabWindow(project, new RequestPanel(project)), "", false);
         toolWindow.getContentManager().addContent(content);
     }
 }

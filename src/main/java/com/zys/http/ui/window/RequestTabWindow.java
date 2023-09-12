@@ -4,14 +4,20 @@ import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionPlaces;
 import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
+import com.intellij.openapi.application.ModalityState;
+import com.intellij.openapi.application.ReadAction;
+import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.SimpleToolWindowPanel;
 import com.zys.http.action.EnvAction;
 import com.zys.http.action.TestAction;
 import com.zys.http.ui.dialog.EnvShowDialog;
 import com.zys.http.ui.icon.HttpIcons;
+import com.zys.http.ui.tree.HttpApiTreePanel;
 import com.zys.http.ui.window.panel.RequestPanel;
 import jdk.jfr.Description;
+
+import java.util.concurrent.*;
 
 /**
  * @author zys
@@ -21,9 +27,20 @@ import jdk.jfr.Description;
 public class RequestTabWindow extends SimpleToolWindowPanel {
     private final transient Project project;
 
-    public RequestTabWindow(Project project) {
+    private final RequestPanel requestPanel;
+    private final transient ExecutorService executorTaskBounded = new ThreadPoolExecutor(
+            1,
+            1,
+            5L, TimeUnit.SECONDS,
+            new LinkedBlockingQueue<>(),
+            Executors.defaultThreadFactory(),
+            new ThreadPoolExecutor.DiscardOldestPolicy()
+    );
+
+    public RequestTabWindow(Project project, RequestPanel requestPanel) {
         super(true, true);
         this.project = project;
+        this.requestPanel = requestPanel;
         init();
     }
 
@@ -52,8 +69,16 @@ public class RequestTabWindow extends SimpleToolWindowPanel {
         setToolbar(topToolBar.getComponent());
     }
 
-    @Description("初始化顶部工具栏")
+    @Description("初始化顶部内容")
     private void requestPanel() {
-        setContent(new RequestPanel(project));
+        setContent(requestPanel);
+        DumbService.getInstance(project).runWhenSmart(
+                () -> {
+                    HttpApiTreePanel httpApiTreePanel = requestPanel.getTopPart().getHttpApiTreePanel();
+                    ReadAction.nonBlocking(httpApiTreePanel::initNodes)
+                            .finishOnUiThread(ModalityState.defaultModalityState(), httpApiTreePanel::render)
+                            .submit(executorTaskBounded);
+                }
+        );
     }
 }

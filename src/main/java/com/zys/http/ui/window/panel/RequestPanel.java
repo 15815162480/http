@@ -34,8 +34,10 @@ public class RequestPanel extends JBSplitter {
     public RequestPanel(@NotNull Project project) {
         super(true, Window.class.getName(), 0.6F);
         this.project = project;
-        this.setFirstComponent(new TopPart(project));
-        this.setSecondComponent(new BottomPart());
+        this.topPart = new TopPart(project);
+        this.bottomPart = new BottomPart();
+        this.setFirstComponent(topPart);
+        this.setSecondComponent(bottomPart);
     }
 
     @Data
@@ -53,6 +55,8 @@ public class RequestPanel extends JBSplitter {
         @Description("设置的IP/HOST")
         private String hostValue = "";
 
+        private HttpApiTreePanel httpApiTreePanel;
+
         public TopPart(@NotNull Project project) {
             // 初始化所有组件
             setLayout(new GridBagLayout());
@@ -66,7 +70,8 @@ public class RequestPanel extends JBSplitter {
             gbc.weightx = 1.0;
             gbc.weighty = 1.0;
             gbc.gridwidth = GridBagConstraints.REMAINDER;
-            add(new HttpApiTreePanel(project), gbc);
+            this.httpApiTreePanel = new HttpApiTreePanel(project);
+            add(httpApiTreePanel, gbc);
 
             gbc.weightx = 0;
             gbc.weighty = 0;
