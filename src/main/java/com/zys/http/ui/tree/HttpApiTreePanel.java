@@ -1,20 +1,23 @@
 package com.zys.http.ui.tree;
 
-import cn.hutool.core.text.CharSequenceUtil;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.psi.PsiClass;
 import com.intellij.ui.treeStructure.SimpleTree;
-import com.zys.http.entity.tree.*;
+import com.zys.http.entity.tree.ClassNodeData;
+import com.zys.http.entity.tree.ModuleNodeData;
+import com.zys.http.entity.tree.NodeData;
+import com.zys.http.entity.tree.PackageNodeData;
 import com.zys.http.tool.PsiTool;
 import com.zys.http.ui.tree.node.*;
 import jdk.jfr.Description;
 import org.jetbrains.annotations.NotNull;
 
+import javax.swing.tree.TreeNode;
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author zys
@@ -24,155 +27,181 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
 
     private final transient Project project;
 
+    @Description("模块名, 模块结点")
     private final transient Map<String, ModuleNode> moduleNodeMap = new HashMap<>();
+
+    @Description("模块名, controller")
+    private final transient Map<String, List<PsiClass>> classNodeMap = new HashMap<>();
+    @Description("controller, 方法列表")
+    private final transient Map<PsiClass, List<MethodNode>> methodNodeMap = new HashMap<>();
 
     public HttpApiTreePanel(@NotNull Project project) {
         super(new SimpleTree());
         this.project = project;
+
     }
 
     public ModuleNode initNodes() {
         return initModuleNodes();
     }
 
-    @Description("初始化模块结点")
-    private ModuleNode initModuleNodes() {
-        Module[] modules = ModuleManager.getInstance(project).getSortedModules();
-        String contextPath = PsiTool.getContextPath(project, modules[0]);
-        ModuleNode root = new ModuleNode(new ModuleNodeData(modules[0].getName(), contextPath));
-        if (modules.length == 1) {
-            moduleNodeMap.put(modules[0].getName(), root);
-            initPackageNodes(root, modules[0]);
-            return root;
+    @Description("初始化模块结点, 可能有多层级")
+    public ModuleNode initModuleNodes() {
+        Module[] modules = ModuleManager.getInstance(project).getModules();
+        String projectName = project.getName();
+        Module rootModule = Stream.of(modules).filter(o -> o.getName().equals(projectName)).findFirst().orElse(null);
+        if (Objects.isNull(rootModule)) {
+            return new ModuleNode(new ModuleNodeData("", ""));
         }
-
-        for (Module module : modules) {
-            String moduleName = module.getName();
-            String parentName = ModuleRootManager.getInstance(module).getContentRoots()[0].getParent().getName();
-            // 顶级模块跳过, 模块没有 Controller 类跳过
-            List<PsiClass> controllers = PsiTool.getModuleController(project, module);
-            if (moduleName.equals(project.getName()) || "Project".equals(parentName) || controllers.isEmpty()) {
-                continue;
+        String contextPath = PsiTool.getContextPath(project, rootModule);
+        ModuleNode rootNode = new ModuleNode(new ModuleNodeData(projectName, contextPath));
+        moduleNodeMap.put(rootModule.getName(), rootNode);
+        List<PsiClass> controllers = PsiTool.getModuleController(project, rootModule);
+        if (!controllers.isEmpty()) {
+            classNodeMap.put(projectName, controllers);
+            for (PsiClass c : controllers) {
+                String controllerPath = PsiTool.getControllerPath(c);
+                methodNodeMap.put(c, PsiTool.getMappingMethods(c, contextPath, controllerPath));
             }
+        }
+        super.getTreeModel().setRoot(rootNode);
+        List<Module> list = Stream.of(modules).filter(o -> !o.getName().equals(projectName)).distinct()
+                .peek(o -> {
+                    String contextPath1 = PsiTool.getContextPath(project, o);
+                    ModuleNode moduleNode = new ModuleNode(new ModuleNodeData(o.getName(), contextPath1));
+                    moduleNodeMap.put(o.getName(), moduleNode);
+                })
+                .toList();
 
-            contextPath = PsiTool.getContextPath(project, module);
-            ModuleNode moduleNode = new ModuleNode(new ModuleNodeData(moduleName, contextPath));
-            moduleNodeMap.put(moduleName, moduleNode);
+        for (Module o : list) {
+            String moduleName = o.getName();
+            String parentName = ModuleRootManager.getInstance(o).getContentRoots()[0].getParent().getName();
+            String contextPath1 = PsiTool.getContextPath(project, o);
             ModuleNode parentNode = moduleNodeMap.get(parentName);
-            if (Objects.nonNull(parentNode)) {
+            ModuleNode moduleNode = moduleNodeMap.get(moduleName);
+            if (!"Project".equals(parentName) && Objects.nonNull(parentNode)) {
                 parentNode.add(moduleNode);
             }
-            initPackageNodes(moduleNode, module);
+            controllers = PsiTool.getModuleController(project, o);
+            classNodeMap.put(moduleName, controllers);
+            for (PsiClass c : controllers) {
+                String controllerPath = PsiTool.getControllerPath(c);
+                methodNodeMap.put(c, PsiTool.getMappingMethods(c, contextPath1, controllerPath));
+            }
+            initPackageNodes(moduleName).forEach(moduleNode::add);
         }
-        return root;
+        if (moduleNodeMap.size() == 1) {
+
+            initPackageNodes(projectName).forEach(rootNode::add);
+        }
+        return rootNode;
     }
 
-    @Description("初始化包结点")
-    private void initPackageNodes(BaseNode<? extends NodeData> parent, Module module) {
-        List<PsiClass> controllers = PsiTool.getModuleController(project, module);
-        if (controllers.isEmpty()) {
-            return;
-        }
-        List<String> packageNames = controllers.stream().map(PsiClass::getQualifiedName)
-                .filter(Objects::nonNull).map(o -> o.substring(0, o.lastIndexOf('.'))).toList();
 
-        String commonPrefix = getCommonPrefix(packageNames);
-        String finalCommonPrefix = commonPrefix;
-        if (CharSequenceUtil.isEmpty(commonPrefix)) {
-            return;
-        }
+    public List<BaseNode<? extends NodeData>> initPackageNodes(String moduleName) {
+        List<PsiClass> psiClasses = classNodeMap.get(moduleName);
 
-        if (commonPrefix.endsWith(".")) {
-            commonPrefix = commonPrefix.substring(0, commonPrefix.length() - 1);
+        if (methodNodeMap.isEmpty()) {
+            return Collections.emptyList();
         }
-        PackageNode commonPackageNode = new PackageNode(new PackageNodeData(commonPrefix));
-        // 是否有类在当前节点, 添加
-        for (PsiClass controller : controllers) {
-            String qualifiedName = controller.getQualifiedName();
-            if (Objects.isNull(qualifiedName)) {
+        Map<String, PackageNode> packageNodeMap = new HashMap<>(4);
+        List<BaseNode<?>> children = new ArrayList<>();
+        List<BaseNode<?>> unKnownPackage = new ArrayList<>(0);
+
+        for (Map.Entry<PsiClass, List<MethodNode>> e : methodNodeMap.entrySet()) {
+            PsiClass k = e.getKey();
+            List<MethodNode> v = e.getValue();
+
+            if (!psiClasses.contains(k)) {
                 continue;
             }
-            qualifiedName = qualifiedName.substring(0, qualifiedName.lastIndexOf('.'));
-            if (qualifiedName.equals(finalCommonPrefix)) {
-                initMethodNodes(controller, module, commonPackageNode);
-            }
-        }
-        parent.add(commonPackageNode);
-        // 剩余的进行分组
-        Map<String, Set<String>> map = packageNames.stream().filter(o -> o.length() > finalCommonPrefix.length())
-                .map(o -> o.substring(finalCommonPrefix.length()))
-                .collect(Collectors.groupingBy(
-                        o -> o.substring(0, o.lastIndexOf('.')),
-                        Collectors.mapping(o -> o.substring(o.lastIndexOf('.') + 1), Collectors.toSet())
-                ));
-        map.forEach((k, v) -> {
-            if (v.size() > 1) {
-                PackageNode node = new PackageNode(new PackageNodeData(k));
-                for (String s : v) {
-                    PackageNode childPackageNode = new PackageNode(new PackageNodeData(s));
-                    initClassNodes(k, s, controllers, module, childPackageNode);
-                    node.add(childPackageNode);
-                }
-                commonPackageNode.add(node);
+            ClassNode classNode = new ClassNode(new ClassNodeData(k));
+            v.forEach(classNode::add);
+            String packageName = PsiTool.getPackageName(k);
+            if (packageName == null) {
+                // 没有包名则直接添加到 module 节点
+                unKnownPackage.add(classNode);
             } else {
-                String s = v.stream().toList().get(0);
-                PackageNode childPackageNode = new PackageNode(new PackageNodeData(k + "." + s));
-                initClassNodes(k, s, controllers, module, childPackageNode);
-                commonPackageNode.add(childPackageNode);
+                customPending(packageNodeMap, packageName).add(classNode);
             }
+        }
+
+        List<PackageNode> nodes = new ArrayList<>();
+        packageNodeMap.forEach((key, rootNode) -> {
+            while (true) {
+                List<PackageNode> list = findChildren(rootNode);
+                if (list.size() == 1) {
+                    PackageNode newEle = list.get(0);
+                    rootNode.remove(newEle);
+                    newEle.getValue().setNodeName(rootNode.getValue().getNodeName() + "." + newEle.getValue().getNodeName());
+                    rootNode = newEle;
+                } else {
+                    break;
+                }
+            }
+
+            nodes.add(rootNode);
         });
-    }
-
-    @Description("初始化类节点")
-    private void initClassNodes(String package1, String package2, List<PsiClass> controllers, Module module, PackageNode parentNode) {
-        for (PsiClass controller : controllers) {
-            String qualifiedName = controller.getQualifiedName();
-            if (Objects.isNull(qualifiedName)) {
-                continue;
-            }
-            qualifiedName = qualifiedName.substring(0, qualifiedName.lastIndexOf('.'));
-            if (qualifiedName.endsWith(package1 + "." + package2)) {
-                initMethodNodes(controller, module, parentNode);
-            }
+        if (!unKnownPackage.isEmpty()) {
+            unKnownPackage.sort(Comparator.comparing(BaseNode::toString));
+            children.addAll(unKnownPackage);
         }
-    }
 
-    @Description("初始化方法节点")
-    private void initMethodNodes(PsiClass controller, Module module, PackageNode parentNode) {
-        String controllerPath = PsiTool.getControllerPath(controller);
-        String contextPath = moduleNodeMap.get(module.getName()).getValue().getContextPath();
-        ClassNode classNode = new ClassNode(new ClassNodeData(controller));
-        // 添加方法结点
-        List<MethodNodeData> mappingMethods = PsiTool.getMappingMethods(controller, contextPath, controllerPath);
-        mappingMethods.forEach(o -> classNode.add(new MethodNode(o)));
-        parentNode.add(classNode);
+        children.addAll(nodes);
+        return children;
     }
-
-    @Description("获取字符串公共前缀")
-    private String getCommonPrefix(List<String> packageNames) {
-        if (packageNames.isEmpty()) {
-            return "";
-        }
-        if (packageNames.size() == 1) {
-            return packageNames.get(0);
-        }
-        String commonPrefix = packageNames.get(0);
-        for (int i = 1; i < packageNames.size(); i++) {
-            String currentString = packageNames.get(i);
-            int j = 0;
-            while (j < commonPrefix.length() && j < currentString.length() && commonPrefix.charAt(j) == currentString.charAt(j)) {
-                j++;
-            }
-            commonPrefix = commonPrefix.substring(0, j);
-            if (commonPrefix.isEmpty()) {
-                break;
-            }
-        }
-        return commonPrefix;
-    }
-
 
     public void render(ModuleNode root) {
         super.getTreeModel().setRoot(root);
+    }
+
+    private static PackageNode customPending(@NotNull Map<String, PackageNode> data, @NotNull String packageName) {
+        String[] names = packageName.split("\\.");
+
+        PackageNode node = data.computeIfAbsent(names[0], o -> new PackageNode(new PackageNodeData(o)));
+
+        if (names.length == 1) {
+            return node;
+        }
+
+        PackageNode curr = node;
+        int fex = 1;
+        while (fex < names.length) {
+            String name = names[fex++];
+            curr = findChild(curr, name);
+        }
+
+        return curr;
+    }
+
+    @NotNull
+    private static PackageNode findChild(@NotNull PackageNode node, @NotNull String name) {
+        Enumeration<TreeNode> children = node.children();
+        while (children.hasMoreElements()) {
+            TreeNode child = children.nextElement();
+            if (!(child instanceof PackageNode packageNode)) {
+                continue;
+            }
+            if (name.equals(packageNode.getValue().getNodeName())) {
+                return packageNode;
+            }
+        }
+        PackageNode packageNode = new PackageNode(new PackageNodeData(name));
+        node.add(packageNode);
+        return packageNode;
+    }
+
+    @NotNull
+    private static List<PackageNode> findChildren(@NotNull PackageNode node) {
+        List<PackageNode> children = new ArrayList<>();
+        Enumeration<TreeNode> enumeration = node.children();
+        while (enumeration.hasMoreElements()) {
+            TreeNode ele = enumeration.nextElement();
+            if (ele instanceof PackageNode p) {
+                children.add(p);
+            }
+        }
+
+        return children;
     }
 }

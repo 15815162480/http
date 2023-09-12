@@ -15,6 +15,7 @@ import com.intellij.psi.search.GlobalSearchScope;
 import com.zys.http.constant.HttpEnum;
 import com.zys.http.constant.SpringEnum;
 import com.zys.http.entity.tree.MethodNodeData;
+import com.zys.http.ui.tree.node.MethodNode;
 import jdk.jfr.Description;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -171,21 +172,21 @@ public class PsiTool {
 
 
     @Description("获取所有 @xxxMapping 的方法")
-    public static List<MethodNodeData> getMappingMethods(@NotNull PsiClass psiClass, String contextPath, String controllerPath) {
+    public static List<MethodNode> getMappingMethods(@NotNull PsiClass psiClass, String contextPath, String controllerPath) {
         PsiMethod[] methods = psiClass.getAllMethods();
         if (methods.length < 1) {
             return Collections.emptyList();
         }
         Map<String, HttpEnum.HttpMethod> httpMethodMap = Arrays.stream(SpringEnum.Method.values())
                 .collect(Collectors.toMap(SpringEnum.Method::getClazz, SpringEnum.Method::getHttpMethod));
-        List<MethodNodeData> dataList = new ArrayList<>();
-        MethodNodeData data;
+        List<MethodNode> dataList = new ArrayList<>();
+        MethodNode data;
         for (PsiMethod method : methods) {
             PsiAnnotation[] annotations = method.getAnnotations();
             for (PsiAnnotation annotation : annotations) {
                 String qualifiedName = annotation.getQualifiedName();
                 if (httpMethodMap.containsKey(qualifiedName)) {
-                    data = buildMethodNodeData(annotation, contextPath, controllerPath, method.getNavigationElement());
+                    data = new MethodNode(Objects.requireNonNull(buildMethodNodeData(annotation, contextPath, controllerPath, method.getNavigationElement())));
                     dataList.add(data);
                 }
             }
@@ -282,6 +283,25 @@ public class PsiTool {
         return new ArrayList<>(map.values());
     }
 
+
+    @Nullable
+    public static String getPackageName(@NotNull PsiClass psiClass) {
+        String qualifiedName = psiClass.getQualifiedName();
+        if (qualifiedName == null) {
+            return null;
+        }
+
+        String fileName = psiClass.getName();
+        if (fileName == null) {
+            return null;
+        }
+
+        if (qualifiedName.endsWith(fileName)) {
+            return qualifiedName.substring(0, qualifiedName.lastIndexOf('.'));
+        }
+
+        return null;
+    }
 
     @Description("方法名是否以 get 或 set 开头")
     private static boolean methodNameStartWithGetOrSet(String name) {
