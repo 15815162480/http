@@ -99,11 +99,7 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
             }
             qualifiedName = qualifiedName.substring(0, qualifiedName.lastIndexOf('.'));
             if (qualifiedName.equals(finalCommonPrefix)) {
-                String controllerPath = PsiTool.getControllerPath(controller);
-                String contextPath = moduleNodeMap.get(module.getName()).getValue().getContextPath();
-                ClassNode classNode = new ClassNode(new ClassNodeData(controller, contextPath, controllerPath));
-                commonPackageNode.add(classNode);
-                // 添加方法结点
+                initMethodNodes(controller, module, commonPackageNode);
             }
         }
         parent.add(commonPackageNode);
@@ -141,31 +137,23 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
             }
             qualifiedName = qualifiedName.substring(0, qualifiedName.lastIndexOf('.'));
             if (qualifiedName.endsWith(package1 + "." + package2)) {
-                String controllerPath = PsiTool.getControllerPath(controller);
-                String contextPath = moduleNodeMap.get(module.getName()).getValue().getContextPath();
-                ClassNode classNode = new ClassNode(new ClassNodeData(controller, contextPath, controllerPath));
-                parentNode.add(classNode);
-                // 添加方法结点
+                initMethodNodes(controller, module, parentNode);
             }
         }
     }
 
-    @Description("初始化方法结点")
-    private void initMethodNodes() {
-        List<DefaultMutableTreeNode> classNodes = getAllLeafNodes();
-        if (classNodes.size() == 1 && !(classNodes.get(0) instanceof ClassNode)) {
-            // 说明当前项目没有引用 SpringBoot 项目
-            return;
-        }
-        for (DefaultMutableTreeNode classNode : classNodes) {
-            ClassNode node = (ClassNode) classNode;
-            ClassNodeData value = node.getValue();
-            PsiClass psiClass = value.getPsiClass();
-            List<MethodNodeData> mappingMethods = PsiTool.getMappingMethods(psiClass, value.getContextPath(), PsiTool.getControllerPath(psiClass));
-            mappingMethods.forEach(o -> classNode.add(new MethodNode(o)));
-        }
+    @Description("初始化方法节点")
+    private void initMethodNodes(PsiClass controller, Module module, PackageNode parentNode) {
+        String controllerPath = PsiTool.getControllerPath(controller);
+        String contextPath = moduleNodeMap.get(module.getName()).getValue().getContextPath();
+        ClassNode classNode = new ClassNode(new ClassNodeData(controller));
+        // 添加方法结点
+        List<MethodNodeData> mappingMethods = PsiTool.getMappingMethods(controller, contextPath, controllerPath);
+        mappingMethods.forEach(o -> classNode.add(new MethodNode(o)));
+        parentNode.add(classNode);
     }
 
+    @Description("获取字符串公共前缀")
     private String getCommonPrefix(List<String> packageNames) {
         if (packageNames.isEmpty()) {
             return "";
