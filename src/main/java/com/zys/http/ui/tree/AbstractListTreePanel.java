@@ -41,7 +41,7 @@ public abstract class AbstractListTreePanel extends JBScrollPane implements Tree
                 return;
             }
 
-            System.out.println("context-path: " + selectedNode.getValue().getNodeName());
+            System.out.println("selected_node: " + selectedNode.getValue().getNodeName());
             // TODO 对选中的节点进行处理
         });
 
