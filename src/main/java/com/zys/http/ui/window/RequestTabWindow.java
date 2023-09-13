@@ -1,5 +1,6 @@
 package com.zys.http.ui.window;
 
+import com.intellij.openapi.Disposable;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionPlaces;
 import com.intellij.openapi.actionSystem.ActionToolbar;
@@ -24,7 +25,7 @@ import java.util.concurrent.*;
  * @since 2023-08-13
  */
 @Description("请求标签页面")
-public class RequestTabWindow extends SimpleToolWindowPanel {
+public class RequestTabWindow extends SimpleToolWindowPanel implements Disposable {
     private final transient Project project;
 
     private final RequestPanel requestPanel;
@@ -80,5 +81,10 @@ public class RequestTabWindow extends SimpleToolWindowPanel {
                             .submit(executorTaskBounded);
                 }
         );
+    }
+
+    @Override
+    public void dispose() {
+        executorTaskBounded.shutdown();
     }
 }

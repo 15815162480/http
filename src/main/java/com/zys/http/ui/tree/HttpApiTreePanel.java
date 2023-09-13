@@ -1,5 +1,6 @@
 package com.zys.http.ui.tree;
 
+import cn.hutool.core.text.CharSequenceUtil;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
@@ -124,7 +125,13 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
             if (!psiClasses.contains(k)) {
                 continue;
             }
-            ClassNode classNode = new ClassNode(new ClassNodeData(k));
+            ClassNodeData data = new ClassNodeData(k);
+            String s = PsiTool.getSwaggerAnnotation(k, "CLASS_");
+            if (CharSequenceUtil.isNotEmpty(s)) {
+                data.setDescription(s);
+            }
+            ClassNode classNode = new ClassNode(data);
+
             v.forEach(classNode::add);
             String packageName = PsiTool.getPackageName(k);
             if (packageName == null) {

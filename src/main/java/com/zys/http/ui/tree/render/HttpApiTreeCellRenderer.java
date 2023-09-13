@@ -1,5 +1,6 @@
 package com.zys.http.ui.tree.render;
 
+import cn.hutool.core.text.CharSequenceUtil;
 import com.intellij.ui.ColoredTreeCellRenderer;
 import com.zys.http.entity.tree.NodeData;
 import com.zys.http.ui.tree.node.BaseNode;
@@ -22,13 +23,13 @@ public class HttpApiTreeCellRenderer extends ColoredTreeCellRenderer {
             int row,
             boolean hasFocus
     ) {
-        BaseNode<? extends NodeData> node = null;
-        if (value instanceof BaseNode) {
-            node = (BaseNode<? extends NodeData>) value;
-        }
-        if (node != null) {
+        if (value instanceof BaseNode<? extends NodeData> node) {
             setIcon(node.getIcon(selected));
             append(node.getFragment(), node.getTextAttributes());
+            String description = node.getValue().getDescription();
+            if (CharSequenceUtil.isNotEmpty(description)) {
+                setToolTipText(description);
+            }
         }
     }
 }

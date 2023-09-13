@@ -111,24 +111,56 @@ public class PsiTool {
         if (Objects.isNull(requestMapping)) {
             return "";
         }
-        return getMappingValue(requestMapping);
+        return getAnnotationValue(requestMapping, new String[]{"value", "path"});
+    }
+
+    @Description("获取 Controller 上 @Api 或 @Tag/方法上的 @ApiOperation 或 @Operation")
+    public static String getSwaggerAnnotation(@NotNull PsiTarget psiTarget, String prefix) {
+        PsiModifierList modifierList = null;
+        if (psiTarget instanceof PsiClass psiClass) {
+            modifierList = psiClass.getModifierList();
+        } else if (psiTarget instanceof PsiMethod psiMethod) {
+            modifierList = psiMethod.getModifierList();
+        } else {
+            return "";
+        }
+        if (Objects.isNull(modifierList)) {
+            return "";
+        }
+        List<HttpEnum.ApiOperation> swagger = new ArrayList<>(List.of(HttpEnum.ApiOperation.values())).stream()
+                .filter(o -> o.name().startsWith(prefix))
+                .toList();
+        List<PsiAnnotation> list = Stream.of(modifierList.getAnnotations())
+                .filter(o -> swagger.stream().map(HttpEnum.ApiOperation::getClazz).toList().contains(o.getQualifiedName()))
+                .toList();
+
+        if (list.isEmpty()) {
+            return "";
+        }
+        PsiAnnotation annotation = list.get(0);
+        HttpEnum.ApiOperation operation = swagger.stream().filter(o -> o.getClazz().equals(annotation.getQualifiedName()))
+                .findFirst().orElse(null);
+        if (Objects.isNull(operation)) {
+            return "";
+        }
+        return getAnnotationValue(annotation, new String[]{operation.getValue()});
     }
 
     @Description("获取 @xxxMapping 上的 value 或 path 属性")
-    private static String getMappingValue(PsiAnnotation requestMapping) {
-        PsiAnnotationMemberValue annoValue = requestMapping.findAttributeValue("value");
-        PsiAnnotationMemberValue annoPath = requestMapping.findAttributeValue("path");
-
+    private static String getAnnotationValue(PsiAnnotation annotation, String[] attributeNames) {
         List<PsiAnnotationMemberValue> initializerList = new ArrayList<>();
-        if (annoValue instanceof PsiArrayInitializerMemberValue arrayAnnoValues) {
-            initializerList.addAll(List.of(arrayAnnoValues.getInitializers()));
-        } else {
-            initializerList.add(annoValue);
-        }
-        if (annoPath instanceof PsiArrayInitializerMemberValue arrayAnnoPaths) {
-            initializerList.addAll(List.of(arrayAnnoPaths.getInitializers()));
-        } else {
-            initializerList.add(annoPath);
+        for (String attributeName : attributeNames) {
+            PsiAnnotationMemberValue annoValue = annotation.findAttributeValue(attributeName);
+            if (annoValue instanceof PsiArrayInitializerMemberValue arrayAnnoValues) {
+                PsiAnnotationMemberValue[] initializers = arrayAnnoValues.getInitializers();
+                if (initializers.length > 0) {
+                    initializerList.addAll(List.of(initializers));
+                }
+            } else {
+                if (annoValue != null) {
+                    initializerList.add(annoValue);
+                }
+            }
         }
         return initializerList.isEmpty() ? "" : initializerList.get(0).getText().replace("\"", "");
     }
@@ -149,8 +181,12 @@ public class PsiTool {
             for (PsiAnnotation annotation : annotations) {
                 String qualifiedName = annotation.getQualifiedName();
                 if (httpMethodMap.containsKey(qualifiedName)) {
-                    data = new MethodNode(Objects.requireNonNull(buildMethodNodeData(annotation, contextPath, controllerPath, method)));
-                    dataList.add(data);
+                    MethodNodeData data1 = buildMethodNodeData(annotation, contextPath, controllerPath, method);
+                    if (Objects.nonNull(data1)) {
+                        data = new MethodNode(data1);
+                        data1.setDescription(getSwaggerAnnotation(method, "METHOD_"));
+                        dataList.add(data);
+                    }
                 }
             }
         }
@@ -169,7 +205,7 @@ public class PsiTool {
         if (httpMethod.equals(HttpEnum.HttpMethod.REQUEST)) {
             httpMethod = HttpEnum.HttpMethod.GET;
         }
-        String name = getMappingValue(annotation);
+        String name = getAnnotationValue(annotation, new String[]{"value", "path"});
         MethodNodeData data = new MethodNodeData(httpMethod, name, controllerPath, contextPath);
         data.setPsiElement((NavigatablePsiElement) psiElement);
         return data;

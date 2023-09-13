@@ -52,4 +52,17 @@ public interface HttpEnum {
         // 不参与, 路径参数, URL参数, 请求体参数
         USELESS, PATH, URL, BODY
     }
+
+
+    @Getter
+    @AllArgsConstructor
+    enum ApiOperation {
+        CLASS_API("io.swagger.annotations.Api", "tags"),
+        CLASS_TAG("io.swagger.v3.oas.annotations.tags.Tag", "name"),
+        METHOD_API_OPERATION("io.swagger.annotations.ApiOperation", "value"),
+        METHOD_OPERATION("io.swagger.v3.oas.annotations.Operation", "summary");
+
+        private final String clazz;
+        private final String value;
+    }
 }

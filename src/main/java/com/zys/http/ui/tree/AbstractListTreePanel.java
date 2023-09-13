@@ -31,6 +31,7 @@ public abstract class AbstractListTreePanel extends JBScrollPane implements Tree
         this.setBorder(JBUI.Borders.customLineTop(BORDER_COLOR));
         this.tree.setRootVisible(true);
         this.tree.setShowsRootHandles(true);
+        this.tree.createToolTip();
         this.setViewportView(tree);
         this.tree.setCellRenderer(new HttpApiTreeCellRenderer());
 
@@ -42,7 +43,6 @@ public abstract class AbstractListTreePanel extends JBScrollPane implements Tree
             if (!(component instanceof BaseNode<? extends NodeData> selectedNode)) {
                 return;
             }
-
             System.out.println("selected_node: " + selectedNode.getValue().getNodeName());
             // TODO 对选中的节点进行处理
             Objects.requireNonNull(getChooseListener()).accept(selectedNode);
