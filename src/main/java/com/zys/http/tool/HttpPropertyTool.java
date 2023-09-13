@@ -7,6 +7,7 @@ import com.zys.http.service.HttpService;
 import jdk.jfr.Description;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 
@@ -18,6 +19,9 @@ import java.util.Objects;
 public class HttpPropertyTool {
 
     private final HttpService httpService;
+
+    private static final HttpConfig DEFAULT_HTTP_CONFIG = new HttpConfig(HttpEnum.Protocol.HTTP,
+            "127.0.0.1", Collections.emptyMap());
 
     private HttpPropertyTool(@NotNull Project project) {
         httpService = HttpService.getInstance(project);
@@ -45,13 +49,13 @@ public class HttpPropertyTool {
 
     public HttpConfig getDefaultHttpConfig() {
         HttpConfig httpConfig = getHttpConfig(httpService.getSelectedEnv());
-        if (Objects.isNull(httpConfig)) {
-            httpConfig = new HttpConfig();
-            httpConfig.setProtocol(HttpEnum.Protocol.HTTP);
-            httpConfig.setHostValue("127.0.0.1");
-            return httpConfig;
-        }
-        return httpConfig;
+        return Objects.isNull(httpConfig) ? DEFAULT_HTTP_CONFIG : httpConfig;
     }
 
+    public String getSelectedEnv() {
+        return httpService.getSelectedEnv();
+    }
+    public void setSelectedEnv(String key) {
+         httpService.setSelectedEnv(key);
+    }
 }

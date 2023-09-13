@@ -19,4 +19,13 @@
     />
     <projectService serviceImplementation="com.zys.http.service.HttpService"/>
   </extensions>
+
+  <actions>
+    <group id="http" class="com.intellij.openapi.actionSystem.DefaultActionGroup">
+      <group id="selectEnvGroup" class="com.zys.http.action.SelectActionGroup" icon="AllIcons.Actions.ListFiles"
+             popup="true" description="Select env" text="选择环境">
+      </group>
+    </group>
+
+  </actions>
 </idea-plugin>
