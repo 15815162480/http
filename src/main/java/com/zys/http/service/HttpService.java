@@ -39,6 +39,9 @@ public class HttpService implements PersistentStateComponent<HttpService.State> 
     }
 
     public void removeHttpConfig(@NotNull String key) {
+        if (state.selectedEnv.equals(key)) {
+            state.selectedEnv = "";
+        }
         state.httpConfigs.remove(key);
     }
 
@@ -50,6 +53,10 @@ public class HttpService implements PersistentStateComponent<HttpService.State> 
         if (state.httpConfigs.containsKey(key)) {
             state.selectedEnv = key;
         }
+    }
+
+    public String getSelectedEnv() {
+        return state.selectedEnv;
     }
 
     @Data

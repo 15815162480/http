@@ -73,7 +73,7 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
     @Description("初始化顶部内容")
     private void requestPanel() {
         setContent(requestPanel);
-        DumbService.getInstance(project).runWhenSmart(
+        DumbService.getInstance(project).smartInvokeLater(
                 () -> {
                     HttpApiTreePanel httpApiTreePanel = requestPanel.getHttpApiTreePanel();
                     ReadAction.nonBlocking(httpApiTreePanel::initNodes)

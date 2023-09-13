@@ -5,6 +5,8 @@ import com.intellij.openapi.ui.ComboBox;
 import com.intellij.ui.JBSplitter;
 import com.intellij.util.ui.JBUI;
 import com.zys.http.constant.UIConstant;
+import com.zys.http.entity.HttpConfig;
+import com.zys.http.tool.HttpPropertyTool;
 import com.zys.http.ui.tree.HttpApiTreePanel;
 import jdk.jfr.Description;
 import lombok.Data;
@@ -14,8 +16,6 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
 
 import static com.zys.http.constant.HttpEnum.HttpMethod;
 
@@ -27,6 +27,7 @@ import static com.zys.http.constant.HttpEnum.HttpMethod;
 @EqualsAndHashCode(callSuper = true)
 public class RequestPanel extends JBSplitter {
 
+    // ================== 上半部分的组件 ==================
     @Description("请求方式选项")
     private ComboBox<HttpMethod> httpMethodComboBox;
 
@@ -41,15 +42,14 @@ public class RequestPanel extends JBSplitter {
     @Description("树形结构列表")
     private HttpApiTreePanel httpApiTreePanel;
 
-    private BottomPart bottomPart;
+    // ================== 上半部分的组件 ==================
     private final transient Project project;
 
     public RequestPanel(@NotNull Project project) {
         super(true, Window.class.getName(), 0.6F);
         this.project = project;
         initFirstPanel();
-        this.bottomPart = new BottomPart();
-        this.setSecondComponent(bottomPart);
+        initSecondPanel();
     }
 
     private void initFirstPanel() {
@@ -86,11 +86,23 @@ public class RequestPanel extends JBSplitter {
         this.setFirstComponent(firstPanel);
     }
 
+
+    private void initSecondPanel() {
+        JPanel secondPanel = new JPanel();
+        secondPanel.add(new JLabel("下半部分"));
+        secondPanel.setBorder(JBUI.Borders.customLineTop(UIConstant.BORDER_COLOR));
+        this.setSecondComponent(secondPanel);
+    }
+
     @Description("初始化树形结构")
     private void initHttpApiTreePanel() {
         this.httpApiTreePanel = new HttpApiTreePanel(project);
         this.httpApiTreePanel.setChooseCallback(methodNode -> {
-            hostTextField.setText(methodNode.getFragment());
+            HttpPropertyTool propertyTool = HttpPropertyTool.getInstance(project);
+            HttpConfig config = propertyTool.getDefaultHttpConfig();
+            String protocol = config.getProtocol().name().toLowerCase();
+            String configHostValue = config.getHostValue();
+            hostTextField.setText(protocol + "://" + configHostValue + methodNode.getFragment());
             httpMethodComboBox.setSelectedItem(methodNode.getValue().getHttpMethod());
         });
     }
@@ -100,10 +112,6 @@ public class RequestPanel extends JBSplitter {
         httpMethodComboBox = new ComboBox<>(HttpMethod.values());
         httpMethodComboBox.setSelectedItem(HttpMethod.GET);
         httpMethodComboBox.setFocusable(false);
-        httpMethodComboBox.addActionListener(e -> {
-            Object selectedItem = httpMethodComboBox.getSelectedItem();
-            System.out.println(selectedItem);
-        });
     }
 
     @Description("host选项")
@@ -112,20 +120,5 @@ public class RequestPanel extends JBSplitter {
         hostTextField.setColumns(10);
         hostTextField.setText(hostValue);
         hostTextField.addActionListener(e -> hostValue = hostTextField.getText());
-        hostTextField.addFocusListener(new FocusAdapter() {
-            @Override
-            public void focusLost(FocusEvent e) {
-                hostValue = hostTextField.getText();
-            }
-        });
-    }
-
-
-    @Data
-    @EqualsAndHashCode(callSuper = true)
-    public static class BottomPart extends JPanel {
-        public BottomPart() {
-            add(new JLabel("下半部分"));
-        }
     }
 }

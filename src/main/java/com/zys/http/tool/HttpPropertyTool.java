@@ -1,12 +1,14 @@
 package com.zys.http.tool;
 
 import com.intellij.openapi.project.Project;
+import com.zys.http.constant.HttpEnum;
 import com.zys.http.entity.HttpConfig;
 import com.zys.http.service.HttpService;
 import jdk.jfr.Description;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author zys
@@ -39,6 +41,17 @@ public class HttpPropertyTool {
 
     public void removeHttpConfig(String key) {
         httpService.removeHttpConfig(key);
+    }
+
+    public HttpConfig getDefaultHttpConfig() {
+        HttpConfig httpConfig = getHttpConfig(httpService.getSelectedEnv());
+        if (Objects.isNull(httpConfig)) {
+            httpConfig = new HttpConfig();
+            httpConfig.setProtocol(HttpEnum.Protocol.HTTP);
+            httpConfig.setHostValue("127.0.0.1");
+            return httpConfig;
+        }
+        return httpConfig;
     }
 
 }
