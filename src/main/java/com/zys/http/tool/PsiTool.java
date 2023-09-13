@@ -2,10 +2,8 @@ package com.zys.http.tool;
 
 import com.intellij.lang.properties.psi.PropertiesFile;
 import com.intellij.openapi.module.Module;
-import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.module.ResourceFileUtil;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
@@ -49,46 +47,6 @@ public class PsiTool {
 
     // ====================================模块==========================================
 
-    @Description("构建出树形结构的模块目录层级")
-    public static Map<String, List<String>> buildModuleLayer(@NotNull Project project) {
-        // 1 将当前所有模块名存到 Map<String, List<String/Module>> 中<当前模块名,子模块名列表>
-        Map<String, List<String>> moduleClassMap = new HashMap<>();
-
-        // 2 遍历所有的模块时, 去获取父级模块的名称
-        Module[] modules = ModuleManager.getInstance(project).getModules();
-        for (Module module : modules) {
-            // 如果父级模块的名称与项目名称一致, 说明是一级模块
-            String parentName = ModuleRootManager.getInstance(module).getContentRoots()[0].getParent().getName();
-            if (parentName.equals("Project")) {
-                continue;
-            }
-            String moduleName = module.getName();
-
-            List<String> list = moduleClassMap.get(parentName);
-
-            if (Objects.isNull(list)) {
-                list = new ArrayList<>();
-                list.add(moduleName);
-                moduleClassMap.put(parentName, list);
-            } else {
-                list.add(moduleName);
-            }
-        }
-
-        return moduleClassMap;
-    }
-
-    @Description("根据模块名获取指定模块")
-    public static Module getModuleByName(Project project, String moduleName) {
-        Module[] modules = ModuleManager.getInstance(project).getModules();
-        for (Module module : modules) {
-            if (module.getName().equals(moduleName)) {
-                return module;
-            }
-        }
-        return null;
-    }
-
     @Description("获取指定模块中所有的 Controller")
     public static List<PsiClass> getModuleController(Project project, Module module) {
         Optional<GlobalSearchScope> globalSearchScope = Optional.of(module)
@@ -117,7 +75,7 @@ public class PsiTool {
         // 如果是 yaml 文件
         if (psiFile instanceof YAMLFile yamlFile) {
             Pair<PsiElement, String> value = YAMLUtil.getValue(yamlFile, "server", "servlet");
-            if (value != null) {
+            if (Objects.nonNull(value)) {
                 PsiElement first = value.getFirst();
                 String text = first.getText(); // 获取到 server.servlet.context-path, 内容: context-path: /
                 return text.split(":")[1].trim();
@@ -133,7 +91,7 @@ public class PsiTool {
     public static PsiFile getSpringApplicationFile(@NotNull Project project, @NotNull Module module) {
         PsiManager psiManager = PsiManager.getInstance(project);
         for (String applicationFileName : APPLICATION_FILE_NAMES) {
-            VirtualFile file = ResourceFileUtil.findResourceFileInDependents(module, applicationFileName);
+            VirtualFile file = ResourceFileUtil.findResourceFileInScope(applicationFileName, project, module.getModuleScope());
             if (Objects.nonNull(file)) {
                 return psiManager.findFile(file);
             }
@@ -153,6 +111,11 @@ public class PsiTool {
         if (Objects.isNull(requestMapping)) {
             return "";
         }
+        return getMappingValue(requestMapping);
+    }
+
+    @Description("获取 @xxxMapping 上的 value 或 path 属性")
+    private static String getMappingValue(PsiAnnotation requestMapping) {
         PsiAnnotationMemberValue annoValue = requestMapping.findAttributeValue("value");
         PsiAnnotationMemberValue annoPath = requestMapping.findAttributeValue("path");
 
@@ -167,7 +130,7 @@ public class PsiTool {
         } else {
             initializerList.add(annoPath);
         }
-        return initializerList.get(0).getText().replace("\"", "");
+        return initializerList.isEmpty() ? "" : initializerList.get(0).getText().replace("\"", "");
     }
 
 
@@ -186,7 +149,7 @@ public class PsiTool {
             for (PsiAnnotation annotation : annotations) {
                 String qualifiedName = annotation.getQualifiedName();
                 if (httpMethodMap.containsKey(qualifiedName)) {
-                    data = new MethodNode(Objects.requireNonNull(buildMethodNodeData(annotation, contextPath, controllerPath, method.getNavigationElement())));
+                    data = new MethodNode(Objects.requireNonNull(buildMethodNodeData(annotation, contextPath, controllerPath, method)));
                     dataList.add(data);
                 }
             }
@@ -195,7 +158,7 @@ public class PsiTool {
     }
 
 
-    public static MethodNodeData buildMethodNodeData(@NotNull PsiAnnotation annotation, String contextPath, String controllerPath, PsiElement psiElement) {
+    private static MethodNodeData buildMethodNodeData(@NotNull PsiAnnotation annotation, String contextPath, String controllerPath, PsiElement psiElement) {
         Map<String, HttpEnum.HttpMethod> httpMethodMap = Arrays.stream(SpringEnum.Method.values())
                 .collect(Collectors.toMap(SpringEnum.Method::getClazz, SpringEnum.Method::getHttpMethod));
         String qualifiedName = annotation.getQualifiedName();
@@ -206,21 +169,7 @@ public class PsiTool {
         if (httpMethod.equals(HttpEnum.HttpMethod.REQUEST)) {
             httpMethod = HttpEnum.HttpMethod.GET;
         }
-        PsiAnnotationMemberValue annoValue = annotation.findAttributeValue("value");
-        PsiAnnotationMemberValue annoPath = annotation.findAttributeValue("path");
-
-        List<PsiAnnotationMemberValue> initializerList = new ArrayList<>();
-        if (annoValue instanceof PsiArrayInitializerMemberValue arrayAnnoValues) {
-            initializerList.addAll(List.of(arrayAnnoValues.getInitializers()));
-        } else {
-            initializerList.add(annoValue);
-        }
-        if (annoPath instanceof PsiArrayInitializerMemberValue arrayAnnoPaths) {
-            initializerList.addAll(List.of(arrayAnnoPaths.getInitializers()));
-        } else {
-            initializerList.add(annoPath);
-        }
-        String name = initializerList.isEmpty() ? "" : initializerList.get(0).getText().replace("\"", "");
+        String name = getMappingValue(annotation);
         MethodNodeData data = new MethodNodeData(httpMethod, name, controllerPath, contextPath);
         data.setPsiElement((NavigatablePsiElement) psiElement);
         return data;

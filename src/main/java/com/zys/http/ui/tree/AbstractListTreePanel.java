@@ -7,11 +7,14 @@ import com.zys.http.entity.tree.NodeData;
 import com.zys.http.ui.tree.node.BaseNode;
 import com.zys.http.ui.tree.render.HttpApiTreeCellRenderer;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultTreeModel;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Objects;
+import java.util.function.Consumer;
 
 import static com.zys.http.constant.UIConstant.BORDER_COLOR;
 
@@ -31,7 +34,6 @@ public abstract class AbstractListTreePanel extends JBScrollPane implements Tree
         this.setViewportView(tree);
         this.tree.setCellRenderer(new HttpApiTreeCellRenderer());
 
-        // 添加节点选择监听器
         tree.addTreeSelectionListener(e -> {
             if (!tree.isEnabled()) {
                 return;
@@ -43,6 +45,7 @@ public abstract class AbstractListTreePanel extends JBScrollPane implements Tree
 
             System.out.println("selected_node: " + selectedNode.getValue().getNodeName());
             // TODO 对选中的节点进行处理
+            Objects.requireNonNull(getChooseListener()).accept(selectedNode);
         });
 
         tree.addMouseListener(new MouseAdapter() {
@@ -59,16 +62,22 @@ public abstract class AbstractListTreePanel extends JBScrollPane implements Tree
 
     @Override
     public boolean canExpand() {
-        return true;
+        return tree.getRowCount() > 0;
     }
 
     @Override
     public boolean canCollapse() {
-        return true;
+        return tree.getRowCount() > 0;
     }
 
     @Override
     public void collapseAll() {
 
     }
+
+    @Nullable
+    protected abstract Consumer<BaseNode<?>> getChooseListener();
+
+    @Nullable
+    protected abstract Consumer<BaseNode<?>> getDoubleClickListener();
 }

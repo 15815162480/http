@@ -72,9 +72,9 @@ public class RequestTabWindow extends SimpleToolWindowPanel {
     @Description("初始化顶部内容")
     private void requestPanel() {
         setContent(requestPanel);
-        DumbService.getInstance(project).smartInvokeLater(
+        DumbService.getInstance(project).runWhenSmart(
                 () -> {
-                    HttpApiTreePanel httpApiTreePanel = requestPanel.getTopPart().getHttpApiTreePanel();
+                    HttpApiTreePanel httpApiTreePanel = requestPanel.getHttpApiTreePanel();
                     ReadAction.nonBlocking(httpApiTreePanel::initNodes)
                             .finishOnUiThread(ModalityState.defaultModalityState(), httpApiTreePanel::render)
                             .submit(executorTaskBounded);

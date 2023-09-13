@@ -13,10 +13,14 @@ import com.zys.http.entity.tree.PackageNodeData;
 import com.zys.http.tool.PsiTool;
 import com.zys.http.ui.tree.node.*;
 import jdk.jfr.Description;
+import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.tree.TreeNode;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 /**
@@ -32,13 +36,18 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
 
     @Description("模块名, controller")
     private final transient Map<String, List<PsiClass>> classNodeMap = new HashMap<>();
+
     @Description("controller, 方法列表")
     private final transient Map<PsiClass, List<MethodNode>> methodNodeMap = new HashMap<>();
+
+    @Getter
+    @Setter
+    @Description("选中方法节点后的回调")
+    private transient Consumer<MethodNode> chooseCallback;
 
     public HttpApiTreePanel(@NotNull Project project) {
         super(new SimpleTree());
         this.project = project;
-
     }
 
     public ModuleNode initNodes() {
@@ -46,7 +55,7 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
     }
 
     @Description("初始化模块结点, 可能有多层级")
-    public ModuleNode initModuleNodes() {
+    private ModuleNode initModuleNodes() {
         Module[] modules = ModuleManager.getInstance(project).getModules();
         String projectName = project.getName();
         Module rootModule = Stream.of(modules).filter(o -> o.getName().equals(projectName)).findFirst().orElse(null);
@@ -97,8 +106,8 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
         return rootNode;
     }
 
-
-    public List<BaseNode<? extends NodeData>> initPackageNodes(String moduleName) {
+    @Description("初始化包结点、类结点、方法结点")
+    private List<BaseNode<? extends NodeData>> initPackageNodes(String moduleName) {
         List<PsiClass> psiClasses = classNodeMap.get(moduleName);
 
         if (methodNodeMap.isEmpty()) {
@@ -174,8 +183,7 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
         return curr;
     }
 
-    @NotNull
-    private static PackageNode findChild(@NotNull PackageNode node, @NotNull String name) {
+    private static @NotNull PackageNode findChild(@NotNull PackageNode node, @NotNull String name) {
         Enumeration<TreeNode> children = node.children();
         while (children.hasMoreElements()) {
             TreeNode child = children.nextElement();
@@ -191,8 +199,7 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
         return packageNode;
     }
 
-    @NotNull
-    private static List<PackageNode> findChildren(@NotNull PackageNode node) {
+    private static @NotNull List<PackageNode> findChildren(@NotNull PackageNode node) {
         List<PackageNode> children = new ArrayList<>();
         Enumeration<TreeNode> enumeration = node.children();
         while (enumeration.hasMoreElements()) {
@@ -203,5 +210,20 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
         }
 
         return children;
+    }
+
+
+    @Override
+    protected @Nullable Consumer<BaseNode<?>> getChooseListener() {
+        return node -> {
+            if (node instanceof MethodNode methodNode && Objects.nonNull(chooseCallback)) {
+                chooseCallback.accept(methodNode);
+            }
+        };
+    }
+
+    @Override
+    protected @Nullable Consumer<BaseNode<?>> getDoubleClickListener() {
+        return null;
     }
 }
