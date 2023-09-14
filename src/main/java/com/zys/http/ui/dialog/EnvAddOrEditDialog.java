@@ -156,15 +156,16 @@ public class EnvAddOrEditDialog extends DialogWrapper {
         httpConfig.setProtocol((Protocol) protocolCB.getSelectedItem());
 
         httpPropertyTool.putHttpConfig(configName, httpConfig);
-        DefaultTableModel model = (DefaultTableModel) envShowTable.getValueTable().getModel();
-        if (isAdd) {
-            model.addRow(new String[]{configName, protocol.toString(), host});
-        } else {
-            int selectedRow = envShowTable.getValueTable().getSelectedRow();
-            model.setValueAt(protocol.toString(), selectedRow, 1);
-            model.setValueAt(host, selectedRow, 2);
+        if (Objects.nonNull(envShowTable)){
+            DefaultTableModel model = (DefaultTableModel) envShowTable.getValueTable().getModel();
+            if (isAdd) {
+                model.addRow(new String[]{configName, protocol.toString(), host});
+            } else {
+                int selectedRow = envShowTable.getValueTable().getSelectedRow();
+                model.setValueAt(protocol.toString(), selectedRow, 1);
+                model.setValueAt(host, selectedRow, 2);
+            }
         }
-
         super.doOKAction();
     }
 }

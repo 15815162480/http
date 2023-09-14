@@ -11,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Objects;
@@ -50,8 +51,28 @@ public abstract class AbstractListTreePanel extends JBScrollPane implements Tree
 
         tree.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseClicked(MouseEvent e) {
-                // TODO 添加鼠标单击事件
+            public void mouseClicked(MouseEvent event) {
+                if (!tree.isEnabled()) {
+                    return;
+                }
+                BaseNode<?> node = getNode(event);
+                if (node == null) {
+                    return;
+                }
+                if (SwingUtilities.isLeftMouseButton(event) && event.getClickCount() == 2 && getDoubleClickListener() != null) {
+                        getDoubleClickListener().accept(node);
+
+                }
+                // } else if (SwingUtilities.isRightMouseButton(event)) {
+                //     showPopupMenu(event.getX(), event.getY(), getPopupMenu(event, node));
+                // }
+            }
+
+            @Nullable
+            private BaseNode<?> getNode(@NotNull MouseEvent event) {
+                TreePath path = tree.getPathForLocation(event.getX(), event.getY());
+                tree.setSelectionPath(path);
+                return getChooseNode(path);
             }
         });
     }
@@ -80,4 +101,18 @@ public abstract class AbstractListTreePanel extends JBScrollPane implements Tree
 
     @Nullable
     protected abstract Consumer<BaseNode<?>> getDoubleClickListener();
+
+    @Nullable
+    public BaseNode<?> getChooseNode(@Nullable TreePath treePath) {
+        Object component;
+        if (treePath != null) {
+            component = treePath.getLastPathComponent();
+        } else {
+            component = tree.getLastSelectedPathComponent();
+        }
+        if (!(component instanceof BaseNode<?>)) {
+            return null;
+        }
+        return (BaseNode<?>) component;
+    }
 }

@@ -1,14 +1,16 @@
 package com.zys.http.ui.window;
 
 import com.intellij.openapi.Disposable;
-import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.ActionPlaces;
+import com.intellij.openapi.actionSystem.ActionToolbar;
+import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.SimpleToolWindowPanel;
-import com.zys.http.action.EnvAction;
-import com.zys.http.ui.dialog.EnvShowDialog;
+import com.zys.http.action.group.EnvActionGroup;
 import com.zys.http.ui.tree.HttpApiTreePanel;
 import com.zys.http.ui.window.panel.RequestPanel;
 import jdk.jfr.Description;
@@ -48,12 +50,22 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
 
     @Description("初始化顶部工具栏")
     private void requestToolBar() {
-        DefaultActionGroup http = (DefaultActionGroup) ActionManager.getInstance().getAction("http");
-        EnvAction envAction = new EnvAction();
-        envAction.setAction(e -> new EnvShowDialog(project).show());
-        http.add(envAction, Constraints.FIRST);
-        // http.add(new SelectActionGroup());
-        ActionToolbar topToolBar = ActionManager.getInstance().createActionToolbar(ActionPlaces.TOOLBAR, http, true);
+        // DefaultActionGroup group = new DefaultActionGroup();
+        //
+        // EnvActionGroup envActionGroup = new EnvActionGroup();
+        // envActionGroup.setPopup(true);
+        DefaultActionGroup group = new DefaultActionGroup();
+        group.add(new EnvActionGroup());
+        // DefaultActionGroup http = (DefaultActionGroup) ActionManager.getInstance().getAction("http");
+        // EnvAction envAction = new EnvAction();
+        // envAction.setAction(e -> new EnvShowDialog(project).show());
+        // http.add(envAction, Constraints.FIRST);
+        //
+        // AddAction addAction = new AddAction("新增环境", "Add env");
+        // addAction.setAction(event -> new EnvAddOrEditDialog(project, true, "", null).show());
+        // http.add(addAction, Constraints.FIRST);
+
+        ActionToolbar topToolBar = ActionManager.getInstance().createActionToolbar(ActionPlaces.TOOLBAR, group, true);
         topToolBar.setTargetComponent(this);
         setToolbar(topToolBar.getComponent());
     }

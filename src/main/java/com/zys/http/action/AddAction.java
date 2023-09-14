@@ -1,6 +1,7 @@
 package com.zys.http.action;
 
 import com.intellij.icons.AllIcons;
+import com.zys.http.ui.icon.HttpIcons;
 
 /**
  * @author zys
@@ -8,6 +9,6 @@ import com.intellij.icons.AllIcons;
  */
 public class AddAction extends CustomAction {
     public AddAction(String text, String description) {
-        super(text, description, AllIcons.General.Add);
+        super(text, description, HttpIcons.ADD);
     }
 }

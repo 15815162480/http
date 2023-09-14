@@ -167,7 +167,7 @@ public class PsiTool {
 
 
     @Description("获取所有 @xxxMapping 的方法")
-    public static List<MethodNode> getMappingMethods(@NotNull PsiClass psiClass, String contextPath, String controllerPath) {
+    public static List<MethodNode> getMappingMethods(@NotNull PsiClass psiClass, String contextPath, String controllerPath, Map<PsiMethod, MethodNode> methodNodePsiMap) {
         PsiMethod[] methods = psiClass.getAllMethods();
         if (methods.length < 1) {
             return Collections.emptyList();
@@ -186,15 +186,18 @@ public class PsiTool {
                         data = new MethodNode(data1);
                         data1.setDescription(getSwaggerAnnotation(method, "METHOD_"));
                         dataList.add(data);
+                        methodNodePsiMap.put(method, data);
                     }
                 }
+
             }
+
         }
         return dataList;
     }
 
 
-    private static MethodNodeData buildMethodNodeData(@NotNull PsiAnnotation annotation, String contextPath, String controllerPath, PsiElement psiElement) {
+    private static MethodNodeData buildMethodNodeData(@NotNull PsiAnnotation annotation, String contextPath, String controllerPath, PsiMethod psiElement) {
         Map<String, HttpEnum.HttpMethod> httpMethodMap = Arrays.stream(SpringEnum.Method.values())
                 .collect(Collectors.toMap(SpringEnum.Method::getClazz, SpringEnum.Method::getHttpMethod));
         String qualifiedName = annotation.getQualifiedName();
@@ -207,7 +210,7 @@ public class PsiTool {
         }
         String name = getAnnotationValue(annotation, new String[]{"value", "path"});
         MethodNodeData data = new MethodNodeData(httpMethod, name, controllerPath, contextPath);
-        data.setPsiElement((NavigatablePsiElement) psiElement);
+        data.setPsiElement(psiElement);
         return data;
     }
 
