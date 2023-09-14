@@ -22,6 +22,7 @@ import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import java.util.*;
@@ -138,7 +139,7 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
 
             v.forEach(classNode::add);
             String packageName = PsiTool.getPackageName(k);
-            if (packageName == null) {
+            if (Objects.isNull(packageName)) {
                 // 没有包名则直接添加到 module 节点
                 unKnownPackage.add(classNode);
             } else {
@@ -246,11 +247,40 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
         };
     }
 
+    public void clear() {
+        this.getTreeModel().setRoot(null);
+    }
+
+
+    public void treeExpand() {
+        expandAll(new TreePath(tree.getModel().getRoot()), true);
+    }
+
+    public void treeCollapse() {
+        expandAll(new TreePath(tree.getModel().getRoot()), false);
+    }
+
+    private void expandAll(@NotNull TreePath parent, boolean expand) {
+        DefaultMutableTreeNode node = (DefaultMutableTreeNode) parent.getLastPathComponent();
+        if (node.getChildCount() >= 0) {
+            for (Enumeration<?> e = node.children(); e.hasMoreElements(); ) {
+                javax.swing.tree.TreeNode n = (javax.swing.tree.TreeNode) e.nextElement();
+                TreePath path = parent.pathByAddingChild(n);
+                expandAll(path, expand);
+            }
+        }
+
+        // 展开或收起必须自下而上进行
+        if (expand) {
+            tree.expandPath(parent);
+        } else {
+            tree.collapsePath(parent);
+        }
+    }
+
     public void navigationToTree(@NotNull PsiMethod psiMethod) {
         if (methodNodeMap.isEmpty()) {
-            project.getMessageBus()
-                    .syncPublisher(RefreshServiceTreeTopic.TOPIC)
-                    .refresh();
+            project.getMessageBus().syncPublisher(RefreshServiceTreeTopic.TOPIC).refresh();
             return;
         }
         MethodNode serviceNode = methodNodePsiMap.get(psiMethod);

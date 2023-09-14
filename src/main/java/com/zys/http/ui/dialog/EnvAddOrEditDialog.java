@@ -142,7 +142,7 @@ public class EnvAddOrEditDialog extends DialogWrapper {
         String configName = configNameTF.getText();
         // 添加时需要检测是否存在
         if (httpPropertyTool.getHttpConfig(configName) != null && envAddOrEditTable.isAdd()) {
-            // TODO 弹窗提示
+            ErrorDialog.show("当前环境配置名已存在");
             return;
         }
         String host = hostTF.getText();

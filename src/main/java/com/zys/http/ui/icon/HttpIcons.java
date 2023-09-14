@@ -19,6 +19,9 @@ public final class HttpIcons {
     public static final Icon ENVIRONMENT = IconLoader.getIcon("/icon/environment.svg", HttpIcons.class);
     public static final Icon ADD = IconLoader.getIcon("/icon/add.svg", HttpIcons.class);
     public static final Icon REMOVE = IconLoader.getIcon("/icon/remove.svg", HttpIcons.class);
+    public static final Icon REFRESH = IconLoader.getIcon("/icon/refresh.svg", HttpIcons.class);
+    public static final Icon EXPAND = IconLoader.getIcon("/icon/expand.svg", HttpIcons.class);
+    public static final Icon COLLAPSE = IconLoader.getIcon("/icon/collapse.svg", HttpIcons.class);
 
     // 请求方法
     private static final EnumMap<HttpEnum.HttpMethod, Icon> HTTP_METHOD_ICON_MAP = new EnumMap<>(HttpEnum.HttpMethod.class);

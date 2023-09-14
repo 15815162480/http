@@ -1,12 +1,17 @@
 package com.zys.http.ui.window.panel;
 
+import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.ui.JBSplitter;
+import com.intellij.ui.tabs.JBTabs;
+import com.intellij.ui.tabs.TabInfo;
+import com.intellij.ui.tabs.impl.JBTabsImpl;
 import com.intellij.util.ui.JBUI;
 import com.zys.http.constant.UIConstant;
 import com.zys.http.entity.HttpConfig;
 import com.zys.http.tool.HttpPropertyTool;
+import com.zys.http.ui.table.EnvAddOrEditTable;
 import com.zys.http.ui.tree.HttpApiTreePanel;
 import jdk.jfr.Description;
 import lombok.Data;
@@ -43,6 +48,12 @@ public class RequestPanel extends JBSplitter {
     private HttpApiTreePanel httpApiTreePanel;
 
     // ================== 上半部分的组件 ==================
+
+    @Description("标签栏")
+    private transient JBTabs tabs;
+
+    private EnvAddOrEditTable headerTable;
+
     private final transient Project project;
 
     public RequestPanel(@NotNull Project project) {
@@ -86,14 +97,6 @@ public class RequestPanel extends JBSplitter {
         this.setFirstComponent(firstPanel);
     }
 
-
-    private void initSecondPanel() {
-        JPanel secondPanel = new JPanel();
-        secondPanel.add(new JLabel("下半部分"));
-        secondPanel.setBorder(JBUI.Borders.customLineTop(UIConstant.BORDER_COLOR));
-        this.setSecondComponent(secondPanel);
-    }
-
     @Description("初始化树形结构")
     private void initHttpApiTreePanel() {
         this.httpApiTreePanel = new HttpApiTreePanel(project);
@@ -120,5 +123,37 @@ public class RequestPanel extends JBSplitter {
         hostTextField.setColumns(10);
         hostTextField.setText(hostValue);
         hostTextField.addActionListener(e -> hostValue = hostTextField.getText());
+    }
+
+    private void initSecondPanel() {
+        JPanel secondPanel = new JPanel(new BorderLayout(0, 0));
+        secondPanel.setBorder(JBUI.Borders.customLineTop(UIConstant.BORDER_COLOR));
+
+        tabs = new JBTabsImpl(project);
+        // 初始化各个标签页面
+        HttpPropertyTool tool = HttpPropertyTool.getInstance(project);
+        headerTable = new EnvAddOrEditTable(project, false, tool.getSelectedEnv());
+        ActionToolbar toolbar = headerTable.getToolbar();
+        toolbar.getComponent().setBorder(JBUI.Borders.customLine(UIConstant.BORDER_COLOR, 0, 0, 1, 0));
+        TabInfo tabInfo = new TabInfo(headerTable);
+        tabInfo.setText("请求头");
+        tabs.addTab(tabInfo);
+
+        TabInfo tabInfo2 = new TabInfo(new JLabel("1111"));
+        tabInfo2.setText("请求参数");
+        tabs.addTab(tabInfo2);
+
+        TabInfo tabInfo3 = new TabInfo(new JLabel("1111"));
+        tabInfo3.setText("请求体");
+        tabs.addTab(tabInfo3);
+
+
+        TabInfo tabInfo4 = new TabInfo(new JLabel("1111"));
+        tabInfo4.setText("返回值");
+        tabs.addTab(tabInfo4);
+
+
+        secondPanel.add(tabs.getComponent(), BorderLayout.NORTH);
+        this.setSecondComponent(secondPanel);
     }
 }

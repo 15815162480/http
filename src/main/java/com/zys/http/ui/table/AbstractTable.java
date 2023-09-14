@@ -1,6 +1,5 @@
 package com.zys.http.ui.table;
 
-import com.intellij.execution.util.StringWithNewLinesCellEditor;
 import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.components.JBScrollPane;
@@ -35,6 +34,7 @@ public abstract class AbstractTable extends JPanel {
     @Description("数据展示表格")
     protected JBTable valueTable;
 
+    @Getter
     @Description("表格所在区域")
     private JBScrollPane scrollPane;
 
@@ -97,12 +97,6 @@ public abstract class AbstractTable extends JPanel {
         scrollPane = new JBScrollPane(valueTable);
         scrollPane.setPreferredSize(PREFERRED_DIMENSION);
         scrollPane.setBorder(JBUI.Borders.customLine(UIConstant.BORDER_COLOR, 1, 1, 1, 1));
-
-        // 单元格失去焦点事件
-        StringWithNewLinesCellEditor editor = new StringWithNewLinesCellEditor();
-        JTextField field = (JTextField) editor.getComponent();
-        field.setBorder(null);
-        valueTable.setCellEditor(editor);
 
         valueTable.getModel().addTableModelListener(initTableModelListener());
 

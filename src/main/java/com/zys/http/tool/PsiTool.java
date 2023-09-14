@@ -116,7 +116,7 @@ public class PsiTool {
 
     @Description("获取 Controller 上 @Api 或 @Tag/方法上的 @ApiOperation 或 @Operation")
     public static String getSwaggerAnnotation(@NotNull PsiTarget psiTarget, String prefix) {
-        PsiModifierList modifierList = null;
+        PsiModifierList modifierList;
         if (psiTarget instanceof PsiClass psiClass) {
             modifierList = psiClass.getModifierList();
         } else if (psiTarget instanceof PsiMethod psiMethod) {
@@ -147,7 +147,7 @@ public class PsiTool {
     }
 
     @Description("获取 @xxxMapping 上的 value 或 path 属性")
-    private static String getAnnotationValue(PsiAnnotation annotation, String[] attributeNames) {
+    public static String getAnnotationValue(PsiAnnotation annotation, String[] attributeNames) {
         List<PsiAnnotationMemberValue> initializerList = new ArrayList<>();
         for (String attributeName : attributeNames) {
             PsiAnnotationMemberValue annoValue = annotation.findAttributeValue(attributeName);
@@ -180,18 +180,17 @@ public class PsiTool {
             PsiAnnotation[] annotations = method.getAnnotations();
             for (PsiAnnotation annotation : annotations) {
                 String qualifiedName = annotation.getQualifiedName();
-                if (httpMethodMap.containsKey(qualifiedName)) {
-                    MethodNodeData data1 = buildMethodNodeData(annotation, contextPath, controllerPath, method);
-                    if (Objects.nonNull(data1)) {
-                        data = new MethodNode(data1);
-                        data1.setDescription(getSwaggerAnnotation(method, "METHOD_"));
-                        dataList.add(data);
-                        methodNodePsiMap.put(method, data);
-                    }
+                if (!httpMethodMap.containsKey(qualifiedName)) {
+                    continue;
                 }
-
+                MethodNodeData data1 = buildMethodNodeData(annotation, contextPath, controllerPath, method);
+                if (Objects.nonNull(data1)) {
+                    data = new MethodNode(data1);
+                    data1.setDescription(getSwaggerAnnotation(method, "METHOD_"));
+                    dataList.add(data);
+                    methodNodePsiMap.put(method, data);
+                }
             }
-
         }
         return dataList;
     }

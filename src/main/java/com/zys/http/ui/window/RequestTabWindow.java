@@ -10,11 +10,16 @@ import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.SimpleToolWindowPanel;
+import com.zys.http.action.CollapseAction;
+import com.zys.http.action.ExpandAction;
+import com.zys.http.action.RefreshAction;
 import com.zys.http.action.group.EnvActionGroup;
 import com.zys.http.ui.tree.HttpApiTreePanel;
 import com.zys.http.ui.window.panel.RequestPanel;
 import jdk.jfr.Description;
 
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.*;
 
 /**
@@ -52,6 +57,27 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
     private void requestToolBar() {
         DefaultActionGroup group = new DefaultActionGroup();
         group.add(new EnvActionGroup());
+        RefreshAction refreshAction = new RefreshAction();
+        refreshAction.setAction(event -> {
+            requestPanel.getHttpApiTreePanel().clear();
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    refreshTree();
+                }
+            }, 500);
+        });
+        group.add(refreshAction);
+        group.addSeparator();
+
+        ExpandAction expandAction = new ExpandAction();
+        expandAction.setAction(event -> requestPanel.getHttpApiTreePanel().treeExpand());
+        group.add(expandAction);
+        CollapseAction collapseAction = new CollapseAction();
+        collapseAction.setAction(event -> requestPanel.getHttpApiTreePanel().treeCollapse());
+        group.add(collapseAction);
+
+
         ActionToolbar topToolBar = ActionManager.getInstance().createActionToolbar(ActionPlaces.TOOLBAR, group, true);
         topToolBar.setTargetComponent(this);
         setToolbar(topToolBar.getComponent());
@@ -60,6 +86,10 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
     @Description("初始化顶部内容")
     private void requestPanel() {
         setContent(requestPanel);
+        refreshTree();
+    }
+
+    private void refreshTree() {
         DumbService.getInstance(project).smartInvokeLater(
                 () -> {
                     HttpApiTreePanel httpApiTreePanel = requestPanel.getHttpApiTreePanel();

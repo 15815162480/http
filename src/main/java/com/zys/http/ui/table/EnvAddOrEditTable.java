@@ -86,7 +86,12 @@ public class EnvAddOrEditTable extends AbstractTable {
         group.add(addAction);
 
         RemoveAction removeAction = new RemoveAction("删除", "删除");
-        removeAction.setAction(event -> ((DefaultTableModel) valueTable.getModel()).removeRow(valueTable.getSelectedRow()));
+        removeAction.setAction(event -> {
+            DefaultTableModel model = (DefaultTableModel) valueTable.getModel();
+            model.removeRow(valueTable.getSelectedRow());
+            int selectedRow = valueTable.getSelectedRow();
+            valueTable.getSelectionModel().setSelectionInterval(selectedRow - 1, selectedRow - 1);
+        });
         removeAction.setEnabled(false);
         group.add(removeAction);
 
