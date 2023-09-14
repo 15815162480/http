@@ -50,21 +50,8 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
 
     @Description("初始化顶部工具栏")
     private void requestToolBar() {
-        // DefaultActionGroup group = new DefaultActionGroup();
-        //
-        // EnvActionGroup envActionGroup = new EnvActionGroup();
-        // envActionGroup.setPopup(true);
         DefaultActionGroup group = new DefaultActionGroup();
         group.add(new EnvActionGroup());
-        // DefaultActionGroup http = (DefaultActionGroup) ActionManager.getInstance().getAction("http");
-        // EnvAction envAction = new EnvAction();
-        // envAction.setAction(e -> new EnvShowDialog(project).show());
-        // http.add(envAction, Constraints.FIRST);
-        //
-        // AddAction addAction = new AddAction("新增环境", "Add env");
-        // addAction.setAction(event -> new EnvAddOrEditDialog(project, true, "", null).show());
-        // http.add(addAction, Constraints.FIRST);
-
         ActionToolbar topToolBar = ActionManager.getInstance().createActionToolbar(ActionPlaces.TOOLBAR, group, true);
         topToolBar.setTargetComponent(this);
         setToolbar(topToolBar.getComponent());
