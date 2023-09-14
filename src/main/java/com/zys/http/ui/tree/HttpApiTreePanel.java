@@ -238,9 +238,8 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
     protected @Nullable Consumer<BaseNode<?>> getDoubleClickListener() {
         return node -> {
             if (node instanceof MethodNode m) {
-                System.out.println(m.getValue());
                 NavigatablePsiElement psiElement = m.getValue().getPsiElement();
-                if (psiElement != null) {
+                if (Objects.nonNull(psiElement)) {
                     psiElement.navigate(true);
                 }
             }
@@ -249,7 +248,6 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
 
     public void navigationToTree(@NotNull PsiMethod psiMethod) {
         if (methodNodeMap.isEmpty()) {
-            System.out.println("Empty");
             project.getMessageBus()
                     .syncPublisher(RefreshServiceTreeTopic.TOPIC)
                     .refresh();
