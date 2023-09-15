@@ -1,6 +1,6 @@
 package com.zys.http.action;
 
-import com.intellij.icons.AllIcons;
+import com.zys.http.ui.icon.HttpIcons;
 import jdk.jfr.Description;
 
 /**
@@ -10,6 +10,6 @@ import jdk.jfr.Description;
 @Description("删除操作")
 public class RemoveAction extends CustomAction {
     public RemoveAction(String text, String description) {
-        super(text, description, AllIcons.General.Remove);
+        super(text, description, HttpIcons.General.REMOVE);
     }
 }

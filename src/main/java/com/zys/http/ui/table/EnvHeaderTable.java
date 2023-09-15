@@ -10,6 +10,7 @@ import com.zys.http.action.AddAction;
 import com.zys.http.action.CustomAction;
 import com.zys.http.action.RemoveAction;
 import com.zys.http.entity.HttpConfig;
+import com.zys.http.service.Bundle;
 import jdk.jfr.Description;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
@@ -52,20 +53,22 @@ public class EnvHeaderTable extends AbstractTable {
     protected @NotNull DefaultTableModel initTableModel() {
         // 构建列信息
         Vector<String> columnNames = new Vector<>();
-        columnNames.add("请求头");
-        columnNames.add("请求值");
+        columnNames.add(Bundle.get("http.table.header"));
+        columnNames.add(Bundle.get("http.table.value"));
         Vector<Vector<String>> rowData = new Vector<>();
 
         if (!this.isAdd) {
             HttpConfig httpConfig = httpPropertyTool.getHttpConfig(selectEnv);
-            Map<String, String> headers = httpConfig.getHeaders();
-            if (Objects.nonNull(headers)) {
-                headers.forEach((k, v) -> {
-                    Vector<String> vector = new Vector<>(2);
-                    vector.add(k);
-                    vector.add(v);
-                    rowData.add(vector);
-                });
+            if (Objects.nonNull(httpConfig)) {
+                Map<String, String> headers = httpConfig.getHeaders();
+                if (Objects.nonNull(headers)) {
+                    headers.forEach((k, v) -> {
+                        Vector<String> vector = new Vector<>(2);
+                        vector.add(k);
+                        vector.add(v);
+                        rowData.add(vector);
+                    });
+                }
             }
         }
 
@@ -75,7 +78,7 @@ public class EnvHeaderTable extends AbstractTable {
     @Override
     protected @Nullable ActionToolbar initActionToolbar() {
         DefaultActionGroup group = new DefaultActionGroup();
-        AddAction addAction = new AddAction("添加", "添加");
+        AddAction addAction = new AddAction(Bundle.get("http.action.add"), "Add");
         addAction.setAction(event -> {
             DefaultTableModel model = (DefaultTableModel) valueTable.getModel();
             int rowCount = model.getRowCount();
@@ -85,7 +88,7 @@ public class EnvHeaderTable extends AbstractTable {
         });
         group.add(addAction);
 
-        RemoveAction removeAction = new RemoveAction("删除", "删除");
+        RemoveAction removeAction = new RemoveAction(Bundle.get("http.action.remove"), "Remove");
         removeAction.setAction(event -> {
             DefaultTableModel model = (DefaultTableModel) valueTable.getModel();
             model.removeRow(valueTable.getSelectedRow());

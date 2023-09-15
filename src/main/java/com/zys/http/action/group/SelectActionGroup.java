@@ -5,6 +5,7 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.zys.http.action.SelectAction;
+import com.zys.http.service.Bundle;
 import com.zys.http.tool.HttpPropertyTool;
 import com.zys.http.ui.icon.HttpIcons;
 import jdk.jfr.Description;
@@ -21,7 +22,7 @@ import java.util.Set;
 public class SelectActionGroup extends DefaultActionGroup {
 
     public SelectActionGroup(){
-        super("选择环境", "Select env", AllIcons.Actions.ListFiles);
+        super(Bundle.get("http.action.group.select"), "Select env", AllIcons.Actions.ListFiles);
         setPopup(true);
     }
 

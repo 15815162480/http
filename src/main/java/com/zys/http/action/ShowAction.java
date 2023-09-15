@@ -11,6 +11,6 @@ import javax.swing.*;
 @Description("展示操作")
 public class ShowAction extends CustomAction {
     public ShowAction(String text, String description, Icon icon) {
-        super("环境列表", "Env", null);
+        super(text, description, icon);
     }
 }

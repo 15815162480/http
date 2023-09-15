@@ -1,5 +1,6 @@
 package com.zys.http.action;
 
+import com.zys.http.service.Bundle;
 import com.zys.http.ui.icon.HttpIcons;
 import jdk.jfr.Description;
 
@@ -10,6 +11,6 @@ import jdk.jfr.Description;
 @Description("收起操作")
 public class CollapseAction extends CustomAction{
     public CollapseAction() {
-        super("全部收起", "Collapse all", HttpIcons.General.COLLAPSE);
+        super(Bundle.get("http.action.collapse.all"), "Collapse all", HttpIcons.General.COLLAPSE);
     }
 }

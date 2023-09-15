@@ -1,5 +1,6 @@
 package com.zys.http.action;
 
+import com.zys.http.service.Bundle;
 import com.zys.http.ui.icon.HttpIcons;
 import jdk.jfr.Description;
 
@@ -10,6 +11,6 @@ import jdk.jfr.Description;
 @Description("展开操作")
 public class ExpandAction extends CustomAction{
     public ExpandAction() {
-        super("全部展开", "Expand all", HttpIcons.General.EXPAND);
+        super(Bundle.get("http.action.expand.all"), "Expand all", HttpIcons.General.EXPAND);
     }
 }

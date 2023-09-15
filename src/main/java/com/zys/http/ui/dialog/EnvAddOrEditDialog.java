@@ -8,6 +8,7 @@ import com.intellij.ui.SeparatorComponent;
 import com.intellij.ui.SeparatorOrientation;
 import com.intellij.util.ui.JBUI;
 import com.zys.http.entity.HttpConfig;
+import com.zys.http.service.Bundle;
 import com.zys.http.ui.table.EnvHeaderTable;
 import com.zys.http.ui.table.EnvListTable;
 import com.zys.http.tool.HttpPropertyTool;
@@ -54,9 +55,9 @@ public class EnvAddOrEditDialog extends DialogWrapper {
         this.isAdd = isAdd;
         init();
         getRootPane().setMinimumSize(new Dimension(500, 400));
-        setTitle(isAdd ? "添加环境配置" : "修改环境配置");
-        setCancelButtonText("取消");
-        setOKButtonText("确定");
+        setTitle(isAdd ? Bundle.get("http.dialog.add.env.config") : Bundle.get("http.dialog.edit.env.config"));
+        setCancelButtonText(Bundle.get("http.text.cancel"));
+        setOKButtonText(Bundle.get("http.text.ok"));
         setAutoAdjustable(true);
         if (!isAdd) {
             // 修改时配置名称禁止修改
@@ -79,18 +80,18 @@ public class EnvAddOrEditDialog extends DialogWrapper {
         gbc.insets = JBUI.insetsBottom(4);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.gridx = 0;
-        first.add(new JLabel("环境名称:  "), gbc);
+        first.add(new JLabel(Bundle.get("http.dialog.env.config.name")), gbc);
         gbc.gridy = 1;
-        first.add(new JLabel("协       议:  "), gbc);
+        first.add(new JLabel(Bundle.get("http.dialog.env.config.protocol")), gbc);
         gbc.gridy = 2;
-        first.add(new JLabel("IP/HOST:  "), gbc);
+        first.add(new JLabel(Bundle.get("http.dialog.env.config.ip")), gbc);
 
         gbc.gridx = 1;
         gbc.gridy = 0;
         gbc.weightx = 1.0;
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         configNameTF = new JTextField();
-        configNameTF.setToolTipText("输入配置名");
+        configNameTF.setToolTipText(Bundle.get("http.dialog.env.config.name.tooltip"));
         first.add(configNameTF, gbc);
 
         // 环境配置
@@ -102,7 +103,7 @@ public class EnvAddOrEditDialog extends DialogWrapper {
         // IP/HOST
         gbc.gridy = 2;
         hostTF = new JTextField();
-        hostTF.setToolTipText("输入 ip:port 或域名");
+        hostTF.setToolTipText(Bundle.get("http.dialog.env.config.ip.tooltip"));
         first.add(hostTF, gbc);
 
         // 请求头分割线
@@ -124,7 +125,7 @@ public class EnvAddOrEditDialog extends DialogWrapper {
     private JPanel headerPanel() {
         JPanel header = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
-        header.add(new JLabel("请求头 "), gbc);
+        header.add(new JLabel(Bundle.get("http.dialog.env.separator.header") + " "), gbc);
         gbc.gridx = 1;
         gbc.weightx = 1.0;
         gbc.gridwidth = GridBagConstraints.REMAINDER;
@@ -142,7 +143,7 @@ public class EnvAddOrEditDialog extends DialogWrapper {
         String configName = configNameTF.getText();
         // 添加时需要检测是否存在
         if (httpPropertyTool.getHttpConfig(configName) != null && envAddOrEditTable.isAdd()) {
-            ErrorDialog.show("当前环境配置名已存在");
+            ErrorDialog.show(Bundle.get("http.dialog.env.config.existed"));
             return;
         }
         String host = hostTF.getText();

@@ -10,6 +10,7 @@ import com.intellij.ui.tabs.impl.JBTabsImpl;
 import com.intellij.util.ui.JBUI;
 import com.zys.http.constant.UIConstant;
 import com.zys.http.entity.HttpConfig;
+import com.zys.http.service.Bundle;
 import com.zys.http.tool.HttpPropertyTool;
 import com.zys.http.ui.table.EnvHeaderTable;
 import com.zys.http.ui.tree.HttpApiTreePanel;
@@ -69,7 +70,7 @@ public class RequestPanel extends JBSplitter {
         initHostOption();
         initHttpApiTreePanel();
         firstPanel.setBorder(JBUI.Borders.customLineTop(UIConstant.BORDER_COLOR));
-        sendRequestBtn = new JXButton("发送");
+        sendRequestBtn = new JXButton(Bundle.get("http.text.send"));
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.BOTH;
@@ -136,20 +137,20 @@ public class RequestPanel extends JBSplitter {
         ActionToolbar toolbar = headerTable.getToolbar();
         toolbar.getComponent().setBorder(JBUI.Borders.customLine(UIConstant.BORDER_COLOR, 0, 0, 1, 0));
         TabInfo tabInfo = new TabInfo(headerTable);
-        tabInfo.setText("请求头");
+        tabInfo.setText(Bundle.get("http.tab.request.header"));
         tabs.addTab(tabInfo);
 
         TabInfo tabInfo2 = new TabInfo(new JLabel("1111"));
-        tabInfo2.setText("请求参数");
+        tabInfo2.setText(Bundle.get("http.tab.request.param"));
         tabs.addTab(tabInfo2);
 
         TabInfo tabInfo3 = new TabInfo(new JLabel("1111"));
-        tabInfo3.setText("请求体");
+        tabInfo3.setText(Bundle.get("http.tab.request.body"));
         tabs.addTab(tabInfo3);
 
 
         TabInfo tabInfo4 = new TabInfo(new JLabel("1111"));
-        tabInfo4.setText("返回值");
+        tabInfo4.setText(Bundle.get("http.tab.request.return"));
         tabs.addTab(tabInfo4);
 
 
