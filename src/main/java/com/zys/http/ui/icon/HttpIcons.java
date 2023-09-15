@@ -20,12 +20,13 @@ public final class HttpIcons {
     @Description("通用")
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class General {
-        public static final Icon ENVIRONMENT = IconLoader.getIcon("/icon/environment.svg", HttpIcons.class);
-        public static final Icon ADD = IconLoader.getIcon("/icon/add.svg", HttpIcons.class);
-        public static final Icon REMOVE = IconLoader.getIcon("/icon/remove.svg", HttpIcons.class);
-        public static final Icon REFRESH = IconLoader.getIcon("/icon/refresh.svg", HttpIcons.class);
-        public static final Icon EXPAND = IconLoader.getIcon("/icon/expand.svg", HttpIcons.class);
-        public static final Icon COLLAPSE = IconLoader.getIcon("/icon/collapse.svg", HttpIcons.class);
+        public static final Icon ENVIRONMENT = IconLoader.getIcon("/icon/general/environment.svg", HttpIcons.class);
+        public static final Icon ADD = IconLoader.getIcon("/icon/general/add.svg", HttpIcons.class);
+        public static final Icon REMOVE = IconLoader.getIcon("/icon/general/remove.svg", HttpIcons.class);
+        public static final Icon REFRESH = IconLoader.getIcon("/icon/general/refresh.svg", HttpIcons.class);
+        public static final Icon EXPAND = IconLoader.getIcon("/icon/general/expand.svg", HttpIcons.class);
+        public static final Icon COLLAPSE = IconLoader.getIcon("/icon/general/collapse.svg", HttpIcons.class);
+        public static final Icon FILTER = IconLoader.getIcon("/icon/general/filter.svg", HttpIcons.class);
     }
 
     @Description("请求方法")

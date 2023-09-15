@@ -37,12 +37,12 @@ public class EnvActionGroup extends DefaultActionGroup {
         AddAction addAction = new AddAction("新增环境", "Add env");
         addAction.setAction(event -> new EnvAddOrEditDialog(project, true, "", null).show());
         actions[0] = addAction;
-        ShowAction action = new ShowAction("环境列表", "Env list", null);
-        action.setAction(event -> new EnvListShowDialog(project).show());
-        actions[1] = action;
         SelectActionGroup selectActionGroup = new SelectActionGroup();
         selectActionGroup.setPopup(true);
-        actions[2] = selectActionGroup;
+        actions[1] = selectActionGroup;
+        ShowAction action = new ShowAction("环境列表", "Env list", null);
+        action.setAction(event -> new EnvListShowDialog(project).show());
+        actions[2] = action;
         return actions;
     }
 }

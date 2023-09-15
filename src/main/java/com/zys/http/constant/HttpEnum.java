@@ -55,8 +55,7 @@ public interface HttpEnum {
 
 
     @Getter
-    @Description("")
-    @AllArgsConstructor
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
     enum Swagger {
         CLASS_API("io.swagger.annotations.Api", "tags"),
         CLASS_TAG("io.swagger.v3.oas.annotations.tags.Tag", "name"),

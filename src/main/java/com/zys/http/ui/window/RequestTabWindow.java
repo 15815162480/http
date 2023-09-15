@@ -29,7 +29,6 @@ import java.util.concurrent.*;
 @Description("请求标签页面")
 public class RequestTabWindow extends SimpleToolWindowPanel implements Disposable {
     private final transient Project project;
-
     private final RequestPanel requestPanel;
     private final transient ExecutorService executorTaskBounded = new ThreadPoolExecutor(
             1,
