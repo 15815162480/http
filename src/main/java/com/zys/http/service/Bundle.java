@@ -1,6 +1,6 @@
 package com.zys.http.service;
 
-import com.intellij.AbstractBundle;
+import com.intellij.DynamicBundle;
 import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.extensions.PluginId;
 import jdk.jfr.Description;
@@ -17,7 +17,7 @@ import java.util.ResourceBundle;
  * @since 2023-09-15
  */
 @Description("国际化 i18n")
-public class Bundle extends AbstractBundle {
+public class Bundle extends DynamicBundle {
     @NonNls
     public static final String I18N = "messages.http";
 

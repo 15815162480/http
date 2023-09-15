@@ -27,6 +27,8 @@ public final class HttpIcons {
         public static final Icon EXPAND = IconLoader.getIcon("/icon/general/expand.svg", HttpIcons.class);
         public static final Icon COLLAPSE = IconLoader.getIcon("/icon/general/collapse.svg", HttpIcons.class);
         public static final Icon FILTER = IconLoader.getIcon("/icon/general/filter.svg", HttpIcons.class);
+        public static final Icon LIST = IconLoader.getIcon("/icon/general/list.svg", HttpIcons.class);
+        public static final Icon DEFAULT = IconLoader.getIcon("/icon/general/default.svg", HttpIcons.class);
     }
 
     @Description("请求方法")

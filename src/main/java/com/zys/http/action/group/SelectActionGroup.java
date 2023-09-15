@@ -1,6 +1,5 @@
 package com.zys.http.action.group;
 
-import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
@@ -22,7 +21,7 @@ import java.util.Set;
 public class SelectActionGroup extends DefaultActionGroup {
 
     public SelectActionGroup(){
-        super(Bundle.get("http.action.group.select"), "Select env", AllIcons.Actions.ListFiles);
+        super(Bundle.get("http.action.group.select"), "Select env", HttpIcons.General.LIST);
         setPopup(true);
     }
 
@@ -41,7 +40,7 @@ public class SelectActionGroup extends DefaultActionGroup {
                 tool.setSelectedEnv(event.getPresentation().getText());
             });
             if (s.equals(tool.getSelectedEnv())) {
-                action.setIcon(AllIcons.Actions.SetDefault);
+                action.setIcon(HttpIcons.General.DEFAULT);
             }
             anActions[i++] = action;
         }
