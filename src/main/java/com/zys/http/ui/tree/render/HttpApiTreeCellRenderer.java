@@ -26,7 +26,7 @@ public class HttpApiTreeCellRenderer extends ColoredTreeCellRenderer {
             boolean hasFocus
     ) {
         if (value instanceof BaseNode<? extends NodeData> node) {
-            setIcon(node.getIcon(selected));
+            setIcon(node.getIcon());
             append(node.getFragment(), node.getTextAttributes());
             String description = node.getValue().getDescription();
             if (CharSequenceUtil.isNotEmpty(description)) {

@@ -54,16 +54,12 @@ public abstract class AbstractListTreePanel extends JBScrollPane implements Tree
                     return;
                 }
                 BaseNode<?> node = getNode(event);
-                if (node == null) {
+                if (Objects.isNull(node)) {
                     return;
                 }
                 if (SwingUtilities.isLeftMouseButton(event) && event.getClickCount() == 2 && getDoubleClickListener() != null) {
-                        getDoubleClickListener().accept(node);
-
+                    getDoubleClickListener().accept(node);
                 }
-                // } else if (SwingUtilities.isRightMouseButton(event)) {
-                //     showPopupMenu(event.getX(), event.getY(), getPopupMenu(event, node));
-                // }
             }
 
             @Nullable

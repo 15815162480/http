@@ -22,6 +22,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Arrays;
 
 import static com.zys.http.constant.HttpEnum.HttpMethod;
 
@@ -63,43 +64,10 @@ public class RequestPanel extends JBSplitter {
         initFirstPanel();
         initSecondPanel();
     }
-
+    @Description("初始化上半部分组件")
     private void initFirstPanel() {
-        JPanel firstPanel = new JPanel(new GridBagLayout());
-        initHttpMethodOption();
-        initHostOption();
-        initHttpApiTreePanel();
+        JPanel firstPanel = new JPanel(new BorderLayout(0,0));
         firstPanel.setBorder(JBUI.Borders.customLineTop(UIConstant.BORDER_COLOR));
-        sendRequestBtn = new JXButton(Bundle.get("http.text.send"));
-
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.weightx = 1.0;
-        gbc.weighty = 1.0;
-        gbc.gridwidth = GridBagConstraints.REMAINDER;
-
-        firstPanel.add(httpApiTreePanel, gbc);
-
-        gbc.weightx = 0;
-        gbc.weighty = 0;
-        gbc.gridwidth = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.gridy = 1;
-        firstPanel.add(httpMethodComboBox, gbc);
-        gbc.gridx = 1;
-        gbc.weightx = 1.0;
-        gbc.gridwidth = 1;
-        firstPanel.add(hostTextField, gbc);
-        gbc.weightx = 0;
-        gbc.gridx = 2;
-        gbc.gridwidth = GridBagConstraints.REMAINDER;
-        firstPanel.add(sendRequestBtn, gbc);
-
-        this.setFirstComponent(firstPanel);
-    }
-
-    @Description("初始化树形结构")
-    private void initHttpApiTreePanel() {
         this.httpApiTreePanel = new HttpApiTreePanel(project);
         this.httpApiTreePanel.setChooseCallback(methodNode -> {
             HttpPropertyTool propertyTool = HttpPropertyTool.getInstance(project);
@@ -107,29 +75,51 @@ public class RequestPanel extends JBSplitter {
             String protocol = config.getProtocol().name().toLowerCase();
             String configHostValue = config.getHostValue();
             hostTextField.setText(protocol + "://" + configHostValue + methodNode.getFragment());
-            httpMethodComboBox.setSelectedItem(methodNode.getValue().getHttpMethod());
+            HttpMethod httpMethod = methodNode.getValue().getHttpMethod();
+            httpMethodComboBox.setSelectedItem(httpMethod.equals(HttpMethod.REQUEST) ? HttpMethod.GET : httpMethod);
         });
+        firstPanel.add(httpApiTreePanel, BorderLayout.NORTH);
+
+        this.setFirstComponent(firstPanel);
     }
 
-    @Description("请求方式选项")
-    private void initHttpMethodOption() {
-        httpMethodComboBox = new ComboBox<>(HttpMethod.values());
+    @Description("初始化下半部分组件")
+    private void initSecondPanel() {
+        JPanel secondPanel = new JPanel(new GridBagLayout());
+        secondPanel.setBorder(JBUI.Borders.customLineTop(UIConstant.BORDER_COLOR));
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        // 请求方式下拉框
+        HttpMethod[] methods = Arrays.stream(HttpMethod.values()).filter(o -> !o.equals(HttpMethod.REQUEST))
+                .toList().toArray(new HttpMethod[]{});
+        httpMethodComboBox = new ComboBox<>(methods);
         httpMethodComboBox.setSelectedItem(HttpMethod.GET);
         httpMethodComboBox.setFocusable(false);
-    }
+        gbc.weightx = 0;
+        gbc.weighty = 0;
+        gbc.gridwidth = 1;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        secondPanel.add(httpMethodComboBox, gbc);
 
-    @Description("host选项")
-    private void initHostOption() {
+        // 请求地址文本框
         hostTextField = new JTextField();
         hostTextField.setColumns(10);
         hostTextField.setText(hostValue);
         hostTextField.addActionListener(e -> hostValue = hostTextField.getText());
-    }
+        gbc.gridx = 1;
+        gbc.weightx = 1.0;
+        gbc.gridwidth = 1;
+        secondPanel.add(hostTextField, gbc);
 
-    private void initSecondPanel() {
-        JPanel secondPanel = new JPanel(new BorderLayout(0, 0));
-        secondPanel.setBorder(JBUI.Borders.customLineTop(UIConstant.BORDER_COLOR));
+        // 发送按钮
+        sendRequestBtn = new JXButton(Bundle.get("http.text.send"));
+        gbc.weightx = 0;
+        gbc.gridx = 2;
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        secondPanel.add(sendRequestBtn, gbc);
 
+        // 标签页面
+        JPanel tabsPanel = new JPanel(new BorderLayout(0, 0));
         tabs = new JBTabsImpl(project);
         // 初始化各个标签页面
         HttpPropertyTool tool = HttpPropertyTool.getInstance(project);
@@ -153,8 +143,15 @@ public class RequestPanel extends JBSplitter {
         tabInfo4.setText(Bundle.get("http.tab.request.return"));
         tabs.addTab(tabInfo4);
 
-
-        secondPanel.add(tabs.getComponent(), BorderLayout.NORTH);
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        gbc.insets = JBUI.insetsTop(3);
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        tabsPanel.add(tabs.getComponent(), BorderLayout.NORTH);
+        secondPanel.add(tabsPanel, gbc);
         this.setSecondComponent(secondPanel);
     }
 }

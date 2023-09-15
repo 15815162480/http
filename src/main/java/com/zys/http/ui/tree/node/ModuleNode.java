@@ -13,5 +13,4 @@ public class ModuleNode extends BaseNode<ModuleNodeData> {
     public ModuleNode(@NotNull ModuleNodeData value) {
         super(value);
     }
-
 }

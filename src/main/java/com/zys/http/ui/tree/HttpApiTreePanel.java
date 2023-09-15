@@ -266,7 +266,7 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
         DefaultMutableTreeNode node = (DefaultMutableTreeNode) parent.getLastPathComponent();
         if (node.getChildCount() >= 0) {
             for (Enumeration<?> e = node.children(); e.hasMoreElements(); ) {
-                javax.swing.tree.TreeNode n = (javax.swing.tree.TreeNode) e.nextElement();
+                TreeNode n = (TreeNode) e.nextElement();
                 TreePath path = parent.pathByAddingChild(n);
                 expandAll(path, expand);
             }

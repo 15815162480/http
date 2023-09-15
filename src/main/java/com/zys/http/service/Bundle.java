@@ -3,6 +3,7 @@ package com.zys.http.service;
 import com.intellij.AbstractBundle;
 import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.extensions.PluginId;
+import jdk.jfr.Description;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -15,6 +16,7 @@ import java.util.ResourceBundle;
  * @author zhou ys
  * @since 2023-09-15
  */
+@Description("国际化 i18n")
 public class Bundle extends AbstractBundle {
     @NonNls
     public static final String I18N = "messages.http";

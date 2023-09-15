@@ -30,7 +30,7 @@ public abstract class BaseNode<T extends NodeData> extends DefaultMutableTreeNod
     }
 
     @Nullable
-    public Icon getIcon(boolean selected) {
+    public Icon getIcon() {
         return value.getNodeIcon();
     }
 

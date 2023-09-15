@@ -4,6 +4,7 @@ import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.http.*;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import jdk.jfr.Description;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -21,6 +22,7 @@ import static com.zys.http.constant.HttpEnum.HttpMethod;
  * @author zys
  * @since 2023-08-20
  */
+@Description("发起请求客户端")
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class HttpClient {
 
