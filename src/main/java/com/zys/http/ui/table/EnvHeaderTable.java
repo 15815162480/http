@@ -29,8 +29,8 @@ import java.util.Vector;
  * @author zys
  * @since 2023-09-03
  */
-@Description("添加/修改环境的表格")
-public class EnvAddOrEditTable extends AbstractTable {
+@Description("请求头表格")
+public class EnvHeaderTable extends AbstractTable {
 
     @Getter
     @Description("添加(true)/修改(false)")
@@ -39,7 +39,7 @@ public class EnvAddOrEditTable extends AbstractTable {
     @Description("选中的环境名, isAdd 为 true 时忽略")
     private String selectEnv;
 
-    public EnvAddOrEditTable(@NotNull Project project, boolean isAdd, String selectEnv) {
+    public EnvHeaderTable(@NotNull Project project, boolean isAdd, String selectEnv) {
         super(project, true);
         this.isAdd = isAdd;
         if (!isAdd) {
@@ -89,8 +89,7 @@ public class EnvAddOrEditTable extends AbstractTable {
         removeAction.setAction(event -> {
             DefaultTableModel model = (DefaultTableModel) valueTable.getModel();
             model.removeRow(valueTable.getSelectedRow());
-            int selectedRow = valueTable.getSelectedRow();
-            valueTable.getSelectionModel().setSelectionInterval(selectedRow - 1, selectedRow - 1);
+            valueTable.getSelectionModel().setSelectionInterval(0, 0);
         });
         removeAction.setEnabled(false);
         group.add(removeAction);

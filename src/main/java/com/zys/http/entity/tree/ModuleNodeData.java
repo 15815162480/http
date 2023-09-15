@@ -16,7 +16,7 @@ public class ModuleNodeData extends NodeData {
 
     public ModuleNodeData(String nodeName, String contextPath) {
         super(nodeName);
-        this.setNodeIcon(HttpIcons.MODULE);
+        this.setNodeIcon(HttpIcons.TreeNode.MODULE);
         this.contextPath = contextPath;
     }
 }

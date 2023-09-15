@@ -18,6 +18,6 @@ public class ClassNodeData extends NodeData {
     public ClassNodeData(PsiClass psiClass) {
         super(psiClass.getName());
         this.psiClass = psiClass;
-        this.setNodeIcon(HttpIcons.CLASS);
+        this.setNodeIcon(HttpIcons.TreeNode.CLASS);
     }
 }

@@ -33,6 +33,7 @@ import java.util.stream.Stream;
  * @author zys
  * @since 2023-09-08
  */
+@Description("树形列表展示区")
 public class HttpApiTreePanel extends AbstractListTreePanel {
 
     private final transient Project project;
@@ -45,6 +46,7 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
 
     @Description("controller, 方法列表")
     private final transient Map<PsiClass, List<MethodNode>> methodNodeMap = new HashMap<>();
+    @Description("方法引用, 方法结点")
     private final transient Map<PsiMethod, MethodNode> methodNodePsiMap = new HashMap<>();
 
     @Getter

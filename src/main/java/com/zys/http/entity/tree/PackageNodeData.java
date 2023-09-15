@@ -10,6 +10,6 @@ public class PackageNodeData extends NodeData {
 
     public PackageNodeData(String nodeName) {
         super(nodeName);
-        this.setNodeIcon(HttpIcons.PACKAGE);
+        this.setNodeIcon(HttpIcons.TreeNode.PACKAGE);
     }
 }

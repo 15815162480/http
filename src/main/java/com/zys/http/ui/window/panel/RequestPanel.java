@@ -11,7 +11,7 @@ import com.intellij.util.ui.JBUI;
 import com.zys.http.constant.UIConstant;
 import com.zys.http.entity.HttpConfig;
 import com.zys.http.tool.HttpPropertyTool;
-import com.zys.http.ui.table.EnvAddOrEditTable;
+import com.zys.http.ui.table.EnvHeaderTable;
 import com.zys.http.ui.tree.HttpApiTreePanel;
 import jdk.jfr.Description;
 import lombok.Data;
@@ -52,7 +52,7 @@ public class RequestPanel extends JBSplitter {
     @Description("标签栏")
     private transient JBTabs tabs;
 
-    private EnvAddOrEditTable headerTable;
+    private EnvHeaderTable headerTable;
 
     private final transient Project project;
 
@@ -132,7 +132,7 @@ public class RequestPanel extends JBSplitter {
         tabs = new JBTabsImpl(project);
         // 初始化各个标签页面
         HttpPropertyTool tool = HttpPropertyTool.getInstance(project);
-        headerTable = new EnvAddOrEditTable(project, false, tool.getSelectedEnv());
+        headerTable = new EnvHeaderTable(project, false, tool.getSelectedEnv());
         ActionToolbar toolbar = headerTable.getToolbar();
         toolbar.getComponent().setBorder(JBUI.Borders.customLine(UIConstant.BORDER_COLOR, 0, 0, 1, 0));
         TabInfo tabInfo = new TabInfo(headerTable);

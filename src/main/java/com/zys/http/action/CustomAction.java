@@ -3,6 +3,7 @@ package com.zys.http.action;
 import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import jdk.jfr.Description;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
@@ -13,6 +14,7 @@ import java.util.function.Consumer;
  * @author zys
  * @since 2023-09-03
  */
+@Description("自定义菜单操作")
 public abstract class CustomAction extends AnAction {
 
     @Setter

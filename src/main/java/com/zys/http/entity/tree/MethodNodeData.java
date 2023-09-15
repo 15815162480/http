@@ -35,7 +35,7 @@ public class MethodNodeData extends NodeData {
     public MethodNodeData(HttpEnum.HttpMethod httpMethod, String nodeName, String controllerPath, String contextPath) {
         super(nodeName);
         this.httpMethod = httpMethod;
-        this.setNodeIcon(HttpIcons.getHttpMethodIcon(httpMethod));
+        this.setNodeIcon(HttpIcons.HttpMethod.getHttpMethodIcon(httpMethod));
         this.contextPath = contextPath;
         this.controllerPath = controllerPath;
         this.path = nodeName;

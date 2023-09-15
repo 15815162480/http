@@ -5,6 +5,7 @@ import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.intellij.openapi.project.Project;
 import com.zys.http.entity.HttpConfig;
+import jdk.jfr.Description;
 import lombok.Data;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
@@ -17,6 +18,7 @@ import java.util.Map;
  * @since 2023-09-03
  */
 @Getter
+@Description("缓存环境配置列表")
 @State(name = "Http", storages = @Storage("httpService.xml"))
 public class HttpService implements PersistentStateComponent<HttpService.State> {
 

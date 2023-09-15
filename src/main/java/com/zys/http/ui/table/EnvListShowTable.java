@@ -26,9 +26,9 @@ import java.util.Set;
  * @since 2023-09-03
  */
 @Description("展示所有环境的表格")
-public class EnvShowTable extends AbstractTable {
+public class EnvListShowTable extends AbstractTable {
 
-    public EnvShowTable(@NotNull Project project) {
+    public EnvListShowTable(@NotNull Project project) {
         super(project, false);
         init();
     }

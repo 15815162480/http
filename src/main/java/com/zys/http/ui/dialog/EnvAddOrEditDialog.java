@@ -8,8 +8,8 @@ import com.intellij.ui.SeparatorComponent;
 import com.intellij.ui.SeparatorOrientation;
 import com.intellij.util.ui.JBUI;
 import com.zys.http.entity.HttpConfig;
-import com.zys.http.ui.table.EnvAddOrEditTable;
-import com.zys.http.ui.table.EnvShowTable;
+import com.zys.http.ui.table.EnvHeaderTable;
+import com.zys.http.ui.table.EnvListShowTable;
 import com.zys.http.tool.HttpPropertyTool;
 import jdk.jfr.Description;
 import org.jetbrains.annotations.NotNull;
@@ -39,17 +39,17 @@ public class EnvAddOrEditDialog extends DialogWrapper {
     private ComboBox<Protocol> protocolCB;
 
     @Description("数据表格")
-    private final EnvAddOrEditTable envAddOrEditTable;
+    private final EnvHeaderTable envAddOrEditTable;
 
     @Description("添加/修改后方便刷新数据")
-    private final EnvShowTable envShowTable;
+    private final EnvListShowTable envShowTable;
 
     @Description("是否是添加")
     private final boolean isAdd;
 
-    public EnvAddOrEditDialog(@NotNull Project project, boolean isAdd, String selectEnv, EnvShowTable envShowTable) {
+    public EnvAddOrEditDialog(@NotNull Project project, boolean isAdd, String selectEnv, EnvListShowTable envShowTable) {
         super(project, true);
-        envAddOrEditTable = new EnvAddOrEditTable(project, isAdd, selectEnv);
+        envAddOrEditTable = new EnvHeaderTable(project, isAdd, selectEnv);
         this.envShowTable = envShowTable;
         this.isAdd = isAdd;
         init();
