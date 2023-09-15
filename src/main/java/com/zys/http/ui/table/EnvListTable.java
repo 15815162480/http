@@ -25,10 +25,10 @@ import java.util.Set;
  * @author zys
  * @since 2023-09-03
  */
-@Description("展示所有环境的表格")
-public class EnvListShowTable extends AbstractTable {
+@Description("环境列表表格")
+public class EnvListTable extends AbstractTable {
 
-    public EnvListShowTable(@NotNull Project project) {
+    public EnvListTable(@NotNull Project project) {
         super(project, false);
         init();
     }

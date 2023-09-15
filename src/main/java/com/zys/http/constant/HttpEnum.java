@@ -55,14 +55,16 @@ public interface HttpEnum {
 
 
     @Getter
+    @Description("")
     @AllArgsConstructor
-    enum ApiOperation {
+    enum Swagger {
         CLASS_API("io.swagger.annotations.Api", "tags"),
         CLASS_TAG("io.swagger.v3.oas.annotations.tags.Tag", "name"),
         METHOD_API_OPERATION("io.swagger.annotations.ApiOperation", "value"),
         METHOD_OPERATION("io.swagger.v3.oas.annotations.Operation", "summary");
 
         private final String clazz;
+        @Description("注解上说明功能的属性")
         private final String value;
     }
 }

@@ -127,18 +127,18 @@ public class PsiTool {
         if (Objects.isNull(modifierList)) {
             return "";
         }
-        List<HttpEnum.ApiOperation> swagger = new ArrayList<>(List.of(HttpEnum.ApiOperation.values())).stream()
+        List<HttpEnum.Swagger> swagger = new ArrayList<>(List.of(HttpEnum.Swagger.values())).stream()
                 .filter(o -> o.name().startsWith(prefix))
                 .toList();
         List<PsiAnnotation> list = Stream.of(modifierList.getAnnotations())
-                .filter(o -> swagger.stream().map(HttpEnum.ApiOperation::getClazz).toList().contains(o.getQualifiedName()))
+                .filter(o -> swagger.stream().map(HttpEnum.Swagger::getClazz).toList().contains(o.getQualifiedName()))
                 .toList();
 
         if (list.isEmpty()) {
             return "";
         }
         PsiAnnotation annotation = list.get(0);
-        HttpEnum.ApiOperation operation = swagger.stream().filter(o -> o.getClazz().equals(annotation.getQualifiedName()))
+        HttpEnum.Swagger operation = swagger.stream().filter(o -> o.getClazz().equals(annotation.getQualifiedName()))
                 .findFirst().orElse(null);
         if (Objects.isNull(operation)) {
             return "";

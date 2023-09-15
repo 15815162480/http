@@ -9,7 +9,7 @@ import com.intellij.ui.SeparatorOrientation;
 import com.intellij.util.ui.JBUI;
 import com.zys.http.entity.HttpConfig;
 import com.zys.http.ui.table.EnvHeaderTable;
-import com.zys.http.ui.table.EnvListShowTable;
+import com.zys.http.ui.table.EnvListTable;
 import com.zys.http.tool.HttpPropertyTool;
 import jdk.jfr.Description;
 import org.jetbrains.annotations.NotNull;
@@ -42,12 +42,12 @@ public class EnvAddOrEditDialog extends DialogWrapper {
     private final EnvHeaderTable envAddOrEditTable;
 
     @Description("添加/修改后方便刷新数据")
-    private final EnvListShowTable envShowTable;
+    private final EnvListTable envShowTable;
 
     @Description("是否是添加")
     private final boolean isAdd;
 
-    public EnvAddOrEditDialog(@NotNull Project project, boolean isAdd, String selectEnv, EnvListShowTable envShowTable) {
+    public EnvAddOrEditDialog(@NotNull Project project, boolean isAdd, String selectEnv, EnvListTable envShowTable) {
         super(project, true);
         envAddOrEditTable = new EnvHeaderTable(project, isAdd, selectEnv);
         this.envShowTable = envShowTable;
