@@ -64,6 +64,7 @@ public class RequestPanel extends JBSplitter {
         initFirstPanel();
         initSecondPanel();
     }
+
     @Description("初始化上半部分组件")
     private void initFirstPanel() {
         JPanel firstPanel = new JPanel(new BorderLayout(0,0));
@@ -121,7 +122,7 @@ public class RequestPanel extends JBSplitter {
         // 标签页面
         JPanel tabsPanel = new JPanel(new BorderLayout(0, 0));
         tabs = new JBTabsImpl(project);
-        // 初始化各个标签页面
+        // 请求头标签页
         HttpPropertyTool tool = HttpPropertyTool.getInstance(project);
         headerTable = new EnvHeaderTable(project, false, tool.getSelectedEnv());
         ActionToolbar toolbar = headerTable.getToolbar();
@@ -137,7 +138,6 @@ public class RequestPanel extends JBSplitter {
         TabInfo tabInfo3 = new TabInfo(new JLabel("1111"));
         tabInfo3.setText(Bundle.get("http.tab.request.body"));
         tabs.addTab(tabInfo3);
-
 
         TabInfo tabInfo4 = new TabInfo(new JLabel("1111"));
         tabInfo4.setText(Bundle.get("http.tab.request.return"));
