@@ -133,16 +133,7 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
         if (moduleNodeMap.size() == 1) {
             initPackageNodes(projectName).forEach(rootNode::add);
         }
-        for (Map.Entry<String, ModuleNode> entry : moduleNodeMap.entrySet()) {
-            ModuleNode value = entry.getValue();
-            if (!value.isRoot() && value.isLeaf()) {
-                TreeNode parent = value.getParent();
-                getTreeModel().removeNodeFromParent(value);
-                if (parent != null && parent.isLeaf()) {
-                    getTreeModel().removeNodeFromParent((MutableTreeNode) parent);
-                }
-            }
-        }
+        removeEmptyModule();
         return rootNode;
     }
 
@@ -208,6 +199,19 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
 
     public void render(ModuleNode root) {
         super.getTreeModel().setRoot(root);
+    }
+
+    private void removeEmptyModule() {
+        for (Map.Entry<String, ModuleNode> entry : moduleNodeMap.entrySet()) {
+            ModuleNode value = entry.getValue();
+            if (!value.isRoot() && value.isLeaf()) {
+                TreeNode parent = value.getParent();
+                getTreeModel().removeNodeFromParent(value);
+                if (parent != null && parent.isLeaf()) {
+                    getTreeModel().removeNodeFromParent((MutableTreeNode) parent);
+                }
+            }
+        }
     }
 
     private static PackageNode customPending(@NotNull Map<String, PackageNode> data, @NotNull String packageName) {
