@@ -17,6 +17,8 @@ import java.util.EnumMap;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class HttpIcons {
 
+    @Description("插件工具栏上展示的图标")
+    public static final Icon PLUGIN_ICON = IconLoader.getIcon("/icon/plugins.svg", HttpIcons.class);
     @Description("通用")
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class General {

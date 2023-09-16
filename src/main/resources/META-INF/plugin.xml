@@ -14,7 +14,7 @@
   <depends>org.jetbrains.kotlin</depends>
 
   <extensions defaultExtensionNs="com.intellij">
-    <toolWindow id="http" secondary="true" anchor="right" icon="AllIcons.Toolwindows.WebToolWindow"
+    <toolWindow id="http" secondary="true" anchor="right" icon="com.zys.http.ui.icon.HttpIcons.PLUGIN_ICON"
                 doNotActivateOnStart="true" factoryClass="com.zys.http.HttpMainWindowFactory"
     />
     <projectService serviceImplementation="com.zys.http.service.HttpService"/>

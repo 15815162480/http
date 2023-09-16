@@ -93,7 +93,7 @@ public class RequestPanel extends JBSplitter {
     private transient Map<String, ParamProperty> paramPropertyMap;
 
     public RequestPanel(@NotNull Project project) {
-        super(true, Window.class.getName(), 0.6F);
+        super(true, Window.class.getName(), 0.5F);
         this.project = project;
         initFirstPanel();
         initSecondPanel();
