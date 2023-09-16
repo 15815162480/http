@@ -166,7 +166,7 @@ public class EnvHeaderTable extends AbstractTable {
         DefaultTableModel model = getTableModel();
         Vector<Vector> vector = model.getDataVector();
         for (Vector<?> v1 : vector) {
-            map.put((String) v1.get(0), v1.get(1));
+            map.put((String) v1.get(0), v1.get(1) + "");
         }
         return map;
     }

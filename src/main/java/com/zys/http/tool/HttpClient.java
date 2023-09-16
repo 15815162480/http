@@ -48,15 +48,16 @@ public class HttpClient {
         HttpRequest req = createRequest(Method.valueOf(method.name()), url).timeout(TIME_OUT);
         headers.forEach((name, value) -> req.header(name, String.valueOf(value)));
 
-        if (Objects.isNull(body) || body.isBlank()) {
-            return req;
+        if (Objects.nonNull(body) && !body.isBlank()) {
+            req.body(body);
         }
 
-        req.body(body);
-        if (parameters.isEmpty()) {
+        if (!parameters.isEmpty()) {
             String s = ParamConvert.buildUrlParameters(parameters);
+            url = url.endsWith("/") ? url.substring(0, url.lastIndexOf('/')) : url;
             req.setUrl(url + "?" + s);
         }
+
         return req;
     }
 

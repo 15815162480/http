@@ -97,7 +97,7 @@ public class ParamConvert {
                     String jsonStr = JSONUtil.toJsonPrettyStr(paramMap);
                     map.put(parameterName, new ParamProperty(jsonStr, HttpEnum.ParamUsage.BODY));
                 } else {
-                    paramMap.forEach((k, v) -> map.put(k.toString(), new ParamProperty(v.toString(), HttpEnum.ParamUsage.URL)));
+                    paramMap.forEach((k, v) -> map.put(k.toString(), new ParamProperty(v, HttpEnum.ParamUsage.URL)));
                 }
             } else {
                 map.put(parameterName, new ParamProperty(paramDefaultTypeValue, paramUsage));

@@ -34,7 +34,6 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 import java.awt.*;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -134,7 +133,7 @@ public class RequestPanel extends JBSplitter {
                 switch (usage) {
                     case PATH -> {
                         tabs.select(parameterTabInfo, true);
-                        parameterTable.getTableModel().addRow(new Object[]{k, v});
+                        parameterTable.getTableModel().addRow(new Object[]{k, v.getDefaultValue()});
                     }
                     case URL -> {
                         if (httpMethod.equals(HttpMethod.POST)) {
@@ -143,7 +142,7 @@ public class RequestPanel extends JBSplitter {
                             bodyEditor.setText(s, CustomEditor.TEXT_FILE_TYPE);
                             tabs.select(bodyTabInfo, true);
                         } else {
-                            parameterTable.getTableModel().addRow(new Object[]{k, v});
+                            parameterTable.getTableModel().addRow(new Object[]{k, v.getDefaultValue()});
                             tabs.select(parameterTabInfo, true);
                         }
                     }
@@ -264,7 +263,6 @@ public class RequestPanel extends JBSplitter {
 
 
     private void initSendRequestEvent() {
-
         sendRequestBtn.addActionListener(event -> {
             String url = hostTextField.getText();
             Map<String, Object> header = headerTable.buildHttpHeader();
@@ -274,15 +272,7 @@ public class RequestPanel extends JBSplitter {
             if (httpMethod == null) {
                 httpMethod = HttpMethod.GET;
             }
-            Map<String, Object> finalParameter = new HashMap<>();
-            for (Map.Entry<String, Object> entry : parameter.entrySet()) {
-                String k = entry.getKey();
-                Object v = entry.getValue();
-                ParamProperty property = paramPropertyMap.get(k);
-                Object value = property.getDefaultValue();
-                String className  = value.getClass().getName();
-                System.out.println(className);
-            }
+
             for (Map.Entry<String, ParamProperty> entry : paramPropertyMap.entrySet()) {
                 String k = entry.getKey();
                 ParamProperty v = entry.getValue();
@@ -292,8 +282,6 @@ public class RequestPanel extends JBSplitter {
                     parameter.remove(k);
                 }
             }
-
-            parameter.forEach((k, v) -> System.out.println(k + " : " + v + " : " + v.getClass()));
 
             tabs.select(responseTabInfo, true);
             HttpClient.run(

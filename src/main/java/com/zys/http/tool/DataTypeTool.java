@@ -12,7 +12,11 @@ import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -96,6 +100,7 @@ public class DataTypeTool {
         if (Objects.nonNull(value)) {
             return value;
         }
+
         // 数组类型
         if (canonicalText.contains("[]")) {
             return new Object[0];
@@ -133,6 +138,7 @@ public class DataTypeTool {
                         result.put(fieldMethod.getFieldName(), null);
                         continue;
                     }
+
                     result.put(fieldMethod.getFieldName(), getDefaultValueOfPsiType(psiFieldType));
                 }
             }
@@ -161,8 +167,11 @@ public class DataTypeTool {
         if (qualifiedName.equals(Map.class.getName())) {
             return Collections.emptyMap();
         }
-        if (qualifiedName.equals(Date.class.getName())) {
+        if (qualifiedName.equals(Date.class.getName()) || qualifiedName.equals(LocalDateTime.class.getName())) {
             return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime());
+        }
+        if (qualifiedName.equals(LocalDate.class.getName())) {
+            return new SimpleDateFormat("yyyy-MM-dd").format(Calendar.getInstance().getTime());
         }
 
         final String libPackage = "java.util(.concurrent)?.[a-zA-Z0-9]*";
@@ -194,7 +203,7 @@ public class DataTypeTool {
     public static Object getDefaultData(@NotNull String classType) {
         switch (classType.toLowerCase(Locale.ROOT)) {
             case "string" -> {
-                return "demoData";
+                return "";
             }
             case "char", "character" -> {
                 return 'A';
@@ -212,5 +221,26 @@ public class DataTypeTool {
                 return null;
             }
         }
+    }
+
+    public static Object stringConvertToType(Class<?> clazz, String value) {
+        if (clazz.equals(Integer.class)) {
+            return Integer.parseInt(value);
+        } else if (clazz.equals(Long.class)) {
+            return Long.parseLong(value);
+        } else if (clazz.equals(Byte.class)) {
+            return Byte.parseByte(value);
+        } else if (clazz.equals(Short.class)) {
+            return Short.parseShort(value);
+        } else if (clazz.equals(Float.class)) {
+            return Float.parseFloat(value);
+        } else if (clazz.equals(Double.class)) {
+            return Double.parseDouble(value);
+        } else if (clazz.equals(BigInteger.class)) {
+            return Integer.parseInt(value);
+        } else if (clazz.equals(BigDecimal.class)) {
+            return Double.parseDouble(value);
+        }
+        return value;
     }
 }
