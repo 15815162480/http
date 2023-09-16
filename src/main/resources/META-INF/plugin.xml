@@ -5,7 +5,17 @@
 
   <vendor email="1083734160@qq.com" url="">zys</vendor>
 
-  <description>测试4040404040404004040400404040404004400404040400404040</description>
+  <description><![CDATA[
+    <h3>一个请求服务开发辅助工具插件</h3>
+    <ol>
+      <li>支持 Spring 注解体系(Spring MVC / Spring Boot)</li>
+      <li>提供了一块 API 接口展示</li>
+      <li>双击方法结点直接跳转到对应的方法定义</li>
+      <li>可配置多环境</li>
+      <li>默认环境是按 bootstrap.(properties、yaml、yml)、application.(properties、yaml、yml) 优先级顺序读取其中的 port</li>
+    </ol>
+    <br>
+     ]]></description>
 
   <depends>com.intellij.modules.platform</depends>
   <depends>com.intellij.modules.java</depends>

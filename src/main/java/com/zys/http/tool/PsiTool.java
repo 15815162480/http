@@ -42,7 +42,8 @@ public class PsiTool {
 
     @Description("SpringBoot 项目的配置文件")
     private static final String[] APPLICATION_FILE_NAMES = {
-            "bootstrap.properties", "bootstrap.yml", "application.properties", "application.yml"
+            "bootstrap.properties", "bootstrap.yaml", "bootstrap.yml",
+            "application.properties", "application.yaml", "application.yml"
     };
 
 
