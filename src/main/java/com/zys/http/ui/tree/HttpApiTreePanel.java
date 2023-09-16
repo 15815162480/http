@@ -5,6 +5,7 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ModuleRootManager;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.NavigatablePsiElement;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiMethod;
@@ -102,7 +103,11 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
 
         for (Module o : list) {
             String moduleName = o.getName();
-            String parentName = ModuleRootManager.getInstance(o).getContentRoots()[0].getParent().getName();
+            VirtualFile[] contentRoots = ModuleRootManager.getInstance(o).getContentRoots();
+            if (contentRoots.length < 1) {
+                continue;
+            }
+            String parentName = contentRoots[0].getParent().getName();
             String contextPath1 = PsiTool.getContextPath(project, o);
             ModuleNode parentNode = moduleNodeMap.get(parentName);
             ModuleNode moduleNode = moduleNodeMap.get(moduleName);
