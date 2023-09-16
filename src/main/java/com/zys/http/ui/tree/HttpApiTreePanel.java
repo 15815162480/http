@@ -26,6 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import java.util.*;
@@ -40,7 +41,7 @@ import java.util.stream.Stream;
 public class HttpApiTreePanel extends AbstractListTreePanel {
 
     private final transient Project project;
-    private final HttpPropertyTool httpPropertyTool;
+    private final transient HttpPropertyTool httpPropertyTool;
 
     @Description("模块名, 模块结点")
     private final transient Map<String, ModuleNode> moduleNodeMap = new HashMap<>();
@@ -88,9 +89,9 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
                 methodNodeMap.put(c, PsiTool.getMappingMethods(c, contextPath, controllerPath, methodNodePsiMap));
             }
             HttpConfig config = new HttpConfig();
-            config.setProtocol(HttpEnum.Protocol.HTTP);
             String port = PsiTool.getPort(project, rootModule);
             config.setHostValue("127.0.0.1:" + port);
+            config.setProtocol(HttpEnum.Protocol.HTTP);
             httpPropertyTool.putHttpConfig(rootModule.getName(), config);
         }
         List<Module> list = Stream.of(modules).filter(o -> !o.getName().equals(projectName)).distinct()
@@ -120,15 +121,27 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
                 String controllerPath = PsiTool.getControllerPath(c);
                 methodNodeMap.put(c, PsiTool.getMappingMethods(c, contextPath1, controllerPath, methodNodePsiMap));
             }
-            HttpConfig config = new HttpConfig();
-            config.setProtocol(HttpEnum.Protocol.HTTP);
-            String port = PsiTool.getPort(project, o);
-            config.setHostValue("127.0.0.1:" + port);
-            httpPropertyTool.putHttpConfig(moduleName, config);
+            if (!controllers.isEmpty()){
+                HttpConfig config = new HttpConfig();
+                config.setProtocol(HttpEnum.Protocol.HTTP);
+                String port = PsiTool.getPort(project, o);
+                config.setHostValue("127.0.0.1:" + port);
+                httpPropertyTool.putHttpConfig(moduleName, config);
+            }
             initPackageNodes(moduleName).forEach(moduleNode::add);
         }
         if (moduleNodeMap.size() == 1) {
             initPackageNodes(projectName).forEach(rootNode::add);
+        }
+        for (Map.Entry<String, ModuleNode> entry : moduleNodeMap.entrySet()) {
+            ModuleNode value = entry.getValue();
+            if (!value.isRoot() && value.isLeaf()) {
+                TreeNode parent = value.getParent();
+                getTreeModel().removeNodeFromParent(value);
+                if (parent != null && parent.isLeaf()) {
+                    getTreeModel().removeNodeFromParent((MutableTreeNode) parent);
+                }
+            }
         }
         return rootNode;
     }
