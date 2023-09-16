@@ -9,10 +9,13 @@ import com.intellij.psi.NavigatablePsiElement;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiMethod;
 import com.intellij.ui.treeStructure.SimpleTree;
+import com.zys.http.constant.HttpEnum;
+import com.zys.http.entity.HttpConfig;
 import com.zys.http.entity.tree.ClassNodeData;
 import com.zys.http.entity.tree.ModuleNodeData;
 import com.zys.http.entity.tree.NodeData;
 import com.zys.http.entity.tree.PackageNodeData;
+import com.zys.http.tool.HttpPropertyTool;
 import com.zys.http.tool.PsiTool;
 import com.zys.http.ui.tree.node.*;
 import jdk.jfr.Description;
@@ -36,6 +39,7 @@ import java.util.stream.Stream;
 public class HttpApiTreePanel extends AbstractListTreePanel {
 
     private final transient Project project;
+    private final HttpPropertyTool httpPropertyTool;
 
     @Description("模块名, 模块结点")
     private final transient Map<String, ModuleNode> moduleNodeMap = new HashMap<>();
@@ -48,7 +52,6 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
     @Description("方法引用, 方法结点")
     private final transient Map<PsiMethod, MethodNode> methodNodePsiMap = new HashMap<>();
 
-    private TreeNode root;
 
     @Getter
     @Setter
@@ -58,6 +61,7 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
     public HttpApiTreePanel(@NotNull Project project) {
         super(new SimpleTree());
         this.project = project;
+        this.httpPropertyTool = HttpPropertyTool.getInstance(project);
     }
 
     public ModuleNode initNodes() {
@@ -82,8 +86,12 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
                 String controllerPath = PsiTool.getControllerPath(c);
                 methodNodeMap.put(c, PsiTool.getMappingMethods(c, contextPath, controllerPath, methodNodePsiMap));
             }
+            HttpConfig config = new HttpConfig();
+            config.setProtocol(HttpEnum.Protocol.HTTP);
+            String port = PsiTool.getPort(project, rootModule);
+            config.setHostValue("127.0.0.1:" + port);
+            httpPropertyTool.putHttpConfig(rootModule.getName(), config);
         }
-        root = rootNode;
         List<Module> list = Stream.of(modules).filter(o -> !o.getName().equals(projectName)).distinct()
                 .peek(o -> {
                     String contextPath1 = PsiTool.getContextPath(project, o);
@@ -107,6 +115,11 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
                 String controllerPath = PsiTool.getControllerPath(c);
                 methodNodeMap.put(c, PsiTool.getMappingMethods(c, contextPath1, controllerPath, methodNodePsiMap));
             }
+            HttpConfig config = new HttpConfig();
+            config.setProtocol(HttpEnum.Protocol.HTTP);
+            String port = PsiTool.getPort(project, o);
+            config.setHostValue("127.0.0.1:" + port);
+            httpPropertyTool.putHttpConfig(moduleName, config);
             initPackageNodes(moduleName).forEach(moduleNode::add);
         }
         if (moduleNodeMap.size() == 1) {

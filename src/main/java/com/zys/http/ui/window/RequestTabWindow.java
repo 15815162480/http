@@ -15,6 +15,7 @@ import com.zys.http.action.ExpandAction;
 import com.zys.http.action.RefreshAction;
 import com.zys.http.action.group.EnvActionGroup;
 import com.zys.http.constant.HttpEnum;
+import com.zys.http.entity.HttpConfig;
 import com.zys.http.ui.tree.HttpApiTreePanel;
 import com.zys.http.ui.window.panel.RequestPanel;
 import jdk.jfr.Description;
@@ -99,6 +100,10 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
                             .inSmartMode(project)
                             .finishOnUiThread(ModalityState.defaultModalityState(), httpApiTreePanel::render)
                             .submit(executorTaskBounded);
+                    // 设置默认环境
+                    HttpConfig config = new HttpConfig();
+                    config.setProtocol(HttpEnum.Protocol.HTTP);
+
                 }
         );
     }

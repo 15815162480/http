@@ -1,5 +1,6 @@
 package com.zys.http.tool;
 
+import cn.hutool.core.text.CharSequenceUtil;
 import com.intellij.lang.properties.psi.PropertiesFile;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ResourceFileUtil;
@@ -74,11 +75,11 @@ public class PsiTool {
         }
         // 如果是 yaml 文件
         if (psiFile instanceof YAMLFile yamlFile) {
-            Pair<PsiElement, String> value = YAMLUtil.getValue(yamlFile, "server", "servlet");
+            Pair<PsiElement, String> value = YAMLUtil.getValue(yamlFile, "server", "servlet", "context-path");
             if (Objects.nonNull(value)) {
                 PsiElement first = value.getFirst();
-                String text = first.getText(); // 获取到 server.servlet.context-path, 内容: context-path: /
-                return text.split(":")[1].trim();
+                String text = first.getText();
+                return text.split(":")[0].trim();
             }
         }
         if (psiFile instanceof PropertiesFile propertiesFile) {
@@ -86,6 +87,31 @@ public class PsiTool {
         }
 
         return "";
+    }
+
+    @Description("获取模块的 context-path")
+    public static String getPort(@NotNull Project project, @NotNull Module module) {
+        // 1 获取 SpringBoot 中有的配置文件
+        PsiFile psiFile = getSpringApplicationFile(project, module);
+        if (Objects.isNull(psiFile)) {
+            return "80";
+        }
+        // 如果是 yaml 文件
+        if (psiFile instanceof YAMLFile yamlFile) {
+            Pair<PsiElement, String> value = YAMLUtil.getValue(yamlFile, "server", "port");
+            if (Objects.nonNull(value)) {
+                PsiElement first = value.getFirst();
+                String text = first.getText(); // 获取到 server.servlet.context-path, 内容: context-path: /
+                String port = text.split(":")[0].trim();
+                return CharSequenceUtil.isEmpty(port) ? "80" : port;
+            }
+        }
+        if (psiFile instanceof PropertiesFile propertiesFile) {
+            String port = propertiesFile.getNamesMap().get("server.port");
+            return CharSequenceUtil.isEmpty(port) ? "80" : port;
+        }
+
+        return "80";
     }
 
     @Description("获取模块中的SpringBoot配置文件")
