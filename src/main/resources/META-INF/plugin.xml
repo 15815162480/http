@@ -8,6 +8,7 @@
   <description><![CDATA[
     <h3>一个请求服务开发辅助工具插件</h3>
     <ol>
+      <li><a href="https://gitee.com/zhou-sheng1/http">gitee</a> </li>
       <li>只支持 java 语言</li>
       <li>支持 Spring 注解体系(Spring MVC / Spring Boot)</li>
       <li>提供了一块 API 接口展示</li>
