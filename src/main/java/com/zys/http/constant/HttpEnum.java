@@ -50,7 +50,7 @@ public interface HttpEnum {
     @Description("参数的请用方式")
     enum ParamUsage {
         // 不参与, 路径参数, URL参数, 请求体参数
-        USELESS, PATH, URL, BODY
+        USELESS, PATH, URL, BODY, HEADER
     }
 
 

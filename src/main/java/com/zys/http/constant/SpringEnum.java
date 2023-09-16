@@ -29,7 +29,8 @@ public interface SpringEnum {
     @AllArgsConstructor
     enum Controller {
         CONTROLLER("org.springframework.stereotype.Controller"),
-        REST_CONTROLLER("org.springframework.web.bind.annotation.RestController");
+        REST_CONTROLLER("org.springframework.web.bind.annotation.RestController"),
+        RESPONSE_BODY("org.springframework.web.bind.annotation.ResponseBody"),;
 
         private final String clazz;
 
@@ -46,7 +47,7 @@ public interface SpringEnum {
         REQUEST_BODY("org.springframework.web.bind.annotation.RequestBody", ParamUsage.BODY),
         MATRIX_VARIABLE("org.springframework.web.bind.annotation.MatrixVariable", ParamUsage.USELESS),
         MODEL_ATTRIBUTE("org.springframework.web.bind.annotation.ModelAttribute", ParamUsage.URL),
-        REQUEST_HEADER("org.springframework.web.bind.annotation.RequestHeader", ParamUsage.USELESS),
+        REQUEST_HEADER("org.springframework.web.bind.annotation.RequestHeader", ParamUsage.HEADER),
         REQUEST_PART("org.springframework.web.bind.annotation.RequestPart", ParamUsage.USELESS),
         COOKIE_VALUE("org.springframework.web.bind.annotation.CookieValue", ParamUsage.USELESS),
         SESSION_ATTRIBUTE("org.springframework.web.bind.annotation.SessionAttribute", ParamUsage.USELESS),

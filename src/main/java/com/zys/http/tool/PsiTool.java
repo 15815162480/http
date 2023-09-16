@@ -88,6 +88,7 @@ public class PsiTool {
         return "";
     }
 
+    @Description("获取模块中的SpringBoot配置文件")
     public static PsiFile getSpringApplicationFile(@NotNull Project project, @NotNull Module module) {
         PsiManager psiManager = PsiManager.getInstance(project);
         for (String applicationFileName : APPLICATION_FILE_NAMES) {
@@ -261,18 +262,19 @@ public class PsiTool {
                     map.put(fieldName, fieldMethod);
                 }
             }
-            if (name.startsWith(GETTER_PREFIX)) {
-                fieldMethod.addFieldGetter(method);
-            } else {
-                fieldMethod.addFieldSetter(method);
+            if (Objects.nonNull(fieldMethod)) {
+                if (name.startsWith(GETTER_PREFIX)) {
+                    fieldMethod.addFieldGetter(method);
+                } else {
+                    fieldMethod.addFieldSetter(method);
+                }
             }
         }
         return new ArrayList<>(map.values());
     }
 
-
-    @Nullable
-    public static String getPackageName(@NotNull PsiClass psiClass) {
+    @Description("获取指定类的包名")
+    public static @Nullable String getPackageName(@NotNull PsiClass psiClass) {
         String qualifiedName = psiClass.getQualifiedName();
         if (qualifiedName == null) {
             return null;
@@ -289,6 +291,54 @@ public class PsiTool {
 
         return null;
     }
+
+    // ========================== 请求参数 ==========================================
+
+    @Description("获取方法的所有参数")
+    private static List<PsiParameter> getPsiParameterOfPsiMethod(PsiMethod psiMethod) {
+        PsiParameterList parameterList = psiMethod.getParameterList();
+        if (parameterList.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return Arrays.asList(parameterList.getParameters());
+    }
+
+    @Description("获取当前类的请求类型")
+    public static HttpEnum.ContentType contentTypeHeader(@Nullable PsiClass psiClass) {
+        if (Objects.isNull(psiClass)) {
+            return HttpEnum.ContentType.APPLICATION_X_FORM_URLENCODED;
+        }
+        PsiModifierList modifierList = psiClass.getModifierList();
+        if (Objects.isNull(modifierList)) {
+            return HttpEnum.ContentType.APPLICATION_X_FORM_URLENCODED;
+        }
+
+        PsiAnnotation controller = Stream.of(modifierList.getAnnotations())
+                .filter(o -> SpringEnum.Controller.REST_CONTROLLER.getClazz().equals(o.getQualifiedName()))
+                .findFirst().orElse(null);
+        return Objects.isNull(controller) ? HttpEnum.ContentType.APPLICATION_X_FORM_URLENCODED : HttpEnum.ContentType.APPLICATION_JSON;
+    }
+
+    public static HttpEnum.ContentType contentTypeHeader(@Nullable PsiMethod psiMethod) {
+        if (Objects.isNull(psiMethod)) {
+            return HttpEnum.ContentType.APPLICATION_X_FORM_URLENCODED;
+        }
+        PsiModifierList modifierList = psiMethod.getModifierList();
+        PsiAnnotation responseBody = Stream.of(modifierList.getAnnotations())
+                .filter(o -> SpringEnum.Controller.RESPONSE_BODY.getClazz().equals(o.getQualifiedName()))
+                .findFirst().orElse(null);
+        return Objects.isNull(responseBody) ? null : HttpEnum.ContentType.APPLICATION_JSON;
+    }
+
+    private void getPsiMethodParameters(PsiMethod psiMethod) {
+        List<PsiParameter> parameters = getPsiParameterOfPsiMethod(psiMethod);
+        if (parameters.isEmpty()) {
+            return;
+        }
+        //
+
+    }
+
 
     @Description("方法名是否以 get 或 set 开头")
     private static boolean methodNameStartWithGetOrSet(String name) {

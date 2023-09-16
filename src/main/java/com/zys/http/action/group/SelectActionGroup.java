@@ -7,6 +7,7 @@ import com.zys.http.action.SelectAction;
 import com.zys.http.service.Bundle;
 import com.zys.http.tool.HttpPropertyTool;
 import com.zys.http.ui.icon.HttpIcons;
+import com.zys.http.ui.window.panel.RequestPanel;
 import jdk.jfr.Description;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,9 +21,12 @@ import java.util.Set;
 @Description("选择环境菜单组")
 public class SelectActionGroup extends DefaultActionGroup {
 
-    public SelectActionGroup(){
+    private final RequestPanel requestPanel;
+
+    public SelectActionGroup(RequestPanel requestPanel){
         super(Bundle.get("http.action.group.select"), "Select env", HttpIcons.General.LIST);
         setPopup(true);
+        this.requestPanel = requestPanel;
     }
 
     @Override
@@ -38,6 +42,7 @@ public class SelectActionGroup extends DefaultActionGroup {
             action.setAction(event -> {
                 event.getPresentation().setIcon(HttpIcons.General.ADD);
                 tool.setSelectedEnv(event.getPresentation().getText());
+                requestPanel.getHostTextField().setText("");
             });
             if (s.equals(tool.getSelectedEnv())) {
                 action.setIcon(HttpIcons.General.DEFAULT);

@@ -56,7 +56,7 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
     @Description("初始化顶部工具栏")
     private void requestToolBar() {
         DefaultActionGroup group = new DefaultActionGroup();
-        group.add(new EnvActionGroup());
+        group.add(new EnvActionGroup(requestPanel));
         RefreshAction refreshAction = new RefreshAction();
         refreshAction.setAction(event -> {
             requestPanel.getHttpApiTreePanel().clear();

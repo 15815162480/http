@@ -13,7 +13,6 @@ import com.zys.http.entity.tree.ClassNodeData;
 import com.zys.http.entity.tree.ModuleNodeData;
 import com.zys.http.entity.tree.NodeData;
 import com.zys.http.entity.tree.PackageNodeData;
-import com.zys.http.service.topic.RefreshServiceTreeTopic;
 import com.zys.http.tool.PsiTool;
 import com.zys.http.ui.tree.node.*;
 import jdk.jfr.Description;
@@ -49,6 +48,8 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
     @Description("方法引用, 方法结点")
     private final transient Map<PsiMethod, MethodNode> methodNodePsiMap = new HashMap<>();
 
+    private TreeNode root;
+
     @Getter
     @Setter
     @Description("选中方法节点后的回调")
@@ -82,7 +83,7 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
                 methodNodeMap.put(c, PsiTool.getMappingMethods(c, contextPath, controllerPath, methodNodePsiMap));
             }
         }
-        super.getTreeModel().setRoot(rootNode);
+        root = rootNode;
         List<Module> list = Stream.of(modules).filter(o -> !o.getName().equals(projectName)).distinct()
                 .peek(o -> {
                     String contextPath1 = PsiTool.getContextPath(project, o);
@@ -278,20 +279,5 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
         } else {
             tree.collapsePath(parent);
         }
-    }
-
-    public void navigationToTree(@NotNull PsiMethod psiMethod) {
-        if (methodNodeMap.isEmpty()) {
-            project.getMessageBus().syncPublisher(RefreshServiceTreeTopic.TOPIC).refresh();
-            return;
-        }
-        MethodNode serviceNode = methodNodePsiMap.get(psiMethod);
-        if (serviceNode == null) {
-            return;
-        }
-        // 有节点到根路径数组
-        TreeNode[] nodes = getTreeModel().getPathToRoot(serviceNode);
-        TreePath path = new TreePath(nodes);
-        tree.setSelectionPath(path);
     }
 }

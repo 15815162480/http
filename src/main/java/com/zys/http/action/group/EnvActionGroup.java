@@ -10,6 +10,7 @@ import com.zys.http.service.Bundle;
 import com.zys.http.ui.dialog.EnvAddOrEditDialog;
 import com.zys.http.ui.dialog.EnvListShowDialog;
 import com.zys.http.ui.icon.HttpIcons;
+import com.zys.http.ui.window.panel.RequestPanel;
 import jdk.jfr.Description;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -22,10 +23,12 @@ import java.util.Objects;
  */
 @Description("环境相关操作菜单组")
 public class EnvActionGroup extends DefaultActionGroup {
+    private final RequestPanel requestPanel;
 
-    public EnvActionGroup() {
+    public EnvActionGroup(RequestPanel requestPanel) {
         super(Bundle.get("http.action.group.env"), "Env", HttpIcons.General.ENVIRONMENT);
         setPopup(true);
+        this.requestPanel = requestPanel;
     }
 
     @Override
@@ -38,7 +41,7 @@ public class EnvActionGroup extends DefaultActionGroup {
         AddAction addAction = new AddAction(Bundle.get("http.action.add.env"), "Add env");
         addAction.setAction(event -> new EnvAddOrEditDialog(project, true, "", null).show());
         actions[0] = addAction;
-        SelectActionGroup selectActionGroup = new SelectActionGroup();
+        SelectActionGroup selectActionGroup = new SelectActionGroup(requestPanel);
         selectActionGroup.setPopup(true);
         actions[1] = selectActionGroup;
         ShowAction action = new ShowAction(Bundle.get("http.action.show.env"), "Env list", null);

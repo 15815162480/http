@@ -138,7 +138,13 @@ public abstract class AbstractTable extends JPanel {
         add(scrollPane, gbc);
     }
 
+    public DefaultTableModel getTableModel() {
+        return (DefaultTableModel) valueTable.getModel();
+    }
 
+    public void clearTableModel() {
+        valueTable.setModel(initTableModel());
+    }
     @Description("初始化表格的数据")
     protected abstract @NotNull DefaultTableModel initTableModel();
 
