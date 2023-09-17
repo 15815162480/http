@@ -3,6 +3,7 @@ package com.zys.http.ui.window.panel;
 import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.fileTypes.FileType;
+import com.intellij.openapi.fileTypes.impl.FileTypeRenderer;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.psi.PsiClass;
@@ -34,6 +35,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 import java.awt.*;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -62,7 +64,7 @@ public class RequestPanel extends JBSplitter {
     @Description("树形结构列表")
     private HttpApiTreePanel httpApiTreePanel;
 
-    // ================== 上半部分的组件 ==================
+    // ================== 下半部分的组件 ==================
 
     @Description("标签栏")
     private transient JBTabs tabs;
@@ -79,8 +81,11 @@ public class RequestPanel extends JBSplitter {
     @Description("请求体标签页面")
     private transient TabInfo bodyTabInfo;
 
-    @Description("请求体类型")
+    @Description("请求体编辑区")
     private CustomEditor bodyEditor;
+
+    @Description("请求体类型")
+    private ComboBox<FileType> bodyFileType;
 
     @Description("响应体标签页面")
     private transient TabInfo responseTabInfo;
@@ -92,12 +97,15 @@ public class RequestPanel extends JBSplitter {
 
     private transient Map<String, ParamProperty> paramPropertyMap;
 
+    private transient Map<String, FileType> fileTypeMap = new HashMap<>();
+
     public RequestPanel(@NotNull Project project) {
         super(true, Window.class.getName(), 0.5F);
         this.project = project;
         initFirstPanel();
         initSecondPanel();
         initSendRequestEvent();
+
     }
 
     @Description("初始化上半部分组件")
@@ -126,6 +134,7 @@ public class RequestPanel extends JBSplitter {
             parameterTable.clearTableModel();
             bodyEditor.setText("");
             paramPropertyMap = ParamConvert.parsePsiMethodParams(psiMethod);
+
             for (Map.Entry<String, ParamProperty> entry : paramPropertyMap.entrySet()) {
                 String k = entry.getKey();
                 ParamProperty v = entry.getValue();
@@ -141,6 +150,7 @@ public class RequestPanel extends JBSplitter {
                             String s = ParamConvert.buildParamPropertyUrlParameters(paramPropertyMap);
                             bodyEditor.setText(s, CustomEditor.TEXT_FILE_TYPE);
                             tabs.select(bodyTabInfo, true);
+                            bodyFileType.setSelectedItem(CustomEditor.TEXT_FILE_TYPE);
                         } else {
                             parameterTable.getTableModel().addRow(new Object[]{k, v.getDefaultValue()});
                             tabs.select(parameterTabInfo, true);
@@ -151,12 +161,15 @@ public class RequestPanel extends JBSplitter {
                         if (Objects.isNull(type)) {
                             if (contentType.equals(HttpEnum.ContentType.APPLICATION_JSON)) {
                                 bodyEditor.setText(v.getDefaultValue().toString(), CustomEditor.JSON_FILE_TYPE);
+                                bodyFileType.setSelectedItem(CustomEditor.JSON_FILE_TYPE);
                             } else {
                                 bodyEditor.setText(v.getDefaultValue().toString(), CustomEditor.TEXT_FILE_TYPE);
+                                bodyFileType.setSelectedItem(CustomEditor.TEXT_FILE_TYPE);
 
                             }
                         } else {
                             bodyEditor.setText(v.getDefaultValue().toString(), CustomEditor.TEXT_FILE_TYPE);
+                            bodyFileType.setSelectedItem(CustomEditor.TEXT_FILE_TYPE);
                         }
                     }
                     default -> {
@@ -173,91 +186,63 @@ public class RequestPanel extends JBSplitter {
 
     @Description("初始化下半部分组件")
     private void initSecondPanel() {
-        JPanel secondPanel = new JPanel(new GridBagLayout());
+        JPanel secondPanel = new JPanel(new BorderLayout(0,0));
         secondPanel.setBorder(JBUI.Borders.customLineTop(UIConstant.BORDER_COLOR));
 
-        GridBagConstraints gbc = new GridBagConstraints();
+        JPanel requestPanel = new JPanel(new BorderLayout(0,0));
         // 请求方式下拉框
         HttpMethod[] methods = Arrays.stream(HttpMethod.values()).filter(o -> !o.equals(HttpMethod.REQUEST))
                 .toList().toArray(new HttpMethod[]{});
         httpMethodComboBox = new ComboBox<>(methods);
         httpMethodComboBox.setSelectedItem(HttpMethod.GET);
         httpMethodComboBox.setFocusable(false);
-        gbc.weightx = 0;
-        gbc.weighty = 0;
-        gbc.gridwidth = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        secondPanel.add(httpMethodComboBox, gbc);
-
+        requestPanel.add(httpMethodComboBox, BorderLayout.WEST);
         // 请求地址文本框
         hostTextField = new JTextField();
         hostTextField.setColumns(10);
         hostTextField.setText(hostValue);
         hostTextField.addActionListener(e -> hostValue = hostTextField.getText());
-        gbc.gridx = 1;
-        gbc.weightx = 1.0;
-        gbc.gridwidth = 1;
-        secondPanel.add(hostTextField, gbc);
-
+        requestPanel.add(hostTextField, BorderLayout.CENTER);
         // 发送按钮
         sendRequestBtn = new JXButton(Bundle.get("http.text.send"));
-        gbc.weightx = 0;
-        gbc.gridx = 2;
-        gbc.gridwidth = GridBagConstraints.REMAINDER;
-        secondPanel.add(sendRequestBtn, gbc);
+        requestPanel.add(sendRequestBtn, BorderLayout.EAST);
+
+
+        secondPanel.add(requestPanel, BorderLayout.NORTH);
 
         // 标签页面
-        JPanel tabsPanel = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc2 = new GridBagConstraints();
-        gbc2.weightx = 1.0;
-        gbc2.weighty = 1.0;
-        gbc2.fill = GridBagConstraints.BOTH;
+        JPanel tabsPanel = new JPanel(new BorderLayout(0,0));
         tabs = new JBTabsImpl(project);
+
         // 请求头标签页
         HttpPropertyTool tool = HttpPropertyTool.getInstance(project);
-        JPanel headerPanel = new JPanel(new BorderLayout(0, 0));
         headerTable = new EnvHeaderTable(project, false, tool.getSelectedEnv());
         ActionToolbar toolbar = headerTable.getToolbar();
         toolbar.getComponent().setBorder(JBUI.Borders.customLine(UIConstant.BORDER_COLOR, 0, 0, 1, 0));
-        headerPanel.add(headerTable, BorderLayout.NORTH);
-        TabInfo tabInfo = new TabInfo(headerPanel);
+        TabInfo tabInfo = new TabInfo(headerTable);
         tabInfo.setText(Bundle.get("http.tab.request.header"));
         tabs.addTab(tabInfo);
 
         // 请求参数
         parameterTable = new ParameterTable(project);
-        JPanel paramPanel = new JPanel(new BorderLayout(0, 0));
-        toolbar = parameterTable.getToolbar();
-        toolbar.getComponent().setBorder(JBUI.Borders.customLine(UIConstant.BORDER_COLOR, 0, 0, 1, 0));
-        paramPanel.add(parameterTable, BorderLayout.NORTH);
-        parameterTabInfo = new TabInfo(paramPanel);
+        ActionToolbar toolbar2 = parameterTable.getToolbar();
+        toolbar2.getComponent().setBorder(JBUI.Borders.customLineBottom(UIConstant.BORDER_COLOR));
+        parameterTabInfo = new TabInfo(parameterTable);
         parameterTabInfo.setText(Bundle.get("http.tab.request.param"));
         tabs.addTab(parameterTabInfo);
-
-
         // 请求体
-        bodyEditor = new CustomEditor(project);
-        bodyEditor.setName("BODY");
-        bodyTabInfo = new TabInfo(bodyEditor);
+        bodyTabInfo = new TabInfo(initBodyTabInfoPanel());
         bodyTabInfo.setText(Bundle.get("http.tab.request.body"));
         tabs.addTab(bodyTabInfo);
-
         // 响应体
         responseEditor = new CustomEditor(project);
-        responseEditor.setName("RESPONSE");
+        // responseEditor.setBorder(JBUI.Borders.customLineLeft(EDITOR_BORDER_COLOR));
         responseTabInfo = new TabInfo(responseEditor);
         responseTabInfo.setText(Bundle.get("http.tab.request.return"));
         tabs.addTab(responseTabInfo);
 
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.weightx = 1.0;
-        gbc.weighty = 1.0;
-        gbc.insets = JBUI.insetsTop(3);
-        gbc.gridwidth = GridBagConstraints.REMAINDER;
-        tabsPanel.add(tabs.getComponent(), gbc2);
-        secondPanel.add(tabsPanel, gbc);
+        tabsPanel.add(tabs.getComponent(), BorderLayout.CENTER);
+        secondPanel.add(tabsPanel, BorderLayout.CENTER);
         this.setSecondComponent(secondPanel);
     }
 
@@ -302,5 +287,43 @@ public class RequestPanel extends JBSplitter {
                     null
             );
         });
+    }
+
+
+    private JPanel initBodyTabInfoPanel() {
+        JPanel bodyPanel = new JPanel(new BorderLayout(0, 0));
+        bodyEditor = new CustomEditor(project);
+        bodyEditor.setName("BODY");
+        // bodyEditor.setBorder(JBUI.Borders.customLineLeft(EDITOR_BORDER_COLOR));
+        bodyPanel.add(bodyEditor, BorderLayout.CENTER);
+        JLabel label = new JLabel(Bundle.get("http.editor.body.label"));
+        bodyFileType = new ComboBox<>(new FileType[]{
+                CustomEditor.TEXT_FILE_TYPE,
+                CustomEditor.JSON_FILE_TYPE,
+                CustomEditor.XML_FILE_TYPE
+        });
+        bodyFileType.setFocusable(false);
+        bodyFileType.setRenderer(new FileTypeRenderer());
+        bodyFileType.addItemListener(e -> {
+            ItemSelectable item = e.getItemSelectable();
+            if (Objects.isNull(item)) {
+                return;
+            }
+            Object[] selects = item.getSelectedObjects();
+            if (Objects.isNull(selects) || selects.length < 1) {
+                return;
+            }
+            Object select = selects[0];
+            if (select instanceof FileType fileType) {
+                bodyEditor.setFileType(fileType);
+            }
+        });
+
+        JPanel bodySelectPanel = new JPanel(new BorderLayout(0, 0));
+        bodySelectPanel.add(label, BorderLayout.WEST);
+        bodySelectPanel.add(bodyFileType, BorderLayout.CENTER);
+
+        bodyPanel.add(bodySelectPanel, BorderLayout.SOUTH);
+        return bodyPanel;
     }
 }

@@ -30,6 +30,9 @@ public abstract class CustomAction extends AnAction {
     protected CustomAction(String text, String description, Icon icon) {
         super(text, description, icon);
     }
+    protected CustomAction(String text, String description) {
+        super(text, description, null);
+    }
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent anActionEvent) {

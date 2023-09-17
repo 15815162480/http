@@ -1,5 +1,6 @@
 package com.zys.http.entity.tree;
 
+import com.zys.http.tool.ColorsTool;
 import com.zys.http.ui.icon.HttpIcons;
 
 /**
@@ -10,6 +11,6 @@ public class PackageNodeData extends NodeData {
 
     public PackageNodeData(String nodeName) {
         super(nodeName);
-        this.setNodeIcon(HttpIcons.TreeNode.PACKAGE);
+        this.setNodeIcon(ColorsTool.isDark() ? HttpIcons.TreeNode.PACKAGE : HttpIcons.TreeNode.PACKAGE_LIGHT);
     }
 }

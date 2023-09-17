@@ -18,13 +18,15 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiFileFactory;
 import com.intellij.psi.codeStyle.CodeStyleManager;
 import com.intellij.ui.EditorTextField;
+import com.intellij.ui.Gray;
+import com.intellij.ui.JBColor;
 import com.intellij.util.LocalTimeCounter;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.xmlb.Constants;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.border.Border;
+import java.awt.*;
 
 /**
  * @author zys
@@ -57,7 +59,9 @@ public class CustomEditor extends EditorTextField {
     public CustomEditor(Project project, FileType fileType) {
         super(null, project, fileType, false, false);
         super.setBorder(JBUI.Borders.empty());
+        super.setBackground(new JBColor(Gray._255, new Color(30, 31, 34)));
     }
+
 
     public static void setupTextFieldEditor(@NotNull EditorEx editor) {
         EditorSettings settings = editor.getSettings();
@@ -74,14 +78,8 @@ public class CustomEditor extends EditorTextField {
         setDocument(document);
         PsiFile psiFile = PsiDocumentManager.getInstance(getProject()).getPsiFile(document);
         if (psiFile != null) {
-            try {
-                WriteCommandAction.runWriteCommandAction(
-                        getProject(),
-                        (Computable<PsiElement>) () -> CodeStyleManager.getInstance(getProject()).reformat(psiFile)
-                );
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            WriteCommandAction.runWriteCommandAction(getProject(),
+                    (Computable<PsiElement>) () -> CodeStyleManager.getInstance(getProject()).reformat(psiFile));
         }
     }
 
@@ -119,11 +117,6 @@ public class CustomEditor extends EditorTextField {
         }
     }
 
-    @Override
-    public void setBorder(Border border) {
-        super.setBorder(JBUI.Borders.empty());
-    }
-
     public Document createDocument(@Nullable final String text, @NotNull final FileType fileType) {
         final PsiFileFactory factory = PsiFileFactory.getInstance(getProject());
         final long stamp = LocalTimeCounter.currentTime();
@@ -136,10 +129,5 @@ public class CustomEditor extends EditorTextField {
                 false
         );
         return PsiDocumentManager.getInstance(getProject()).getDocument(psiFile);
-    }
-
-    @Override
-    protected boolean shouldHaveBorder() {
-        return false;
     }
 }

@@ -25,7 +25,7 @@ public class EnvListShowDialog extends DialogWrapper {
         super(project, true);
         envShowTable = new EnvListTable(project);
         init();
-        getRootPane().setMinimumSize(new Dimension(500, 200));
+        getRootPane().setMinimumSize(new Dimension(500, 400));
         setTitle(Bundle.get("http.dialog.env.list"));
         setCancelButtonText(Bundle.get("http.text.cancel"));
         setOKButtonText(Bundle.get("http.text.ok"));
@@ -34,13 +34,8 @@ public class EnvListShowDialog extends DialogWrapper {
 
     @Override
     protected @Nullable JComponent createCenterPanel() {
-        JPanel main = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.weightx = 1.0;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.gridwidth = GridBagConstraints.REMAINDER;
-        // 环境列表展示
-        main.add(envShowTable, gbc);
+        JPanel main = new JPanel(new BorderLayout(0,0));
+        main.add(envShowTable, BorderLayout.CENTER);
         return main;
     }
 }

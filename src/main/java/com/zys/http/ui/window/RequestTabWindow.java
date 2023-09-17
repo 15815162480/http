@@ -55,9 +55,11 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
     }
 
     @Description("初始化顶部工具栏")
+    @SuppressWarnings("ExtractMethodRecommender")
     private void requestToolBar() {
         DefaultActionGroup group = new DefaultActionGroup();
-        group.add(new EnvActionGroup(requestPanel));
+        EnvActionGroup envActionGroup = new EnvActionGroup(requestPanel);
+        group.add(envActionGroup);
         RefreshAction refreshAction = new RefreshAction();
         refreshAction.setAction(event -> {
             requestPanel.getHttpApiTreePanel().clear();

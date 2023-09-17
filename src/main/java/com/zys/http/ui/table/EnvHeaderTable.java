@@ -7,7 +7,6 @@ import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.project.Project;
 import com.zys.http.action.AddAction;
-import com.zys.http.action.CustomAction;
 import com.zys.http.action.RemoveAction;
 import com.zys.http.entity.HttpConfig;
 import com.zys.http.service.Bundle;
@@ -76,6 +75,7 @@ public class EnvHeaderTable extends AbstractTable {
     }
 
     @Override
+    @SuppressWarnings("ExtractMethodRecommender")
     protected @Nullable ActionToolbar initActionToolbar() {
         DefaultActionGroup group = new DefaultActionGroup();
         AddAction addAction = new AddAction(Bundle.get("http.action.add"), "Add");
@@ -91,13 +91,15 @@ public class EnvHeaderTable extends AbstractTable {
 
         RemoveAction removeAction = new RemoveAction(Bundle.get("http.action.remove"), "Remove");
         removeAction.setAction(event -> {
-            DefaultTableModel model = (DefaultTableModel) valueTable.getModel();
-            valueTable.getSelectionModel().setSelectionInterval(0, 0);
-            model.removeRow(valueTable.getSelectedRow());
+            int selectedRow = valueTable.getSelectedRow();
+            getTableModel().removeRow(selectedRow);
+            int rowCount = valueTable.getRowCount();
+            int newSelectRow = selectedRow == rowCount ? rowCount - 1 : selectedRow;
+            valueTable.clearSelection();
+            valueTable.getSelectionModel().setSelectionInterval(newSelectRow,  newSelectRow);
         });
         removeAction.setEnabled(false);
         group.add(removeAction);
-
         return ActionManager.getInstance().createActionToolbar(ActionPlaces.TOOLBAR, group, true);
     }
 
@@ -107,25 +109,11 @@ public class EnvHeaderTable extends AbstractTable {
             DefaultTableModel model = (DefaultTableModel) e.getSource();
             int updateRow = e.getLastRow();
             int updateCol = e.getColumn();
-            switch (e.getType()) {
-                case TableModelEvent.UPDATE -> {
-                    // 最新一行且最新一行的请求头为空, 清除最新一行
-                    String header = (String) model.getValueAt(updateRow, updateCol);
-                    if (CharSequenceUtil.isEmpty(header) || isDuplicateData(valueTable, header)) {
-                        model.removeRow(updateRow);
-                    }
+            if (e.getType() == TableModelEvent.UPDATE) {// 最新一行且最新一行的请求头为空, 清除最新一行
+                String header = (String) model.getValueAt(updateRow, updateCol);
+                if (CharSequenceUtil.isEmpty(header) || isDuplicateData(valueTable, header)) {
+                    model.removeRow(updateRow);
                 }
-                case TableModelEvent.DELETE -> {
-                    if (model.getRowCount() > 0) {
-                        return;
-                    }
-                    getToolbar().getActions().forEach(v -> {
-                        if (v instanceof CustomAction c && !(v instanceof AddAction)) {
-                            c.setEnabled(false);
-                        }
-                    });
-                }
-                default -> valueTable.editCellAt(-1, -1);
             }
         };
     }

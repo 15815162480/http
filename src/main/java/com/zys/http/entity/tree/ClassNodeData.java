@@ -1,6 +1,7 @@
 package com.zys.http.entity.tree;
 
 import com.intellij.psi.PsiClass;
+import com.zys.http.tool.ColorsTool;
 import com.zys.http.ui.icon.HttpIcons;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -18,6 +19,6 @@ public class ClassNodeData extends NodeData {
     public ClassNodeData(PsiClass psiClass) {
         super(psiClass.getName());
         this.psiClass = psiClass;
-        this.setNodeIcon(HttpIcons.TreeNode.CLASS);
+        this.setNodeIcon(ColorsTool.isDark() ? HttpIcons.TreeNode.CLASS : HttpIcons.TreeNode.CLASS_LIGHT);
     }
 }
