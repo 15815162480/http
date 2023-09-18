@@ -59,12 +59,12 @@ public class EnvHeaderTable extends AbstractTable {
         if (!this.isAdd) {
             HttpConfig httpConfig = httpPropertyTool.getHttpConfig(selectEnv);
             if (Objects.nonNull(httpConfig)) {
-                Map<String, Object> headers = httpConfig.getHeaders();
+                Map<String, String> headers = httpConfig.getHeaders();
                 if (Objects.nonNull(headers)) {
                     headers.forEach((k, v) -> {
                         Vector<String> vector = new Vector<>(2);
                         vector.add(k);
-                        vector.add((String) v);
+                        vector.add(v);
                         rowData.add(vector);
                     });
                 }
@@ -96,7 +96,7 @@ public class EnvHeaderTable extends AbstractTable {
             int rowCount = valueTable.getRowCount();
             int newSelectRow = selectedRow == rowCount ? rowCount - 1 : selectedRow;
             valueTable.clearSelection();
-            valueTable.getSelectionModel().setSelectionInterval(newSelectRow,  newSelectRow);
+            valueTable.getSelectionModel().setSelectionInterval(newSelectRow, newSelectRow);
         });
         removeAction.setEnabled(false);
         group.add(removeAction);
@@ -153,14 +153,15 @@ public class EnvHeaderTable extends AbstractTable {
     }
 
 
-    @SuppressWarnings("rawtypes")
-    public Map<String, Object> buildHttpHeader() {
-        Map<String, Object> map = new HashMap<>();
+    public Map<String, String> buildHttpHeader() {
+
+        Map<String, String> map = new HashMap<>();
         DefaultTableModel model = getTableModel();
-        Vector<Vector> vector = model.getDataVector();
-        for (Vector<?> v1 : vector) {
-            map.put((String) v1.get(0), v1.get(1) + "");
+        int rowCount = model.getRowCount();
+        for (int i = 0; i < rowCount; i++) {
+            map.put((String) model.getValueAt(i,0), (String) model.getValueAt(i,1));
         }
+
         return map;
     }
 }

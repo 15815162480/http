@@ -232,7 +232,6 @@ public class RequestPanel extends JBSplitter {
         tabs.addTab(bodyTabInfo);
         // 响应体
         responseEditor = new CustomEditor(project);
-        // responseEditor.setBorder(JBUI.Borders.customLineLeft(EDITOR_BORDER_COLOR));
         responseTabInfo = new TabInfo(responseEditor);
         responseTabInfo.setText(Bundle.get("http.tab.request.return"));
         tabs.addTab(responseTabInfo);
@@ -246,8 +245,8 @@ public class RequestPanel extends JBSplitter {
     private void initSendRequestEvent() {
         sendRequestBtn.addActionListener(event -> {
             String url = hostTextField.getText();
-            Map<String, Object> header = headerTable.buildHttpHeader();
-            Map<String, Object> parameter = parameterTable.buildHttpHeader();
+            Map<String, String> header = headerTable.buildHttpHeader();
+            Map<String, String> parameter = parameterTable.buildHttpHeader();
             String bodyText = bodyEditor.getText();
             HttpMethod httpMethod = (HttpMethod) httpMethodComboBox.getSelectedItem();
             if (httpMethod == null) {
@@ -259,7 +258,7 @@ public class RequestPanel extends JBSplitter {
                 ParamProperty v = entry.getValue();
 
                 if (v.getParamUsage().equals(HttpEnum.ParamUsage.PATH)) {
-                    url = url.replace("{" + k + "}", parameter.get(k).toString());
+                    url = url.replace("{" + k + "}", parameter.get(k));
                     parameter.remove(k);
                 }
             }

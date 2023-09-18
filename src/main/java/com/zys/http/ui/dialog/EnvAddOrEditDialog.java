@@ -144,7 +144,7 @@ public class EnvAddOrEditDialog extends DialogWrapper {
         String host = hostTF.getText();
         Protocol protocol = (Protocol) protocolCB.getSelectedItem();
         protocol = Objects.isNull(protocol) ? Protocol.HTTP : protocol;
-        Map<String, Object> header = envAddOrEditTable.buildHttpHeader();
+        Map<String, String> header = envAddOrEditTable.buildHttpHeader();
 
         HttpConfig httpConfig = new HttpConfig();
         httpConfig.setHeaders(header);

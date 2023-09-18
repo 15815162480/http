@@ -12,8 +12,6 @@ import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -221,26 +219,5 @@ public class DataTypeTool {
                 return null;
             }
         }
-    }
-
-    public static Object stringConvertToType(Class<?> clazz, String value) {
-        if (clazz.equals(Integer.class)) {
-            return Integer.parseInt(value);
-        } else if (clazz.equals(Long.class)) {
-            return Long.parseLong(value);
-        } else if (clazz.equals(Byte.class)) {
-            return Byte.parseByte(value);
-        } else if (clazz.equals(Short.class)) {
-            return Short.parseShort(value);
-        } else if (clazz.equals(Float.class)) {
-            return Float.parseFloat(value);
-        } else if (clazz.equals(Double.class)) {
-            return Double.parseDouble(value);
-        } else if (clazz.equals(BigInteger.class)) {
-            return Integer.parseInt(value);
-        } else if (clazz.equals(BigDecimal.class)) {
-            return Double.parseDouble(value);
-        }
-        return value;
     }
 }

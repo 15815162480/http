@@ -41,8 +41,8 @@ public class HttpClient {
     public static HttpRequest newRequest(
             @NotNull HttpMethod method,
             @NotNull String url,
-            @NotNull Map<String, Object> headers,
-            Map<String, Object> parameters,
+            @NotNull Map<String, String> headers,
+            Map<String, String> parameters,
             String body
     ) {
         HttpRequest req = createRequest(Method.valueOf(method.name()), url).timeout(TIME_OUT);

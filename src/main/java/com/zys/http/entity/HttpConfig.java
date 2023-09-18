@@ -26,5 +26,5 @@ public class HttpConfig {
     private String hostValue;
 
     @Description("请求头")
-    private Map<String, Object> headers;
+    private Map<String, String> headers;
 }
