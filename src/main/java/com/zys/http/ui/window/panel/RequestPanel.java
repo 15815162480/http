@@ -58,9 +58,6 @@ public class RequestPanel extends JBSplitter {
 
     private JButton sendRequestBtn;
 
-    @Description("设置的IP/HOST")
-    private String hostValue = "";
-
     @Description("树形结构列表")
     private HttpApiTreePanel httpApiTreePanel;
 
@@ -200,8 +197,7 @@ public class RequestPanel extends JBSplitter {
         // 请求地址文本框
         hostTextField = new JTextField();
         hostTextField.setColumns(10);
-        hostTextField.setText(hostValue);
-        hostTextField.addActionListener(e -> hostValue = hostTextField.getText());
+        hostTextField.setText("");
         requestPanel.add(hostTextField, BorderLayout.CENTER);
         // 发送按钮
         sendRequestBtn = new JXButton(Bundle.get("http.text.send"));
@@ -325,5 +321,13 @@ public class RequestPanel extends JBSplitter {
 
         bodyPanel.add(bodySelectPanel, BorderLayout.SOUTH);
         return bodyPanel;
+    }
+
+
+    public void reload() {
+        this.headerTable.reloadTableModel();
+        this.parameterTable.clearTableModel();
+        this.hostTextField.setText("");
+        this.httpMethodComboBox.setSelectedItem(HttpMethod.GET);
     }
 }

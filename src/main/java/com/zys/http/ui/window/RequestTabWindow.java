@@ -14,8 +14,6 @@ import com.zys.http.action.CollapseAction;
 import com.zys.http.action.ExpandAction;
 import com.zys.http.action.RefreshAction;
 import com.zys.http.action.group.EnvActionGroup;
-import com.zys.http.constant.HttpEnum;
-import com.zys.http.entity.HttpConfig;
 import com.zys.http.ui.tree.HttpApiTreePanel;
 import com.zys.http.ui.window.panel.RequestPanel;
 import jdk.jfr.Description;
@@ -55,7 +53,6 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
     }
 
     @Description("初始化顶部工具栏")
-    @SuppressWarnings("ExtractMethodRecommender")
     private void requestToolBar() {
         DefaultActionGroup group = new DefaultActionGroup();
         EnvActionGroup envActionGroup = new EnvActionGroup(requestPanel);
@@ -63,8 +60,8 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
         RefreshAction refreshAction = new RefreshAction();
         refreshAction.setAction(event -> {
             requestPanel.getHttpApiTreePanel().clear();
-            requestPanel.getHostTextField().setText("");
-            requestPanel.getHttpMethodComboBox().setSelectedItem(HttpEnum.HttpMethod.GET);
+            requestPanel.reload();
+
             new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {
@@ -102,10 +99,6 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
                             .inSmartMode(project)
                             .finishOnUiThread(ModalityState.defaultModalityState(), httpApiTreePanel::render)
                             .submit(executorTaskBounded);
-                    // 设置默认环境
-                    HttpConfig config = new HttpConfig();
-                    config.setProtocol(HttpEnum.Protocol.HTTP);
-
                 }
         );
     }

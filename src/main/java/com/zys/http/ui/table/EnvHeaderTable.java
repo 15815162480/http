@@ -137,7 +137,7 @@ public class EnvHeaderTable extends AbstractTable {
         boolean isChange = false;
         for (int i = 0; i < rowCount; i++) {
             header = (String) model.getValueAt(i, 0);
-            if (header.equals("Content-Type")) {
+            if ("Content-Type".equals(header)) {
                 model.setValueAt(contentType, i, 1);
                 isChange = true;
             }
@@ -145,6 +145,11 @@ public class EnvHeaderTable extends AbstractTable {
         if (!isChange) {
             getTableModel().addRow(new String[]{"Content-Type", contentType});
         }
+    }
+
+    public void reloadTableModel() {
+        this.selectEnv = httpPropertyTool.getSelectedEnv();
+        valueTable.setModel(initTableModel());
     }
 
 

@@ -1,12 +1,7 @@
 package com.zys.http.action;
 
-import com.intellij.openapi.editor.colors.EditorColors;
-import com.intellij.openapi.editor.colors.EditorColorsManager;
-import com.intellij.openapi.editor.colors.EditorColorsScheme;
 import com.zys.http.ui.icon.HttpIcons;
 import jdk.jfr.Description;
-
-import java.awt.*;
 
 /**
  * @author zys
@@ -18,6 +13,4 @@ public class AddAction extends CustomAction {
         super(text, description, HttpIcons.General.ADD);
 
     }
-
-
 }
