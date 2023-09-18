@@ -1,20 +1,18 @@
 package com.zys.http.ui.tree;
 
-import cn.hutool.core.text.CharSequenceUtil;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.NavigatablePsiElement;
+import com.intellij.psi.PsiAnnotation;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiMethod;
 import com.intellij.ui.treeStructure.SimpleTree;
 import com.zys.http.constant.HttpEnum;
+import com.zys.http.constant.SpringEnum;
 import com.zys.http.entity.HttpConfig;
-import com.zys.http.entity.tree.ClassNodeData;
-import com.zys.http.entity.tree.ModuleNodeData;
-import com.zys.http.entity.tree.NodeData;
-import com.zys.http.entity.tree.PackageNodeData;
+import com.zys.http.entity.tree.*;
 import com.zys.http.tool.HttpPropertyTool;
 import com.zys.http.tool.ProjectTool;
 import com.zys.http.tool.PsiTool;
@@ -29,6 +27,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * @author zys
@@ -112,7 +111,7 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
                 for (PsiClass c : controllers) {
                     controllerPath = PsiTool.getControllerPath(c);
                     contextPath = ProjectTool.getModuleContextPath(project, m);
-                    methodNodeMap.put(c, PsiTool.getMappingMethods(c, contextPath, controllerPath, methodNodePsiMap));
+                    methodNodeMap.put(c, buildMethodNodes(c, contextPath, controllerPath, methodNodePsiMap));
                 }
                 initPackageNodes(moduleName).forEach(mn::add);
             }
@@ -144,9 +143,7 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
             }
             ClassNodeData data = new ClassNodeData(k);
             String s = PsiTool.getSwaggerAnnotation(k, "CLASS_");
-            if (CharSequenceUtil.isNotEmpty(s)) {
-                data.setDescription(s);
-            }
+            data.setDescription(s);
             ClassNode classNode = new ClassNode(data);
 
             v.forEach(classNode::add);
@@ -205,8 +202,6 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
         return curr;
     }
 
-
-
     @Description("移除空模块节点")
     private void removeEmptyModule() {
         for (Map.Entry<String, ModuleNode> entry : moduleNodeMap.entrySet()) {
@@ -223,7 +218,8 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
 
 
     @Override
-    protected @Nullable Consumer<BaseNode<?>> getChooseListener() {
+    @Nullable
+    protected Consumer<BaseNode<?>> getChooseListener() {
         return node -> {
             if (node instanceof MethodNode methodNode && Objects.nonNull(chooseCallback)) {
                 chooseCallback.accept(methodNode);
@@ -232,8 +228,9 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
     }
 
     @Override
+    @Nullable
     @Description("双击跳转到指定的方法")
-    protected @Nullable Consumer<BaseNode<?>> getDoubleClickListener() {
+    protected Consumer<BaseNode<?>> getDoubleClickListener() {
         return node -> {
             if (node instanceof MethodNode m) {
                 NavigatablePsiElement psiElement = m.getValue().getPsiElement();
@@ -244,5 +241,49 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
         };
     }
 
+    @Description("获取所有 @xxxMapping 的方法")
+    public List<MethodNode> buildMethodNodes(@NotNull PsiClass psiClass, String contextPath, String controllerPath, Map<PsiMethod, MethodNode> methodNodePsiMap) {
+        PsiMethod[] methods = psiClass.getAllMethods();
+        if (methods.length < 1) {
+            return Collections.emptyList();
+        }
+        Map<String, HttpEnum.HttpMethod> httpMethodMap = Arrays.stream(SpringEnum.Method.values())
+                .collect(Collectors.toMap(SpringEnum.Method::getClazz, SpringEnum.Method::getHttpMethod));
+        List<MethodNode> dataList = new ArrayList<>();
+        MethodNode data;
+        for (PsiMethod method : methods) {
+            PsiAnnotation[] annotations = method.getAnnotations();
+            for (PsiAnnotation annotation : annotations) {
+                String qualifiedName = annotation.getQualifiedName();
+                if (!httpMethodMap.containsKey(qualifiedName)) {
+                    continue;
+                }
+                MethodNodeData data1 = buildMethodNodeData(annotation, contextPath, controllerPath, method);
+                if (Objects.nonNull(data1)) {
+                    data = new MethodNode(data1);
+                    data1.setDescription(PsiTool.getSwaggerAnnotation(method, "METHOD_"));
+                    dataList.add(data);
+                    methodNodePsiMap.put(method, data);
+                }
+            }
+        }
+        return dataList;
+    }
 
+    private MethodNodeData buildMethodNodeData(@NotNull PsiAnnotation annotation, String contextPath, String controllerPath, PsiMethod psiElement) {
+        Map<String, HttpEnum.HttpMethod> httpMethodMap = Arrays.stream(SpringEnum.Method.values())
+                .collect(Collectors.toMap(SpringEnum.Method::getClazz, SpringEnum.Method::getHttpMethod));
+        String qualifiedName = annotation.getQualifiedName();
+        if (!httpMethodMap.containsKey(qualifiedName)) {
+            return null;
+        }
+        HttpEnum.HttpMethod httpMethod = httpMethodMap.get(qualifiedName);
+        if (httpMethod.equals(HttpEnum.HttpMethod.REQUEST)) {
+            httpMethod = HttpEnum.HttpMethod.GET;
+        }
+        String name = PsiTool.getAnnotationValue(annotation, new String[]{"value", "path"});
+        MethodNodeData data = new MethodNodeData(httpMethod, name, controllerPath, contextPath);
+        data.setPsiElement(psiElement);
+        return data;
+    }
 }

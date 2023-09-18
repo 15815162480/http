@@ -3,8 +3,6 @@ package com.zys.http.tool;
 import com.intellij.psi.*;
 import com.zys.http.constant.HttpEnum;
 import com.zys.http.constant.SpringEnum;
-import com.zys.http.entity.tree.MethodNodeData;
-import com.zys.http.ui.tree.node.MethodNode;
 import jdk.jfr.Description;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -93,54 +91,6 @@ public class PsiTool {
             }
         }
         return initializerList.isEmpty() ? "" : initializerList.get(0).getText().replace("\"", "");
-    }
-
-
-    @Description("获取所有 @xxxMapping 的方法")
-    public static List<MethodNode> getMappingMethods(@NotNull PsiClass psiClass, String contextPath, String controllerPath, Map<PsiMethod, MethodNode> methodNodePsiMap) {
-        PsiMethod[] methods = psiClass.getAllMethods();
-        if (methods.length < 1) {
-            return Collections.emptyList();
-        }
-        Map<String, HttpEnum.HttpMethod> httpMethodMap = Arrays.stream(SpringEnum.Method.values())
-                .collect(Collectors.toMap(SpringEnum.Method::getClazz, SpringEnum.Method::getHttpMethod));
-        List<MethodNode> dataList = new ArrayList<>();
-        MethodNode data;
-        for (PsiMethod method : methods) {
-            PsiAnnotation[] annotations = method.getAnnotations();
-            for (PsiAnnotation annotation : annotations) {
-                String qualifiedName = annotation.getQualifiedName();
-                if (!httpMethodMap.containsKey(qualifiedName)) {
-                    continue;
-                }
-                MethodNodeData data1 = buildMethodNodeData(annotation, contextPath, controllerPath, method);
-                if (Objects.nonNull(data1)) {
-                    data = new MethodNode(data1);
-                    data1.setDescription(getSwaggerAnnotation(method, "METHOD_"));
-                    dataList.add(data);
-                    methodNodePsiMap.put(method, data);
-                }
-            }
-        }
-        return dataList;
-    }
-
-
-    private static MethodNodeData buildMethodNodeData(@NotNull PsiAnnotation annotation, String contextPath, String controllerPath, PsiMethod psiElement) {
-        Map<String, HttpEnum.HttpMethod> httpMethodMap = Arrays.stream(SpringEnum.Method.values())
-                .collect(Collectors.toMap(SpringEnum.Method::getClazz, SpringEnum.Method::getHttpMethod));
-        String qualifiedName = annotation.getQualifiedName();
-        if (!httpMethodMap.containsKey(qualifiedName)) {
-            return null;
-        }
-        HttpEnum.HttpMethod httpMethod = httpMethodMap.get(qualifiedName);
-        if (httpMethod.equals(HttpEnum.HttpMethod.REQUEST)) {
-            httpMethod = HttpEnum.HttpMethod.GET;
-        }
-        String name = getAnnotationValue(annotation, new String[]{"value", "path"});
-        MethodNodeData data = new MethodNodeData(httpMethod, name, controllerPath, contextPath);
-        data.setPsiElement(psiElement);
-        return data;
     }
 
     @Description("获取指定 PsiClass 中所有的字段及对应的 Getter/Setter")
