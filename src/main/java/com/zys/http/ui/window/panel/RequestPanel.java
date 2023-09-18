@@ -139,7 +139,7 @@ public class RequestPanel extends JBSplitter {
                 switch (usage) {
                     case PATH -> {
                         tabs.select(parameterTabInfo, true);
-                        parameterTable.getTableModel().addRow(new Object[]{k, v.getDefaultValue()});
+                        parameterTable.getTableModel().addRow(new String[]{k, v.getDefaultValue() + ""});
                     }
                     case URL -> {
                         if (httpMethod.equals(HttpMethod.POST)) {
@@ -149,7 +149,7 @@ public class RequestPanel extends JBSplitter {
                             tabs.select(bodyTabInfo, true);
                             bodyFileType.setSelectedItem(CustomEditor.TEXT_FILE_TYPE);
                         } else {
-                            parameterTable.getTableModel().addRow(new Object[]{k, v.getDefaultValue()});
+                            parameterTable.getTableModel().addRow(new String[]{k, v.getDefaultValue() + ""});
                             tabs.select(parameterTabInfo, true);
                         }
                     }
@@ -183,10 +183,10 @@ public class RequestPanel extends JBSplitter {
 
     @Description("初始化下半部分组件")
     private void initSecondPanel() {
-        JPanel secondPanel = new JPanel(new BorderLayout(0,0));
+        JPanel secondPanel = new JPanel(new BorderLayout(0, 0));
         secondPanel.setBorder(JBUI.Borders.customLineTop(UIConstant.BORDER_COLOR));
 
-        JPanel requestPanel = new JPanel(new BorderLayout(0,0));
+        JPanel requestPanel = new JPanel(new BorderLayout(0, 0));
         // 请求方式下拉框
         HttpMethod[] methods = Arrays.stream(HttpMethod.values()).filter(o -> !o.equals(HttpMethod.REQUEST))
                 .toList().toArray(new HttpMethod[]{});
@@ -207,7 +207,7 @@ public class RequestPanel extends JBSplitter {
         secondPanel.add(requestPanel, BorderLayout.NORTH);
 
         // 标签页面
-        JPanel tabsPanel = new JPanel(new BorderLayout(0,0));
+        JPanel tabsPanel = new JPanel(new BorderLayout(0, 0));
         tabs = new JBTabsImpl(project);
 
         // 请求头标签页
