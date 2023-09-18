@@ -2,7 +2,7 @@ package com.zys.http.ui.icon;
 
 import com.intellij.openapi.util.IconLoader;
 import com.zys.http.constant.HttpEnum;
-import com.zys.http.tool.ColorsTool;
+import com.zys.http.tool.ThemeTool;
 import jdk.jfr.Description;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -76,7 +76,7 @@ public final class HttpIcons {
         }
 
         public static Icon getHttpMethodIcon(HttpEnum.HttpMethod httpMethod) {
-            return ColorsTool.isDark() ? HTTP_METHOD_ICON_DARK_MAP.getOrDefault(httpMethod, REQUEST)
+            return ThemeTool.isDark() ? HTTP_METHOD_ICON_DARK_MAP.getOrDefault(httpMethod, REQUEST)
                     : HTTP_METHOD_ICON_LIGHT_MAP.getOrDefault(httpMethod, REQUEST_LIGHT);
         }
     }

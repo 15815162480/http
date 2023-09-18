@@ -1,6 +1,6 @@
 package com.zys.http.entity.tree;
 
-import com.zys.http.tool.ColorsTool;
+import com.zys.http.tool.ThemeTool;
 import com.zys.http.ui.icon.HttpIcons;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -17,7 +17,7 @@ public class ModuleNodeData extends NodeData {
 
     public ModuleNodeData(String nodeName, String contextPath) {
         super(nodeName);
-        this.setNodeIcon(ColorsTool.isDark() ? HttpIcons.TreeNode.MODULE : HttpIcons.TreeNode.MODULE_LIGHT);
+        this.setNodeIcon(ThemeTool.isDark() ? HttpIcons.TreeNode.MODULE : HttpIcons.TreeNode.MODULE_LIGHT);
         this.contextPath = contextPath;
     }
 }

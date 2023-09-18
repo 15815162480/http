@@ -15,7 +15,7 @@ import java.util.Objects;
  * @since 2023-09-17
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ColorsTool {
+public class ThemeTool {
 
     @Description("判断当前主题是否是深色")
     public static boolean isDark() {
