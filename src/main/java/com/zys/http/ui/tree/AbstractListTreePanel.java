@@ -5,15 +5,19 @@ import com.intellij.ui.components.JBScrollPane;
 import com.intellij.util.ui.JBUI;
 import com.zys.http.entity.tree.NodeData;
 import com.zys.http.ui.tree.node.BaseNode;
+import com.zys.http.ui.tree.node.ModuleNode;
 import com.zys.http.ui.tree.render.HttpApiTreeCellRenderer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Enumeration;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -29,6 +33,7 @@ public abstract class AbstractListTreePanel extends JBScrollPane implements Tree
     protected AbstractListTreePanel(@NotNull final JTree tree) {
         this.tree = tree;
         this.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        this.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         this.setBorder(JBUI.Borders.customLineTop(BORDER_COLOR));
         this.tree.setRootVisible(true);
         this.tree.setShowsRootHandles(true);
@@ -108,5 +113,41 @@ public abstract class AbstractListTreePanel extends JBScrollPane implements Tree
             return null;
         }
         return (BaseNode<?>) component;
+    }
+
+
+    public void clear() {
+        this.getTreeModel().setRoot(null);
+    }
+
+
+    public void treeExpand() {
+        expandAll(new TreePath(tree.getModel().getRoot()), true);
+    }
+
+    public void treeCollapse() {
+        expandAll(new TreePath(tree.getModel().getRoot()), false);
+    }
+
+    private void expandAll(@NotNull TreePath parent, boolean expand) {
+        DefaultMutableTreeNode node = (DefaultMutableTreeNode) parent.getLastPathComponent();
+        if (node.getChildCount() >= 0) {
+            for (Enumeration<?> e = node.children(); e.hasMoreElements(); ) {
+                TreeNode n = (TreeNode) e.nextElement();
+                TreePath path = parent.pathByAddingChild(n);
+                expandAll(path, expand);
+            }
+        }
+
+        // 展开或收起必须自下而上进行
+        if (expand) {
+            tree.expandPath(parent);
+        } else {
+            tree.collapsePath(parent);
+        }
+    }
+
+    public void render(ModuleNode root) {
+        getTreeModel().setRoot(root);
     }
 }

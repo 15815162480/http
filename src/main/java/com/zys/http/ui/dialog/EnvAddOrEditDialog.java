@@ -7,11 +7,12 @@ import com.intellij.ui.JBColor;
 import com.intellij.ui.SeparatorComponent;
 import com.intellij.ui.SeparatorOrientation;
 import com.intellij.util.ui.JBUI;
+import com.zys.http.constant.UIConstant;
 import com.zys.http.entity.HttpConfig;
 import com.zys.http.service.Bundle;
+import com.zys.http.tool.HttpPropertyTool;
 import com.zys.http.ui.table.EnvHeaderTable;
 import com.zys.http.ui.table.EnvListTable;
-import com.zys.http.tool.HttpPropertyTool;
 import jdk.jfr.Description;
 import org.jetbrains.annotations.NotNull;
 
@@ -73,7 +74,7 @@ public class EnvAddOrEditDialog extends DialogWrapper {
 
     @Override
     protected @NotNull JComponent createCenterPanel() {
-        JPanel main = new JPanel(new BorderLayout());
+        JPanel main = new JPanel(new BorderLayout(0, 0));
         // 配置名字
         JPanel first = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -112,12 +113,8 @@ public class EnvAddOrEditDialog extends DialogWrapper {
         first.add(headerPanel(), gbc);
 
         // 表格
-        gbc.gridy = 4;
-        gbc.gridwidth = GridBagConstraints.REMAINDER;
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.insets = JBUI.emptyInsets();
-        first.add(envAddOrEditTable, gbc);
         main.add(first, BorderLayout.NORTH);
+        main.add(envAddOrEditTable, BorderLayout.CENTER);
 
         return main;
     }
@@ -130,10 +127,8 @@ public class EnvAddOrEditDialog extends DialogWrapper {
         gbc.weightx = 1.0;
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        SeparatorComponent separator = new SeparatorComponent(new JBColor(JBColor.darkGray, new Color(57, 59, 64)),
-                SeparatorOrientation.HORIZONTAL);
+        SeparatorComponent separator = new SeparatorComponent(UIConstant.EDITOR_BORDER_COLOR, SeparatorOrientation.HORIZONTAL);
         header.add(separator, gbc);
-        header.add(new JPanel());
         return header;
     }
 
@@ -149,7 +144,7 @@ public class EnvAddOrEditDialog extends DialogWrapper {
         String host = hostTF.getText();
         Protocol protocol = (Protocol) protocolCB.getSelectedItem();
         protocol = Objects.isNull(protocol) ? Protocol.HTTP : protocol;
-        Map<String, Object> header = envAddOrEditTable.buildHttpHeader();
+        Map<String, String> header = envAddOrEditTable.buildHttpHeader();
 
         HttpConfig httpConfig = new HttpConfig();
         httpConfig.setHeaders(header);
@@ -157,7 +152,7 @@ public class EnvAddOrEditDialog extends DialogWrapper {
         httpConfig.setProtocol((Protocol) protocolCB.getSelectedItem());
 
         httpPropertyTool.putHttpConfig(configName, httpConfig);
-        if (Objects.nonNull(envShowTable)){
+        if (Objects.nonNull(envShowTable)) {
             DefaultTableModel model = (DefaultTableModel) envShowTable.getValueTable().getModel();
             if (isAdd) {
                 model.addRow(new String[]{configName, protocol.toString(), host});

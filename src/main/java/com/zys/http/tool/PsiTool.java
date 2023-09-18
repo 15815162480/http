@@ -1,28 +1,14 @@
 package com.zys.http.tool;
 
-import cn.hutool.core.text.CharSequenceUtil;
-import com.intellij.lang.properties.psi.PropertiesFile;
-import com.intellij.openapi.module.Module;
-import com.intellij.openapi.module.ResourceFileUtil;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.Pair;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
-import com.intellij.psi.impl.PsiClassImplUtil;
-import com.intellij.psi.impl.java.stubs.index.JavaAnnotationIndex;
-import com.intellij.psi.search.GlobalSearchScope;
 import com.zys.http.constant.HttpEnum;
 import com.zys.http.constant.SpringEnum;
-import com.zys.http.entity.tree.MethodNodeData;
-import com.zys.http.ui.tree.node.MethodNode;
 import jdk.jfr.Description;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.yaml.YAMLUtil;
-import org.jetbrains.yaml.psi.YAMLFile;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -40,92 +26,6 @@ public class PsiTool {
     private static final String GETTER_PREFIX = "get";
     private static final String SETTER_PREFIX = "set";
 
-    @Description("SpringBoot 项目的配置文件")
-    private static final String[] APPLICATION_FILE_NAMES = {
-            "bootstrap.properties", "bootstrap.yaml", "bootstrap.yml",
-            "application.properties", "application.yaml", "application.yml"
-    };
-
-
-    // ====================================模块==========================================
-
-    @Description("获取指定模块中所有的 Controller")
-    public static List<PsiClass> getModuleController(Project project, Module module) {
-        Optional<GlobalSearchScope> globalSearchScope = Optional.of(module)
-                .map(Module::getModuleScope);
-        return Stream.concat(
-                        globalSearchScope.map(moduleScope -> JavaAnnotationIndex.getInstance().get(SpringEnum.Controller.CONTROLLER.getShortClassName(), project, moduleScope))
-                                .orElse(new ArrayList<>()).stream(),
-                        globalSearchScope.map(moduleScope -> JavaAnnotationIndex.getInstance().get(SpringEnum.Controller.REST_CONTROLLER.getShortClassName(), project, moduleScope))
-                                .orElse(new ArrayList<>()).stream())
-                .map(PsiElement::getParent)
-                .map(PsiModifierList.class::cast)
-                .map(PsiModifierList::getParent)
-                .filter(PsiClass.class::isInstance)
-                .map(PsiClass.class::cast)
-                .toList();
-
-    }
-
-    @Description("获取模块的 context-path")
-    public static String getContextPath(@NotNull Project project, @NotNull Module module) {
-        // 1 获取 SpringBoot 中有的配置文件
-        PsiFile psiFile = getSpringApplicationFile(project, module);
-        if (Objects.isNull(psiFile)) {
-            return "";
-        }
-        // 如果是 yaml 文件
-        if (psiFile instanceof YAMLFile yamlFile) {
-            Pair<PsiElement, String> value = YAMLUtil.getValue(yamlFile, "server", "servlet", "context-path");
-            if (Objects.nonNull(value)) {
-                PsiElement first = value.getFirst();
-                String text = first.getText();
-                return text.split(":")[0].trim();
-            }
-        }
-        if (psiFile instanceof PropertiesFile propertiesFile) {
-            return propertiesFile.getNamesMap().get("server.servlet.context-path");
-        }
-
-        return "";
-    }
-
-    @Description("获取模块的 context-path")
-    public static String getPort(@NotNull Project project, @NotNull Module module) {
-        // 1 获取 SpringBoot 中有的配置文件
-        PsiFile psiFile = getSpringApplicationFile(project, module);
-        if (Objects.isNull(psiFile)) {
-            return "80";
-        }
-        // 如果是 yaml 文件
-        if (psiFile instanceof YAMLFile yamlFile) {
-            Pair<PsiElement, String> value = YAMLUtil.getValue(yamlFile, "server", "port");
-            if (Objects.nonNull(value)) {
-                PsiElement first = value.getFirst();
-                String text = first.getText(); // 获取到 server.servlet.context-path, 内容: context-path: /
-                String port = text.split(":")[0].trim();
-                return CharSequenceUtil.isEmpty(port) ? "80" : port;
-            }
-        }
-        if (psiFile instanceof PropertiesFile propertiesFile) {
-            String port = propertiesFile.getNamesMap().get("server.port");
-            return CharSequenceUtil.isEmpty(port) ? "80" : port;
-        }
-
-        return "80";
-    }
-
-    @Description("获取模块中的SpringBoot配置文件")
-    public static PsiFile getSpringApplicationFile(@NotNull Project project, @NotNull Module module) {
-        PsiManager psiManager = PsiManager.getInstance(project);
-        for (String applicationFileName : APPLICATION_FILE_NAMES) {
-            VirtualFile file = ResourceFileUtil.findResourceFileInScope(applicationFileName, project, module.getModuleScope());
-            if (Objects.nonNull(file)) {
-                return psiManager.findFile(file);
-            }
-        }
-        return null;
-    }
 
     @Description("获取 Controller 上 RequestMapping 的请求路径")
     public static String getControllerPath(@NotNull PsiClass psiClass) {
@@ -191,63 +91,6 @@ public class PsiTool {
             }
         }
         return initializerList.isEmpty() ? "" : initializerList.get(0).getText().replace("\"", "");
-    }
-
-
-    @Description("获取所有 @xxxMapping 的方法")
-    public static List<MethodNode> getMappingMethods(@NotNull PsiClass psiClass, String contextPath, String controllerPath, Map<PsiMethod, MethodNode> methodNodePsiMap) {
-        PsiMethod[] methods = psiClass.getAllMethods();
-        if (methods.length < 1) {
-            return Collections.emptyList();
-        }
-        Map<String, HttpEnum.HttpMethod> httpMethodMap = Arrays.stream(SpringEnum.Method.values())
-                .collect(Collectors.toMap(SpringEnum.Method::getClazz, SpringEnum.Method::getHttpMethod));
-        List<MethodNode> dataList = new ArrayList<>();
-        MethodNode data;
-        for (PsiMethod method : methods) {
-            PsiAnnotation[] annotations = method.getAnnotations();
-            for (PsiAnnotation annotation : annotations) {
-                String qualifiedName = annotation.getQualifiedName();
-                if (!httpMethodMap.containsKey(qualifiedName)) {
-                    continue;
-                }
-                MethodNodeData data1 = buildMethodNodeData(annotation, contextPath, controllerPath, method);
-                if (Objects.nonNull(data1)) {
-                    data = new MethodNode(data1);
-                    data1.setDescription(getSwaggerAnnotation(method, "METHOD_"));
-                    dataList.add(data);
-                    methodNodePsiMap.put(method, data);
-                }
-            }
-        }
-        return dataList;
-    }
-
-
-    private static MethodNodeData buildMethodNodeData(@NotNull PsiAnnotation annotation, String contextPath, String controllerPath, PsiMethod psiElement) {
-        Map<String, HttpEnum.HttpMethod> httpMethodMap = Arrays.stream(SpringEnum.Method.values())
-                .collect(Collectors.toMap(SpringEnum.Method::getClazz, SpringEnum.Method::getHttpMethod));
-        String qualifiedName = annotation.getQualifiedName();
-        if (!httpMethodMap.containsKey(qualifiedName)) {
-            return null;
-        }
-        HttpEnum.HttpMethod httpMethod = httpMethodMap.get(qualifiedName);
-        if (httpMethod.equals(HttpEnum.HttpMethod.REQUEST)) {
-            httpMethod = HttpEnum.HttpMethod.GET;
-        }
-        String name = getAnnotationValue(annotation, new String[]{"value", "path"});
-        MethodNodeData data = new MethodNodeData(httpMethod, name, controllerPath, contextPath);
-        data.setPsiElement(psiElement);
-        return data;
-    }
-
-    public static @NotNull List<PsiClass> getAllPsiClass(@NotNull PsiClass psiClass) {
-        return Optional.of(psiClass)
-                .filter(c -> !c.isAnnotationType())
-                .map(c -> Stream.concat(Stream.of(c), Arrays.stream(PsiClassImplUtil.getAllInnerClasses(c))
-                        .filter(innerClass -> !innerClass.isAnnotationType())))
-                .orElse(Stream.empty())
-                .toList();
     }
 
     @Description("获取指定 PsiClass 中所有的字段及对应的 Getter/Setter")
@@ -357,15 +200,6 @@ public class PsiTool {
         return Objects.isNull(responseBody) ? null : HttpEnum.ContentType.APPLICATION_JSON;
     }
 
-    private void getPsiMethodParameters(PsiMethod psiMethod) {
-        List<PsiParameter> parameters = getPsiParameterOfPsiMethod(psiMethod);
-        if (parameters.isEmpty()) {
-            return;
-        }
-        //
-
-    }
-
 
     @Description("方法名是否以 get 或 set 开头")
     private static boolean methodNameStartWithGetOrSet(String name) {
@@ -374,10 +208,6 @@ public class PsiTool {
 
     private static boolean hasPublicModifier(@Nullable PsiModifierList target) {
         return hasModifier(target, PsiModifier.PUBLIC);
-    }
-
-    private static boolean hasPrivateModifier(@Nullable PsiModifierList target) {
-        return hasModifier(target, PsiModifier.PRIVATE);
     }
 
     private static boolean hasStaticModifier(@Nullable PsiModifierList target) {

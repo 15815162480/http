@@ -1,6 +1,7 @@
 package com.zys.http.ui.table;
 
 import com.intellij.openapi.actionSystem.ActionToolbar;
+import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
@@ -48,11 +49,8 @@ public abstract class AbstractTable extends JPanel {
     @Description("存储工具")
     protected final transient HttpPropertyTool httpPropertyTool;
 
-    @Description("表格的默认展示宽高")
-    public static final Dimension PREFERRED_DIMENSION = new Dimension(300, 200);
-
     protected AbstractTable(Project project, boolean cellEditable) {
-        super(new GridBagLayout());
+        super(new BorderLayout(0, 0));
         this.project = project;
         this.cellEditable = cellEditable;
         this.httpPropertyTool = HttpPropertyTool.getInstance(this.project);
@@ -95,9 +93,7 @@ public abstract class AbstractTable extends JPanel {
         valueTable.getTableHeader().setResizingAllowed(false);
 
         scrollPane = new JBScrollPane(valueTable);
-        scrollPane.setPreferredSize(PREFERRED_DIMENSION);
         scrollPane.setBorder(JBUI.Borders.customLine(UIConstant.BORDER_COLOR, 1, 1, 1, 1));
-
         valueTable.getModel().addTableModelListener(initTableModelListener());
 
         // 选中时, 工具栏的某些按钮才可以使用
@@ -125,17 +121,10 @@ public abstract class AbstractTable extends JPanel {
     }
 
     private void initLayout() {
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.gridwidth = GridBagConstraints.REMAINDER;
-        gbc.insets = JBUI.emptyInsets();
-        gbc.weightx = 1.0;
         if (Objects.nonNull(toolbar)) {
-            add((Component) toolbar, gbc);
-            gbc.gridy = 1;
+            add((Component) toolbar, BorderLayout.NORTH);
         }
-        gbc.fill = GridBagConstraints.BOTH;
-        add(scrollPane, gbc);
+        add(scrollPane, BorderLayout.CENTER);
     }
 
     public DefaultTableModel getTableModel() {
@@ -145,6 +134,7 @@ public abstract class AbstractTable extends JPanel {
     public void clearTableModel() {
         valueTable.setModel(initTableModel());
     }
+
     @Description("初始化表格的数据")
     protected abstract @NotNull DefaultTableModel initTableModel();
 

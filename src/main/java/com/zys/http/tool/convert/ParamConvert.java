@@ -106,15 +106,15 @@ public class ParamConvert {
     }
 
     public static String buildParamPropertyUrlParameters(Map<String, ParamProperty> parameters) {
-        Map<String, Object> map = new HashMap<>();
-        parameters.forEach((k, v) -> map.put(k, v.getDefaultValue()));
+        Map<String, String> map = new HashMap<>();
+        parameters.forEach((k, v) -> map.put(k, v.getDefaultValue() + ""));
         return buildUrlParameters(map);
     }
 
-    public static String buildUrlParameters(Map<String, Object> parameters) {
+    public static String buildUrlParameters(Map<String, String> parameters) {
         StringBuilder sb = new StringBuilder();
 
-        for (Map.Entry<String, Object> entry : parameters.entrySet()) {
+        for (Map.Entry<String, String> entry : parameters.entrySet()) {
             String key = entry.getKey();
             Object value = entry.getValue();
             if (!sb.isEmpty()) {
