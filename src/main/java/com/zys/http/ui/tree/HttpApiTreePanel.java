@@ -159,9 +159,9 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
         List<PackageNode> nodes = new ArrayList<>();
         packageNodeMap.forEach((key, rootNode) -> {
             while (true) {
-                List<BaseNode<?>> list = TreeTool.findChildren(rootNode);
+                List<PackageNode> list = TreeTool.findChildren(rootNode);
                 if (list.size() == 1) {
-                    PackageNode newEle = (PackageNode) list.get(0);
+                    PackageNode newEle = list.get(0);
                     rootNode.remove(newEle);
                     newEle.getValue().setNodeName(rootNode.getValue().getNodeName() + "." + newEle.getValue().getNodeName());
                     rootNode = newEle;

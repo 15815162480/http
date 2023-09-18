@@ -1,25 +1,29 @@
 <idea-plugin>
   <id>com.zys.http</id>
+  <version>1.0.1</version>
 
-  <name>RequestTool</name>
+  <name>ApiTool</name>
 
   <vendor email="1083734160@qq.com" url="">zys</vendor>
 
+  <!-- 插件作用说明 -->
   <description><![CDATA[
     <h3>A request service development aid plugin.</h3>
     <ol>
-      <li><a href="https://gitee.com/zhou-sheng1/http">gitee</a> </li>
+      <li><a href="https://gitee.com/zhou-sheng1/http">gitee</a></li>
       <li>Only Java language is supported.</li>
       <li>Support for Spring annotation system (Spring MVC / Spring Boot)</li>
       <li>Provides a regional display API interface</li>
       <li>Double-click a method node to jump directly to the corresponding method definition</li>
       <li>Configurable multiple environments</li>
-      <li>The default environment is to read the ports in order of bootstrap.(properties, yaml, yml) and application.(properties, yaml, yml) priority.</li>
+      <li>The default environment is to read the ports in order of bootstrap.(properties, yaml, yml) and
+        application.(properties, yaml, yml) priority.
+      </li>
     </ol>
     <br>
     <h3>一个请求服务开发辅助工具插件</h3>
     <ol>
-      <li><a href="https://gitee.com/zhou-sheng1/http">gitee</a> </li>
+      <li><a href="https://gitee.com/zhou-sheng1/http">gitee</a></li>
       <li>只支持 java 语言</li>
       <li>支持 Spring 注解体系(Spring MVC / Spring Boot)</li>
       <li>提供了一块区域展示 API 接口</li>
@@ -29,6 +33,39 @@
     </ol>
     <br>
      ]]></description>
+
+  <!-- 更新公告 -->
+  <change-notes><![CDATA[
+    <p>1.0.1</p>
+    <ol>
+      <li>Change plugin name —— ApiTool<br>更改插件名为 ApiTool</li>
+    </ol>
+    <p>1.0.0</p>
+    <ol>
+      <li>
+        Read all annotation request interface methods in Spring MVC
+        <br>
+        读取 Spring MVC 中所有注解请求接口方法
+      </li>
+      <li>
+        Multi Environment configuration, by default, reads the context-path and port of each module and
+        generates a local environment for each module (refresh will still take effect after deletion)
+        <br/>
+        多环境配置, 默认读取每个模块的 context-path 和 port 并为每个模块生成本地环境(删除后刷新仍会生效)
+      </li>
+      <li>
+        If the project refers to Swagger2 and Swagger3 annotations, hover the mouse over the corresponding
+        node will display the corresponding description
+        <br/>
+        如果项目引用了 Swagger2 和 Swagger3 注解, 将鼠标悬浮在对应的结点上会显示对应的说明
+      </li>
+      <li>
+        Double-click the method node to jump to the specified method
+        <br/>
+        双击方法结点可以跳转到指定方法处
+      </li>
+    </ol>
+   ]]></change-notes>
 
   <depends>com.intellij.modules.platform</depends>
   <depends>com.intellij.modules.java</depends>

@@ -7,7 +7,6 @@ plugins {
 }
 
 group = "com.zys"
-version = "1.0"
 
 repositories {
     mavenCentral()
