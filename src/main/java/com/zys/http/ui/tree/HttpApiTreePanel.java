@@ -126,7 +126,7 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
         // 获取当前模块的所有 controller
         List<PsiClass> psiClasses = moduleControllerMap.get(moduleName);
 
-        if (Objects.isNull(psiClasses) || methodNodeMap.isEmpty()) {
+        if (Objects.isNull(psiClasses) || psiClasses.isEmpty()) {
             return Collections.emptyList();
         }
 
@@ -159,9 +159,11 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
         List<PackageNode> nodes = new ArrayList<>();
         packageNodeMap.forEach((key, rootNode) -> {
             while (true) {
-                List<PackageNode> list = TreeTool.findChildren(rootNode);
-                if (list.size() == 1) {
-                    PackageNode newEle = list.get(0);
+                // 判断当前结点的包结点是否只有一个
+                List<BaseNode<?>> list = TreeTool.findChildren(rootNode);
+                List<BaseNode<?>> packageList = list.stream().filter(PackageNode.class::isInstance).toList();
+                if (list.size() == 1 && packageList.size() == 1) {
+                    PackageNode newEle = (PackageNode) list.get(0);
                     rootNode.remove(newEle);
                     newEle.getValue().setNodeName(rootNode.getValue().getNodeName() + "." + newEle.getValue().getNodeName());
                     rootNode = newEle;
@@ -180,7 +182,6 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
         children.addAll(nodes);
         return children;
     }
-
 
     private PackageNode createPackageNodes(@NotNull Map<String, PackageNode> data, @NotNull String packageName) {
         String[] names = packageName.split("\\.");
@@ -209,7 +210,7 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
             if (!value.isRoot() && value.isLeaf()) {
                 DefaultMutableTreeNode parent = (DefaultMutableTreeNode) value.getParent();
                 getTreeModel().removeNodeFromParent(value);
-                if (parent != null && parent.isLeaf() && !parent.isRoot()) {
+                if (Objects.nonNull(parent) && parent.isLeaf() && !parent.isRoot()) {
                     getTreeModel().removeNodeFromParent(parent);
                 }
             }

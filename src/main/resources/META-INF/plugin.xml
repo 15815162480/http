@@ -36,11 +36,24 @@
 
   <!-- 更新公告 -->
   <change-notes><![CDATA[
-    <p>1.0.1</p>
+    <b>1.0.2</b><br>
+    <ol>
+      <li>
+        fix bugs: Package and class are at the same level, class node is missing
+        <br>
+        bug 修复: 包和类处于同一级别，类节点丢失
+      </li>
+      <li>
+        fix bugs: choose a new request, the older request do not clear the response editor
+        <br>
+        bug 修复: 选择一个新节点, 旧节点的请求结果没有清除
+      </li>
+    </ol>
+    <b>1.0.1</b><br>
     <ol>
       <li>Change plugin name —— ApiTool<br>更改插件名为 ApiTool</li>
     </ol>
-    <p>1.0.0</p>
+    <b>1.0.0</b><br>
     <ol>
       <li>
         Read all annotation request interface methods in Spring MVC

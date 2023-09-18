@@ -33,6 +33,7 @@ public abstract class AbstractListTreePanel extends JBScrollPane implements Tree
     protected AbstractListTreePanel(@NotNull final JTree tree) {
         this.tree = tree;
         this.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        this.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         this.setBorder(JBUI.Borders.customLineTop(BORDER_COLOR));
         this.tree.setRootVisible(true);
         this.tree.setShowsRootHandles(true);

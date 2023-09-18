@@ -107,8 +107,6 @@ public class RequestPanel extends JBSplitter {
 
     @Description("初始化上半部分组件")
     private void initFirstPanel() {
-        JPanel firstPanel = new JPanel(new BorderLayout(0, 0));
-        firstPanel.setBorder(JBUI.Borders.customLineTop(UIConstant.BORDER_COLOR));
         this.httpApiTreePanel = new HttpApiTreePanel(project);
         this.httpApiTreePanel.setChooseCallback(methodNode -> {
             HttpPropertyTool propertyTool = HttpPropertyTool.getInstance(project);
@@ -130,6 +128,7 @@ public class RequestPanel extends JBSplitter {
             // 先清空 model
             parameterTable.clearTableModel();
             bodyEditor.setText("");
+            responseEditor.setText("");
             paramPropertyMap = ParamConvert.parsePsiMethodParams(psiMethod);
 
             for (Map.Entry<String, ParamProperty> entry : paramPropertyMap.entrySet()) {
@@ -176,9 +175,7 @@ public class RequestPanel extends JBSplitter {
             }
 
         });
-        firstPanel.add(httpApiTreePanel, BorderLayout.NORTH);
-
-        this.setFirstComponent(firstPanel);
+        this.setFirstComponent(httpApiTreePanel);
     }
 
     @Description("初始化下半部分组件")

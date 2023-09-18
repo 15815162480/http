@@ -1,7 +1,6 @@
 package com.zys.http.tool;
 
 import com.zys.http.ui.tree.node.BaseNode;
-import com.zys.http.ui.tree.node.PackageNode;
 import jdk.jfr.Description;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -38,12 +37,12 @@ public class TreeTool {
 
     @NotNull
     @Description("获取指定父节点的所有包子节点")
-    public static List<PackageNode> findChildren(@NotNull BaseNode<?> parentNode) {
-        List<PackageNode> children = new ArrayList<>();
+    public static List< BaseNode<?>> findChildren(@NotNull BaseNode<?> parentNode) {
+        List< BaseNode<?>> children = new ArrayList<>();
         Enumeration<TreeNode> enumeration = parentNode.children();
         while (enumeration.hasMoreElements()) {
             TreeNode ele = enumeration.nextElement();
-            if (ele instanceof PackageNode p) {
+            if (ele instanceof BaseNode<?> p) {
                 children.add(p);
             }
         }
