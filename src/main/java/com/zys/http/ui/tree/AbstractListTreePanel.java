@@ -69,7 +69,7 @@ public abstract class AbstractListTreePanel extends JBScrollPane implements Tree
                         getDoubleClickListener().accept(node);
                     }
                 } else if (SwingUtilities.isRightMouseButton(event)) {
-
+                    showPopupMenu(event.getX(), event.getY(), getRightClickMenu(event, node));
                 }
             }
 
@@ -102,18 +102,21 @@ public abstract class AbstractListTreePanel extends JBScrollPane implements Tree
     }
 
     @Nullable
+    @Description("节点选中事件")
     protected abstract Consumer<BaseNode<?>> getChooseListener();
 
     @Nullable
+    @Description("节点双击事件")
     protected abstract Consumer<BaseNode<?>> getDoubleClickListener();
 
     @Nullable
-    protected abstract JPopupMenu getPopupMenu(@NotNull MouseEvent event, @NotNull BaseNode<?> node);
+    @Description("节点右键菜单")
+    protected abstract JPopupMenu getRightClickMenu(@NotNull MouseEvent e, @NotNull BaseNode<?> node);
 
     @Nullable
     public BaseNode<?> getChooseNode(@Nullable TreePath treePath) {
         Object component;
-        if (treePath != null) {
+        if (Objects.nonNull(treePath)) {
             component = treePath.getLastPathComponent();
         } else {
             component = tree.getLastSelectedPathComponent();
@@ -128,7 +131,6 @@ public abstract class AbstractListTreePanel extends JBScrollPane implements Tree
     public void clear() {
         this.getTreeModel().setRoot(null);
     }
-
 
     @Description("展开全部")
     public void treeExpand() {

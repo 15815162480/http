@@ -1,5 +1,8 @@
 package com.zys.http.ui.window.panel;
 
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.DefaultActionGroup;
+import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.fileTypes.impl.FileTypeRenderer;
@@ -12,6 +15,7 @@ import com.intellij.ui.tabs.JBTabs;
 import com.intellij.ui.tabs.TabInfo;
 import com.intellij.ui.tabs.impl.JBTabsImpl;
 import com.intellij.util.ui.JBUI;
+import com.zys.http.action.ShowAction;
 import com.zys.http.constant.HttpEnum;
 import com.zys.http.constant.UIConstant;
 import com.zys.http.entity.HttpConfig;
@@ -21,7 +25,9 @@ import com.zys.http.tool.HttpClient;
 import com.zys.http.tool.HttpPropertyTool;
 import com.zys.http.tool.PsiTool;
 import com.zys.http.tool.convert.ParamConvert;
+import com.zys.http.ui.dialog.EditorDialog;
 import com.zys.http.ui.editor.CustomEditor;
+import com.zys.http.ui.icon.HttpIcons;
 import com.zys.http.ui.table.EnvHeaderTable;
 import com.zys.http.ui.table.ParameterTable;
 import com.zys.http.ui.tree.HttpApiTreePanel;
@@ -301,7 +307,18 @@ public class RequestPanel extends JBSplitter {
         JPanel bodySelectPanel = new JPanel(new BorderLayout(0, 0));
         bodySelectPanel.add(label, BorderLayout.WEST);
         bodySelectPanel.add(bodyFileType, BorderLayout.CENTER);
-
+        DefaultActionGroup group = new DefaultActionGroup();
+        ShowAction action = new ShowAction(Bundle.get("http.editor.body.action"), "", HttpIcons.General.FULL_SCREEN);
+        action.setAction(e -> {
+            CustomEditor editor = new CustomEditor(project, bodyEditor.getFileType());
+            editor.setText(bodyEditor.getText());
+            EditorDialog dialog = new EditorDialog(project, Bundle.get("http.editor.body.action.dialog"), editor);
+            dialog.setOkCallBack(s -> bodyEditor.setText(s)).show();
+        });
+        group.add(action);
+        ActionToolbarImpl component = (ActionToolbarImpl) ActionManager.getInstance().createActionToolbar("http.body.editor", group, true).getComponent();
+        component.setReservePlaceAutoPopupIcon(false);
+        bodySelectPanel.add(component, BorderLayout.EAST);
         bodyPanel.add(bodySelectPanel, BorderLayout.SOUTH);
         return bodyPanel;
     }

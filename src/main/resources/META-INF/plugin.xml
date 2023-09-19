@@ -42,6 +42,19 @@
 
   <!-- 更新公告 -->
   <change-notes><![CDATA[
+    <b>1.0.3</b><br>
+    <ol>
+      <li>
+        new: Method node add right-click menu: Jump to Method, Copy Full Path, Copy Api
+        <br>
+        新: 方法结点添加右键菜单: 跳转到方法、复制完整路径、复制 API
+      </li>
+      <li>
+        new: Request Body Editor Can Open in new Dialog to edit
+        <br>
+        新: 请求体内容能打开在一个新的对话框中编辑
+      </li>
+    </ol>
     <b>1.0.2</b><br>
     <ol>
       <li>
@@ -63,8 +76,8 @@
     <ol>
       <li>
         Read all annotation request interface methods in Spring MVC
-        <br>
-        读取 Spring MVC 中所有注解请求接口方法
+      <br>
+      读取 Spring MVC 中所有注解请求接口方法
       </li>
       <li>
         Multi Environment configuration, by default, reads the context-path and port of each module and
@@ -97,5 +110,8 @@
                 doNotActivateOnStart="true" factoryClass="com.zys.http.HttpMainWindowFactory"
     />
     <projectService serviceImplementation="com.zys.http.service.HttpService"/>
+    <projectService serviceImplementation="com.zys.http.service.NotifyService"/>
+    <notificationGroup displayType="BALLOON" id="http.notify" toolWindowId="http"/>
   </extensions>
+
 </idea-plugin>

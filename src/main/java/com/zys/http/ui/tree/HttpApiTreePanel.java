@@ -1,5 +1,8 @@
 package com.zys.http.ui.tree;
 
+import com.intellij.icons.AllIcons;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ModuleRootManager;
@@ -9,14 +12,15 @@ import com.intellij.psi.PsiAnnotation;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiMethod;
 import com.intellij.ui.treeStructure.SimpleTree;
+import com.zys.http.action.ShowAction;
 import com.zys.http.constant.HttpEnum;
 import com.zys.http.constant.SpringEnum;
 import com.zys.http.entity.HttpConfig;
 import com.zys.http.entity.tree.*;
-import com.zys.http.tool.HttpPropertyTool;
-import com.zys.http.tool.ProjectTool;
-import com.zys.http.tool.PsiTool;
-import com.zys.http.tool.TreeTool;
+import com.zys.http.service.Bundle;
+import com.zys.http.service.NotifyService;
+import com.zys.http.tool.*;
+import com.zys.http.ui.icon.HttpIcons;
 import com.zys.http.ui.tree.node.*;
 import jdk.jfr.Description;
 import lombok.Getter;
@@ -245,9 +249,34 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
         };
     }
 
-    @Override
-    protected @Nullable JPopupMenu getPopupMenu(@NotNull MouseEvent event, @NotNull BaseNode<?> node) {
-        return null;
+    protected @Nullable JPopupMenu getRightClickMenu(@NotNull MouseEvent e, @NotNull BaseNode<?> node) {
+        if (!(node instanceof MethodNode mn)) {
+            return null;
+        }
+        DefaultActionGroup group = new DefaultActionGroup();
+        group.setPopup(true);
+
+        ShowAction navigation = new ShowAction(Bundle.get("http.tree.right.item.navigation"), "", HttpIcons.General.LOCATE);
+        navigation.setAction(event -> mn.getValue().getPsiElement().navigate(true));
+        group.add(navigation);
+
+        ShowAction copyFullPath = new ShowAction(Bundle.get("http.tree.right.item.copy.full.path"), "", AllIcons.Actions.Copy);
+        copyFullPath.setAction(event -> {
+            HttpConfig config = httpPropertyTool.getDefaultHttpConfig();
+            String protocol = config.getProtocol().name().toLowerCase();
+            SystemTool.copy2Clipboard(protocol + "://" + config.getHostValue() + mn.getFragment());
+            NotifyService.instance(project).info(Bundle.get("http.tree.right.item.copy.full.msg"));
+        });
+        group.add(copyFullPath);
+
+        ShowAction copyApiPath = new ShowAction(Bundle.get("http.tree.right.item.copy.api.path"), "", AllIcons.Actions.Copy);
+        copyApiPath.setAction(event -> {
+            SystemTool.copy2Clipboard(mn.getFragment());
+            NotifyService.instance(project).info(Bundle.get("http.tree.right.item.copy.api.msg"));
+        });
+        group.add(copyApiPath);
+
+        return ActionManager.getInstance().createActionPopupMenu("http", group).getComponent();
     }
 
     @Description("获取所有 @xxxMapping 的方法")
