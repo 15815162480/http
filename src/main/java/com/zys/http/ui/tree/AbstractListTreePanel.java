@@ -7,6 +7,7 @@ import com.zys.http.entity.tree.NodeData;
 import com.zys.http.ui.tree.node.BaseNode;
 import com.zys.http.ui.tree.node.ModuleNode;
 import com.zys.http.ui.tree.render.HttpApiTreeCellRenderer;
+import jdk.jfr.Description;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -115,16 +116,18 @@ public abstract class AbstractListTreePanel extends JBScrollPane implements Tree
         return (BaseNode<?>) component;
     }
 
-
+    @Description("清空树形结构中的数据")
     public void clear() {
         this.getTreeModel().setRoot(null);
     }
 
 
+    @Description("展开全部")
     public void treeExpand() {
         expandAll(new TreePath(tree.getModel().getRoot()), true);
     }
 
+    @Description("收起全部")
     public void treeCollapse() {
         expandAll(new TreePath(tree.getModel().getRoot()), false);
     }

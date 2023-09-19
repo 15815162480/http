@@ -37,8 +37,8 @@ public class TreeTool {
 
     @NotNull
     @Description("获取指定父节点的所有包子节点")
-    public static List< BaseNode<?>> findChildren(@NotNull BaseNode<?> parentNode) {
-        List< BaseNode<?>> children = new ArrayList<>();
+    public static List<BaseNode<?>> findChildren(@NotNull BaseNode<?> parentNode) {
+        List<BaseNode<?>> children = new ArrayList<>();
         Enumeration<TreeNode> enumeration = parentNode.children();
         while (enumeration.hasMoreElements()) {
             TreeNode ele = enumeration.nextElement();

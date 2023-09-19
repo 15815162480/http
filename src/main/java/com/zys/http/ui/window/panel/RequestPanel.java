@@ -1,6 +1,5 @@
 package com.zys.http.ui.window.panel;
 
-import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.fileTypes.impl.FileTypeRenderer;
@@ -35,7 +34,6 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 import java.awt.*;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -50,12 +48,14 @@ import static com.zys.http.constant.HttpEnum.HttpMethod;
 public class RequestPanel extends JBSplitter {
 
     // ================== 上半部分的组件 ==================
+
     @Description("请求方式选项")
     private ComboBox<HttpMethod> httpMethodComboBox;
 
     @Description("IP/HOST文本输入框")
     private JTextField hostTextField;
 
+    @Description("发起请求的按钮")
     private JButton sendRequestBtn;
 
     @Description("树形结构列表")
@@ -94,23 +94,19 @@ public class RequestPanel extends JBSplitter {
 
     private transient Map<String, ParamProperty> paramPropertyMap;
 
-    private transient Map<String, FileType> fileTypeMap = new HashMap<>();
-
     public RequestPanel(@NotNull Project project) {
         super(true, Window.class.getName(), 0.5F);
         this.project = project;
         initFirstPanel();
         initSecondPanel();
         initSendRequestEvent();
-
     }
 
     @Description("初始化上半部分组件")
     private void initFirstPanel() {
         this.httpApiTreePanel = new HttpApiTreePanel(project);
         this.httpApiTreePanel.setChooseCallback(methodNode -> {
-            HttpPropertyTool propertyTool = HttpPropertyTool.getInstance(project);
-            HttpConfig config = propertyTool.getDefaultHttpConfig();
+            HttpConfig config = HttpPropertyTool.getInstance(project).getDefaultHttpConfig();
             String protocol = config.getProtocol().name().toLowerCase();
             String configHostValue = config.getHostValue();
             hostTextField.setText(protocol + "://" + configHostValue + methodNode.getFragment());
@@ -161,7 +157,6 @@ public class RequestPanel extends JBSplitter {
                             } else {
                                 bodyEditor.setText(v.getDefaultValue().toString(), CustomEditor.TEXT_FILE_TYPE);
                                 bodyFileType.setSelectedItem(CustomEditor.TEXT_FILE_TYPE);
-
                             }
                         } else {
                             bodyEditor.setText(v.getDefaultValue().toString(), CustomEditor.TEXT_FILE_TYPE);
@@ -188,38 +183,28 @@ public class RequestPanel extends JBSplitter {
         HttpMethod[] methods = Arrays.stream(HttpMethod.values()).filter(o -> !o.equals(HttpMethod.REQUEST))
                 .toList().toArray(new HttpMethod[]{});
         httpMethodComboBox = new ComboBox<>(methods);
-        httpMethodComboBox.setSelectedItem(HttpMethod.GET);
-        httpMethodComboBox.setFocusable(false);
         requestPanel.add(httpMethodComboBox, BorderLayout.WEST);
         // 请求地址文本框
         hostTextField = new JTextField();
-        hostTextField.setColumns(10);
-        hostTextField.setText("");
         requestPanel.add(hostTextField, BorderLayout.CENTER);
         // 发送按钮
         sendRequestBtn = new JXButton(Bundle.get("http.text.send"));
         requestPanel.add(sendRequestBtn, BorderLayout.EAST);
-
-
         secondPanel.add(requestPanel, BorderLayout.NORTH);
 
         // 标签页面
         JPanel tabsPanel = new JPanel(new BorderLayout(0, 0));
         tabs = new JBTabsImpl(project);
-
         // 请求头标签页
         HttpPropertyTool tool = HttpPropertyTool.getInstance(project);
         headerTable = new EnvHeaderTable(project, false, tool.getSelectedEnv());
-        ActionToolbar toolbar = headerTable.getToolbar();
-        toolbar.getComponent().setBorder(JBUI.Borders.customLine(UIConstant.BORDER_COLOR, 0, 0, 1, 0));
+        headerTable.getToolbar().getComponent().setBorder(JBUI.Borders.customLineBottom(UIConstant.BORDER_COLOR));
         TabInfo tabInfo = new TabInfo(headerTable);
         tabInfo.setText(Bundle.get("http.tab.request.header"));
         tabs.addTab(tabInfo);
-
         // 请求参数
         parameterTable = new ParameterTable(project);
-        ActionToolbar toolbar2 = parameterTable.getToolbar();
-        toolbar2.getComponent().setBorder(JBUI.Borders.customLineBottom(UIConstant.BORDER_COLOR));
+        parameterTable.getToolbar().getComponent().setBorder(JBUI.Borders.customLineBottom(UIConstant.BORDER_COLOR));
         parameterTabInfo = new TabInfo(parameterTable);
         parameterTabInfo.setText(Bundle.get("http.tab.request.param"));
         tabs.addTab(parameterTabInfo);
@@ -229,16 +214,18 @@ public class RequestPanel extends JBSplitter {
         tabs.addTab(bodyTabInfo);
         // 响应体
         responseEditor = new CustomEditor(project);
+        responseEditor.setBorder(JBUI.Borders.customLineLeft(UIConstant.EDITOR_BORDER_COLOR));
         responseTabInfo = new TabInfo(responseEditor);
         responseTabInfo.setText(Bundle.get("http.tab.request.return"));
         tabs.addTab(responseTabInfo);
 
+        tabs.getComponent().setBorder(JBUI.Borders.customLineLeft(UIConstant.EDITOR_BORDER_COLOR));
         tabsPanel.add(tabs.getComponent(), BorderLayout.CENTER);
         secondPanel.add(tabsPanel, BorderLayout.CENTER);
         this.setSecondComponent(secondPanel);
     }
 
-
+    @Description("初始化发送请求按钮")
     private void initSendRequestEvent() {
         sendRequestBtn.addActionListener(event -> {
             String url = hostTextField.getText();
@@ -281,12 +268,12 @@ public class RequestPanel extends JBSplitter {
         });
     }
 
-
+    @Description("初始化请求体面板")
     private JPanel initBodyTabInfoPanel() {
         JPanel bodyPanel = new JPanel(new BorderLayout(0, 0));
         bodyEditor = new CustomEditor(project);
         bodyEditor.setName("BODY");
-        // bodyEditor.setBorder(JBUI.Borders.customLineLeft(EDITOR_BORDER_COLOR));
+        bodyEditor.setBorder(JBUI.Borders.customLineLeft(UIConstant.EDITOR_BORDER_COLOR));
         bodyPanel.add(bodyEditor, BorderLayout.CENTER);
         JLabel label = new JLabel(Bundle.get("http.editor.body.label"));
         bodyFileType = new ComboBox<>(new FileType[]{
@@ -318,7 +305,6 @@ public class RequestPanel extends JBSplitter {
         bodyPanel.add(bodySelectPanel, BorderLayout.SOUTH);
         return bodyPanel;
     }
-
 
     public void reload() {
         this.headerTable.reloadTableModel();
