@@ -24,7 +24,9 @@ import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
+import java.awt.event.MouseEvent;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -241,6 +243,11 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
                 }
             }
         };
+    }
+
+    @Override
+    protected @Nullable JPopupMenu getPopupMenu(@NotNull MouseEvent event, @NotNull BaseNode<?> node) {
+        return null;
     }
 
     @Description("获取所有 @xxxMapping 的方法")

@@ -16,6 +16,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Enumeration;
@@ -42,7 +43,7 @@ public abstract class AbstractListTreePanel extends JBScrollPane implements Tree
         this.setViewportView(tree);
         this.tree.setCellRenderer(new HttpApiTreeCellRenderer());
 
-        tree.addTreeSelectionListener(e -> {
+        this.tree.addTreeSelectionListener(e -> {
             if (!tree.isEnabled()) {
                 return;
             }
@@ -53,7 +54,7 @@ public abstract class AbstractListTreePanel extends JBScrollPane implements Tree
             Objects.requireNonNull(getChooseListener()).accept(selectedNode);
         });
 
-        tree.addMouseListener(new MouseAdapter() {
+        this.tree.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent event) {
                 if (!tree.isEnabled()) {
@@ -63,8 +64,12 @@ public abstract class AbstractListTreePanel extends JBScrollPane implements Tree
                 if (Objects.isNull(node)) {
                     return;
                 }
-                if (SwingUtilities.isLeftMouseButton(event) && event.getClickCount() == 2 && getDoubleClickListener() != null) {
-                    getDoubleClickListener().accept(node);
+                if (SwingUtilities.isLeftMouseButton(event)) {
+                    if (event.getClickCount() == 2 && Objects.nonNull(getDoubleClickListener())) {
+                        getDoubleClickListener().accept(node);
+                    }
+                } else if (SwingUtilities.isRightMouseButton(event)) {
+
                 }
             }
 
@@ -101,6 +106,9 @@ public abstract class AbstractListTreePanel extends JBScrollPane implements Tree
 
     @Nullable
     protected abstract Consumer<BaseNode<?>> getDoubleClickListener();
+
+    @Nullable
+    protected abstract JPopupMenu getPopupMenu(@NotNull MouseEvent event, @NotNull BaseNode<?> node);
 
     @Nullable
     public BaseNode<?> getChooseNode(@Nullable TreePath treePath) {
@@ -152,5 +160,17 @@ public abstract class AbstractListTreePanel extends JBScrollPane implements Tree
 
     public void render(ModuleNode root) {
         getTreeModel().setRoot(root);
+    }
+
+    protected void showPopupMenu(int x, int y, @Nullable JPopupMenu menu) {
+        if (menu == null) {
+            return;
+        }
+        TreePath path = tree.getPathForLocation(x, y);
+        tree.setSelectionPath(path);
+        Rectangle rectangle = tree.getUI().getPathBounds(tree, path);
+        if (rectangle != null && rectangle.contains(x, y)) {
+            menu.show(tree, x, rectangle.y + rectangle.height);
+        }
     }
 }
