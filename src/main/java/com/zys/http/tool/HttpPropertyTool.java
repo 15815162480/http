@@ -20,6 +20,8 @@ public class HttpPropertyTool {
 
     private final HttpService httpService;
 
+    private static HttpPropertyTool instance;
+
     private static final HttpConfig DEFAULT_HTTP_CONFIG = new HttpConfig(HttpEnum.Protocol.HTTP,
             "127.0.0.1", Collections.emptyMap());
 
@@ -28,7 +30,10 @@ public class HttpPropertyTool {
     }
 
     public static HttpPropertyTool getInstance(Project project) {
-        return new HttpPropertyTool(project);
+        if (Objects.isNull(instance)) {
+            instance = new HttpPropertyTool(project);
+        }
+        return instance;
     }
 
     public Map<String, HttpConfig> getHttpConfigs() {
@@ -55,7 +60,8 @@ public class HttpPropertyTool {
     public String getSelectedEnv() {
         return httpService.getSelectedEnv();
     }
+
     public void setSelectedEnv(String key) {
-         httpService.setSelectedEnv(key);
+        httpService.setSelectedEnv(key);
     }
 }
