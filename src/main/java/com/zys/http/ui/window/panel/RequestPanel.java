@@ -31,6 +31,8 @@ import com.zys.http.ui.icon.HttpIcons;
 import com.zys.http.ui.table.EnvHeaderTable;
 import com.zys.http.ui.table.ParameterTable;
 import com.zys.http.ui.tree.HttpApiTreePanel;
+import com.zys.http.ui.tree.node.BaseNode;
+import com.zys.http.ui.tree.node.MethodNode;
 import jdk.jfr.Description;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -111,71 +113,7 @@ public class RequestPanel extends JBSplitter {
     @Description("初始化上半部分组件")
     private void initFirstPanel() {
         this.httpApiTreePanel = new HttpApiTreePanel(project);
-        this.httpApiTreePanel.setChooseCallback(methodNode -> {
-            HttpConfig config = HttpPropertyTool.getInstance(project).getDefaultHttpConfig();
-            String protocol = config.getProtocol().name().toLowerCase();
-            String configHostValue = config.getHostValue();
-            hostTextField.setText(protocol + "://" + configHostValue + methodNode.getFragment());
-            HttpMethod httpMethod = methodNode.getValue().getHttpMethod();
-            httpMethod = httpMethod.equals(HttpMethod.REQUEST) ? HttpMethod.GET : httpMethod;
-            httpMethodComboBox.setSelectedItem(httpMethod);
-            // 获取选中节点的参数类型
-            PsiMethod psiMethod = (PsiMethod) methodNode.getValue().getPsiElement();
-            HttpEnum.ContentType contentType = PsiTool.contentTypeHeader((PsiClass) psiMethod.getParent());
-            HttpEnum.ContentType type = PsiTool.contentTypeHeader(psiMethod);
-            type = httpMethod.equals(HttpMethod.GET) ? HttpEnum.ContentType.APPLICATION_X_FORM_URLENCODED : type;
-            headerTable.addContentType(Objects.isNull(type) ? contentType.getValue() : type.getValue());
-
-            // 填充参数
-            // 先清空 model
-            parameterTable.clearTableModel();
-            bodyEditor.setText("");
-            responseEditor.setText("");
-            paramPropertyMap = ParamConvert.parsePsiMethodParams(psiMethod);
-
-            for (Map.Entry<String, ParamProperty> entry : paramPropertyMap.entrySet()) {
-                String k = entry.getKey();
-                ParamProperty v = entry.getValue();
-                HttpEnum.ParamUsage usage = v.getParamUsage();
-                switch (usage) {
-                    case PATH -> {
-                        tabs.select(parameterTabInfo, true);
-                        parameterTable.getTableModel().addRow(new String[]{k, v.getDefaultValue() + ""});
-                    }
-                    case URL -> {
-                        if (httpMethod.equals(HttpMethod.POST)) {
-                            // 将参数格式化成 username=a&password=a
-                            String s = ParamConvert.buildParamPropertyUrlParameters(paramPropertyMap);
-                            bodyEditor.setText(s, CustomEditor.TEXT_FILE_TYPE);
-                            tabs.select(bodyTabInfo, true);
-                            bodyFileType.setSelectedItem(CustomEditor.TEXT_FILE_TYPE);
-                        } else {
-                            parameterTable.getTableModel().addRow(new String[]{k, v.getDefaultValue() + ""});
-                            tabs.select(parameterTabInfo, true);
-                        }
-                    }
-                    case BODY -> {
-                        tabs.select(bodyTabInfo, true);
-                        if (Objects.isNull(type)) {
-                            if (contentType.equals(HttpEnum.ContentType.APPLICATION_JSON)) {
-                                bodyEditor.setText(v.getDefaultValue().toString(), CustomEditor.JSON_FILE_TYPE);
-                                bodyFileType.setSelectedItem(CustomEditor.JSON_FILE_TYPE);
-                            } else {
-                                bodyEditor.setText(v.getDefaultValue().toString(), CustomEditor.TEXT_FILE_TYPE);
-                                bodyFileType.setSelectedItem(CustomEditor.TEXT_FILE_TYPE);
-                            }
-                        } else {
-                            bodyEditor.setText(v.getDefaultValue().toString(), CustomEditor.TEXT_FILE_TYPE);
-                            bodyFileType.setSelectedItem(CustomEditor.TEXT_FILE_TYPE);
-                        }
-                    }
-                    default -> {
-                        // 不处理
-                    }
-                }
-            }
-
-        });
+        this.httpApiTreePanel.setChooseCallback(this::chooseEvent);
         this.setFirstComponent(httpApiTreePanel);
     }
 
@@ -316,17 +254,89 @@ public class RequestPanel extends JBSplitter {
             dialog.setOkCallBack(s -> bodyEditor.setText(s)).show();
         });
         group.add(action);
-        ActionToolbarImpl component = (ActionToolbarImpl) ActionManager.getInstance().createActionToolbar("http.body.editor", group, true).getComponent();
+        ActionToolbarImpl component = (ActionToolbarImpl) ActionManager.getInstance()
+                .createActionToolbar("http.body.editor", group, true).getComponent();
         component.setReservePlaceAutoPopupIcon(false);
+        component.setTargetComponent(bodyEditor);
         bodySelectPanel.add(component, BorderLayout.EAST);
         bodyPanel.add(bodySelectPanel, BorderLayout.SOUTH);
         return bodyPanel;
     }
 
-    public void reload() {
-        this.headerTable.reloadTableModel();
-        this.parameterTable.clearTableModel();
-        this.hostTextField.setText("");
-        this.httpMethodComboBox.setSelectedItem(HttpMethod.GET);
+    public void reload(BaseNode<?> chooseNode) {
+        if (Objects.nonNull(chooseNode) && chooseNode instanceof MethodNode m) {
+            chooseEvent(m);
+        } else {
+            this.headerTable.reloadTableModel();
+            this.parameterTable.clearTableModel();
+            this.hostTextField.setText("");
+            this.httpMethodComboBox.setSelectedItem(HttpMethod.GET);
+        }
+    }
+
+    @Description("选中方法结点的事件处理")
+    private void chooseEvent(MethodNode methodNode) {
+        HttpConfig config = HttpPropertyTool.getInstance(project).getDefaultHttpConfig();
+        String protocol = config.getProtocol().name().toLowerCase();
+        String configHostValue = config.getHostValue();
+        hostTextField.setText(protocol + "://" + configHostValue + methodNode.getFragment());
+        HttpMethod httpMethod = methodNode.getValue().getHttpMethod();
+        httpMethod = httpMethod.equals(HttpMethod.REQUEST) ? HttpMethod.GET : httpMethod;
+        httpMethodComboBox.setSelectedItem(httpMethod);
+        // 获取选中节点的参数类型
+        PsiMethod psiMethod = (PsiMethod) methodNode.getValue().getPsiElement();
+        HttpEnum.ContentType contentType = PsiTool.contentTypeHeader((PsiClass) psiMethod.getParent());
+        HttpEnum.ContentType type = PsiTool.contentTypeHeader(psiMethod);
+        type = httpMethod.equals(HttpMethod.GET) ? HttpEnum.ContentType.APPLICATION_X_FORM_URLENCODED : type;
+        headerTable.addContentType(Objects.isNull(type) ? contentType.getValue() : type.getValue());
+
+        // 填充参数
+        // 先清空 model
+        parameterTable.clearTableModel();
+        bodyEditor.setText("");
+        responseEditor.setText("");
+        paramPropertyMap = ParamConvert.parsePsiMethodParams(psiMethod);
+
+        for (Map.Entry<String, ParamProperty> entry : paramPropertyMap.entrySet()) {
+            String k = entry.getKey();
+            ParamProperty v = entry.getValue();
+            HttpEnum.ParamUsage usage = v.getParamUsage();
+            switch (usage) {
+                case PATH -> {
+                    tabs.select(parameterTabInfo, true);
+                    parameterTable.getTableModel().addRow(new String[]{k, v.getDefaultValue() + ""});
+                }
+                case URL -> {
+                    if (httpMethod.equals(HttpMethod.POST)) {
+                        // 将参数格式化成 username=a&password=a
+                        String s = ParamConvert.buildParamPropertyUrlParameters(paramPropertyMap);
+                        bodyEditor.setText(s, CustomEditor.TEXT_FILE_TYPE);
+                        tabs.select(bodyTabInfo, true);
+                        bodyFileType.setSelectedItem(CustomEditor.TEXT_FILE_TYPE);
+                    } else {
+                        parameterTable.getTableModel().addRow(new String[]{k, v.getDefaultValue() + ""});
+                        tabs.select(parameterTabInfo, true);
+                    }
+                }
+                case BODY -> {
+                    tabs.select(bodyTabInfo, true);
+                    if (Objects.isNull(type)) {
+                        if (contentType.equals(HttpEnum.ContentType.APPLICATION_JSON)) {
+                            bodyEditor.setText(v.getDefaultValue().toString(), CustomEditor.JSON_FILE_TYPE);
+                            bodyFileType.setSelectedItem(CustomEditor.JSON_FILE_TYPE);
+                        } else {
+                            bodyEditor.setText(v.getDefaultValue().toString(), CustomEditor.TEXT_FILE_TYPE);
+                            bodyFileType.setSelectedItem(CustomEditor.TEXT_FILE_TYPE);
+                        }
+                    } else {
+                        bodyEditor.setText(v.getDefaultValue().toString(), CustomEditor.TEXT_FILE_TYPE);
+                        bodyFileType.setSelectedItem(CustomEditor.TEXT_FILE_TYPE);
+                    }
+                }
+                default -> {
+                    // 不处理
+                }
+            }
+        }
     }
 }

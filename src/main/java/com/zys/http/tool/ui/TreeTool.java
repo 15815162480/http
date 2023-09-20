@@ -1,4 +1,4 @@
-package com.zys.http.tool;
+package com.zys.http.tool.ui;
 
 import com.zys.http.ui.tree.node.BaseNode;
 import jdk.jfr.Description;

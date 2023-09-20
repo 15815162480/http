@@ -42,7 +42,7 @@ public class SelectActionGroup extends DefaultActionGroup {
             action.setAction(event -> {
                 event.getPresentation().setIcon(HttpIcons.General.ADD);
                 tool.setSelectedEnv(event.getPresentation().getText());
-                requestPanel.reload();
+                requestPanel.reload(requestPanel.getHttpApiTreePanel().getChooseNode());
             });
             if (s.equals(tool.getSelectedEnv())) {
                 action.setIcon(HttpIcons.General.DEFAULT);

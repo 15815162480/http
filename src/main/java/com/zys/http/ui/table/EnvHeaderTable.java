@@ -154,7 +154,6 @@ public class EnvHeaderTable extends AbstractTable {
 
 
     public Map<String, String> buildHttpHeader() {
-
         Map<String, String> map = new HashMap<>();
         DefaultTableModel model = getTableModel();
         int rowCount = model.getRowCount();

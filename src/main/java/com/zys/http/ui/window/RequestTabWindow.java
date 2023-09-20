@@ -59,9 +59,8 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
         group.add(envActionGroup);
         RefreshAction refreshAction = new RefreshAction();
         refreshAction.setAction(event -> {
+            requestPanel.reload(null);
             requestPanel.getHttpApiTreePanel().clear();
-            requestPanel.reload();
-
             new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {

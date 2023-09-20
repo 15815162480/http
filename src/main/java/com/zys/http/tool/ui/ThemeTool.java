@@ -1,4 +1,4 @@
-package com.zys.http.tool;
+package com.zys.http.tool.ui;
 
 import com.intellij.openapi.editor.colors.EditorColors;
 import com.intellij.openapi.editor.colors.EditorColorsManager;

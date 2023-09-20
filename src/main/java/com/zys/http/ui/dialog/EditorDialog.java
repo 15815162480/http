@@ -2,9 +2,10 @@ package com.zys.http.ui.dialog;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.util.ui.JBUI;
+import com.zys.http.constant.UIConstant;
 import com.zys.http.service.Bundle;
 import com.zys.http.ui.editor.CustomEditor;
-import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.jetbrains.annotations.NotNull;
@@ -19,18 +20,19 @@ import java.util.function.Consumer;
  * @author zys
  * @since 2023-09-19
  */
-@Getter
-@Setter
+
 @Accessors(chain = true)
 public class EditorDialog extends DialogWrapper {
 
     private final CustomEditor customEditor;
 
+    @Setter
     private Consumer<String> okCallBack;
 
     public EditorDialog(@Nullable Project project, String title, CustomEditor customEditor) {
         super(project);
         this.customEditor = customEditor;
+        customEditor.setBorder(JBUI.Borders.customLine(UIConstant.EDITOR_BORDER_COLOR, 1, 1, 1, 1));
         init();
         getRootPane().setMinimumSize(new Dimension(800, 600));
         setOKButtonText(Bundle.get("http.text.ok"));
@@ -50,7 +52,7 @@ public class EditorDialog extends DialogWrapper {
 
     @Override
     protected void doOKAction() {
-        if (Objects.nonNull(okCallBack)){
+        if (Objects.nonNull(okCallBack)) {
             okCallBack.accept(customEditor.getText());
         }
         super.doOKAction();

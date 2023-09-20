@@ -11,6 +11,7 @@ import com.zys.http.constant.UIConstant;
 import com.zys.http.entity.HttpConfig;
 import com.zys.http.service.Bundle;
 import com.zys.http.tool.HttpPropertyTool;
+import com.zys.http.tool.ui.DialogTool;
 import com.zys.http.ui.table.EnvHeaderTable;
 import com.zys.http.ui.table.EnvListTable;
 import jdk.jfr.Description;
@@ -110,6 +111,7 @@ public class EnvAddOrEditDialog extends DialogWrapper {
         // 请求头分割线
         gbc.gridy = 3;
         gbc.gridx = 0;
+        gbc.insets = JBUI.insetsBottom(5);
         first.add(headerPanel(), gbc);
 
         // 表格
@@ -127,7 +129,7 @@ public class EnvAddOrEditDialog extends DialogWrapper {
         gbc.weightx = 1.0;
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        SeparatorComponent separator = new SeparatorComponent(UIConstant.EDITOR_BORDER_COLOR, SeparatorOrientation.HORIZONTAL);
+        SeparatorComponent separator = new SeparatorComponent(UIConstant.BORDER_COLOR, SeparatorOrientation.HORIZONTAL);
         header.add(separator, gbc);
         return header;
     }
@@ -138,7 +140,7 @@ public class EnvAddOrEditDialog extends DialogWrapper {
         String configName = configNameTF.getText();
         // 添加时需要检测是否存在
         if (httpPropertyTool.getHttpConfig(configName) != null && envAddOrEditTable.isAdd()) {
-            ErrorDialog.show(Bundle.get("http.dialog.env.config.existed"));
+            DialogTool.error(Bundle.get("http.dialog.env.config.existed"));
             return;
         }
         String host = hostTF.getText();

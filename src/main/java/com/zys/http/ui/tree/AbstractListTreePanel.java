@@ -175,4 +175,14 @@ public abstract class AbstractListTreePanel extends JBScrollPane implements Tree
             menu.show(tree, x, rectangle.y + rectangle.height);
         }
     }
+
+    public BaseNode<?> getChooseNode() {
+        TreePath path = tree.getSelectionPath();
+        if (Objects.isNull(path)) {
+            return null;
+        } else {
+            Object component = path.getLastPathComponent();
+            return (BaseNode<?>) component;
+        }
+    }
 }

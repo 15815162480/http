@@ -34,8 +34,6 @@ public class EnvListShowDialog extends DialogWrapper {
 
     @Override
     protected @Nullable JComponent createCenterPanel() {
-        JPanel main = new JPanel(new BorderLayout(0,0));
-        main.add(envShowTable, BorderLayout.CENTER);
-        return main;
+        return envShowTable;
     }
 }
