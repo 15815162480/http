@@ -74,6 +74,7 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
         ExpandAction expandAction = new ExpandAction();
         expandAction.setAction(event -> requestPanel.getHttpApiTreePanel().treeExpand());
         group.add(expandAction);
+
         CollapseAction collapseAction = new CollapseAction();
         collapseAction.setAction(event -> requestPanel.getHttpApiTreePanel().treeCollapse());
         group.add(collapseAction);

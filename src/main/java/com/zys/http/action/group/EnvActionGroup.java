@@ -5,7 +5,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.project.Project;
 import com.zys.http.action.AddAction;
-import com.zys.http.action.ShowAction;
+import com.zys.http.action.CommonAction;
 import com.zys.http.service.Bundle;
 import com.zys.http.ui.dialog.EnvAddOrEditDialog;
 import com.zys.http.ui.dialog.EnvListShowDialog;
@@ -44,7 +44,7 @@ public class EnvActionGroup extends DefaultActionGroup {
         SelectActionGroup selectActionGroup = new SelectActionGroup(requestPanel);
         selectActionGroup.setPopup(true);
         actions[1] = selectActionGroup;
-        ShowAction action = new ShowAction(Bundle.get("http.action.show.env"), "Env list", null);
+        CommonAction action = new CommonAction(Bundle.get("http.action.show.env"), "Env list", null);
         action.setAction(event -> new EnvListShowDialog(project).show());
         actions[2] = action;
         return actions;

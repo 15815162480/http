@@ -12,7 +12,7 @@ import com.intellij.psi.PsiAnnotation;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiMethod;
 import com.intellij.ui.treeStructure.SimpleTree;
-import com.zys.http.action.ShowAction;
+import com.zys.http.action.CommonAction;
 import com.zys.http.constant.HttpEnum;
 import com.zys.http.constant.SpringEnum;
 import com.zys.http.entity.HttpConfig;
@@ -258,11 +258,11 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
         DefaultActionGroup group = new DefaultActionGroup();
         group.setPopup(true);
 
-        ShowAction navigation = new ShowAction(Bundle.get("http.tree.right.item.navigation"), "", HttpIcons.General.LOCATE);
+        CommonAction navigation = new CommonAction(Bundle.get("http.tree.right.item.navigation"), "", HttpIcons.General.LOCATE);
         navigation.setAction(event -> mn.getValue().getPsiElement().navigate(true));
         group.add(navigation);
 
-        ShowAction copyFullPath = new ShowAction(Bundle.get("http.tree.right.item.copy.full.path"), "", AllIcons.Actions.Copy);
+        CommonAction copyFullPath = new CommonAction(Bundle.get("http.tree.right.item.copy.full.path"), "", AllIcons.Actions.Copy);
         copyFullPath.setAction(event -> {
             HttpConfig config = httpPropertyTool.getDefaultHttpConfig();
             String protocol = config.getProtocol().name().toLowerCase();
@@ -271,7 +271,7 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
         });
         group.add(copyFullPath);
 
-        ShowAction copyApiPath = new ShowAction(Bundle.get("http.tree.right.item.copy.api.path"), "", AllIcons.Actions.Copy);
+        CommonAction copyApiPath = new CommonAction(Bundle.get("http.tree.right.item.copy.api.path"), "", AllIcons.Actions.Copy);
         copyApiPath.setAction(event -> {
             SystemTool.copy2Clipboard(mn.getFragment());
             NotifyService.instance(project).info(Bundle.get("http.tree.right.item.copy.api.msg"));

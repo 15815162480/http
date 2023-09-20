@@ -15,7 +15,7 @@ import com.intellij.ui.tabs.JBTabs;
 import com.intellij.ui.tabs.TabInfo;
 import com.intellij.ui.tabs.impl.JBTabsImpl;
 import com.intellij.util.ui.JBUI;
-import com.zys.http.action.ShowAction;
+import com.zys.http.action.CommonAction;
 import com.zys.http.constant.HttpEnum;
 import com.zys.http.constant.UIConstant;
 import com.zys.http.entity.HttpConfig;
@@ -246,7 +246,7 @@ public class RequestPanel extends JBSplitter {
         bodySelectPanel.add(label, BorderLayout.WEST);
         bodySelectPanel.add(bodyFileType, BorderLayout.CENTER);
         DefaultActionGroup group = new DefaultActionGroup();
-        ShowAction action = new ShowAction(Bundle.get("http.editor.body.action"), "", HttpIcons.General.FULL_SCREEN);
+        CommonAction action = new CommonAction(Bundle.get("http.editor.body.action"), "", HttpIcons.General.FULL_SCREEN);
         action.setAction(e -> {
             CustomEditor editor = new CustomEditor(project, bodyEditor.getFileType());
             editor.setText(bodyEditor.getText());
