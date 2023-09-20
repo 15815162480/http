@@ -19,8 +19,10 @@ import com.zys.http.entity.HttpConfig;
 import com.zys.http.entity.tree.*;
 import com.zys.http.service.Bundle;
 import com.zys.http.service.NotifyService;
-import com.zys.http.tool.*;
+import com.zys.http.tool.HttpPropertyTool;
+import com.zys.http.tool.ProjectTool;
 import com.zys.http.tool.PsiTool;
+import com.zys.http.tool.SystemTool;
 import com.zys.http.tool.ui.TreeTool;
 import com.zys.http.ui.icon.HttpIcons;
 import com.zys.http.ui.tree.node.*;
@@ -71,12 +73,12 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
         this.httpPropertyTool = HttpPropertyTool.getInstance(project);
     }
 
-    public ModuleNode initNodes() {
-        return initModuleNodes();
+    public ModuleNode initNodes(HttpEnum.HttpMethod[] methods) {
+        return initModuleNodes(methods);
     }
 
     @Description("初始化模块结点, 可能有多层级")
-    private ModuleNode initModuleNodes() {
+    private ModuleNode initModuleNodes(HttpEnum.HttpMethod[] methods) {
         Collection<Module> modules = ProjectTool.moduleList(project);
         Module rootModule = ProjectTool.getRootModule(project);
         if (modules.isEmpty() || Objects.isNull(rootModule)) {
@@ -88,6 +90,10 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
         for (Module m : modules) {
             contextPath = ProjectTool.getModuleContextPath(project, m);
             moduleNodeMap.put(m.getName(), new ModuleNode(new ModuleNodeData(m.getName(), contextPath)));
+        }
+
+        if (methods.length < 1) {
+            return moduleNodeMap.get(project.getName());
         }
 
         String moduleName;
@@ -122,7 +128,7 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
                     contextPath = ProjectTool.getModuleContextPath(project, m);
                     methodNodeMap.put(c, buildMethodNodes(c, contextPath, controllerPath, methodNodePsiMap));
                 }
-                initPackageNodes(moduleName).forEach(mn::add);
+                initPackageNodes(moduleName, methods).forEach(mn::add);
             }
         }
 
@@ -131,7 +137,7 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
     }
 
     @Description("初始化包结点、类结点、方法结点")
-    private List<BaseNode<? extends NodeData>> initPackageNodes(String moduleName) {
+    private List<BaseNode<? extends NodeData>> initPackageNodes(String moduleName, HttpEnum.HttpMethod[] methods) {
         // 获取当前模块的所有 controller
         List<PsiClass> psiClasses = moduleControllerMap.get(moduleName);
 
@@ -143,10 +149,10 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
         List<BaseNode<?>> children = new ArrayList<>();
         List<BaseNode<?>> unKnownPackage = new ArrayList<>(0);
 
+        List<HttpEnum.HttpMethod> httpMethods = Arrays.stream(methods).toList();
         for (Map.Entry<PsiClass, List<MethodNode>> e : methodNodeMap.entrySet()) {
             PsiClass k = e.getKey();
             List<MethodNode> v = e.getValue();
-
             if (!psiClasses.contains(k)) {
                 continue;
             }
@@ -155,13 +161,20 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
             data.setDescription(s);
             ClassNode classNode = new ClassNode(data);
 
-            v.forEach(classNode::add);
+            v.forEach(methodNode -> {
+                HttpEnum.HttpMethod httpMethod = methodNode.getValue().getHttpMethod();
+                if (httpMethods.contains(httpMethod)) {
+                    classNode.add(methodNode);
+                }
+            });
             String packageName = PsiTool.getPackageName(k);
-            if (Objects.isNull(packageName)) {
-                // 没有包名则直接添加到 module 节点
-                unKnownPackage.add(classNode);
-            } else {
-                createPackageNodes(packageNodeMap, packageName).add(classNode);
+            if (classNode.getChildCount() > 0) {
+                if (Objects.isNull(packageName)) {
+                    // 没有包名则直接添加到 module 节点
+                    unKnownPackage.add(classNode);
+                } else {
+                    createPackageNodes(packageNodeMap, packageName).add(classNode);
+                }
             }
         }
 

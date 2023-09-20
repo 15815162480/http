@@ -268,7 +268,7 @@ public class RequestPanel extends JBSplitter {
             chooseEvent(m);
         } else {
             this.headerTable.reloadTableModel();
-            this.parameterTable.clearTableModel();
+            this.parameterTable.reloadTableModel();
             this.hostTextField.setText("");
             this.httpMethodComboBox.setSelectedItem(HttpMethod.GET);
         }
@@ -292,7 +292,7 @@ public class RequestPanel extends JBSplitter {
 
         // 填充参数
         // 先清空 model
-        parameterTable.clearTableModel();
+        parameterTable.reloadTableModel();
         bodyEditor.setText("");
         responseEditor.setText("");
         paramPropertyMap = ParamConvert.parsePsiMethodParams(psiMethod);

@@ -8,6 +8,8 @@ import com.intellij.openapi.module.ResourceFileUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.wm.ToolWindow;
+import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.psi.*;
 import com.intellij.psi.impl.java.stubs.index.JavaAnnotationIndex;
 import com.intellij.psi.search.GlobalSearchScope;
@@ -129,5 +131,10 @@ public class ProjectTool {
             }
         }
         return null;
+    }
+
+
+    public static ToolWindow getCurrentToolWindow(Project project){
+        return  ToolWindowManager.getInstance(project).getToolWindow("http");
     }
 }

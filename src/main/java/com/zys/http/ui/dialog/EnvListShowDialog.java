@@ -4,6 +4,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.zys.http.service.Bundle;
 import com.zys.http.ui.table.EnvListTable;
+import com.zys.http.ui.window.panel.RequestPanel;
 import jdk.jfr.Description;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -21,9 +22,9 @@ public class EnvListShowDialog extends DialogWrapper {
     @Description("环境列表表格")
     private final EnvListTable envShowTable;
 
-    public EnvListShowDialog(@NotNull Project project) {
+    public EnvListShowDialog(@NotNull Project project, RequestPanel requestPanel) {
         super(project, true);
-        envShowTable = new EnvListTable(project);
+        envShowTable = new EnvListTable(project, requestPanel);
         init();
         getRootPane().setMinimumSize(new Dimension(500, 400));
         setTitle(Bundle.get("http.dialog.env.list"));

@@ -15,6 +15,7 @@ import com.zys.http.tool.ui.DialogTool;
 import com.zys.http.ui.table.EnvHeaderTable;
 import com.zys.http.ui.table.EnvListTable;
 import jdk.jfr.Description;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -22,6 +23,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 import static com.zys.http.constant.HttpEnum.Protocol;
 
@@ -49,6 +51,10 @@ public class EnvAddOrEditDialog extends DialogWrapper {
 
     @Description("是否是添加")
     private final boolean isAdd;
+
+    @Setter
+    @Description("编辑成功回调")
+    private Consumer<HttpConfig> editOkCallback;
 
     public EnvAddOrEditDialog(@NotNull Project project, boolean isAdd, String selectEnv, EnvListTable envShowTable) {
         super(project, true);
@@ -162,6 +168,9 @@ public class EnvAddOrEditDialog extends DialogWrapper {
                 int selectedRow = envShowTable.getValueTable().getSelectedRow();
                 model.setValueAt(protocol.toString(), selectedRow, 1);
                 model.setValueAt(host, selectedRow, 2);
+                if (Objects.nonNull(editOkCallback)){
+                    editOkCallback.accept(httpConfig);
+                }
             }
         }
         super.doOKAction();

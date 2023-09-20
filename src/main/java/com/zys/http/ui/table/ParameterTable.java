@@ -19,7 +19,7 @@ public class ParameterTable extends EnvHeaderTable {
 
     @Override
     protected @NotNull DefaultTableModel initTableModel() {
-        Object[] columnNames = {
+        String[] columnNames = {
                 Bundle.get("http.table.param.key"),
                 Bundle.get("http.table.param.value")
         };

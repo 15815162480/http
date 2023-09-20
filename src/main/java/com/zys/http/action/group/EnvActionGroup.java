@@ -45,7 +45,7 @@ public class EnvActionGroup extends DefaultActionGroup {
         selectActionGroup.setPopup(true);
         actions[1] = selectActionGroup;
         CommonAction action = new CommonAction(Bundle.get("http.action.show.env"), "Env list", null);
-        action.setAction(event -> new EnvListShowDialog(project).show());
+        action.setAction(event -> new EnvListShowDialog(project, requestPanel).show());
         actions[2] = action;
         return actions;
     }

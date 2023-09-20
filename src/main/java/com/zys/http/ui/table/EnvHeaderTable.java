@@ -23,7 +23,6 @@ import javax.swing.table.TableModel;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Vector;
 
 /**
  * @author zys
@@ -50,25 +49,32 @@ public class EnvHeaderTable extends AbstractTable {
 
     @Override
     protected @NotNull DefaultTableModel initTableModel() {
-        // 构建列信息
-        Vector<String> columnNames = new Vector<>();
-        columnNames.add(Bundle.get("http.table.header"));
-        columnNames.add(Bundle.get("http.table.value"));
-        Vector<Vector<String>> rowData = new Vector<>();
+        String[] columnNames = {
+                Bundle.get("http.table.header"),
+                Bundle.get("http.table.value")
+        };
+        String[][] rowData = null;
 
-        if (!this.isAdd) {
-            HttpConfig httpConfig = httpPropertyTool.getHttpConfig(selectEnv);
-            if (Objects.nonNull(httpConfig)) {
-                Map<String, String> headers = httpConfig.getHeaders();
-                if (Objects.nonNull(headers)) {
-                    headers.forEach((k, v) -> {
-                        Vector<String> vector = new Vector<>(2);
-                        vector.add(k);
-                        vector.add(v);
-                        rowData.add(vector);
-                    });
-                }
-            }
+        if (this.isAdd) {
+            return new DefaultTableModel(rowData, columnNames);
+        }
+
+        HttpConfig httpConfig = httpPropertyTool.getHttpConfig(selectEnv);
+        if (Objects.isNull(httpConfig)) {
+            return new DefaultTableModel(rowData, columnNames);
+        }
+
+        Map<String, String> headers = httpConfig.getHeaders();
+        if (Objects.isNull(headers)) {
+            return new DefaultTableModel(rowData, columnNames);
+        }
+
+        rowData = new String[headers.size()][];
+        int i = 0;
+        for (Map.Entry<String, String> e : headers.entrySet()) {
+            rowData[i] = new String[2];
+            rowData[i][0] = e.getKey();
+            rowData[i++][1] = e.getValue();
         }
 
         return new DefaultTableModel(rowData, columnNames);
@@ -147,20 +153,19 @@ public class EnvHeaderTable extends AbstractTable {
         }
     }
 
+    @Override
     public void reloadTableModel() {
         this.selectEnv = httpPropertyTool.getSelectedEnv();
         valueTable.setModel(initTableModel());
     }
-
 
     public Map<String, String> buildHttpHeader() {
         Map<String, String> map = new HashMap<>();
         DefaultTableModel model = getTableModel();
         int rowCount = model.getRowCount();
         for (int i = 0; i < rowCount; i++) {
-            map.put((String) model.getValueAt(i,0), (String) model.getValueAt(i,1));
+            map.put((String) model.getValueAt(i, 0), (String) model.getValueAt(i, 1));
         }
-
         return map;
     }
 }

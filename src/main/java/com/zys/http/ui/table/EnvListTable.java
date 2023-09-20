@@ -12,6 +12,7 @@ import com.zys.http.action.RemoveAction;
 import com.zys.http.entity.HttpConfig;
 import com.zys.http.service.Bundle;
 import com.zys.http.ui.dialog.EnvAddOrEditDialog;
+import com.zys.http.ui.window.panel.RequestPanel;
 import jdk.jfr.Description;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -29,8 +30,11 @@ import java.util.Set;
 @Description("环境列表表格")
 public class EnvListTable extends AbstractTable {
 
-    public EnvListTable(@NotNull Project project) {
+    private final RequestPanel requestPanel;
+
+    public EnvListTable(@NotNull Project project, RequestPanel requestPanel) {
         super(project, false);
+        this.requestPanel = requestPanel;
         init();
     }
 
@@ -77,7 +81,9 @@ public class EnvListTable extends AbstractTable {
         editAction.setAction(event -> {
             DefaultTableModel model = (DefaultTableModel) valueTable.getModel();
             String envName = (String) model.getValueAt(valueTable.getSelectedRow(), 0);
-            new EnvAddOrEditDialog(project, false, envName, this).show();
+            EnvAddOrEditDialog dialog = new EnvAddOrEditDialog(project, false, envName, this);
+            dialog.setEditOkCallback(o -> requestPanel.reload(requestPanel.getHttpApiTreePanel().getChooseNode()));
+            dialog.show();
         });
         editAction.setEnabled(false);
         group.add(editAction);

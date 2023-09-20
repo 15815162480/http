@@ -34,9 +34,6 @@ public abstract class AbstractTable extends JPanel {
     @Description("数据展示表格")
     protected JBTable valueTable;
 
-    @Getter
-    @Description("表格所在区域")
-    private JBScrollPane scrollPane;
 
     @Description("所在项目")
     protected transient Project project;
@@ -57,13 +54,17 @@ public abstract class AbstractTable extends JPanel {
 
     @Description("子类需要自己调用")
     protected void init() {
-        initToolbar();
-        initTable();
-        initLayout();
+        this.toolbar = initToolbar();
+        JBScrollPane scrollPane = initTable();
+        if (Objects.nonNull(toolbar)) {
+            add((Component) toolbar, BorderLayout.NORTH);
+        }
+        add(scrollPane, BorderLayout.CENTER);
     }
 
 
-    private void initTable() {
+    @Description("初始化表格各个选项")
+    private JBScrollPane initTable() {
         valueTable = new JBTable(this.initTableModel()) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -91,13 +92,13 @@ public abstract class AbstractTable extends JPanel {
         valueTable.getTableHeader().setReorderingAllowed(false);
         valueTable.getTableHeader().setResizingAllowed(false);
 
-        scrollPane = new JBScrollPane(valueTable);
+        JBScrollPane scrollPane = new JBScrollPane(valueTable);
         scrollPane.setBorder(JBUI.Borders.customLine(UIConstant.BORDER_COLOR, 1, 1, 1, 1));
         valueTable.getModel().addTableModelListener(initTableModelListener());
 
         // 选中时, 工具栏的某些按钮才可以使用
         valueTable.getSelectionModel().addListSelectionListener(e -> {
-            if (!e.getValueIsAdjusting()) {
+            if (!e.getValueIsAdjusting() && Objects.nonNull(toolbar)) {
                 toolbar.getActions().forEach(v -> {
                     if (v instanceof CustomAction c && !(v instanceof AddAction)) {
                         c.setEnabled(valueTable.getSelectedRow() != -1);
@@ -105,32 +106,30 @@ public abstract class AbstractTable extends JPanel {
                 });
             }
         });
+        return scrollPane;
     }
 
 
-    private void initToolbar() {
-        this.toolbar = initActionToolbar();
-        if (Objects.isNull(this.toolbar)) {
-            return;
+    @Description("初始化表格上方工具栏")
+    private ActionToolbar initToolbar() {
+        ActionToolbar actionToolbar = initActionToolbar();
+        if (Objects.isNull(actionToolbar)) {
+            return null;
         }
-        toolbar.setTargetComponent(this);
-        JComponent component = toolbar.getComponent();
+        actionToolbar.setTargetComponent(this);
+        JComponent component = actionToolbar.getComponent();
         component.setBorder(JBUI.Borders.customLine(UIConstant.BORDER_COLOR, 1, 1, 0, 1));
         component.setOpaque(true);
+        return actionToolbar;
     }
 
-    private void initLayout() {
-        if (Objects.nonNull(toolbar)) {
-            add((Component) toolbar, BorderLayout.NORTH);
-        }
-        add(scrollPane, BorderLayout.CENTER);
-    }
-
+    @Description("获取表格数据对象")
     public DefaultTableModel getTableModel() {
         return (DefaultTableModel) valueTable.getModel();
     }
 
-    public void clearTableModel() {
+    @Description("重新加载表格数据")
+    public void reloadTableModel() {
         valueTable.setModel(initTableModel());
     }
 
