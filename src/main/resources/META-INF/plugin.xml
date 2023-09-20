@@ -42,7 +42,7 @@
 
   <!-- 更新公告 -->
   <change-notes><![CDATA[
-      <b>1.0.3</b><br>
+      <b>1.1.0</b><br>
       <ol>
         <li>
           feature: Request Method Filter
