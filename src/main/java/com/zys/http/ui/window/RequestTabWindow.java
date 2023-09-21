@@ -17,7 +17,7 @@ import com.zys.http.action.RefreshAction;
 import com.zys.http.action.group.EnvActionGroup;
 import com.zys.http.constant.HttpEnum;
 import com.zys.http.service.Bundle;
-import com.zys.http.tool.FreeMakerTool;
+import com.zys.http.tool.VelocityTool;
 import com.zys.http.ui.popup.MethodFilterPopup;
 import com.zys.http.ui.tree.HttpApiTreePanel;
 import com.zys.http.ui.window.panel.RequestPanel;
@@ -101,7 +101,7 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
         // filterAction.setAction(e -> methodFilterPopup.show(requestPanel, methodFilterPopup.getX(), methodFilterPopup.getY()));
         filterAction.setAction(e -> {
             try {
-                FreeMakerTool.exportEnv(requestPanel.getServiceTool().getSelectedEnv(), requestPanel.getServiceTool().getDefaultHttpConfig());
+                VelocityTool.exportEnv(requestPanel.getServiceTool().getSelectedEnv(), requestPanel.getServiceTool().getDefaultHttpConfig());
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
