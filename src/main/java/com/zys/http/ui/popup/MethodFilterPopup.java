@@ -43,6 +43,11 @@ public class MethodFilterPopup extends JPopupMenu {
     @Description("选中的所有数据, 是否选中")
     private transient BiConsumer<List<HttpEnum.HttpMethod>, Boolean> changeAllCb;
 
+    public MethodFilterPopup(HttpEnum.HttpMethod[] values) {
+        this.values = values;
+        this.defaultValues = values;
+        render(values, defaultValues);
+    }
 
     public void render(@NotNull HttpEnum.HttpMethod[] values, HttpEnum.HttpMethod[] defaultValues) {
         this.values = values;
@@ -113,11 +118,7 @@ public class MethodFilterPopup extends JPopupMenu {
         setDefaultValues(getSelectedValues());
     }
 
-    public MethodFilterPopup(HttpEnum.HttpMethod[] values) {
-        this.values = values;
-        this.defaultValues = values;
-        render(values, defaultValues);
-    }
+
 
 
     public HttpEnum.HttpMethod[] getSelectedValues() {

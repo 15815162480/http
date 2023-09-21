@@ -115,7 +115,7 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
                             .finishOnUiThread(ModalityState.defaultModalityState(), root -> {
                                 httpApiTreePanel.render(root);
                                 if (isExpand) {
-                                    requestPanel.getHttpApiTreePanel().treeExpand();
+                                    requestPanel.getHttpApiTreePanel().expandAll();
                                 }
                             })
                             .submit(executorTaskBounded);

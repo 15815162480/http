@@ -53,7 +53,7 @@ public class EnvAddOrEditDialog extends DialogWrapper {
 
     @Setter
     @Description("编辑成功回调")
-    private Consumer<HttpConfig> editOkCallback;
+    private Consumer<String> editOkCallback;
 
     public EnvAddOrEditDialog(boolean isAdd, String selectEnv, EnvListTable envShowTable) {
         super(HttpServiceTool.getProject(), true);
@@ -166,7 +166,7 @@ public class EnvAddOrEditDialog extends DialogWrapper {
                 model.setValueAt(protocol.toString(), selectedRow, 1);
                 model.setValueAt(host, selectedRow, 2);
                 if (Objects.nonNull(editOkCallback)){
-                    editOkCallback.accept(httpConfig);
+                    editOkCallback.accept(configName);
                 }
             }
         }

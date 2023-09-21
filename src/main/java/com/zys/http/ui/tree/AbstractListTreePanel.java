@@ -138,7 +138,7 @@ public abstract class AbstractListTreePanel extends JBScrollPane implements Tree
         TreePath path = tree.getSelectionPath();
         BaseNode<?> chooseNode = getChooseNode();
         if (Objects.isNull(path) || Objects.isNull(chooseNode) || chooseNode instanceof MethodNode) {
-            tree.expandPath(new TreePath(tree.getModel().getRoot()));
+            expandAll(new TreePath(tree.getModel().getRoot()), true);
         } else {
             expandAll(path, true);
         }
@@ -146,7 +146,18 @@ public abstract class AbstractListTreePanel extends JBScrollPane implements Tree
 
     @Description("收起全部")
     public void treeCollapse() {
-        expandAll(new TreePath(tree.getModel().getRoot()), false);
+        TreePath path = tree.getSelectionPath();
+        BaseNode<?> chooseNode = getChooseNode();
+        if (Objects.isNull(path) || Objects.isNull(chooseNode) || chooseNode instanceof MethodNode) {
+            expandAll(new TreePath(tree.getModel().getRoot()), false);
+        } else {
+            expandAll(path, false);
+        }
+    }
+
+    @Override
+    public void expandAll() {
+        expandAll(new TreePath(tree.getModel().getRoot()), true);
     }
 
     private void expandAll(@NotNull TreePath parent, boolean expand) {

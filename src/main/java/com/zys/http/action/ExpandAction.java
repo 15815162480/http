@@ -11,6 +11,6 @@ import jdk.jfr.Description;
 @Description("展开操作")
 public class ExpandAction extends CustomAction{
     public ExpandAction() {
-        super(Bundle.get("http.action.expand"), "Expand all", HttpIcons.General.EXPAND);
+        super(Bundle.get("http.action.expand"), "Expand", HttpIcons.General.EXPAND);
     }
 }
