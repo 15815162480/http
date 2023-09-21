@@ -69,12 +69,12 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
         super(new SimpleTree());
     }
 
-    public ModuleNode initNodes(HttpEnum.HttpMethod[] methods) {
+    public ModuleNode initNodes(List<HttpEnum.HttpMethod> methods) {
         return initModuleNodes(methods);
     }
 
     @Description("初始化模块结点, 可能有多层级")
-    private ModuleNode initModuleNodes(HttpEnum.HttpMethod[] methods) {
+    private ModuleNode initModuleNodes(List<HttpEnum.HttpMethod> methods) {
         Project project = ProjectTool.getProject();
         Collection<Module> modules = ProjectTool.moduleList();
         Module rootModule = ProjectTool.getRootModule();
@@ -89,7 +89,7 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
             moduleNodeMap.put(m.getName(), new ModuleNode(new ModuleNodeData(m.getName(), contextPath)));
         }
 
-        if (methods.length < 1) {
+        if (methods.isEmpty()) {
             return moduleNodeMap.get(project.getName());
         }
 
@@ -134,7 +134,7 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
     }
 
     @Description("初始化包结点、类结点、方法结点")
-    private List<BaseNode<? extends NodeData>> initPackageNodes(String moduleName, HttpEnum.HttpMethod[] methods) {
+    private List<BaseNode<? extends NodeData>> initPackageNodes(String moduleName, List<HttpEnum.HttpMethod> methods) {
         // 获取当前模块的所有 controller
         List<PsiClass> psiClasses = moduleControllerMap.get(moduleName);
 
@@ -146,7 +146,6 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
         List<BaseNode<?>> children = new ArrayList<>();
         List<BaseNode<?>> unKnownPackage = new ArrayList<>(0);
 
-        List<HttpEnum.HttpMethod> httpMethods = Arrays.stream(methods).toList();
         for (Map.Entry<PsiClass, List<MethodNode>> e : methodNodeMap.entrySet()) {
             PsiClass k = e.getKey();
             List<MethodNode> v = e.getValue();
@@ -160,7 +159,7 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
 
             v.forEach(methodNode -> {
                 HttpEnum.HttpMethod httpMethod = methodNode.getValue().getHttpMethod();
-                if (httpMethods.contains(httpMethod)) {
+                if (methods.contains(httpMethod)) {
                     classNode.add(methodNode);
                 }
             });

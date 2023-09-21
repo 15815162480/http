@@ -24,6 +24,7 @@ import com.zys.http.ui.window.panel.RequestPanel;
 import jdk.jfr.Description;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.*;
@@ -53,7 +54,7 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
         this.requestPanel = requestPanel;
         this.methodFilterPopup = new MethodFilterPopup(
                 Arrays.stream(HttpEnum.HttpMethod.values()).filter(o -> !o.equals(HttpEnum.HttpMethod.REQUEST))
-                        .toList().toArray(new HttpEnum.HttpMethod[]{})
+                        .toList()
         );
         methodFilterPopup.setChangeAllCb((list, b) -> refreshTree(true));
         methodFilterPopup.setChangeCb((method, b) -> refreshTree(true));
@@ -109,8 +110,8 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
         DumbService.getInstance(project).smartInvokeLater(
                 () -> {
                     HttpApiTreePanel httpApiTreePanel = requestPanel.getHttpApiTreePanel();
-                    HttpEnum.HttpMethod[] values = methodFilterPopup.getSelectedValues();
-                    ReadAction.nonBlocking(() -> httpApiTreePanel.initNodes(values))
+                    List<HttpEnum.HttpMethod> selectedValues = methodFilterPopup.getSelectedValues();
+                    ReadAction.nonBlocking(() -> httpApiTreePanel.initNodes(selectedValues))
                             .inSmartMode(project)
                             .finishOnUiThread(ModalityState.defaultModalityState(), root -> {
                                 httpApiTreePanel.render(root);
