@@ -15,7 +15,9 @@ repositories {
 dependencies {
     compileOnly("org.projectlombok:lombok:1.18.24")
     annotationProcessor("org.projectlombok:lombok:1.18.24")
-    implementation("cn.hutool:hutool-all:5.8.11")
+    implementation("cn.hutool:hutool-http:5.8.22")
+    implementation("cn.hutool:hutool-json:5.8.22")
+    implementation("org.freemarker:freemarker:2.3.32")
 }
 
 // Configure Gradle IntelliJ Plugin

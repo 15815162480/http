@@ -1,5 +1,6 @@
 package com.zys.http.ui.dialog;
 
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.ui.JBColor;
@@ -55,9 +56,13 @@ public class EnvAddOrEditDialog extends DialogWrapper {
     @Description("编辑成功回调")
     private Consumer<String> editOkCallback;
 
-    public EnvAddOrEditDialog(boolean isAdd, String selectEnv, EnvListTable envShowTable) {
-        super(HttpServiceTool.getProject(), true);
-        envAddOrEditTable = new EnvHeaderTable( isAdd, selectEnv);
+    private final HttpServiceTool serviceTool;
+
+    public EnvAddOrEditDialog(Project project, boolean isAdd, String selectEnv, EnvListTable envShowTable) {
+        super(project, true);
+        serviceTool = HttpServiceTool.getInstance(project);
+        envAddOrEditTable = new EnvHeaderTable(serviceTool, isAdd);
+
         this.envShowTable = envShowTable;
         this.isAdd = isAdd;
         init();
@@ -71,7 +76,7 @@ public class EnvAddOrEditDialog extends DialogWrapper {
             configNameTF.setText(selectEnv);
             configNameTF.setEnabled(false);
             configNameTF.setDisabledTextColor(JBColor.BLACK);
-            HttpConfig httpConfig = HttpServiceTool.getHttpConfig(selectEnv);
+            HttpConfig httpConfig = serviceTool.getHttpConfig(selectEnv);
             hostTF.setText(httpConfig.getHostValue());
             protocolCB.setSelectedItem(httpConfig.getProtocol());
         }
@@ -142,7 +147,7 @@ public class EnvAddOrEditDialog extends DialogWrapper {
     protected void doOKAction() {
         String configName = configNameTF.getText();
         // 添加时需要检测是否存在
-        if (HttpServiceTool.getHttpConfig(configName) != null && envAddOrEditTable.isAdd()) {
+        if (serviceTool.getHttpConfig(configName) != null && envAddOrEditTable.isAdd()) {
             DialogTool.error(Bundle.get("http.dialog.env.config.existed"));
             return;
         }
@@ -156,7 +161,7 @@ public class EnvAddOrEditDialog extends DialogWrapper {
         httpConfig.setHostValue(host);
         httpConfig.setProtocol((Protocol) protocolCB.getSelectedItem());
 
-        HttpServiceTool.putHttpConfig(configName, httpConfig);
+        serviceTool.putHttpConfig(configName, httpConfig);
         if (Objects.nonNull(envShowTable)) {
             DefaultTableModel model = (DefaultTableModel) envShowTable.getValueTable().getModel();
             if (isAdd) {
@@ -165,7 +170,7 @@ public class EnvAddOrEditDialog extends DialogWrapper {
                 int selectedRow = envShowTable.getValueTable().getSelectedRow();
                 model.setValueAt(protocol.toString(), selectedRow, 1);
                 model.setValueAt(host, selectedRow, 2);
-                if (Objects.nonNull(editOkCallback)){
+                if (Objects.nonNull(editOkCallback)) {
                     editOkCallback.accept(configName);
                 }
             }

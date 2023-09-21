@@ -37,11 +37,11 @@ public class EnvActionGroup extends DefaultActionGroup {
         }
         AnAction[] actions = new AnAction[3];
         AddAction addAction = new AddAction(Bundle.get("http.action.add.env"), "Add env");
-        addAction.setAction(event -> new EnvAddOrEditDialog(true, "", null).show());
+        addAction.setAction(event -> new EnvAddOrEditDialog(e.getProject(), true, "", null).show());
         actions[0] = addAction;
         SelectActionGroup selectActionGroup = new SelectActionGroup();
         selectActionGroup.setPopup(true);
-        selectActionGroup.setCallback(s-> requestPanel.reload(requestPanel.getHttpApiTreePanel().getChooseNode()));
+        selectActionGroup.setCallback(s -> requestPanel.reload(requestPanel.getHttpApiTreePanel().getChooseNode()));
         actions[1] = selectActionGroup;
         CommonAction action = new CommonAction(Bundle.get("http.action.show.env"), "Env list", null);
         action.setAction(event -> new EnvListShowDialog(requestPanel).show());

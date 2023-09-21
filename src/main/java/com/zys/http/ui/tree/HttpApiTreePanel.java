@@ -13,6 +13,7 @@ import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiMethod;
 import com.intellij.ui.treeStructure.SimpleTree;
 import com.zys.http.action.CommonAction;
+import com.zys.http.action.ExpandAction;
 import com.zys.http.constant.HttpEnum;
 import com.zys.http.constant.SpringEnum;
 import com.zys.http.entity.HttpConfig;
@@ -46,7 +47,6 @@ import java.util.stream.Collectors;
 @Description("树形列表展示区")
 public class HttpApiTreePanel extends AbstractListTreePanel {
 
-
     @Description("模块名, 模块结点")
     private final transient Map<String, ModuleNode> moduleNodeMap = new HashMap<>();
 
@@ -65,8 +65,13 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
     @Description("选中方法节点后的回调")
     private transient Consumer<MethodNode> chooseCallback;
 
-    public HttpApiTreePanel() {
+    private final transient HttpServiceTool serviceTool;
+    private final transient Project project;
+
+    public HttpApiTreePanel(Project project) {
         super(new SimpleTree());
+        this.project = project;
+        this.serviceTool = HttpServiceTool.getInstance(project);
     }
 
     public ModuleNode initNodes(List<HttpEnum.HttpMethod> methods) {
@@ -75,9 +80,8 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
 
     @Description("初始化模块结点, 可能有多层级")
     private ModuleNode initModuleNodes(List<HttpEnum.HttpMethod> methods) {
-        Project project = ProjectTool.getProject();
-        Collection<Module> modules = ProjectTool.moduleList();
-        Module rootModule = ProjectTool.getRootModule();
+        Collection<Module> modules = ProjectTool.moduleList(project);
+        Module rootModule = ProjectTool.getRootModule(project);
         if (modules.isEmpty() || Objects.isNull(rootModule)) {
             return new ModuleNode(new ModuleNodeData("Empty Module", ""));
         }
@@ -85,7 +89,7 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
         String contextPath;
         // 初始化所有的模块结点
         for (Module m : modules) {
-            contextPath = ProjectTool.getModuleContextPath(m);
+            contextPath = ProjectTool.getModuleContextPath(project, m);
             moduleNodeMap.put(m.getName(), new ModuleNode(new ModuleNodeData(m.getName(), contextPath)));
         }
 
@@ -114,15 +118,15 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
                 pn.add(mn);
             }
 
-            controllers = ProjectTool.getModuleControllers( m);
+            controllers = ProjectTool.getModuleControllers(project, m);
             if (!controllers.isEmpty()) {
                 moduleControllerMap.put(moduleName, controllers);
-                String host = "127.0.0.1:" + ProjectTool.getModulePort( m);
-                HttpServiceTool.putHttpConfig(moduleName, new HttpConfig(HttpEnum.Protocol.HTTP, host, Collections.emptyMap()));
+                String host = "127.0.0.1:" + ProjectTool.getModulePort(project, m);
+                serviceTool.putHttpConfig(moduleName, new HttpConfig(HttpEnum.Protocol.HTTP, host, Collections.emptyMap()));
                 String controllerPath;
                 for (PsiClass c : controllers) {
                     controllerPath = PsiTool.getControllerPath(c);
-                    contextPath = ProjectTool.getModuleContextPath( m);
+                    contextPath = ProjectTool.getModuleContextPath(project, m);
                     methodNodeMap.put(c, buildMethodNodes(c, contextPath, controllerPath, methodNodePsiMap));
                 }
                 initPackageNodes(moduleName, methods).forEach(mn::add);
@@ -262,31 +266,33 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
 
     @Override
     protected @Nullable JPopupMenu getRightClickMenu(@NotNull MouseEvent e, @NotNull BaseNode<?> node) {
-        if (!(node instanceof MethodNode mn)) {
-            return null;
-        }
         DefaultActionGroup group = new DefaultActionGroup();
         group.setPopup(true);
+        if (!(node instanceof MethodNode mn)) {
+            ExpandAction expandAction = new ExpandAction();
+            expandAction.setAction(event -> treeExpand());
+            group.add(expandAction);
+        } else {
+            CommonAction navigation = new CommonAction(Bundle.get("http.tree.right.item.navigation"), "", HttpIcons.General.LOCATE);
+            navigation.setAction(event -> mn.getValue().getPsiElement().navigate(true));
+            group.add(navigation);
 
-        CommonAction navigation = new CommonAction(Bundle.get("http.tree.right.item.navigation"), "", HttpIcons.General.LOCATE);
-        navigation.setAction(event -> mn.getValue().getPsiElement().navigate(true));
-        group.add(navigation);
+            CommonAction copyFullPath = new CommonAction(Bundle.get("http.tree.right.item.copy.full.path"), "", AllIcons.Actions.Copy);
+            copyFullPath.setAction(event -> {
+                HttpConfig config = serviceTool.getDefaultHttpConfig();
+                String protocol = config.getProtocol().name().toLowerCase();
+                SystemTool.copy2Clipboard(protocol + "://" + config.getHostValue() + mn.getFragment());
+                NotifyService.instance(project).info(Bundle.get("http.tree.right.item.copy.full.msg"));
+            });
+            group.add(copyFullPath);
 
-        CommonAction copyFullPath = new CommonAction(Bundle.get("http.tree.right.item.copy.full.path"), "", AllIcons.Actions.Copy);
-        copyFullPath.setAction(event -> {
-            HttpConfig config = HttpServiceTool.getDefaultHttpConfig();
-            String protocol = config.getProtocol().name().toLowerCase();
-            SystemTool.copy2Clipboard(protocol + "://" + config.getHostValue() + mn.getFragment());
-            NotifyService.instance(ProjectTool.getProject()).info(Bundle.get("http.tree.right.item.copy.full.msg"));
-        });
-        group.add(copyFullPath);
-
-        CommonAction copyApiPath = new CommonAction(Bundle.get("http.tree.right.item.copy.api.path"), "", AllIcons.Actions.Copy);
-        copyApiPath.setAction(event -> {
-            SystemTool.copy2Clipboard(mn.getFragment());
-            NotifyService.instance(ProjectTool.getProject()).info(Bundle.get("http.tree.right.item.copy.api.msg"));
-        });
-        group.add(copyApiPath);
+            CommonAction copyApiPath = new CommonAction(Bundle.get("http.tree.right.item.copy.api.path"), "", AllIcons.Actions.Copy);
+            copyApiPath.setAction(event -> {
+                SystemTool.copy2Clipboard(mn.getFragment());
+                NotifyService.instance(project).info(Bundle.get("http.tree.right.item.copy.api.msg"));
+            });
+            group.add(copyApiPath);
+        }
 
         return ActionManager.getInstance().createActionPopupMenu("http", group).getComponent();
     }

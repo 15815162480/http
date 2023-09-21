@@ -6,6 +6,7 @@ import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.fileTypes.impl.FileTypeRenderer;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiMethod;
@@ -22,7 +23,6 @@ import com.zys.http.entity.param.ParamProperty;
 import com.zys.http.service.Bundle;
 import com.zys.http.tool.HttpClient;
 import com.zys.http.tool.HttpServiceTool;
-import com.zys.http.tool.ProjectTool;
 import com.zys.http.tool.PsiTool;
 import com.zys.http.tool.convert.ParamConvert;
 import com.zys.http.ui.dialog.EditorDialog;
@@ -36,6 +36,7 @@ import com.zys.http.ui.tree.node.MethodNode;
 import jdk.jfr.Description;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import org.jdesktop.swingx.JXButton;
 
 import javax.swing.*;
@@ -97,11 +98,18 @@ public class RequestPanel extends JBSplitter {
     @Description("响应体类型")
     private CustomEditor responseEditor;
 
+    @Getter
+    private final transient Project project;
+
+    @Getter
+    private final transient HttpServiceTool serviceTool;
 
     private transient Map<String, ParamProperty> paramPropertyMap;
 
-    public RequestPanel() {
+    public RequestPanel(Project project) {
         super(true, Window.class.getName(), 0.5F);
+        this.project = project;
+        this.serviceTool = HttpServiceTool.getInstance(project);
         initFirstPanel();
         initSecondPanel();
         initSendRequestEvent();
@@ -109,7 +117,7 @@ public class RequestPanel extends JBSplitter {
 
     @Description("初始化上半部分组件")
     private void initFirstPanel() {
-        this.httpApiTreePanel = new HttpApiTreePanel();
+        this.httpApiTreePanel = new HttpApiTreePanel(project);
         this.httpApiTreePanel.setChooseCallback(this::chooseEvent);
         this.setFirstComponent(httpApiTreePanel);
     }
@@ -135,16 +143,16 @@ public class RequestPanel extends JBSplitter {
 
         // 标签页面
         JPanel tabsPanel = new JPanel(new BorderLayout(0, 0));
-        tabs = new JBTabsImpl(ProjectTool.getProject());
+        tabs = new JBTabsImpl(project);
         // 请求头标签页
 
-        headerTable = new EnvHeaderTable(false, HttpServiceTool.getSelectedEnv());
+        headerTable = new EnvHeaderTable(serviceTool, false);
         headerTable.getToolbar().getComponent().setBorder(JBUI.Borders.customLineBottom(UIConstant.BORDER_COLOR));
         TabInfo tabInfo = new TabInfo(headerTable);
         tabInfo.setText(Bundle.get("http.tab.request.header"));
         tabs.addTab(tabInfo);
         // 请求参数
-        parameterTable = new ParameterTable();
+        parameterTable = new ParameterTable(serviceTool);
         parameterTable.getToolbar().getComponent().setBorder(JBUI.Borders.customLineBottom(UIConstant.BORDER_COLOR));
         parameterTabInfo = new TabInfo(parameterTable);
         parameterTabInfo.setText(Bundle.get("http.tab.request.param"));
@@ -154,7 +162,7 @@ public class RequestPanel extends JBSplitter {
         bodyTabInfo.setText(Bundle.get("http.tab.request.body"));
         tabs.addTab(bodyTabInfo);
         // 响应体
-        responseEditor = new CustomEditor();
+        responseEditor = new CustomEditor(project);
         responseEditor.setBorder(JBUI.Borders.customLineLeft(UIConstant.EDITOR_BORDER_COLOR));
         responseTabInfo = new TabInfo(responseEditor);
         responseTabInfo.setText(Bundle.get("http.tab.request.return"));
@@ -212,7 +220,7 @@ public class RequestPanel extends JBSplitter {
     @Description("初始化请求体面板")
     private JPanel initBodyTabInfoPanel() {
         JPanel bodyPanel = new JPanel(new BorderLayout(0, 0));
-        bodyEditor = new CustomEditor();
+        bodyEditor = new CustomEditor(project);
         bodyEditor.setName("BODY");
         bodyEditor.setBorder(JBUI.Borders.customLineLeft(UIConstant.EDITOR_BORDER_COLOR));
         bodyPanel.add(bodyEditor, BorderLayout.CENTER);
@@ -245,9 +253,9 @@ public class RequestPanel extends JBSplitter {
         DefaultActionGroup group = new DefaultActionGroup();
         CommonAction action = new CommonAction(Bundle.get("http.editor.body.action"), "", HttpIcons.General.FULL_SCREEN);
         action.setAction(e -> {
-            CustomEditor editor = new CustomEditor(bodyEditor.getFileType());
+            CustomEditor editor = new CustomEditor(project, bodyEditor.getFileType());
             editor.setText(bodyEditor.getText());
-            EditorDialog dialog = new EditorDialog(Bundle.get("http.editor.body.action.dialog"), editor);
+            EditorDialog dialog = new EditorDialog(project, Bundle.get("http.editor.body.action.dialog"), editor);
             dialog.setOkCallBack(s -> bodyEditor.setText(s)).show();
         });
         group.add(action);
@@ -273,7 +281,7 @@ public class RequestPanel extends JBSplitter {
 
     @Description("选中方法结点的事件处理")
     private void chooseEvent(MethodNode methodNode) {
-        HttpConfig config = HttpServiceTool.getDefaultHttpConfig();
+        HttpConfig config = serviceTool.getDefaultHttpConfig();
         String protocol = config.getProtocol().name().toLowerCase();
         String configHostValue = config.getHostValue();
         hostTextField.setText(protocol + "://" + configHostValue + methodNode.getFragment());

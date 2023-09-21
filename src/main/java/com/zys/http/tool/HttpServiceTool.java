@@ -5,9 +5,6 @@ import com.zys.http.constant.HttpEnum;
 import com.zys.http.entity.HttpConfig;
 import com.zys.http.service.HttpService;
 import jdk.jfr.Description;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
@@ -19,48 +16,47 @@ import java.util.Objects;
  * @since 2023-08-16
  */
 @Description("http 配置工具类")
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class HttpServiceTool {
 
-    private static HttpService instance;
-
-    @Getter
-    private static Project project;
+    private final HttpService httpService;
 
     private static final HttpConfig DEFAULT_HTTP_CONFIG = new HttpConfig(HttpEnum.Protocol.HTTP,
             "127.0.0.1", Collections.emptyMap());
 
-    public static void initHttpService(@NotNull Project project) {
-        HttpServiceTool.project = project;
-        instance = HttpService.getInstance(project);
+    private HttpServiceTool(@NotNull Project project) {
+        httpService = HttpService.getInstance(project);
     }
 
-    public static Map<String, HttpConfig> getHttpConfigs() {
-        return instance.getHttpConfigs();
+    public static HttpServiceTool getInstance(@NotNull Project project) {
+        return new HttpServiceTool(project);
     }
 
-    public static HttpConfig getHttpConfig(String key) {
-        return instance.getHttpConfigs().get(key);
+    public Map<String, HttpConfig> getHttpConfigs() {
+        return httpService.getHttpConfigs();
     }
 
-    public static void putHttpConfig(String key, HttpConfig httpConfig) {
-        instance.addHttpConfig(key, httpConfig);
+    public HttpConfig getHttpConfig(String key) {
+        return httpService.getHttpConfigs().get(key);
     }
 
-    public static void removeHttpConfig(String key) {
-        instance.removeHttpConfig(key);
+    public void putHttpConfig(String key, HttpConfig httpConfig) {
+        httpService.addHttpConfig(key, httpConfig);
     }
 
-    public static HttpConfig getDefaultHttpConfig() {
-        HttpConfig httpConfig = getHttpConfig(instance.getSelectedEnv());
+    public void removeHttpConfig(String key) {
+        httpService.removeHttpConfig(key);
+    }
+
+    public HttpConfig getDefaultHttpConfig() {
+        HttpConfig httpConfig = httpService.getHttpConfigs().get(httpService.getSelectedEnv());
         return Objects.isNull(httpConfig) ? DEFAULT_HTTP_CONFIG : httpConfig;
     }
 
-    public static String getSelectedEnv() {
-        return instance.getSelectedEnv();
+    public String getSelectedEnv() {
+        return httpService.getSelectedEnv();
     }
 
-    public static void setSelectedEnv(String key) {
-        instance.setSelectedEnv(key);
+    public void setSelectedEnv(String key) {
+        httpService.setSelectedEnv(key);
     }
 }

@@ -2,7 +2,6 @@ package com.zys.http.ui.dialog;
 
 import com.intellij.openapi.ui.DialogWrapper;
 import com.zys.http.service.Bundle;
-import com.zys.http.tool.ProjectTool;
 import com.zys.http.ui.table.EnvListTable;
 import com.zys.http.ui.window.panel.RequestPanel;
 import jdk.jfr.Description;
@@ -22,7 +21,7 @@ public class EnvListShowDialog extends DialogWrapper {
     private final EnvListTable envShowTable;
 
     public EnvListShowDialog(RequestPanel requestPanel) {
-        super(ProjectTool.getProject(), true);
+        super(requestPanel.getProject(), true);
         envShowTable = new EnvListTable(requestPanel);
         init();
         getRootPane().setMinimumSize(new Dimension(500, 400));

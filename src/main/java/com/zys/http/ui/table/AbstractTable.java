@@ -7,6 +7,7 @@ import com.intellij.util.ui.JBUI;
 import com.zys.http.action.AddAction;
 import com.zys.http.action.CustomAction;
 import com.zys.http.constant.UIConstant;
+import com.zys.http.tool.HttpServiceTool;
 import jdk.jfr.Description;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
@@ -35,9 +36,12 @@ public abstract class AbstractTable extends JPanel {
     @Description("单元格是否能编辑")
     private final boolean cellEditable;
 
-    protected AbstractTable( boolean cellEditable) {
+    protected final HttpServiceTool serviceTool;
+
+    protected AbstractTable(HttpServiceTool serviceTool, boolean cellEditable) {
         super(new BorderLayout(0, 0));
         this.cellEditable = cellEditable;
+        this.serviceTool = serviceTool;
     }
 
     @Description("子类需要自己调用")

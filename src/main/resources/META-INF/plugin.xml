@@ -47,82 +47,89 @@
     <b>1.1.1</b><br>
     <ol>
       <li>
-        feature: Expand and collapse function optimization, if there is selected node, only the selected nodes will be expanded or collapse.
+        feature: Expand and collapse function optimization, if there is selected node, only the selected nodes will be
+        expanded or collapse.
         <br>
-        新功能: 展开、收起功能优化, 如果有选中节点, 只会展开/收起选中的节点
+        新功能: 展开、收起功能优化, 如果有选中节点, 则只会展开/收起选中的节点
+      </li>
+      <li>
+        feature: Module Node, Package Node, Class Node add the right-click menu: expand all child node
+        <br>
+        新功能: 模块结点、包结点、类结点添加右键菜单功能: 展开所有子节点
       </li>
     </ol>
-      <b>1.1.0</b><br>
-      <ol>
-        <li>
-          feature: Request Method Filter
-          <br>
-          新功能: 请求方式过滤
-        </li>
-        <li>
-          feature: Method node add right-click menu: Jump to Method, Copy Full Path, Copy Api
-          <br>
-          新功能: 方法结点添加右键菜单: 跳转到方法、复制完整路径、复制 API
-        </li>
-        <li>
-          feature: Request body editor can open in new dialog to edit
-          <br>
-          新功能: 请求体内容能打开在一个新的对话框中编辑
-        </li>
-        <li>
-          fix bug: change env does not change the host value, header and so on
-          <br>
-          bug 修复: 切换环境时地址栏、请求头不会随之切换
-        </li>
-        <li>
-          fix bug: When the selected environment configuration is edited, the host value and request header will not change.
-          <br>
-          bug 修复: 选中环境配置在编辑完成时, 地址栏、请求头不会随之切换
-        </li>
-      </ol>
-      <b>1.0.2</b><br>
-      <ol>
-        <li>
-          fix bugs: Package and class are at the same level, class node is missing
-          <br>
-          bug 修复: 包和类处于同一级别，类节点丢失
-        </li>
-        <li>
-          fix bugs: choose a new request, the older request do not clear the response editor
-          <br>
-          bug 修复: 选择一个新节点, 旧节点的请求结果没有清除
-        </li>
-      </ol>
-      <b>1.0.1</b><br>
-      <ol>
-        <li>Change plugin name —— ApiTool<br>更改插件名为 ApiTool</li>
-      </ol>
-      <b>1.0.0</b><br>
-      <ol>
-        <li>
-          Read all annotation request interface methods in Spring MVC
-          <br>
-          读取 Spring MVC 中所有注解请求接口方法
-        </li>
-        <li>
-          Multi Environment configuration, by default, reads the context-path and port of each module and
-          generates a local environment for each module (refresh will still take effect after deletion)
-          <br/>
-          多环境配置, 默认读取每个模块的 context-path 和 port 并为每个模块生成本地环境(删除后刷新仍会生效)
-        </li>
-        <li>
-          If the project refers to Swagger2 and Swagger3 annotations, hover the mouse over the corresponding
-          node will display the corresponding description
-          <br/>
-          如果项目引用了 Swagger2 和 Swagger3 注解, 将鼠标悬浮在对应的结点上会显示对应的说明
-        </li>
-        <li>
-          Double-click the method node to jump to the specified method
-          <br/>
-          双击方法结点可以跳转到指定方法处
-        </li>
-      </ol>
-      ]]></change-notes>
+    <b>1.1.0</b><br>
+    <ol>
+      <li>
+        feature: Request Method Filter
+        <br>
+        新功能: 请求方式过滤
+      </li>
+      <li>
+        feature: Method node add right-click menu: Jump to Method, Copy Full Path, Copy Api
+        <br>
+        新功能: 方法结点添加右键菜单: 跳转到方法、复制完整路径、复制 API
+      </li>
+      <li>
+        feature: Request body editor can open in new dialog to edit
+        <br>
+        新功能: 请求体内容能打开在一个新的对话框中编辑
+      </li>
+      <li>
+        fix bug: change env does not change the host value, header and so on
+        <br>
+        bug 修复: 切换环境时地址栏、请求头不会随之切换
+      </li>
+      <li>
+        fix bug: When the selected environment configuration is edited, the host value and request header will not
+        change.
+        <br>
+        bug 修复: 选中环境配置在编辑完成时, 地址栏、请求头不会随之切换
+      </li>
+    </ol>
+    <b>1.0.2</b><br>
+    <ol>
+      <li>
+        fix bugs: Package and class are at the same level, class node is missing
+        <br>
+        bug 修复: 包和类处于同一级别，类节点丢失
+      </li>
+      <li>
+        fix bugs: choose a new request, the older request do not clear the response editor
+        <br>
+        bug 修复: 选择一个新节点, 旧节点的请求结果没有清除
+      </li>
+    </ol>
+    <b>1.0.1</b><br>
+    <ol>
+      <li>Change plugin name —— ApiTool<br>更改插件名为 ApiTool</li>
+    </ol>
+    <b>1.0.0</b><br>
+    <ol>
+      <li>
+        Read all annotation request interface methods in Spring MVC
+        <br>
+        读取 Spring MVC 中所有注解请求接口方法
+      </li>
+      <li>
+        Multi Environment configuration, by default, reads the context-path and port of each module and
+        generates a local environment for each module (refresh will still take effect after deletion)
+        <br/>
+        多环境配置, 默认读取每个模块的 context-path 和 port 并为每个模块生成本地环境(删除后刷新仍会生效)
+      </li>
+      <li>
+        If the project refers to Swagger2 and Swagger3 annotations, hover the mouse over the corresponding
+        node will display the corresponding description
+        <br/>
+        如果项目引用了 Swagger2 和 Swagger3 注解, 将鼠标悬浮在对应的结点上会显示对应的说明
+      </li>
+      <li>
+        Double-click the method node to jump to the specified method
+        <br/>
+        双击方法结点可以跳转到指定方法处
+      </li>
+    </ol>
+    ]]></change-notes>
 
   <depends>com.intellij.modules.platform</depends>
   <depends>com.intellij.modules.java</depends>

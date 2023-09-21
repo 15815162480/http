@@ -38,11 +38,11 @@ public class EnvHeaderTable extends AbstractTable {
     @Description("选中的环境名, isAdd 为 true 时忽略")
     private String selectEnv;
 
-    public EnvHeaderTable(boolean isAdd, String selectEnv) {
-        super(true);
+    public EnvHeaderTable(HttpServiceTool serviceTool, boolean isAdd) {
+        super(serviceTool, true);
         this.isAdd = isAdd;
         if (!isAdd) {
-            this.selectEnv = selectEnv;
+            this.selectEnv = serviceTool.getSelectedEnv();
         }
         init();
     }
@@ -57,7 +57,7 @@ public class EnvHeaderTable extends AbstractTable {
         if (this.isAdd) {
             return new DefaultTableModel(null, columnNames);
         }
-        HttpConfig httpConfig = HttpServiceTool.getHttpConfig(selectEnv);
+        HttpConfig httpConfig = serviceTool.getHttpConfig(selectEnv);
         if (Objects.isNull(httpConfig)) {
             return new DefaultTableModel(null, columnNames);
         }
@@ -153,7 +153,7 @@ public class EnvHeaderTable extends AbstractTable {
 
     @Override
     public void reloadTableModel() {
-        this.selectEnv = HttpServiceTool.getSelectedEnv();
+        this.selectEnv = serviceTool.getSelectedEnv();
         valueTable.setModel(initTableModel());
     }
 

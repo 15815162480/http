@@ -11,6 +11,7 @@ import jdk.jfr.Description;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -25,7 +26,7 @@ public class SelectActionGroup extends DefaultActionGroup {
     @Setter
     private Consumer<String> callback;
 
-    public SelectActionGroup(){
+    public SelectActionGroup() {
         super(Bundle.get("http.action.group.select"), "Select env", HttpIcons.General.LIST);
         setPopup(true);
     }
@@ -33,7 +34,8 @@ public class SelectActionGroup extends DefaultActionGroup {
     @Override
     @Description("实现动态菜单的关键方法")
     public AnAction @NotNull [] getChildren(AnActionEvent e) {
-        Set<String> set = HttpServiceTool.getHttpConfigs().keySet();
+        HttpServiceTool tool = HttpServiceTool.getInstance(Objects.requireNonNull(Objects.requireNonNull(e).getProject()));
+        Set<String> set = tool.getHttpConfigs().keySet();
         AnAction[] anActions = new AnAction[set.size()];
 
         int i = 0;
@@ -42,10 +44,10 @@ public class SelectActionGroup extends DefaultActionGroup {
             action.setAction(event -> {
                 event.getPresentation().setIcon(HttpIcons.General.ADD);
                 String selectEnv = event.getPresentation().getText();
-                HttpServiceTool.setSelectedEnv(selectEnv);
+                tool.setSelectedEnv(selectEnv);
                 callback.accept(selectEnv);
             });
-            if (s.equals(HttpServiceTool.getSelectedEnv())) {
+            if (s.equals(tool.getSelectedEnv())) {
                 action.setIcon(HttpIcons.General.DEFAULT);
             }
             anActions[i++] = action;

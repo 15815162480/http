@@ -133,7 +133,7 @@ public abstract class AbstractListTreePanel extends JBScrollPane implements Tree
         this.getTreeModel().setRoot(null);
     }
 
-    @Description("展开全部")
+    @Description("展开")
     public void treeExpand() {
         TreePath path = tree.getSelectionPath();
         BaseNode<?> chooseNode = getChooseNode();
@@ -144,7 +144,7 @@ public abstract class AbstractListTreePanel extends JBScrollPane implements Tree
         }
     }
 
-    @Description("收起全部")
+    @Description("收起")
     public void treeCollapse() {
         TreePath path = tree.getSelectionPath();
         BaseNode<?> chooseNode = getChooseNode();

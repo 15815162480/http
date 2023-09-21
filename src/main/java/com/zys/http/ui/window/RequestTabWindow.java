@@ -17,12 +17,13 @@ import com.zys.http.action.RefreshAction;
 import com.zys.http.action.group.EnvActionGroup;
 import com.zys.http.constant.HttpEnum;
 import com.zys.http.service.Bundle;
-import com.zys.http.tool.HttpServiceTool;
+import com.zys.http.tool.FreeMakerTool;
 import com.zys.http.ui.popup.MethodFilterPopup;
 import com.zys.http.ui.tree.HttpApiTreePanel;
 import com.zys.http.ui.window.panel.RequestPanel;
 import jdk.jfr.Description;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Timer;
@@ -97,7 +98,14 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
 
         group.addSeparator();
         FilterAction filterAction = new FilterAction(Bundle.get("http.filter.action"));
-        filterAction.setAction(e -> methodFilterPopup.show(requestPanel, methodFilterPopup.getX(), methodFilterPopup.getY()));
+        // filterAction.setAction(e -> methodFilterPopup.show(requestPanel, methodFilterPopup.getX(), methodFilterPopup.getY()));
+        filterAction.setAction(e -> {
+            try {
+                FreeMakerTool.exportEnv(requestPanel.getServiceTool().getSelectedEnv(), requestPanel.getServiceTool().getDefaultHttpConfig());
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        });
         group.add(filterAction);
 
         ActionToolbar topToolBar = ActionManager.getInstance().createActionToolbar(ActionPlaces.TOOLBAR, group, true);
@@ -106,7 +114,7 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
     }
 
     private void refreshTree(boolean isExpand) {
-        Project project = HttpServiceTool.getProject();
+        Project project = requestPanel.getProject();
         DumbService.getInstance(project).smartInvokeLater(
                 () -> {
                     HttpApiTreePanel httpApiTreePanel = requestPanel.getHttpApiTreePanel();
