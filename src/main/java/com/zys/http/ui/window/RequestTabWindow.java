@@ -17,6 +17,7 @@ import com.zys.http.action.RefreshAction;
 import com.zys.http.action.group.EnvActionGroup;
 import com.zys.http.constant.HttpEnum;
 import com.zys.http.service.Bundle;
+import com.zys.http.tool.HttpServiceTool;
 import com.zys.http.ui.popup.MethodFilterPopup;
 import com.zys.http.ui.tree.HttpApiTreePanel;
 import com.zys.http.ui.window.panel.RequestPanel;
@@ -33,7 +34,6 @@ import java.util.concurrent.*;
  */
 @Description("请求标签页面")
 public class RequestTabWindow extends SimpleToolWindowPanel implements Disposable {
-    private final transient Project project;
     private final RequestPanel requestPanel;
 
     @Description("请求方式过滤菜单")
@@ -48,9 +48,8 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
             new ThreadPoolExecutor.DiscardOldestPolicy()
     );
 
-    public RequestTabWindow(Project project, RequestPanel requestPanel) {
+    public RequestTabWindow(RequestPanel requestPanel) {
         super(true, true);
-        this.project = project;
         this.requestPanel = requestPanel;
         this.methodFilterPopup = new MethodFilterPopup(
                 Arrays.stream(HttpEnum.HttpMethod.values()).filter(o -> !o.equals(HttpEnum.HttpMethod.REQUEST))
@@ -106,6 +105,7 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
     }
 
     private void refreshTree(boolean isExpand) {
+        Project project = HttpServiceTool.getProject();
         DumbService.getInstance(project).smartInvokeLater(
                 () -> {
                     HttpApiTreePanel httpApiTreePanel = requestPanel.getHttpApiTreePanel();

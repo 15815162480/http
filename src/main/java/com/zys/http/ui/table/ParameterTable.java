@@ -1,6 +1,5 @@
 package com.zys.http.ui.table;
 
-import com.intellij.openapi.project.Project;
 import com.zys.http.service.Bundle;
 import jdk.jfr.Description;
 import org.jetbrains.annotations.NotNull;
@@ -13,8 +12,8 @@ import javax.swing.table.DefaultTableModel;
  */
 @Description("请求参数(path、param 参数)表格")
 public class ParameterTable extends EnvHeaderTable {
-    public ParameterTable(Project project) {
-        super(project, true, "");
+    public ParameterTable() {
+        super(true, "");
     }
 
     @Override

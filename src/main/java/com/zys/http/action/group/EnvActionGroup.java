@@ -3,7 +3,6 @@ package com.zys.http.action.group;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
-import com.intellij.openapi.project.Project;
 import com.zys.http.action.AddAction;
 import com.zys.http.action.CommonAction;
 import com.zys.http.service.Bundle;
@@ -36,16 +35,16 @@ public class EnvActionGroup extends DefaultActionGroup {
         if (Objects.isNull(e) || Objects.isNull(e.getProject())) {
             return new AnAction[]{};
         }
-        Project project = e.getProject();
         AnAction[] actions = new AnAction[3];
         AddAction addAction = new AddAction(Bundle.get("http.action.add.env"), "Add env");
-        addAction.setAction(event -> new EnvAddOrEditDialog(project, true, "", null).show());
+        addAction.setAction(event -> new EnvAddOrEditDialog(true, "", null).show());
         actions[0] = addAction;
-        SelectActionGroup selectActionGroup = new SelectActionGroup(requestPanel);
+        SelectActionGroup selectActionGroup = new SelectActionGroup();
         selectActionGroup.setPopup(true);
+        selectActionGroup.setCallback(s-> requestPanel.reload(requestPanel.getHttpApiTreePanel().getChooseNode()));
         actions[1] = selectActionGroup;
         CommonAction action = new CommonAction(Bundle.get("http.action.show.env"), "Env list", null);
-        action.setAction(event -> new EnvListShowDialog(project, requestPanel).show());
+        action.setAction(event -> new EnvListShowDialog(requestPanel).show());
         actions[2] = action;
         return actions;
     }

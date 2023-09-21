@@ -8,8 +8,6 @@ import com.intellij.openapi.module.ResourceFileUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.wm.ToolWindow;
-import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.psi.*;
 import com.intellij.psi.impl.java.stubs.index.JavaAnnotationIndex;
 import com.intellij.psi.search.GlobalSearchScope;
@@ -39,27 +37,31 @@ public class ProjectTool {
             "application.properties", "application.yaml", "application.yml"
     };
 
+    public static Project getProject() {
+        return HttpServiceTool.getProject();
+    }
+
     @Description("获取当前项目的所有模块, 并去重")
-    public static Collection<Module> moduleList(@NotNull Project project) {
-        Module[] modules = ModuleManager.getInstance(project).getModules();
+    public static Collection<Module> moduleList() {
+        Module[] modules = ModuleManager.getInstance(getProject()).getModules();
         Map<String, Module> map = Arrays.stream(modules).collect(Collectors.toMap(Module::getName, v -> v));
         return map.values();
     }
 
     @Description("获取根模块")
-    public static Module getRootModule(@NotNull Project project) {
-        return findModuleByName(project, project.getName());
+    public static Module getRootModule() {
+        return findModuleByName(getProject().getName());
     }
 
     @Description("根据模块名查找获取模块")
-    public static Module findModuleByName(@NotNull Project project, @Nullable String moduleName) {
-        return moduleList(project).stream().filter(m -> m.getName().equals(moduleName)).findFirst().orElse(null);
+    public static Module findModuleByName(@Nullable String moduleName) {
+        return moduleList().stream().filter(m -> m.getName().equals(moduleName)).findFirst().orElse(null);
     }
 
     @Description("获取模块的 context-path")
-    public static String getModuleContextPath(@NotNull Project project, @NotNull Module module) {
+    public static String getModuleContextPath(@NotNull Module module) {
         // 1 获取 SpringBoot 中有的配置文件
-        PsiFile psiFile = getSpringApplicationFile(project, module);
+        PsiFile psiFile = getSpringApplicationFile(module);
         if (Objects.isNull(psiFile)) {
             return "";
         }
@@ -80,13 +82,13 @@ public class ProjectTool {
     }
 
     @Description("获取模块所有的 Controller")
-    public static List<PsiClass> getModuleControllers(Project project, Module module) {
+    public static List<PsiClass> getModuleControllers(Module module) {
         Optional<GlobalSearchScope> globalSearchScope = Optional.of(module)
                 .map(Module::getModuleScope);
         return Stream.concat(
-                        globalSearchScope.map(moduleScope -> JavaAnnotationIndex.getInstance().get(SpringEnum.Controller.CONTROLLER.getShortClassName(), project, moduleScope))
+                        globalSearchScope.map(moduleScope -> JavaAnnotationIndex.getInstance().get(SpringEnum.Controller.CONTROLLER.getShortClassName(), getProject(), moduleScope))
                                 .orElse(new ArrayList<>()).stream(),
-                        globalSearchScope.map(moduleScope -> JavaAnnotationIndex.getInstance().get(SpringEnum.Controller.REST_CONTROLLER.getShortClassName(), project, moduleScope))
+                        globalSearchScope.map(moduleScope -> JavaAnnotationIndex.getInstance().get(SpringEnum.Controller.REST_CONTROLLER.getShortClassName(), getProject(), moduleScope))
                                 .orElse(new ArrayList<>()).stream())
                 .map(PsiElement::getParent)
                 .map(PsiModifierList.class::cast)
@@ -97,9 +99,9 @@ public class ProjectTool {
     }
 
     @Description("获取模块的 context-path")
-    public static String getModulePort(@NotNull Project project, @NotNull Module module) {
+    public static String getModulePort(@NotNull Module module) {
         // 1 获取 SpringBoot 中有的配置文件
-        PsiFile psiFile = getSpringApplicationFile(project, module);
+        PsiFile psiFile = getSpringApplicationFile(module);
         if (Objects.isNull(psiFile)) {
             return "80";
         }
@@ -122,19 +124,14 @@ public class ProjectTool {
     }
 
     @Description("获取模块中的 SpringBoot 优先级最高的配置文件")
-    public static PsiFile getSpringApplicationFile(@NotNull Project project, @NotNull Module module) {
-        PsiManager psiManager = PsiManager.getInstance(project);
+    public static PsiFile getSpringApplicationFile(@NotNull Module module) {
+        PsiManager psiManager = PsiManager.getInstance(getProject());
         for (String applicationFileName : APPLICATION_FILE_NAMES) {
-            VirtualFile file = ResourceFileUtil.findResourceFileInScope(applicationFileName, project, module.getModuleScope());
+            VirtualFile file = ResourceFileUtil.findResourceFileInScope(applicationFileName, getProject(), module.getModuleScope());
             if (Objects.nonNull(file)) {
                 return psiManager.findFile(file);
             }
         }
         return null;
-    }
-
-
-    public static ToolWindow getCurrentToolWindow(Project project){
-        return  ToolWindowManager.getInstance(project).getToolWindow("http");
     }
 }

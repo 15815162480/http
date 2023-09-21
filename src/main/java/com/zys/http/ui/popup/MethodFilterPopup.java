@@ -129,7 +129,6 @@ public class MethodFilterPopup extends JPopupMenu {
                 methods.add(getValues()[i]);
             }
         }
-        ;
         return setDefaultValues(methods.toArray(new HttpEnum.HttpMethod[]{}));
     }
 }

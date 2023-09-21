@@ -1,6 +1,5 @@
 package com.zys.http.ui.dialog;
 
-import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.ui.JBColor;
@@ -10,7 +9,7 @@ import com.intellij.util.ui.JBUI;
 import com.zys.http.constant.UIConstant;
 import com.zys.http.entity.HttpConfig;
 import com.zys.http.service.Bundle;
-import com.zys.http.tool.HttpPropertyTool;
+import com.zys.http.tool.HttpServiceTool;
 import com.zys.http.tool.ui.DialogTool;
 import com.zys.http.ui.table.EnvHeaderTable;
 import com.zys.http.ui.table.EnvListTable;
@@ -56,9 +55,9 @@ public class EnvAddOrEditDialog extends DialogWrapper {
     @Description("编辑成功回调")
     private Consumer<HttpConfig> editOkCallback;
 
-    public EnvAddOrEditDialog(@NotNull Project project, boolean isAdd, String selectEnv, EnvListTable envShowTable) {
-        super(project, true);
-        envAddOrEditTable = new EnvHeaderTable(project, isAdd, selectEnv);
+    public EnvAddOrEditDialog(boolean isAdd, String selectEnv, EnvListTable envShowTable) {
+        super(HttpServiceTool.getProject(), true);
+        envAddOrEditTable = new EnvHeaderTable( isAdd, selectEnv);
         this.envShowTable = envShowTable;
         this.isAdd = isAdd;
         init();
@@ -72,8 +71,7 @@ public class EnvAddOrEditDialog extends DialogWrapper {
             configNameTF.setText(selectEnv);
             configNameTF.setEnabled(false);
             configNameTF.setDisabledTextColor(JBColor.BLACK);
-            HttpPropertyTool httpPropertyTool = envAddOrEditTable.getHttpPropertyTool();
-            HttpConfig httpConfig = httpPropertyTool.getHttpConfig(selectEnv);
+            HttpConfig httpConfig = HttpServiceTool.getHttpConfig(selectEnv);
             hostTF.setText(httpConfig.getHostValue());
             protocolCB.setSelectedItem(httpConfig.getProtocol());
         }
@@ -142,10 +140,9 @@ public class EnvAddOrEditDialog extends DialogWrapper {
 
     @Override
     protected void doOKAction() {
-        HttpPropertyTool httpPropertyTool = envAddOrEditTable.getHttpPropertyTool();
         String configName = configNameTF.getText();
         // 添加时需要检测是否存在
-        if (httpPropertyTool.getHttpConfig(configName) != null && envAddOrEditTable.isAdd()) {
+        if (HttpServiceTool.getHttpConfig(configName) != null && envAddOrEditTable.isAdd()) {
             DialogTool.error(Bundle.get("http.dialog.env.config.existed"));
             return;
         }
@@ -159,7 +156,7 @@ public class EnvAddOrEditDialog extends DialogWrapper {
         httpConfig.setHostValue(host);
         httpConfig.setProtocol((Protocol) protocolCB.getSelectedItem());
 
-        httpPropertyTool.putHttpConfig(configName, httpConfig);
+        HttpServiceTool.putHttpConfig(configName, httpConfig);
         if (Objects.nonNull(envShowTable)) {
             DefaultTableModel model = (DefaultTableModel) envShowTable.getValueTable().getModel();
             if (isAdd) {

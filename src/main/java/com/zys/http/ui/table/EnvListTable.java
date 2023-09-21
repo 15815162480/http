@@ -4,13 +4,13 @@ import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionPlaces;
 import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
-import com.intellij.openapi.project.Project;
 import com.zys.http.action.AddAction;
 import com.zys.http.action.CustomAction;
 import com.zys.http.action.EditAction;
 import com.zys.http.action.RemoveAction;
 import com.zys.http.entity.HttpConfig;
 import com.zys.http.service.Bundle;
+import com.zys.http.tool.HttpServiceTool;
 import com.zys.http.ui.dialog.EnvAddOrEditDialog;
 import com.zys.http.ui.window.panel.RequestPanel;
 import jdk.jfr.Description;
@@ -32,8 +32,8 @@ public class EnvListTable extends AbstractTable {
 
     private final RequestPanel requestPanel;
 
-    public EnvListTable(@NotNull Project project, RequestPanel requestPanel) {
-        super(project, false);
+    public EnvListTable(RequestPanel requestPanel) {
+        super(false);
         this.requestPanel = requestPanel;
         init();
     }
@@ -46,7 +46,7 @@ public class EnvListTable extends AbstractTable {
                 Bundle.get("http.table.env.config.ip")
         };
         // 获取存储的所有配置, 再构建
-        Map<String, HttpConfig> httpConfigs = httpPropertyTool.getHttpConfigs();
+        Map<String, HttpConfig> httpConfigs = HttpServiceTool.getHttpConfigs();
         Set<Map.Entry<String, HttpConfig>> entries = httpConfigs.entrySet();
         int i = 0;
         String[][] rowData = new String[entries.size()][];
@@ -64,14 +64,14 @@ public class EnvListTable extends AbstractTable {
     protected @Nullable ActionToolbar initActionToolbar() {
         DefaultActionGroup group = new DefaultActionGroup();
         AddAction addAction = new AddAction(Bundle.get("http.action.add"), "Add");
-        addAction.setAction(event -> new EnvAddOrEditDialog(project, true, "", this).show());
+        addAction.setAction(event -> new EnvAddOrEditDialog( true, "", this).show());
         group.add(addAction);
 
         RemoveAction removeAction = new RemoveAction(Bundle.get("http.action.remove"), "Remove");
         removeAction.setAction(event -> {
             DefaultTableModel model = (DefaultTableModel) valueTable.getModel();
             int selectedRow = valueTable.getSelectedRow();
-            httpPropertyTool.removeHttpConfig((String) model.getValueAt(selectedRow, 0));
+           HttpServiceTool.removeHttpConfig((String) model.getValueAt(selectedRow, 0));
             model.removeRow(selectedRow);
         });
         removeAction.setEnabled(false);
@@ -81,7 +81,7 @@ public class EnvListTable extends AbstractTable {
         editAction.setAction(event -> {
             DefaultTableModel model = (DefaultTableModel) valueTable.getModel();
             String envName = (String) model.getValueAt(valueTable.getSelectedRow(), 0);
-            EnvAddOrEditDialog dialog = new EnvAddOrEditDialog(project, false, envName, this);
+            EnvAddOrEditDialog dialog = new EnvAddOrEditDialog( false, envName, this);
             dialog.setEditOkCallback(o -> requestPanel.reload(requestPanel.getHttpApiTreePanel().getChooseNode()));
             dialog.show();
         });

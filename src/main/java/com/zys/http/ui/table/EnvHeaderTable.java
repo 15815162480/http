@@ -5,11 +5,11 @@ import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionPlaces;
 import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
-import com.intellij.openapi.project.Project;
 import com.zys.http.action.AddAction;
 import com.zys.http.action.RemoveAction;
 import com.zys.http.entity.HttpConfig;
 import com.zys.http.service.Bundle;
+import com.zys.http.tool.HttpServiceTool;
 import jdk.jfr.Description;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
@@ -38,8 +38,8 @@ public class EnvHeaderTable extends AbstractTable {
     @Description("选中的环境名, isAdd 为 true 时忽略")
     private String selectEnv;
 
-    public EnvHeaderTable(@NotNull Project project, boolean isAdd, String selectEnv) {
-        super(project, true);
+    public EnvHeaderTable(boolean isAdd, String selectEnv) {
+        super(true);
         this.isAdd = isAdd;
         if (!isAdd) {
             this.selectEnv = selectEnv;
@@ -53,23 +53,21 @@ public class EnvHeaderTable extends AbstractTable {
                 Bundle.get("http.table.header"),
                 Bundle.get("http.table.value")
         };
-        String[][] rowData = null;
 
         if (this.isAdd) {
-            return new DefaultTableModel(rowData, columnNames);
+            return new DefaultTableModel(null, columnNames);
         }
-
-        HttpConfig httpConfig = httpPropertyTool.getHttpConfig(selectEnv);
+        HttpConfig httpConfig = HttpServiceTool.getHttpConfig(selectEnv);
         if (Objects.isNull(httpConfig)) {
-            return new DefaultTableModel(rowData, columnNames);
+            return new DefaultTableModel(null, columnNames);
         }
 
         Map<String, String> headers = httpConfig.getHeaders();
         if (Objects.isNull(headers)) {
-            return new DefaultTableModel(rowData, columnNames);
+            return new DefaultTableModel(null, columnNames);
         }
 
-        rowData = new String[headers.size()][];
+        String[][] rowData = new String[headers.size()][];
         int i = 0;
         for (Map.Entry<String, String> e : headers.entrySet()) {
             rowData[i] = new String[2];
@@ -155,7 +153,7 @@ public class EnvHeaderTable extends AbstractTable {
 
     @Override
     public void reloadTableModel() {
-        this.selectEnv = httpPropertyTool.getSelectedEnv();
+        this.selectEnv = HttpServiceTool.getSelectedEnv();
         valueTable.setModel(initTableModel());
     }
 

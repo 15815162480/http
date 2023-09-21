@@ -5,6 +5,7 @@ import com.intellij.ui.components.JBScrollPane;
 import com.intellij.util.ui.JBUI;
 import com.zys.http.entity.tree.NodeData;
 import com.zys.http.ui.tree.node.BaseNode;
+import com.zys.http.ui.tree.node.MethodNode;
 import com.zys.http.ui.tree.node.ModuleNode;
 import com.zys.http.ui.tree.render.HttpApiTreeCellRenderer;
 import jdk.jfr.Description;
@@ -134,7 +135,13 @@ public abstract class AbstractListTreePanel extends JBScrollPane implements Tree
 
     @Description("展开全部")
     public void treeExpand() {
-        expandAll(new TreePath(tree.getModel().getRoot()), true);
+        TreePath path = tree.getSelectionPath();
+        BaseNode<?> chooseNode = getChooseNode();
+        if (Objects.isNull(path) || Objects.isNull(chooseNode) || chooseNode instanceof MethodNode) {
+            tree.expandPath(new TreePath(tree.getModel().getRoot()));
+        } else {
+            expandAll(path, true);
+        }
     }
 
     @Description("收起全部")

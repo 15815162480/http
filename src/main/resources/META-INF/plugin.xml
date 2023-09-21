@@ -42,6 +42,14 @@
 
   <!-- 更新公告 -->
   <change-notes><![CDATA[
+    <b>1.1.1</b><br>
+    <ol>
+      <li>
+        feature: Expand function optimization, if there is selected node, only the selected nodes will be expanded.
+        <br>
+        新功能: 展开功能优化, 如果有选中节点, 只会展开选中的节点
+      </li>
+    </ol>
       <b>1.1.0</b><br>
       <ol>
         <li>

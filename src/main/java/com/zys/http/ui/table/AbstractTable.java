@@ -1,14 +1,12 @@
 package com.zys.http.ui.table;
 
 import com.intellij.openapi.actionSystem.ActionToolbar;
-import com.intellij.openapi.project.Project;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
 import com.intellij.util.ui.JBUI;
 import com.zys.http.action.AddAction;
 import com.zys.http.action.CustomAction;
 import com.zys.http.constant.UIConstant;
-import com.zys.http.tool.HttpPropertyTool;
 import jdk.jfr.Description;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
@@ -34,22 +32,12 @@ public abstract class AbstractTable extends JPanel {
     @Description("数据展示表格")
     protected JBTable valueTable;
 
-
-    @Description("所在项目")
-    protected transient Project project;
-
     @Description("单元格是否能编辑")
     private final boolean cellEditable;
 
-    @Getter
-    @Description("存储工具")
-    protected final transient HttpPropertyTool httpPropertyTool;
-
-    protected AbstractTable(Project project, boolean cellEditable) {
+    protected AbstractTable( boolean cellEditable) {
         super(new BorderLayout(0, 0));
-        this.project = project;
         this.cellEditable = cellEditable;
-        this.httpPropertyTool = HttpPropertyTool.getInstance(this.project);
     }
 
     @Description("子类需要自己调用")

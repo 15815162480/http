@@ -10,7 +10,6 @@ import com.intellij.openapi.editor.EditorSettings;
 import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.fileTypes.FileTypes;
-import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Computable;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
@@ -23,6 +22,7 @@ import com.intellij.ui.JBColor;
 import com.intellij.util.LocalTimeCounter;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.xmlb.Constants;
+import com.zys.http.tool.ProjectTool;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -52,12 +52,12 @@ public class CustomEditor extends EditorTextField {
      */
     public static final FileType XML_FILE_TYPE = XmlFileType.INSTANCE;
 
-    public CustomEditor(Project project) {
-        this(project, TEXT_FILE_TYPE);
+    public CustomEditor() {
+        this(TEXT_FILE_TYPE);
     }
 
-    public CustomEditor(Project project, FileType fileType) {
-        super(null, project, fileType, false, false);
+    public CustomEditor(FileType fileType) {
+        super(null, ProjectTool.getProject(), fileType, false, false);
         super.setBorder(JBUI.Borders.empty());
         super.setBackground(new JBColor(Gray._255, new Color(30, 31, 34)));
     }

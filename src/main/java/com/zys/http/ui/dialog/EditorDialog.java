@@ -1,10 +1,10 @@
 package com.zys.http.ui.dialog;
 
-import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.util.ui.JBUI;
 import com.zys.http.constant.UIConstant;
 import com.zys.http.service.Bundle;
+import com.zys.http.tool.ProjectTool;
 import com.zys.http.ui.editor.CustomEditor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -29,8 +29,8 @@ public class EditorDialog extends DialogWrapper {
     @Setter
     private Consumer<String> okCallBack;
 
-    public EditorDialog(@Nullable Project project, String title, CustomEditor customEditor) {
-        super(project);
+    public EditorDialog(String title, CustomEditor customEditor) {
+        super(ProjectTool.getProject());
         this.customEditor = customEditor;
         customEditor.setBorder(JBUI.Borders.customLine(UIConstant.EDITOR_BORDER_COLOR, 1, 1, 1, 1));
         init();
