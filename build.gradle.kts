@@ -13,19 +13,10 @@ repositories {
 }
 
 dependencies {
-    compileOnly("org.projectlombok:lombok:1.18.24")
-    annotationProcessor("org.projectlombok:lombok:1.18.24")
+    compileOnly("org.projectlombok:lombok:1.18.26")
+    annotationProcessor("org.projectlombok:lombok:1.18.26")
     implementation("cn.hutool:hutool-http:5.8.22")
     implementation("cn.hutool:hutool-json:5.8.22")
-    implementation("org.apache.velocity:velocity-engine-core:1.6.2") {
-        exclude("org.slf4j")
-    }
-    implementation("org.apache.velocity:velocity-engine-scripting:1.6.2") {
-        exclude("org.slf4j")
-    }
-    implementation("org.apache.velocity:velocity-tools:2.0"){
-        exclude("org.slf4j")
-    }
 }
 
 // Configure Gradle IntelliJ Plugin
