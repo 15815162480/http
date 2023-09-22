@@ -300,7 +300,7 @@ public class RequestPanel extends JBSplitter {
         parameterTable.reloadTableModel();
         bodyEditor.setText("");
         responseEditor.setText("");
-        paramPropertyMap = ParamConvert.parsePsiMethodParams(psiMethod);
+        paramPropertyMap = ParamConvert.parsePsiMethodParams(psiMethod, true);
 
         for (Map.Entry<String, ParamProperty> entry : paramPropertyMap.entrySet()) {
             String k = entry.getKey();

@@ -47,17 +47,17 @@ import java.util.stream.Collectors;
 @Description("树形列表展示区")
 public class HttpApiTreePanel extends AbstractListTreePanel {
 
+    @Getter
     @Description("模块名, 模块结点")
     private final transient Map<String, ModuleNode> moduleNodeMap = new HashMap<>();
 
+    @Getter
     @Description("模块名, controller")
     private final transient Map<String, List<PsiClass>> moduleControllerMap = new HashMap<>();
 
+    @Getter
     @Description("controller, 方法列表")
     private final transient Map<PsiClass, List<MethodNode>> methodNodeMap = new HashMap<>();
-
-    @Description("方法引用, 方法结点")
-    private final transient Map<PsiMethod, MethodNode> methodNodePsiMap = new HashMap<>();
 
 
     @Getter
@@ -127,7 +127,7 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
                 for (PsiClass c : controllers) {
                     controllerPath = PsiTool.getControllerPath(c);
                     contextPath = ProjectTool.getModuleContextPath(project, m);
-                    methodNodeMap.put(c, buildMethodNodes(c, contextPath, controllerPath, methodNodePsiMap));
+                    methodNodeMap.put(c, buildMethodNodes(c, contextPath, controllerPath));
                 }
                 initPackageNodes(moduleName, methods).forEach(mn::add);
             }
@@ -298,7 +298,7 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
     }
 
     @Description("获取所有 @xxxMapping 的方法")
-    public List<MethodNode> buildMethodNodes(@NotNull PsiClass psiClass, String contextPath, String controllerPath, Map<PsiMethod, MethodNode> methodNodePsiMap) {
+    public List<MethodNode> buildMethodNodes(@NotNull PsiClass psiClass, String contextPath, String controllerPath) {
         PsiMethod[] methods = psiClass.getAllMethods();
         if (methods.length < 1) {
             return Collections.emptyList();
@@ -319,7 +319,6 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
                     data = new MethodNode(data1);
                     data1.setDescription(PsiTool.getSwaggerAnnotation(method, "METHOD_"));
                     dataList.add(data);
-                    methodNodePsiMap.put(method, data);
                 }
             }
         }

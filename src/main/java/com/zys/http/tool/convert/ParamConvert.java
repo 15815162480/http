@@ -30,7 +30,7 @@ public class ParamConvert {
     private static final String ANNO_VALUE = "value";
     private static final String ANNO_NAME = "name";
 
-    public static Map<String, ParamProperty> parsePsiMethodParams(@NotNull PsiMethod psiMethod) {
+    public static Map<String, ParamProperty> parsePsiMethodParams(@NotNull PsiMethod psiMethod, boolean isJsonPretty) {
         PsiParameterList parameterList = psiMethod.getParameterList();
         if (parameterList.isEmpty()) {
             return Collections.emptyMap();
@@ -42,13 +42,13 @@ public class ParamConvert {
         }
         Map<String, ParamProperty> map = new HashMap<>();
         for (PsiParameter parameter : parameters) {
-            parsePsiParameter(parameter, map);
+            parsePsiParameter(parameter, map, isJsonPretty);
         }
         return map;
     }
 
 
-    private static void parsePsiParameter(PsiParameter parameter, Map<String, ParamProperty> map) {
+    private static void parsePsiParameter(PsiParameter parameter, Map<String, ParamProperty> map, boolean isJsonPretty) {
         String parameterName = parameter.getName();
         PsiType parameterType = parameter.getType();
 
@@ -94,7 +94,7 @@ public class ParamConvert {
                 PsiAnnotation requestBodyAnno = parameter.getAnnotation(SpringEnum.Param.REQUEST_BODY.getClazz());
                 if (Objects.nonNull(requestBodyAnno)) {
                     // 将 paramMap 转成 Json 字符串
-                    String jsonStr = JSONUtil.toJsonPrettyStr(paramMap);
+                    String jsonStr = isJsonPretty ? JSONUtil.toJsonPrettyStr(paramMap) : JSONUtil.toJsonStr(paramMap);
                     map.put(parameterName, new ParamProperty(jsonStr, HttpEnum.ParamUsage.BODY));
                 } else {
                     paramMap.forEach((k, v) -> map.put(k.toString(), new ParamProperty(v, HttpEnum.ParamUsage.URL)));

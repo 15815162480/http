@@ -1,65 +1,90 @@
 {
   "info": {
-    "_postman_id": "53aed660-68b9-4eca-9a2c-5c8a1c685fa9",
-    "name": "New Collection",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "14459125"
+      ## 模块名
+    "name": "$moduleName",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
-    {
-      "name": "New Folder",
-      "item": [
+      #foreach($item in $controllerItems)
         {
-          "name": "New Folder",
+            ## swagger 注解优先,没有就用类名
+          "name": "$item",
           "item": [
-            {
-              "name": "参数",
-              "protocolProfileBehavior": {
-                "disableBodyPruning": true
-              },
-              "request": {
-                "method": "GET",
-                "header": [],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\r\n    \"a\": 1\r\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
+              #foreach($method in $methodMap.get($item))
+                {
+                    ## swagger 注解, 没有就请求路径
+                  "name": "$method.name",
+                  "request": {
+                      ## 请求方式
+                    "method": "$method.method",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "$method.contentType"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "*/*"
+                      },
+                      {
+                        "key": "Authorization",
+                        "value": "{{Authorization}}"
+                      }
+                    ],
+                      #set($mode = $method.mode)
+                      #if($mode && !$mode.isEmpty())
+                        "body": {
+                          "mode": "$mode"
+                            #if($mode == "raw")
+                            ,
+                              "raw": "$method.raw",
+                              "options": {
+                                "raw": {
+                                  "language": "json"
+                                }
+                              }
+                            #else
+                                #set($urlencodedKey =$method.urlencodedKey)
+                                #if($urlencodedKey && $urlencodedKey.size() > 0)
+                                ,
+                                  "urlencoded": [
+                                      #foreach($uk in $urlencodedKey)
+                                        {
+                                          "key": "$uk",
+                                          "value": "",
+                                          "description": ""
+                                        }#if(!$foreach.last), #end
+                                      #end
+                                  ]
+                                #end
+                            #end
+                        },
+                      #end
+
+                      ## url 参数
+                    "url": {
+                        ## 请求地址
+                      "raw": "{{protocol}}://{{hostValue}}$method.uri"
+                        #set($queryKey =$method.queryKey)
+                        #if($queryKey && $queryKey.size() > 0)
+                        ,
+                          "query": [
+                              #foreach($k in $queryKey)
+                                {
+                                  "key": "$k",
+                                  "value": ""
+                                }#if(!$foreach.last), #end
+                              #end
+
+                          ]
+                        #end
                     }
-                  }
-                },
-                "url": {
-                  "raw": "?1=1",
-                  "query": [
-                    {
-                      "key": "1",
-                      "value": "1"
-                    }
-                  ]
-                }
-              },
-              "response": []
-            }
+                  },
+                  "response": []
+                }#if(!$foreach.last), #end
+              #end
           ]
-        },
-        {
-          "name": "New Request",
-          "request": {
-            "method": "GET",
-            "header": []
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "New Request",
-      "request": {
-        "method": "GET",
-        "header": []
-      },
-      "response": []
-    }
+        }#if(!$foreach.last), #end
+      #end
   ]
 }

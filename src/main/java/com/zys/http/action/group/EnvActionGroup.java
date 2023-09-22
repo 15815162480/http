@@ -19,6 +19,7 @@ import com.zys.http.tool.velocity.VelocityTool;
 import com.zys.http.ui.dialog.EnvAddOrEditDialog;
 import com.zys.http.ui.dialog.EnvListShowDialog;
 import com.zys.http.ui.icon.HttpIcons;
+import com.zys.http.ui.tree.HttpApiTreePanel;
 import com.zys.http.ui.window.panel.RequestPanel;
 import jdk.jfr.Description;
 import org.jetbrains.annotations.NotNull;
@@ -76,7 +77,7 @@ public class EnvActionGroup extends DefaultActionGroup {
             }
             String path = selectedFile.getPath();
             try {
-                VelocityTool.exportEnv(selectedEnv, requestPanel.getServiceTool().getHttpConfig(selectedEnv), path);
+                VelocityTool.exportEnv(selectedEnv, config, path);
                 NotifyService.instance(project).info(Bundle.get("http.message.export.success"));
             } catch (IOException ex) {
                 NotifyService.instance(project).error(Bundle.get("http.message.export.fail"));
@@ -100,6 +101,25 @@ public class EnvActionGroup extends DefaultActionGroup {
             }
         });
         exportGroup.add(exportAll);
+
+        CommonAction exportAllApi = new CommonAction(Bundle.get("http.action.export.all.api"), "Export All Api", HttpIcons.General.EXPORT);
+        exportAll.setAction(event -> {
+            VirtualFile selectedFile = createFileChooser(project);
+            if (Objects.isNull(selectedFile)) {
+                DialogTool.error("error type");
+                return;
+            }
+            String path = selectedFile.getPath();
+            try {
+                HttpApiTreePanel treePanel = requestPanel.getHttpApiTreePanel();
+                VelocityTool.exportAllModuleApi(treePanel.getModuleControllerMap(), treePanel.getMethodNodeMap(), path);
+                NotifyService.instance(project).info(Bundle.get("http.message.export.success"));
+            } catch (IOException ex) {
+                NotifyService.instance(project).error(Bundle.get("http.message.export.fail"));
+            }
+        });
+        exportGroup.add(exportAllApi);
+
         actions[3] = exportGroup;
         return actions;
     }

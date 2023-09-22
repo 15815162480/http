@@ -49,7 +49,7 @@
       <li>
         feature: Support for exporting postman environment configuration
         <br>
-        新功能: 支持导出 Postman 环境配置
+        新功能: 支持导出 Postman 环境配置、分模块 API 列表导出
       </li>
       <li>
         feature: Expand and collapse function optimization, if there is selected node, only the selected nodes will be
