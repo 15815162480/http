@@ -17,6 +17,10 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok:1.18.26")
     implementation("cn.hutool:hutool-http:5.8.22")
     implementation("cn.hutool:hutool-json:5.8.22")
+    // 很坑的一个点, 自己测试时需要注释 velocity 依赖包, 打包时需要打开
+    implementation("org.apache.velocity:velocity-engine-core:2.3") {
+        exclude("org.slf4j")
+    }
 }
 
 // Configure Gradle IntelliJ Plugin

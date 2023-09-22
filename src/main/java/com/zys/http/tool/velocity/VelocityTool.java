@@ -21,6 +21,7 @@ import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
+import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -38,9 +39,9 @@ public class VelocityTool {
 
     private static final VelocityEngine ENGINE = new VelocityEngine();
     @Description("环境导出模板")
-    private static final String ENV_TEMPLATE_PATH = "env.json.vm";
+    private static final String ENV_TEMPLATE_PATH = "template/env.json.vm";
     @Description("接口导出模板")
-    private static final String API_TEMPLATE_PATH = "api.json.vm";
+    private static final String API_TEMPLATE_PATH = "template/api.json.vm";
 
     @Description("环境导出文件名模板, {}-环境名")
     private static final String EXPORT_ENV_FILE_NAME = "apiTool.export.postman.env.{}.json";
@@ -49,11 +50,10 @@ public class VelocityTool {
 
     static {
         Properties p = new Properties();
-        p.setProperty("resource.loader", "plugin");
-        p.setProperty("plugin.resource.loader.class", "com.zys.http.tool.velocity.PluginResourceLoader");
-        p.setProperty(RuntimeConstants.OUTPUT_ENCODING, StandardCharsets.UTF_8.name());
+        p.setProperty("resource.loader", "class");
+        p.setProperty("class.resource.loader.class", ClasspathResourceLoader.class.getName());
         p.setProperty(RuntimeConstants.INPUT_ENCODING, StandardCharsets.UTF_8.name());
-        ClassLoaderUtil.runWithClassLoader(PluginResourceLoader.class.getClassLoader(), () -> ENGINE.init(p));
+        ClassLoaderUtil.runWithClassLoader(ClasspathResourceLoader.class.getClassLoader(), () -> ENGINE.init(p));
     }
 
     @Description("导出指定环境")
