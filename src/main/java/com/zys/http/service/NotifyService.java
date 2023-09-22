@@ -30,6 +30,10 @@ public class NotifyService {
         return notify(content, NotificationType.INFORMATION);
     }
 
+    public Notification error(@NotNull String content) {
+        return notify(content, NotificationType.ERROR);
+    }
+
     public Notification notify(@NotNull String content, @NotNull NotificationType type) {
         final Notification notification = Objects.requireNonNull(NOTIFICATION_GROUP).createNotification(content, type);
         notification.notify(project);

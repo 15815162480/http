@@ -27,7 +27,7 @@ public class SelectActionGroup extends DefaultActionGroup {
     private Consumer<String> callback;
 
     public SelectActionGroup() {
-        super(Bundle.get("http.action.group.select"), "Select env", HttpIcons.General.LIST);
+        super(Bundle.get("http.action.group.select.env"), "Select env", HttpIcons.General.LIST);
         setPopup(true);
     }
 

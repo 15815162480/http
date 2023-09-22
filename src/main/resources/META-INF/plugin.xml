@@ -1,6 +1,6 @@
 <idea-plugin>
   <id>com.zys.http</id>
-  <version>1.1.0</version>
+  <version>1.2.0</version>
 
   <name>ApiTool</name>
 
@@ -44,8 +44,13 @@
 
   <!-- 更新公告 -->
   <change-notes><![CDATA[
-    <b>1.1.1</b><br>
+    <b>1.2.0</b><br>
     <ol>
+      <li>
+        feature: Support for exporting postman environment configuration
+        <br>
+        新功能: 支持导出 Postman 环境配置
+      </li>
       <li>
         feature: Expand and collapse function optimization, if there is selected node, only the selected nodes will be
         expanded or collapse.
@@ -56,6 +61,11 @@
         feature: Module Node, Package Node, Class Node add the right-click menu: expand all child node
         <br>
         新功能: 模块结点、包结点、类结点添加右键菜单功能: 展开所有子节点
+      </li>
+      <li>
+        fix bug: Send a new request, the older request do not clear the response editor
+        <br>
+        bug 修复: 发送一个新请求时, 旧请求的结果没有被清空
       </li>
     </ol>
     <b>1.1.0</b><br>

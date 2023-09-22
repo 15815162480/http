@@ -196,6 +196,7 @@ public class RequestPanel extends JBSplitter {
             }
 
             tabs.select(responseTabInfo, true);
+            responseEditor.setText("");
             HttpClient.run(
                     HttpClient.newRequest(httpMethod, url, header, parameter, bodyText),
                     response -> {

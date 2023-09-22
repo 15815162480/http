@@ -35,6 +35,7 @@ public final class HttpIcons {
         public static final Icon DEFAULT = IconLoader.getIcon("/icon/general/default.svg", HttpIcons.class);
         public static final Icon LOCATE = IconLoader.getIcon("/icon/general/locate.svg", HttpIcons.class);
         public static final Icon FULL_SCREEN = IconLoader.getIcon("/icon/general/fullScreen.svg", HttpIcons.class);
+        public static final Icon EXPORT = IconLoader.getIcon("/icon/general/export.svg", HttpIcons.class);
     }
 
     @Description("请求方法")
