@@ -18,9 +18,8 @@ import java.util.Objects;
 @Description("消息通知")
 public class NotifyService {
 
-    private final Project project;
-
     private static final NotificationGroup NOTIFICATION_GROUP = NotificationGroup.findRegisteredGroup("http.notify");
+    private final Project project;
 
     public static NotifyService instance(@NotNull Project project) {
         return project.getService(NotifyService.class);

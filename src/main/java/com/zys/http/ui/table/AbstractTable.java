@@ -25,18 +25,15 @@ import java.util.Objects;
  * @since 2023-09-03
  */
 public abstract class AbstractTable extends JPanel {
-    @Getter
-    @Description("表格上方的工具栏")
-    private transient ActionToolbar toolbar;
-
+    protected final HttpServiceTool serviceTool;
+    @Description("单元格是否能编辑")
+    private final boolean cellEditable;
     @Getter
     @Description("数据展示表格")
     protected JBTable valueTable;
-
-    @Description("单元格是否能编辑")
-    private final boolean cellEditable;
-
-    protected final HttpServiceTool serviceTool;
+    @Getter
+    @Description("表格上方的工具栏")
+    private transient ActionToolbar toolbar;
 
     protected AbstractTable(HttpServiceTool serviceTool, boolean cellEditable) {
         super(new BorderLayout(0, 0));

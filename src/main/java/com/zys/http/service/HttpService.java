@@ -24,13 +24,13 @@ public class HttpService implements PersistentStateComponent<HttpService.State> 
 
     private State state = new State();
 
+    public static HttpService getInstance(Project project) {
+        return project.getService(HttpService.class);
+    }
+
     @Override
     public void loadState(@NotNull State state) {
         this.state = state;
-    }
-
-    public static HttpService getInstance(Project project) {
-        return project.getService(HttpService.class);
     }
 
     public void addHttpConfig(@NotNull String key, @NotNull HttpConfig httpConfig) {
@@ -51,14 +51,14 @@ public class HttpService implements PersistentStateComponent<HttpService.State> 
         return state.httpConfigs;
     }
 
+    public String getSelectedEnv() {
+        return state.selectedEnv;
+    }
+
     public void setSelectedEnv(String key) {
         if (state.httpConfigs.containsKey(key)) {
             state.selectedEnv = key;
         }
-    }
-
-    public String getSelectedEnv() {
-        return state.selectedEnv;
     }
 
     @Data

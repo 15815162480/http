@@ -57,53 +57,38 @@ public class RequestPanel extends JBSplitter {
 
     // ================== 上半部分的组件 ==================
 
+    @Getter
+    private final transient Project project;
+    @Getter
+    private final transient HttpServiceTool serviceTool;
     @Description("请求方式选项")
     private ComboBox<HttpMethod> httpMethodComboBox;
-
     @Description("IP/HOST文本输入框")
     private JTextField hostTextField;
 
+    // ================== 下半部分的组件 ==================
     @Description("发起请求的按钮")
     private JButton sendRequestBtn;
-
     @Description("树形结构列表")
     private HttpApiTreePanel httpApiTreePanel;
-
-    // ================== 下半部分的组件 ==================
-
     @Description("标签栏")
     private transient JBTabs tabs;
-
     @Description("请求头表格")
     private EnvHeaderTable headerTable;
-
     @Description("参数标签页面")
     private transient TabInfo parameterTabInfo;
-
     @Description("请求参数表格")
     private ParameterTable parameterTable;
-
     @Description("请求体标签页面")
     private transient TabInfo bodyTabInfo;
-
     @Description("请求体编辑区")
     private CustomEditor bodyEditor;
-
     @Description("请求体类型")
     private ComboBox<FileType> bodyFileType;
-
     @Description("响应体标签页面")
     private transient TabInfo responseTabInfo;
-
     @Description("响应体类型")
     private CustomEditor responseEditor;
-
-    @Getter
-    private final transient Project project;
-
-    @Getter
-    private final transient HttpServiceTool serviceTool;
-
     private transient Map<String, ParamProperty> paramPropertyMap;
 
     public RequestPanel(Project project) {

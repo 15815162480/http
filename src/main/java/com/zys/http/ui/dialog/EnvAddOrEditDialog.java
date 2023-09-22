@@ -34,29 +34,22 @@ import static com.zys.http.constant.HttpEnum.Protocol;
 @Description("添加或修改环境配置的对话框")
 public class EnvAddOrEditDialog extends DialogWrapper {
 
-    @Description("配置名称")
-    private JTextField configNameTF;
-
-    @Description("IP:PORT/域名")
-    private JTextField hostTF;
-
-    @Description("协议选择框")
-    private ComboBox<Protocol> protocolCB;
-
     @Description("数据表格")
     private final EnvHeaderTable envAddOrEditTable;
-
     @Description("添加/修改后方便刷新数据")
     private final EnvListTable envShowTable;
-
     @Description("是否是添加")
     private final boolean isAdd;
-
+    private final HttpServiceTool serviceTool;
+    @Description("配置名称")
+    private JTextField configNameTF;
+    @Description("IP:PORT/域名")
+    private JTextField hostTF;
+    @Description("协议选择框")
+    private ComboBox<Protocol> protocolCB;
     @Setter
     @Description("编辑成功回调")
     private Consumer<String> editOkCallback;
-
-    private final HttpServiceTool serviceTool;
 
     public EnvAddOrEditDialog(Project project, boolean isAdd, String selectEnv, EnvListTable envShowTable) {
         super(project, true);

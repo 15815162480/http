@@ -47,6 +47,17 @@ public class EnvHeaderTable extends AbstractTable {
         init();
     }
 
+    @Description("请求头是否重复")
+    private static boolean isDuplicateData(JTable table, String header) {
+        for (int row = 0; row < table.getRowCount() - 1; row++) {
+            String existingHeader = (String) table.getValueAt(row, 0);
+            if (header.equals(existingHeader)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     protected @NotNull DefaultTableModel initTableModel() {
         String[] columnNames = {
@@ -120,17 +131,6 @@ public class EnvHeaderTable extends AbstractTable {
                 }
             }
         };
-    }
-
-    @Description("请求头是否重复")
-    private static boolean isDuplicateData(JTable table, String header) {
-        for (int row = 0; row < table.getRowCount() - 1; row++) {
-            String existingHeader = (String) table.getValueAt(row, 0);
-            if (header.equals(existingHeader)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public void addContentType(String contentType) {

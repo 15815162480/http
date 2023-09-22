@@ -58,15 +58,12 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
     @Getter
     @Description("controller, 方法列表")
     private final transient Map<PsiClass, List<MethodNode>> methodNodeMap = new HashMap<>();
-
-
+    private final transient HttpServiceTool serviceTool;
+    private final transient Project project;
     @Getter
     @Setter
     @Description("选中方法节点后的回调")
     private transient Consumer<MethodNode> chooseCallback;
-
-    private final transient HttpServiceTool serviceTool;
-    private final transient Project project;
 
     public HttpApiTreePanel(Project project) {
         super(new SimpleTree());
