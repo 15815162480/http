@@ -40,7 +40,7 @@ public class SelectActionGroup extends DefaultActionGroup {
 
         int i = 0;
         for (String s : set) {
-            SelectAction action = new SelectAction(s, s);
+            SelectAction action = new SelectAction(s);
             action.setAction(event -> {
                 event.getPresentation().setIcon(HttpIcons.General.ADD);
                 String selectEnv = event.getPresentation().getText();

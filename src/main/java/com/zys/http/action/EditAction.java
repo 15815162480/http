@@ -9,7 +9,7 @@ import jdk.jfr.Description;
  */
 @Description("编辑操作")
 public class EditAction extends CustomAction {
-    public EditAction(String text, String description) {
-        super(text, description, AllIcons.Actions.Edit);
+    public EditAction(String text) {
+        super(text, "Edit", AllIcons.Actions.Edit);
     }
 }

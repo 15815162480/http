@@ -5,8 +5,6 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.util.Arrays;
-
 /**
  * @author zys
  * @since 2023-08-19
@@ -25,13 +23,6 @@ public interface HttpEnum {
 
         private final String value;
 
-        public static ContentType convert(String value) {
-            return Arrays.stream(values())
-                    .filter(o -> o.value.equals(value))
-                    .findFirst()
-                    .orElse(APPLICATION_X_FORM_URLENCODED);
-        }
-
         @Override
         public String toString() {
             return value;
@@ -40,7 +31,7 @@ public interface HttpEnum {
 
 
     enum HttpMethod {
-        REQUEST, GET, POST, PUT, DELETE, PATCH;
+        REQUEST, GET, POST, PUT, DELETE, PATCH
     }
 
     enum Protocol {

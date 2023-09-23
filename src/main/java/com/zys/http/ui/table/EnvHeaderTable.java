@@ -90,10 +90,9 @@ public class EnvHeaderTable extends AbstractTable {
     }
 
     @Override
-    @SuppressWarnings("ExtractMethodRecommender")
     protected @Nullable ActionToolbar initActionToolbar() {
         DefaultActionGroup group = new DefaultActionGroup();
-        AddAction addAction = new AddAction(Bundle.get("http.action.add"), "Add");
+        AddAction addAction = new AddAction(Bundle.get("http.action.add"));
         addAction.setAction(event -> {
             DefaultTableModel model = (DefaultTableModel) valueTable.getModel();
             int rowCount = model.getRowCount();
@@ -104,7 +103,7 @@ public class EnvHeaderTable extends AbstractTable {
         });
         group.add(addAction);
 
-        RemoveAction removeAction = new RemoveAction(Bundle.get("http.action.remove"), "Remove");
+        RemoveAction removeAction = new RemoveAction(Bundle.get("http.action.remove"));
         removeAction.setAction(event -> {
             int selectedRow = valueTable.getSelectedRow();
             getTableModel().removeRow(selectedRow);

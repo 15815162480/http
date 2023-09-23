@@ -25,17 +25,16 @@ public class NotifyService {
         return project.getService(NotifyService.class);
     }
 
-    public Notification info(@NotNull String content) {
-        return notify(content, NotificationType.INFORMATION);
+    public void info(@NotNull String content) {
+        notify(content, NotificationType.INFORMATION);
     }
 
-    public Notification error(@NotNull String content) {
-        return notify(content, NotificationType.ERROR);
+    public void error(@NotNull String content) {
+        notify(content, NotificationType.ERROR);
     }
 
-    public Notification notify(@NotNull String content, @NotNull NotificationType type) {
+    public void notify(@NotNull String content, @NotNull NotificationType type) {
         final Notification notification = Objects.requireNonNull(NOTIFICATION_GROUP).createNotification(content, type);
         notification.notify(project);
-        return notification;
     }
 }

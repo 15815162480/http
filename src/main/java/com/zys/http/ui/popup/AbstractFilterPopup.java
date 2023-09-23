@@ -22,7 +22,7 @@ import java.util.function.BiConsumer;
 public abstract class AbstractFilterPopup<T> extends JPopupMenu {
 
     protected final transient List<JBCheckBox> checkBoxList = new ArrayList<>();
-    protected transient List<T> values;
+    protected final transient List<T> values;
     protected transient List<T> defaultValues;
     @Setter
     @Nullable

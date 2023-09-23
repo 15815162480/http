@@ -10,11 +10,11 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.zys.http.action.AddAction;
 import com.zys.http.action.CommonAction;
+import com.zys.http.action.ExportAction;
 import com.zys.http.entity.HttpConfig;
 import com.zys.http.service.Bundle;
 import com.zys.http.service.NotifyService;
 import com.zys.http.tool.HttpServiceTool;
-import com.zys.http.tool.ui.DialogTool;
 import com.zys.http.tool.velocity.VelocityTool;
 import com.zys.http.ui.dialog.EnvAddOrEditDialog;
 import com.zys.http.ui.dialog.EnvListShowDialog;
@@ -44,92 +44,103 @@ public class EnvActionGroup extends DefaultActionGroup {
 
     @Override
     public AnAction @NotNull [] getChildren(@Nullable AnActionEvent e) {
-        HttpServiceTool serviceTool = requestPanel.getServiceTool();
         if (Objects.isNull(e) || Objects.isNull(e.getProject())) {
             return new AnAction[]{};
         }
-        Project project = e.getProject();
         AnAction[] actions = new AnAction[4];
-        AddAction addAction = new AddAction(Bundle.get("http.action.add.env"), "Add env");
-        addAction.setAction(event -> new EnvAddOrEditDialog(project, true, "", null).show());
+        AddAction addAction = new AddAction(Bundle.get("http.action.add.env"));
+        addAction.setAction(event -> new EnvAddOrEditDialog(e.getProject(), true, "", null).show());
         actions[0] = addAction;
         SelectActionGroup selectActionGroup = new SelectActionGroup();
         selectActionGroup.setPopup(true);
         selectActionGroup.setCallback(s -> requestPanel.reload(requestPanel.getHttpApiTreePanel().getChooseNode()));
         actions[1] = selectActionGroup;
-        CommonAction action = new CommonAction(Bundle.get("http.action.show.env"), "Env list", null);
-        action.setAction(event -> new EnvListShowDialog(requestPanel).show());
-        actions[2] = action;
+        CommonAction envListAction = new CommonAction(Bundle.get("http.action.show.env"), "Env list", null);
+        envListAction.setAction(event -> new EnvListShowDialog(requestPanel).show());
+        actions[2] = envListAction;
+        actions[3] = createExportActionGroup();
 
+        return actions;
+    }
+
+    @Description("创建导出操作菜单组")
+    private DefaultActionGroup createExportActionGroup() {
+        HttpServiceTool serviceTool = requestPanel.getServiceTool();
+        Project project = requestPanel.getProject();
         DefaultActionGroup exportGroup = new DefaultActionGroup(Bundle.get("http.action.group.export.env"), true);
         exportGroup.getTemplatePresentation().setIcon(HttpIcons.General.EXPORT);
-        CommonAction exportOne = new CommonAction(Bundle.get("http.action.export.current.env"), "Export Current Env", HttpIcons.General.EXPORT);
+        ExportAction exportOne = new ExportAction(Bundle.get("http.action.export.current.env"));
         exportOne.setAction(event -> {
-            String selectedEnv = serviceTool.getSelectedEnv();
-            HttpConfig config = serviceTool.getHttpConfig(selectedEnv);
-            if (Objects.isNull(config)) {
-                NotifyService.instance(project).error(Bundle.get("http.message.export.current.env.error"));
-                return;
-            }
-            VirtualFile selectedFile = createFileChooser(project);
-            if (Objects.isNull(selectedFile)) {
-                NotifyService.instance(project).error("http.message.export.unselect.folder");
-                return;
-            }
-            String path = selectedFile.getPath();
+            VirtualFile selectedFile = null;
             try {
-                VelocityTool.exportEnv(selectedEnv, config, path);
-                NotifyService.instance(project).info(Bundle.get("http.message.export.success"));
+                HttpConfig config = serviceTool.getDefaultHttpConfig();
+                selectedFile = createFileChooser(project);
+                String path = selectedFile.getPath();
+                VelocityTool.exportEnv(serviceTool.getSelectedEnv(), config, path);
+                exportSuccess(project);
             } catch (IOException ex) {
-                NotifyService.instance(project).error(Bundle.get("http.message.export.fail"));
+                if (Objects.nonNull(selectedFile)) {
+                    exportFail(project);
+                }
             }
         });
         exportGroup.add(exportOne);
 
-        CommonAction exportAll = new CommonAction(Bundle.get("http.action.export.all.env"), "Export All Env", HttpIcons.General.EXPORT);
+        ExportAction exportAll = new ExportAction(Bundle.get("http.action.export.all.env"));
         exportAll.setAction(event -> {
-            VirtualFile selectedFile = createFileChooser(project);
-            if (Objects.isNull(selectedFile)) {
-                DialogTool.error("error type");
-                return;
-            }
-            String path = selectedFile.getPath();
+            VirtualFile selectedFile = null;
             try {
+                selectedFile = createFileChooser(project);
+                String path = selectedFile.getPath();
                 VelocityTool.exportAllEnv(serviceTool.getHttpConfigs(), path);
-                NotifyService.instance(project).info(Bundle.get("http.message.export.success"));
+                exportSuccess(project);
             } catch (IOException ex) {
-                NotifyService.instance(project).error(Bundle.get("http.message.export.fail"));
+                if (Objects.nonNull(selectedFile)) {
+                    exportFail(project);
+                }
             }
         });
         exportGroup.add(exportAll);
 
-        CommonAction exportAllApi = new CommonAction(Bundle.get("http.action.export.all.api"), "Export All Api", HttpIcons.General.EXPORT);
+        ExportAction exportAllApi = new ExportAction(Bundle.get("http.action.export.all.api"));
         exportAll.setAction(event -> {
-            VirtualFile selectedFile = createFileChooser(project);
-            if (Objects.isNull(selectedFile)) {
-                DialogTool.error("error type");
-                return;
-            }
-            String path = selectedFile.getPath();
+            VirtualFile selectedFile = null;
             try {
+                selectedFile = createFileChooser(project);
+                String path = selectedFile.getPath();
                 HttpApiTreePanel treePanel = requestPanel.getHttpApiTreePanel();
                 VelocityTool.exportAllModuleApi(treePanel.getModuleControllerMap(), treePanel.getMethodNodeMap(), path);
-                NotifyService.instance(project).info(Bundle.get("http.message.export.success"));
+                exportSuccess(project);
             } catch (IOException ex) {
-                NotifyService.instance(project).error(Bundle.get("http.message.export.fail"));
+                if (Objects.nonNull(selectedFile)) {
+                    exportFail(project);
+                }
             }
         });
         exportGroup.add(exportAllApi);
 
-        actions[3] = exportGroup;
-        return actions;
+
+        return exportGroup;
     }
 
     @Description("创建文件选择对话框")
-    private VirtualFile createFileChooser(Project project) {
+    private VirtualFile createFileChooser(Project project) throws IOException {
         FileChooserDescriptor descriptor = new FileChooserDescriptor(false, true, false, false, false, false);
         descriptor.setTitle(Bundle.get("http.dialog.env.export"));
         FileChooserFactory.getInstance().createFileChooser(descriptor, project, requestPanel);
-        return FileChooser.chooseFile(descriptor, project, null);
+        VirtualFile selectedFile = FileChooser.chooseFile(descriptor, project, null);
+        if (Objects.isNull(selectedFile)) {
+            NotifyService.instance(project).error("http.message.export.unselect.folder");
+            throw new IOException("A");
+        }
+        return selectedFile;
+    }
+
+    private void exportSuccess(Project project) {
+        NotifyService.instance(project).info(Bundle.get("http.message.export.success"));
+    }
+
+    private void exportFail(Project project) {
+        NotifyService.instance(project).error(Bundle.get("http.message.export.fail"));
     }
 }

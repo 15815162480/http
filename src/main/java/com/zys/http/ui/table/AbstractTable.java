@@ -25,7 +25,7 @@ import java.util.Objects;
  * @since 2023-09-03
  */
 public abstract class AbstractTable extends JPanel {
-    protected final HttpServiceTool serviceTool;
+    protected final transient HttpServiceTool serviceTool;
     @Description("单元格是否能编辑")
     private final boolean cellEditable;
     @Getter

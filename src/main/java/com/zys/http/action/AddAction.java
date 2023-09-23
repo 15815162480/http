@@ -9,7 +9,7 @@ import jdk.jfr.Description;
  */
 @Description("添加菜单")
 public class AddAction extends CustomAction {
-    public AddAction(String text, String description) {
-        super(text, description, HttpIcons.General.ADD);
+    public AddAction(String text) {
+        super(text, "Add", HttpIcons.General.ADD);
     }
 }

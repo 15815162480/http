@@ -10,8 +10,8 @@ import javax.swing.*;
  */
 @Description("选择操作")
 public class SelectAction extends CustomAction {
-    public SelectAction(String text, String description) {
-        super(text, description, null);
+    public SelectAction(String text) {
+        super(text, "Select", null);
     }
 
     public void setIcon(Icon icon) {

@@ -68,11 +68,11 @@ public class EnvListTable extends AbstractTable {
     @Override
     protected @Nullable ActionToolbar initActionToolbar() {
         DefaultActionGroup group = new DefaultActionGroup();
-        AddAction addAction = new AddAction(Bundle.get("http.action.add"), "Add");
+        AddAction addAction = new AddAction(Bundle.get("http.action.add"));
         addAction.setAction(event -> new EnvAddOrEditDialog(requestPanel.getProject(), true, "", this).show());
         group.add(addAction);
 
-        RemoveAction removeAction = new RemoveAction(Bundle.get("http.action.remove"), "Remove");
+        RemoveAction removeAction = new RemoveAction(Bundle.get("http.action.remove"));
         removeAction.setAction(event -> {
             DefaultTableModel model = (DefaultTableModel) valueTable.getModel();
             int selectedRow = valueTable.getSelectedRow();
@@ -82,7 +82,7 @@ public class EnvListTable extends AbstractTable {
         removeAction.setEnabled(false);
         group.add(removeAction);
 
-        EditAction editAction = new EditAction(Bundle.get("http.action.edit"), "Edit");
+        EditAction editAction = new EditAction(Bundle.get("http.action.edit"));
         editAction.setAction(event -> {
             DefaultTableModel model = (DefaultTableModel) valueTable.getModel();
             String envName = (String) model.getValueAt(valueTable.getSelectedRow(), 0);
@@ -94,6 +94,15 @@ public class EnvListTable extends AbstractTable {
         editAction.setEnabled(false);
         group.add(editAction);
 
+        CommonAction exportOne = exportOneAction();
+        group.add(exportOne);
+
+        return ActionManager.getInstance().createActionToolbar(ActionPlaces.TOOLBAR, group, true);
+    }
+
+    @NotNull
+    @Description("导出单个环境配置操作")
+    private CommonAction exportOneAction() {
         CommonAction exportOne = new CommonAction(Bundle.get("http.action.export.select.env"), "Export Current Env", HttpIcons.General.EXPORT);
         exportOne.setAction(event -> {
             DefaultTableModel model = (DefaultTableModel) valueTable.getModel();
@@ -118,9 +127,7 @@ public class EnvListTable extends AbstractTable {
             }
         });
         exportOne.setEnabled(false);
-        group.add(exportOne);
-
-        return ActionManager.getInstance().createActionToolbar(ActionPlaces.TOOLBAR, group, true);
+        return exportOne;
     }
 
     @Override
