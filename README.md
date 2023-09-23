@@ -1,11 +1,47 @@
-# http
-<a href="https://gitee.com/zhou-sheng1/http">gitee</a> 
-## 介绍
-#### 一个请求服务开发辅助工具插件
-1. 只支持 java 语言
-2. 支持 Spring 注解体系(Spring MVC / Spring Boot)
-3. 提供了一块区域展示 API 接口 
-4. 双击方法结点直接跳转到对应的方法定义 
-5. 可配置多环境 
-6. 默认环境是按 bootstrap.(properties、yaml、yml)、application.(properties、yaml、yml) 优先级顺序读取其中的 port
+# Api Tool
 
+<a href="https://gitee.com/zhou-sheng1/http">Gitee</a>|
+<a href="https://github.com/15815162480/http">GitHub</a>
+
+## Introduce
+
+#### A request service development aid plugin.
+
+1. Only Java language is supported.
+2. Language Supported: English, Chinese.
+3. Support for Spring annotation system (Spring MVC / Spring Boot).
+4. Provides a regional display API interface.
+5. Double-click a method node to jump directly to the corresponding method definition.
+6. Configurable multiple environments.
+7. The default environment is to read the ports in order of bootstrap.(properties, yaml, yml) and
+   application.(properties, yaml, yml) priority.
+8. The context-path will be bound in the method node.
+
+## Feature
+### Basic
+1. Scans all classes decorated with @ Controller or @ RestController
+   ![img.png](img/ScanController.png)
+2. Clicking on the method node will automatically fill in all the parameters on the method and jump to the corresponding panel.
+   * if it has the path variable, it will be filled at the param
+   * if it is body type, you can choose the content-type in text, xml, json
+   * if the current env has other request header, them will be filled at the header
+   * click /takeaway/admin/order/page
+   ![img.png](img/ClickMehod.png)
+   * click /takeaway/admin/order/receive
+   ![img.png](img/ClickMethod2.png)
+  
+### Multiple environments
+1. Click the first icon of toolbar, that you can see the popup menu.
+![img.png](img/ClickFirstIcon.png)
+2. You can add a new Env in the popup menu ,or click the Env List to show all env, you can click the '+' icon to add a new Env too
+3. Click the Env List to show all env, if you choose a env, you can edit or delete it. If deleting the default env, it will be created after clicking refresh icon
+4. if you want to change the current env, you move the mouse to hover on the select env item, it will pop up all env and click the env you want to change
+
+### Other
+1. refresh
+2. expand: if you choose a node in the tree, it only expands the chose node. If you not choose, it will expands all node.
+3. collapse: Same as expanding
+4. filter method: Filter out the request
+5. toolTip: if your project has used for the swagger annotation(@Api/@Tag, @ApiOperation/@Operation), hovering the class node and method node will pop up the tip.
+6. export: export the simple postman json data
+7. right-click menu: if you click on the node, in addition to method nodes, all with the expanding operation, the method nodes  have three operations, jump to method, copy full path and copy api
