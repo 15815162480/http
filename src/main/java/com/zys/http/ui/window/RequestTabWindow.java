@@ -12,12 +12,18 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.SimpleToolWindowPanel;
 import com.zys.http.action.CollapseAction;
 import com.zys.http.action.ExpandAction;
+import com.zys.http.action.FilterAction;
 import com.zys.http.action.RefreshAction;
 import com.zys.http.action.group.EnvActionGroup;
+import com.zys.http.constant.HttpEnum;
+import com.zys.http.service.Bundle;
+import com.zys.http.ui.popup.MethodFilterPopup;
 import com.zys.http.ui.tree.HttpApiTreePanel;
 import com.zys.http.ui.window.panel.RequestPanel;
 import jdk.jfr.Description;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.*;
@@ -28,8 +34,11 @@ import java.util.concurrent.*;
  */
 @Description("请求标签页面")
 public class RequestTabWindow extends SimpleToolWindowPanel implements Disposable {
-    private final transient Project project;
     private final RequestPanel requestPanel;
+
+    @Description("请求方式过滤菜单")
+    private final MethodFilterPopup methodFilterPopup;
+
     private final transient ExecutorService executorTaskBounded = new ThreadPoolExecutor(
             1,
             1,
@@ -39,65 +48,76 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
             new ThreadPoolExecutor.DiscardOldestPolicy()
     );
 
-    public RequestTabWindow(Project project, RequestPanel requestPanel) {
+    public RequestTabWindow(RequestPanel requestPanel) {
         super(true, true);
-        this.project = project;
         this.requestPanel = requestPanel;
+        this.methodFilterPopup = new MethodFilterPopup(
+                Arrays.stream(HttpEnum.HttpMethod.values()).filter(o -> !o.equals(HttpEnum.HttpMethod.REQUEST))
+                        .toList()
+        );
+        methodFilterPopup.setChangeAllCb((list, b) -> refreshTree(true));
+        methodFilterPopup.setChangeCb((method, b) -> refreshTree(true));
         init();
     }
 
     @Description("初始化")
     private void init() {
-        requestToolBar();
-        requestPanel();
+        setToolbar(requestToolBar().getComponent());
+        setContent(requestPanel);
+        refreshTree(false);
     }
 
     @Description("初始化顶部工具栏")
-    private void requestToolBar() {
+    private ActionToolbar requestToolBar() {
         DefaultActionGroup group = new DefaultActionGroup();
         EnvActionGroup envActionGroup = new EnvActionGroup(requestPanel);
         group.add(envActionGroup);
         RefreshAction refreshAction = new RefreshAction();
         refreshAction.setAction(event -> {
+            requestPanel.reload(null);
             requestPanel.getHttpApiTreePanel().clear();
-            requestPanel.reload();
-
             new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    refreshTree();
+                    refreshTree(false);
                 }
             }, 500);
         });
         group.add(refreshAction);
-        group.addSeparator();
 
+        group.addSeparator();
         ExpandAction expandAction = new ExpandAction();
         expandAction.setAction(event -> requestPanel.getHttpApiTreePanel().treeExpand());
         group.add(expandAction);
+
         CollapseAction collapseAction = new CollapseAction();
         collapseAction.setAction(event -> requestPanel.getHttpApiTreePanel().treeCollapse());
         group.add(collapseAction);
 
+        group.addSeparator();
+        FilterAction filterAction = new FilterAction(Bundle.get("http.filter.action"));
+        filterAction.setAction(e -> methodFilterPopup.show(requestPanel, methodFilterPopup.getX(), methodFilterPopup.getY()));
+        group.add(filterAction);
 
         ActionToolbar topToolBar = ActionManager.getInstance().createActionToolbar(ActionPlaces.TOOLBAR, group, true);
         topToolBar.setTargetComponent(this);
-        setToolbar(topToolBar.getComponent());
+        return topToolBar;
     }
 
-    @Description("初始化顶部内容")
-    private void requestPanel() {
-        setContent(requestPanel);
-        refreshTree();
-    }
-
-    private void refreshTree() {
+    private void refreshTree(boolean isExpand) {
+        Project project = requestPanel.getProject();
         DumbService.getInstance(project).smartInvokeLater(
                 () -> {
                     HttpApiTreePanel httpApiTreePanel = requestPanel.getHttpApiTreePanel();
-                    ReadAction.nonBlocking(httpApiTreePanel::initNodes)
+                    List<HttpEnum.HttpMethod> selectedValues = methodFilterPopup.getSelectedValues();
+                    ReadAction.nonBlocking(() -> httpApiTreePanel.initNodes(selectedValues))
                             .inSmartMode(project)
-                            .finishOnUiThread(ModalityState.defaultModalityState(), httpApiTreePanel::render)
+                            .finishOnUiThread(ModalityState.defaultModalityState(), root -> {
+                                httpApiTreePanel.render(root);
+                                if (isExpand) {
+                                    requestPanel.getHttpApiTreePanel().expandAll();
+                                }
+                            })
                             .submit(executorTaskBounded);
                 }
         );

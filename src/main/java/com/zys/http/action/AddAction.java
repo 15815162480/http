@@ -11,6 +11,5 @@ import jdk.jfr.Description;
 public class AddAction extends CustomAction {
     public AddAction(String text, String description) {
         super(text, description, HttpIcons.General.ADD);
-
     }
 }

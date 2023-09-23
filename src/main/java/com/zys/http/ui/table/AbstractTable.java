@@ -1,15 +1,13 @@
 package com.zys.http.ui.table;
 
 import com.intellij.openapi.actionSystem.ActionToolbar;
-import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl;
-import com.intellij.openapi.project.Project;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
 import com.intellij.util.ui.JBUI;
 import com.zys.http.action.AddAction;
 import com.zys.http.action.CustomAction;
 import com.zys.http.constant.UIConstant;
-import com.zys.http.tool.HttpPropertyTool;
+import com.zys.http.tool.HttpServiceTool;
 import jdk.jfr.Description;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
@@ -27,44 +25,35 @@ import java.util.Objects;
  * @since 2023-09-03
  */
 public abstract class AbstractTable extends JPanel {
+    protected final HttpServiceTool serviceTool;
+    @Description("单元格是否能编辑")
+    private final boolean cellEditable;
+    @Getter
+    @Description("数据展示表格")
+    protected JBTable valueTable;
     @Getter
     @Description("表格上方的工具栏")
     private transient ActionToolbar toolbar;
 
-    @Getter
-    @Description("数据展示表格")
-    protected JBTable valueTable;
-
-    @Getter
-    @Description("表格所在区域")
-    private JBScrollPane scrollPane;
-
-    @Description("所在项目")
-    protected transient Project project;
-
-    @Description("单元格是否能编辑")
-    private final boolean cellEditable;
-
-    @Getter
-    @Description("存储工具")
-    protected final transient HttpPropertyTool httpPropertyTool;
-
-    protected AbstractTable(Project project, boolean cellEditable) {
+    protected AbstractTable(HttpServiceTool serviceTool, boolean cellEditable) {
         super(new BorderLayout(0, 0));
-        this.project = project;
         this.cellEditable = cellEditable;
-        this.httpPropertyTool = HttpPropertyTool.getInstance(this.project);
+        this.serviceTool = serviceTool;
     }
 
     @Description("子类需要自己调用")
     protected void init() {
-        initToolbar();
-        initTable();
-        initLayout();
+        this.toolbar = initToolbar();
+        JBScrollPane scrollPane = initTable();
+        if (Objects.nonNull(toolbar)) {
+            add((Component) toolbar, BorderLayout.NORTH);
+        }
+        add(scrollPane, BorderLayout.CENTER);
     }
 
 
-    private void initTable() {
+    @Description("初始化表格各个选项")
+    private JBScrollPane initTable() {
         valueTable = new JBTable(this.initTableModel()) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -92,13 +81,13 @@ public abstract class AbstractTable extends JPanel {
         valueTable.getTableHeader().setReorderingAllowed(false);
         valueTable.getTableHeader().setResizingAllowed(false);
 
-        scrollPane = new JBScrollPane(valueTable);
+        JBScrollPane scrollPane = new JBScrollPane(valueTable);
         scrollPane.setBorder(JBUI.Borders.customLine(UIConstant.BORDER_COLOR, 1, 1, 1, 1));
         valueTable.getModel().addTableModelListener(initTableModelListener());
 
         // 选中时, 工具栏的某些按钮才可以使用
         valueTable.getSelectionModel().addListSelectionListener(e -> {
-            if (!e.getValueIsAdjusting()) {
+            if (!e.getValueIsAdjusting() && Objects.nonNull(toolbar)) {
                 toolbar.getActions().forEach(v -> {
                     if (v instanceof CustomAction c && !(v instanceof AddAction)) {
                         c.setEnabled(valueTable.getSelectedRow() != -1);
@@ -106,32 +95,30 @@ public abstract class AbstractTable extends JPanel {
                 });
             }
         });
+        return scrollPane;
     }
 
 
-    private void initToolbar() {
-        this.toolbar = initActionToolbar();
-        if (Objects.isNull(this.toolbar)) {
-            return;
+    @Description("初始化表格上方工具栏")
+    private ActionToolbar initToolbar() {
+        ActionToolbar actionToolbar = initActionToolbar();
+        if (Objects.isNull(actionToolbar)) {
+            return null;
         }
-        toolbar.setTargetComponent(this);
-        JComponent component = toolbar.getComponent();
+        actionToolbar.setTargetComponent(this);
+        JComponent component = actionToolbar.getComponent();
         component.setBorder(JBUI.Borders.customLine(UIConstant.BORDER_COLOR, 1, 1, 0, 1));
         component.setOpaque(true);
+        return actionToolbar;
     }
 
-    private void initLayout() {
-        if (Objects.nonNull(toolbar)) {
-            add((Component) toolbar, BorderLayout.NORTH);
-        }
-        add(scrollPane, BorderLayout.CENTER);
-    }
-
+    @Description("获取表格数据对象")
     public DefaultTableModel getTableModel() {
         return (DefaultTableModel) valueTable.getModel();
     }
 
-    public void clearTableModel() {
+    @Description("重新加载表格数据")
+    public void reloadTableModel() {
         valueTable.setModel(initTableModel());
     }
 

@@ -16,19 +16,18 @@ import java.util.Objects;
  * @since 2023-08-16
  */
 @Description("http 配置工具类")
-public class HttpPropertyTool {
-
-    private final HttpService httpService;
+public class HttpServiceTool {
 
     private static final HttpConfig DEFAULT_HTTP_CONFIG = new HttpConfig(HttpEnum.Protocol.HTTP,
             "127.0.0.1", Collections.emptyMap());
+    private final HttpService httpService;
 
-    private HttpPropertyTool(@NotNull Project project) {
+    private HttpServiceTool(@NotNull Project project) {
         httpService = HttpService.getInstance(project);
     }
 
-    public static HttpPropertyTool getInstance(Project project) {
-        return new HttpPropertyTool(project);
+    public static HttpServiceTool getInstance(@NotNull Project project) {
+        return new HttpServiceTool(project);
     }
 
     public Map<String, HttpConfig> getHttpConfigs() {
@@ -48,14 +47,15 @@ public class HttpPropertyTool {
     }
 
     public HttpConfig getDefaultHttpConfig() {
-        HttpConfig httpConfig = getHttpConfig(httpService.getSelectedEnv());
+        HttpConfig httpConfig = httpService.getHttpConfigs().get(httpService.getSelectedEnv());
         return Objects.isNull(httpConfig) ? DEFAULT_HTTP_CONFIG : httpConfig;
     }
 
     public String getSelectedEnv() {
         return httpService.getSelectedEnv();
     }
+
     public void setSelectedEnv(String key) {
-         httpService.setSelectedEnv(key);
+        httpService.setSelectedEnv(key);
     }
 }

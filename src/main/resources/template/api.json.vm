@@ -1,0 +1,90 @@
+{
+  "info": {
+      ## 模块名
+    "name": "$moduleName",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+      #foreach($item in $controllerItems)
+        {
+            ## swagger 注解优先,没有就用类名
+          "name": "$item",
+          "item": [
+              #foreach($method in $methodMap.get($item))
+                {
+                    ## swagger 注解, 没有就请求路径
+                  "name": "$method.name",
+                  "request": {
+                      ## 请求方式
+                    "method": "$method.method",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "$method.contentType"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "*/*"
+                      },
+                      {
+                        "key": "Authorization",
+                        "value": "{{Authorization}}"
+                      }
+                    ],
+                      #set($mode = $method.mode)
+                      #if($mode && !$mode.isEmpty())
+                        "body": {
+                          "mode": "$mode"
+                            #if($mode == "raw")
+                            ,
+                              "raw": "$method.raw",
+                              "options": {
+                                "raw": {
+                                  "language": "json"
+                                }
+                              }
+                            #else
+                                #set($urlencodedKey =$method.urlencodedKey)
+                                #if($urlencodedKey && $urlencodedKey.size() > 0)
+                                ,
+                                  "urlencoded": [
+                                      #foreach($uk in $urlencodedKey)
+                                        {
+                                          "key": "$uk",
+                                          "value": "",
+                                          "description": ""
+                                        }#if(!$foreach.last), #end
+                                      #end
+                                  ]
+                                #end
+                            #end
+                        },
+                      #end
+
+                      ## url 参数
+                    "url": {
+                        ## 请求地址
+                      "raw": "{{protocol}}://{{hostValue}}$method.uri"
+                        #set($queryKey =$method.queryKey)
+                        #if($queryKey && $queryKey.size() > 0)
+                        ,
+                          "query": [
+                              #foreach($k in $queryKey)
+                                {
+                                  "key": "$k",
+                                  "value": ""
+                                }#if(!$foreach.last), #end
+                              #end
+
+                          ]
+                        #end
+                    }
+                  },
+                  "response": []
+                }#if(!$foreach.last), #end
+              #end
+          ]
+        }#if(!$foreach.last), #end
+      #end
+  ]
+}

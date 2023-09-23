@@ -1,11 +1,10 @@
 package com.zys.http.ui.dialog;
 
-import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.zys.http.service.Bundle;
 import com.zys.http.ui.table.EnvListTable;
+import com.zys.http.ui.window.panel.RequestPanel;
 import jdk.jfr.Description;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -21,9 +20,9 @@ public class EnvListShowDialog extends DialogWrapper {
     @Description("环境列表表格")
     private final EnvListTable envShowTable;
 
-    public EnvListShowDialog(@NotNull Project project) {
-        super(project, true);
-        envShowTable = new EnvListTable(project);
+    public EnvListShowDialog(RequestPanel requestPanel) {
+        super(requestPanel.getProject(), true);
+        envShowTable = new EnvListTable(requestPanel);
         init();
         getRootPane().setMinimumSize(new Dimension(500, 400));
         setTitle(Bundle.get("http.dialog.env.list"));
@@ -34,8 +33,6 @@ public class EnvListShowDialog extends DialogWrapper {
 
     @Override
     protected @Nullable JComponent createCenterPanel() {
-        JPanel main = new JPanel(new BorderLayout(0,0));
-        main.add(envShowTable, BorderLayout.CENTER);
-        return main;
+        return envShowTable;
     }
 }

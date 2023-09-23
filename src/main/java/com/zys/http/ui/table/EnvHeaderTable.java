@@ -5,11 +5,11 @@ import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionPlaces;
 import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
-import com.intellij.openapi.project.Project;
 import com.zys.http.action.AddAction;
 import com.zys.http.action.RemoveAction;
 import com.zys.http.entity.HttpConfig;
 import com.zys.http.service.Bundle;
+import com.zys.http.tool.HttpServiceTool;
 import jdk.jfr.Description;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
@@ -23,7 +23,6 @@ import javax.swing.table.TableModel;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Vector;
 
 /**
  * @author zys
@@ -39,36 +38,52 @@ public class EnvHeaderTable extends AbstractTable {
     @Description("选中的环境名, isAdd 为 true 时忽略")
     private String selectEnv;
 
-    public EnvHeaderTable(@NotNull Project project, boolean isAdd, String selectEnv) {
-        super(project, true);
+    public EnvHeaderTable(HttpServiceTool serviceTool, boolean isAdd) {
+        super(serviceTool, true);
         this.isAdd = isAdd;
         if (!isAdd) {
-            this.selectEnv = selectEnv;
+            this.selectEnv = serviceTool.getSelectedEnv();
         }
         init();
     }
 
+    @Description("请求头是否重复")
+    private static boolean isDuplicateData(JTable table, String header) {
+        for (int row = 0; row < table.getRowCount() - 1; row++) {
+            String existingHeader = (String) table.getValueAt(row, 0);
+            if (header.equals(existingHeader)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     protected @NotNull DefaultTableModel initTableModel() {
-        // 构建列信息
-        Vector<String> columnNames = new Vector<>();
-        columnNames.add(Bundle.get("http.table.header"));
-        columnNames.add(Bundle.get("http.table.value"));
-        Vector<Vector<String>> rowData = new Vector<>();
+        String[] columnNames = {
+                Bundle.get("http.table.header"),
+                Bundle.get("http.table.value")
+        };
 
-        if (!this.isAdd) {
-            HttpConfig httpConfig = httpPropertyTool.getHttpConfig(selectEnv);
-            if (Objects.nonNull(httpConfig)) {
-                Map<String, String> headers = httpConfig.getHeaders();
-                if (Objects.nonNull(headers)) {
-                    headers.forEach((k, v) -> {
-                        Vector<String> vector = new Vector<>(2);
-                        vector.add(k);
-                        vector.add(v);
-                        rowData.add(vector);
-                    });
-                }
-            }
+        if (this.isAdd) {
+            return new DefaultTableModel(null, columnNames);
+        }
+        HttpConfig httpConfig = serviceTool.getHttpConfig(selectEnv);
+        if (Objects.isNull(httpConfig)) {
+            return new DefaultTableModel(null, columnNames);
+        }
+
+        Map<String, String> headers = httpConfig.getHeaders();
+        if (Objects.isNull(headers)) {
+            return new DefaultTableModel(null, columnNames);
+        }
+
+        String[][] rowData = new String[headers.size()][];
+        int i = 0;
+        for (Map.Entry<String, String> e : headers.entrySet()) {
+            rowData[i] = new String[2];
+            rowData[i][0] = e.getKey();
+            rowData[i++][1] = e.getValue();
         }
 
         return new DefaultTableModel(rowData, columnNames);
@@ -118,17 +133,6 @@ public class EnvHeaderTable extends AbstractTable {
         };
     }
 
-    @Description("请求头是否重复")
-    private static boolean isDuplicateData(JTable table, String header) {
-        for (int row = 0; row < table.getRowCount() - 1; row++) {
-            String existingHeader = (String) table.getValueAt(row, 0);
-            if (header.equals(existingHeader)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public void addContentType(String contentType) {
         // 是否有 contentType
         TableModel model = valueTable.getModel();
@@ -147,21 +151,19 @@ public class EnvHeaderTable extends AbstractTable {
         }
     }
 
+    @Override
     public void reloadTableModel() {
-        this.selectEnv = httpPropertyTool.getSelectedEnv();
+        this.selectEnv = serviceTool.getSelectedEnv();
         valueTable.setModel(initTableModel());
     }
 
-
     public Map<String, String> buildHttpHeader() {
-
         Map<String, String> map = new HashMap<>();
         DefaultTableModel model = getTableModel();
         int rowCount = model.getRowCount();
         for (int i = 0; i < rowCount; i++) {
-            map.put((String) model.getValueAt(i,0), (String) model.getValueAt(i,1));
+            map.put((String) model.getValueAt(i, 0), (String) model.getValueAt(i, 1));
         }
-
         return map;
     }
 }

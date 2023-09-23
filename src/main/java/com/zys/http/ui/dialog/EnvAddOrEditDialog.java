@@ -10,10 +10,12 @@ import com.intellij.util.ui.JBUI;
 import com.zys.http.constant.UIConstant;
 import com.zys.http.entity.HttpConfig;
 import com.zys.http.service.Bundle;
-import com.zys.http.tool.HttpPropertyTool;
+import com.zys.http.tool.HttpServiceTool;
+import com.zys.http.tool.ui.DialogTool;
 import com.zys.http.ui.table.EnvHeaderTable;
 import com.zys.http.ui.table.EnvListTable;
 import jdk.jfr.Description;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -21,6 +23,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 import static com.zys.http.constant.HttpEnum.Protocol;
 
@@ -31,27 +34,28 @@ import static com.zys.http.constant.HttpEnum.Protocol;
 @Description("添加或修改环境配置的对话框")
 public class EnvAddOrEditDialog extends DialogWrapper {
 
-    @Description("配置名称")
-    private JTextField configNameTF;
-
-    @Description("IP:PORT/域名")
-    private JTextField hostTF;
-
-    @Description("协议选择框")
-    private ComboBox<Protocol> protocolCB;
-
     @Description("数据表格")
     private final EnvHeaderTable envAddOrEditTable;
-
     @Description("添加/修改后方便刷新数据")
     private final EnvListTable envShowTable;
-
     @Description("是否是添加")
     private final boolean isAdd;
+    private final HttpServiceTool serviceTool;
+    @Description("配置名称")
+    private JTextField configNameTF;
+    @Description("IP:PORT/域名")
+    private JTextField hostTF;
+    @Description("协议选择框")
+    private ComboBox<Protocol> protocolCB;
+    @Setter
+    @Description("编辑成功回调")
+    private Consumer<String> editOkCallback;
 
-    public EnvAddOrEditDialog(@NotNull Project project, boolean isAdd, String selectEnv, EnvListTable envShowTable) {
+    public EnvAddOrEditDialog(Project project, boolean isAdd, String selectEnv, EnvListTable envShowTable) {
         super(project, true);
-        envAddOrEditTable = new EnvHeaderTable(project, isAdd, selectEnv);
+        serviceTool = HttpServiceTool.getInstance(project);
+        envAddOrEditTable = new EnvHeaderTable(serviceTool, isAdd);
+
         this.envShowTable = envShowTable;
         this.isAdd = isAdd;
         init();
@@ -65,8 +69,7 @@ public class EnvAddOrEditDialog extends DialogWrapper {
             configNameTF.setText(selectEnv);
             configNameTF.setEnabled(false);
             configNameTF.setDisabledTextColor(JBColor.BLACK);
-            HttpPropertyTool httpPropertyTool = envAddOrEditTable.getHttpPropertyTool();
-            HttpConfig httpConfig = httpPropertyTool.getHttpConfig(selectEnv);
+            HttpConfig httpConfig = serviceTool.getHttpConfig(selectEnv);
             hostTF.setText(httpConfig.getHostValue());
             protocolCB.setSelectedItem(httpConfig.getProtocol());
         }
@@ -110,6 +113,7 @@ public class EnvAddOrEditDialog extends DialogWrapper {
         // 请求头分割线
         gbc.gridy = 3;
         gbc.gridx = 0;
+        gbc.insets = JBUI.insetsBottom(5);
         first.add(headerPanel(), gbc);
 
         // 表格
@@ -127,18 +131,17 @@ public class EnvAddOrEditDialog extends DialogWrapper {
         gbc.weightx = 1.0;
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        SeparatorComponent separator = new SeparatorComponent(UIConstant.EDITOR_BORDER_COLOR, SeparatorOrientation.HORIZONTAL);
+        SeparatorComponent separator = new SeparatorComponent(UIConstant.BORDER_COLOR, SeparatorOrientation.HORIZONTAL);
         header.add(separator, gbc);
         return header;
     }
 
     @Override
     protected void doOKAction() {
-        HttpPropertyTool httpPropertyTool = envAddOrEditTable.getHttpPropertyTool();
         String configName = configNameTF.getText();
         // 添加时需要检测是否存在
-        if (httpPropertyTool.getHttpConfig(configName) != null && envAddOrEditTable.isAdd()) {
-            ErrorDialog.show(Bundle.get("http.dialog.env.config.existed"));
+        if (serviceTool.getHttpConfig(configName) != null && envAddOrEditTable.isAdd()) {
+            DialogTool.error(Bundle.get("http.dialog.env.config.existed"));
             return;
         }
         String host = hostTF.getText();
@@ -151,7 +154,7 @@ public class EnvAddOrEditDialog extends DialogWrapper {
         httpConfig.setHostValue(host);
         httpConfig.setProtocol((Protocol) protocolCB.getSelectedItem());
 
-        httpPropertyTool.putHttpConfig(configName, httpConfig);
+        serviceTool.putHttpConfig(configName, httpConfig);
         if (Objects.nonNull(envShowTable)) {
             DefaultTableModel model = (DefaultTableModel) envShowTable.getValueTable().getModel();
             if (isAdd) {
@@ -160,6 +163,9 @@ public class EnvAddOrEditDialog extends DialogWrapper {
                 int selectedRow = envShowTable.getValueTable().getSelectedRow();
                 model.setValueAt(protocol.toString(), selectedRow, 1);
                 model.setValueAt(host, selectedRow, 2);
+                if (Objects.nonNull(editOkCallback)) {
+                    editOkCallback.accept(configName);
+                }
             }
         }
         super.doOKAction();

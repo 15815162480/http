@@ -18,5 +18,5 @@ public final class UIConstant {
     public static final JBColor BORDER_COLOR = new JBColor(Gray._214, new Color(30, 31, 34));
 
     @Description("编辑器边框颜色")
-    public static final JBColor EDITOR_BORDER_COLOR = new JBColor(Gray._209, new Color(57, 59, 64));
+    public static final JBColor EDITOR_BORDER_COLOR = new JBColor(Gray._209, new Color(43, 45, 48));
 }

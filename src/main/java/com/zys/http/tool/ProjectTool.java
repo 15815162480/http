@@ -38,24 +38,24 @@ public class ProjectTool {
     };
 
     @Description("获取当前项目的所有模块, 并去重")
-    public static Collection<Module> moduleList(@NotNull Project project) {
+    public static Collection<Module> moduleList(Project project) {
         Module[] modules = ModuleManager.getInstance(project).getModules();
         Map<String, Module> map = Arrays.stream(modules).collect(Collectors.toMap(Module::getName, v -> v));
         return map.values();
     }
 
     @Description("获取根模块")
-    public static Module getRootModule(@NotNull Project project) {
+    public static Module getRootModule(Project project) {
         return findModuleByName(project, project.getName());
     }
 
     @Description("根据模块名查找获取模块")
-    public static Module findModuleByName(@NotNull Project project, @Nullable String moduleName) {
+    public static Module findModuleByName(Project project, @Nullable String moduleName) {
         return moduleList(project).stream().filter(m -> m.getName().equals(moduleName)).findFirst().orElse(null);
     }
 
     @Description("获取模块的 context-path")
-    public static String getModuleContextPath(@NotNull Project project, @NotNull Module module) {
+    public static String getModuleContextPath(Project project, @NotNull Module module) {
         // 1 获取 SpringBoot 中有的配置文件
         PsiFile psiFile = getSpringApplicationFile(project, module);
         if (Objects.isNull(psiFile)) {
@@ -95,7 +95,7 @@ public class ProjectTool {
     }
 
     @Description("获取模块的 context-path")
-    public static String getModulePort(@NotNull Project project, @NotNull Module module) {
+    public static String getModulePort(Project project, @NotNull Module module) {
         // 1 获取 SpringBoot 中有的配置文件
         PsiFile psiFile = getSpringApplicationFile(project, module);
         if (Objects.isNull(psiFile)) {
@@ -120,7 +120,7 @@ public class ProjectTool {
     }
 
     @Description("获取模块中的 SpringBoot 优先级最高的配置文件")
-    public static PsiFile getSpringApplicationFile(@NotNull Project project, @NotNull Module module) {
+    public static PsiFile getSpringApplicationFile(Project project, @NotNull Module module) {
         PsiManager psiManager = PsiManager.getInstance(project);
         for (String applicationFileName : APPLICATION_FILE_NAMES) {
             VirtualFile file = ResourceFileUtil.findResourceFileInScope(applicationFileName, project, module.getModuleScope());

@@ -1,4 +1,4 @@
-package com.zys.http.tool;
+package com.zys.http.tool.ui;
 
 import com.intellij.openapi.editor.colors.EditorColors;
 import com.intellij.openapi.editor.colors.EditorColorsManager;
@@ -28,6 +28,7 @@ public class ThemeTool {
         }
         return true;
     }
+
     private static float calculateBrightness(Color color) {
         return (color.getRed() * 299 + color.getGreen() * 587 + color.getBlue() * 114) / 1000f / 255f;
     }

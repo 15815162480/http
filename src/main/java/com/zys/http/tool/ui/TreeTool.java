@@ -1,12 +1,16 @@
-package com.zys.http.tool;
+package com.zys.http.tool.ui;
 
 import com.zys.http.ui.tree.node.BaseNode;
+import com.zys.http.ui.tree.node.MethodNode;
 import jdk.jfr.Description;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.swing.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -36,9 +40,9 @@ public class TreeTool {
     }
 
     @NotNull
-    @Description("获取指定父节点的所有包子节点")
-    public static List< BaseNode<?>> findChildren(@NotNull BaseNode<?> parentNode) {
-        List< BaseNode<?>> children = new ArrayList<>();
+    @Description("获取指定父节点的所有子节点")
+    public static List<BaseNode<?>> findChildren(@NotNull BaseNode<?> parentNode) {
+        List<BaseNode<?>> children = new ArrayList<>();
         Enumeration<TreeNode> enumeration = parentNode.children();
         while (enumeration.hasMoreElements()) {
             TreeNode ele = enumeration.nextElement();
@@ -47,5 +51,25 @@ public class TreeTool {
             }
         }
         return children;
+    }
+
+    public static void removeEmptyParentNodes(JTree tree) {
+        DefaultTreeModel treeModel = (DefaultTreeModel) tree.getModel();
+        DefaultMutableTreeNode root = (DefaultMutableTreeNode) treeModel.getRoot();
+        removeEmptyParentNodes(root, treeModel);
+    }
+
+    private static void removeEmptyParentNodes(DefaultMutableTreeNode node, DefaultTreeModel treeModel) {
+        Enumeration<TreeNode> children = node.children();
+        while (children.hasMoreElements()) {
+            DefaultMutableTreeNode child = (DefaultMutableTreeNode) children.nextElement();
+            removeEmptyParentNodes(child, treeModel);
+        }
+
+        if (node.isLeaf() && node.getParent() != null && !(node instanceof MethodNode)) {
+            DefaultMutableTreeNode parent = (DefaultMutableTreeNode) node.getParent();
+            treeModel.removeNodeFromParent(node);
+            removeEmptyParentNodes(parent, treeModel);
+        }
     }
 }

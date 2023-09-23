@@ -19,18 +19,13 @@ import java.util.Map;
 @EqualsAndHashCode(callSuper = true)
 public class MethodNodeData extends NodeData {
 
+    private final HttpEnum.HttpMethod httpMethod;
     private String path;
-
     private String controllerPath;
-
     private String contextPath;
-
     private Map<String, String> headers;
-
     @Description("双击跳转到目标方法")
     private NavigatablePsiElement psiElement;
-
-    private final HttpEnum.HttpMethod httpMethod;
 
     public MethodNodeData(HttpEnum.HttpMethod httpMethod, String nodeName, String controllerPath, String contextPath) {
         super(nodeName);

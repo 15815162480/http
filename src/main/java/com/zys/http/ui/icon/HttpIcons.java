@@ -2,7 +2,7 @@ package com.zys.http.ui.icon;
 
 import com.intellij.openapi.util.IconLoader;
 import com.zys.http.constant.HttpEnum;
-import com.zys.http.tool.ThemeTool;
+import com.zys.http.tool.ui.ThemeTool;
 import jdk.jfr.Description;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -33,14 +33,14 @@ public final class HttpIcons {
         public static final Icon FILTER = IconLoader.getIcon("/icon/general/filter.svg", HttpIcons.class);
         public static final Icon LIST = IconLoader.getIcon("/icon/general/list.svg", HttpIcons.class);
         public static final Icon DEFAULT = IconLoader.getIcon("/icon/general/default.svg", HttpIcons.class);
+        public static final Icon LOCATE = IconLoader.getIcon("/icon/general/locate.svg", HttpIcons.class);
+        public static final Icon FULL_SCREEN = IconLoader.getIcon("/icon/general/fullScreen.svg", HttpIcons.class);
+        public static final Icon EXPORT = IconLoader.getIcon("/icon/general/export.svg", HttpIcons.class);
     }
 
     @Description("请求方法")
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class HttpMethod {
-        // 请求方法
-        private static final EnumMap<HttpEnum.HttpMethod, Icon> HTTP_METHOD_ICON_DARK_MAP = new EnumMap<>(HttpEnum.HttpMethod.class);
-        private static final EnumMap<HttpEnum.HttpMethod, Icon> HTTP_METHOD_ICON_LIGHT_MAP = new EnumMap<>(HttpEnum.HttpMethod.class);
         public static final Icon REQUEST = IconLoader.getIcon("/icon/http/dark/request.svg", HttpIcons.class);
         public static final Icon GET = IconLoader.getIcon("/icon/http/dark/get.svg", HttpIcons.class);
         public static final Icon POST = IconLoader.getIcon("/icon/http/dark/post.svg", HttpIcons.class);
@@ -49,7 +49,6 @@ public final class HttpIcons {
         public static final Icon PATCH = IconLoader.getIcon("/icon/http/dark/patch.svg", HttpIcons.class);
         public static final Icon HEADER = IconLoader.getIcon("/icon/http/dark/header.svg", HttpIcons.class);
         public static final Icon OPTIONS = IconLoader.getIcon("/icon/http/dark/options.svg", HttpIcons.class);
-
         public static final Icon REQUEST_LIGHT = IconLoader.getIcon("/icon/http/light/request.svg", HttpIcons.class);
         public static final Icon GET_LIGHT = IconLoader.getIcon("/icon/http/light/get.svg", HttpIcons.class);
         public static final Icon POST_LIGHT = IconLoader.getIcon("/icon/http/light/post.svg", HttpIcons.class);
@@ -58,6 +57,9 @@ public final class HttpIcons {
         public static final Icon PATCH_LIGHT = IconLoader.getIcon("/icon/http/light/patch.svg", HttpIcons.class);
         public static final Icon HEADER_LIGHT = IconLoader.getIcon("/icon/http/light/header.svg", HttpIcons.class);
         public static final Icon OPTIONS_LIGHT = IconLoader.getIcon("/icon/http/light/options.svg", HttpIcons.class);
+        // 请求方法
+        private static final EnumMap<HttpEnum.HttpMethod, Icon> HTTP_METHOD_ICON_DARK_MAP = new EnumMap<>(HttpEnum.HttpMethod.class);
+        private static final EnumMap<HttpEnum.HttpMethod, Icon> HTTP_METHOD_ICON_LIGHT_MAP = new EnumMap<>(HttpEnum.HttpMethod.class);
 
         static {
             HTTP_METHOD_ICON_DARK_MAP.put(HttpEnum.HttpMethod.GET, GET);

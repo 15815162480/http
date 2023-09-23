@@ -9,8 +9,8 @@ import jdk.jfr.Description;
  * @since 2023-09-14
  */
 @Description("收起操作")
-public class CollapseAction extends CustomAction{
+public class CollapseAction extends CustomAction {
     public CollapseAction() {
-        super(Bundle.get("http.action.collapse.all"), "Collapse all", HttpIcons.General.COLLAPSE);
+        super(Bundle.get("http.action.collapse"), "Collapse", HttpIcons.General.COLLAPSE);
     }
 }

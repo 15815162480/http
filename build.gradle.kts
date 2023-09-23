@@ -13,9 +13,14 @@ repositories {
 }
 
 dependencies {
-    compileOnly("org.projectlombok:lombok:1.18.24")
-    annotationProcessor("org.projectlombok:lombok:1.18.24")
-    implementation("cn.hutool:hutool-all:5.8.11")
+    compileOnly("org.projectlombok:lombok:1.18.26")
+    annotationProcessor("org.projectlombok:lombok:1.18.26")
+    implementation("cn.hutool:hutool-http:5.8.22")
+    implementation("cn.hutool:hutool-json:5.8.22")
+    // 很坑的一个点, 自己测试时需要注释 velocity 依赖包, 打包时需要打开
+    implementation("org.apache.velocity:velocity-engine-core:2.3") {
+        exclude("org.slf4j")
+    }
 }
 
 // Configure Gradle IntelliJ Plugin
@@ -46,8 +51,6 @@ tasks {
         sinceBuild.set("222")
         untilBuild.set("232.*")
     }
-
-
 
     signPlugin {
         certificateChain.set(System.getenv("CERTIFICATE_CHAIN"))
