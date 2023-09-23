@@ -8,12 +8,14 @@ import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
 import com.zys.http.ui.window.RequestTabWindow;
 import com.zys.http.ui.window.panel.RequestPanel;
+import jdk.jfr.Description;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * @author zys
  * @since 2023-08-13
  */
+@Description("创建 ToolWindow 工厂")
 public class HttpMainWindowFactory implements ToolWindowFactory, DumbAware {
     @Override
     public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {

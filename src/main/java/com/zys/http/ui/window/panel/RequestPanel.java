@@ -139,13 +139,13 @@ public class RequestPanel extends JBSplitter {
         JPanel tabsPanel = new JPanel(new BorderLayout(0, 0));
         tabs = new JBTabsImpl(project);
         // 请求头标签页
-        headerTable = new EnvHeaderTable(serviceTool, false);
+        headerTable = new EnvHeaderTable(project, false);
         headerTable.getToolbar().getComponent().setBorder(JBUI.Borders.customLineBottom(UIConstant.BORDER_COLOR));
         TabInfo tabInfo = new TabInfo(headerTable);
         tabInfo.setText(Bundle.get("http.tab.request.header"));
         tabs.addTab(tabInfo);
         // 请求参数
-        parameterTable = new ParameterTable(serviceTool);
+        parameterTable = new ParameterTable(project);
         parameterTable.getToolbar().getComponent().setBorder(JBUI.Borders.customLineBottom(UIConstant.BORDER_COLOR));
         parameterTabInfo = new TabInfo(parameterTable);
         parameterTabInfo.setText(Bundle.get("http.tab.request.param"));

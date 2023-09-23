@@ -22,8 +22,10 @@ import java.util.function.BiConsumer;
 public abstract class AbstractFilterPopup<T> extends JPopupMenu {
 
     protected final transient List<JBCheckBox> checkBoxList = new ArrayList<>();
+
     protected final transient List<T> values;
     protected transient List<T> defaultValues;
+
     @Setter
     @Nullable
     @Description("选中的单个数据, 对应的选择框")

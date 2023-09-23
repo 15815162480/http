@@ -16,8 +16,8 @@ import com.zys.http.service.NotifyService;
 import com.zys.http.tool.velocity.VelocityTool;
 import com.zys.http.ui.dialog.EnvAddOrEditDialog;
 import com.zys.http.ui.icon.HttpIcons;
-import com.zys.http.ui.window.panel.RequestPanel;
 import jdk.jfr.Description;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,6 +27,7 @@ import javax.swing.table.DefaultTableModel;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 
 /**
  * @author zys
@@ -35,11 +36,12 @@ import java.util.Set;
 @Description("环境列表表格")
 public class EnvListTable extends AbstractTable {
 
-    private final RequestPanel requestPanel;
+    @Setter
+    @Description("修改选中环境回调")
+    private transient Consumer<Void> editOKCb;
 
-    public EnvListTable(RequestPanel requestPanel) {
-        super(requestPanel.getServiceTool(), false);
-        this.requestPanel = requestPanel;
+    public EnvListTable(Project project) {
+        super(project, false);
         init();
     }
 
@@ -51,7 +53,7 @@ public class EnvListTable extends AbstractTable {
                 Bundle.get("http.table.env.config.ip")
         };
         // 获取存储的所有配置, 再构建
-        Map<String, HttpConfig> httpConfigs = requestPanel.getServiceTool().getHttpConfigs();
+        Map<String, HttpConfig> httpConfigs = serviceTool.getHttpConfigs();
         Set<Map.Entry<String, HttpConfig>> entries = httpConfigs.entrySet();
         int i = 0;
         String[][] rowData = new String[entries.size()][];
@@ -68,15 +70,20 @@ public class EnvListTable extends AbstractTable {
     @Override
     protected @Nullable ActionToolbar initActionToolbar() {
         DefaultActionGroup group = new DefaultActionGroup();
+
         AddAction addAction = new AddAction(Bundle.get("http.action.add"));
-        addAction.setAction(event -> new EnvAddOrEditDialog(requestPanel.getProject(), true, "", this).show());
+        addAction.setAction(event -> {
+            EnvAddOrEditDialog dialog = new EnvAddOrEditDialog(project, true, "");
+            dialog.setAddCallback((name, config) -> getTableModel().addRow(new String[]{name, config.getProtocol().toString(), config.getHostValue()}));
+            dialog.show();
+        });
         group.add(addAction);
 
         RemoveAction removeAction = new RemoveAction(Bundle.get("http.action.remove"));
         removeAction.setAction(event -> {
             DefaultTableModel model = (DefaultTableModel) valueTable.getModel();
             int selectedRow = valueTable.getSelectedRow();
-            requestPanel.getServiceTool().removeHttpConfig((String) model.getValueAt(selectedRow, 0));
+            serviceTool.removeHttpConfig((String) model.getValueAt(selectedRow, 0));
             model.removeRow(selectedRow);
         });
         removeAction.setEnabled(false);
@@ -86,8 +93,13 @@ public class EnvListTable extends AbstractTable {
         editAction.setAction(event -> {
             DefaultTableModel model = (DefaultTableModel) valueTable.getModel();
             String envName = (String) model.getValueAt(valueTable.getSelectedRow(), 0);
-            EnvAddOrEditDialog dialog = new EnvAddOrEditDialog(requestPanel.getProject(), false, envName, this);
-            dialog.setEditOkCallback(o -> requestPanel.reload(requestPanel.getHttpApiTreePanel().getChooseNode()));
+            EnvAddOrEditDialog dialog = new EnvAddOrEditDialog(project, false, envName);
+            dialog.setEditCallback((name, config) -> {
+                int selectedRow = valueTable.getSelectedRow();
+                model.setValueAt(config.getProtocol().toString(), selectedRow, 1);
+                model.setValueAt(config.getHostValue(), selectedRow, 2);
+                editOKCb.accept(null);
+            });
             dialog.show();
         });
 
@@ -108,7 +120,6 @@ public class EnvListTable extends AbstractTable {
             DefaultTableModel model = (DefaultTableModel) valueTable.getModel();
             String envName = (String) model.getValueAt(valueTable.getSelectedRow(), 0);
             HttpConfig config = serviceTool.getHttpConfig(envName);
-            Project project = requestPanel.getProject();
             if (null == config) {
                 NotifyService.instance(project).error(Bundle.get("http.message.export.current.env.error"));
                 return;
@@ -148,7 +159,7 @@ public class EnvListTable extends AbstractTable {
     private VirtualFile createFileChooser(Project project) {
         FileChooserDescriptor descriptor = new FileChooserDescriptor(false, true, false, false, false, false);
         descriptor.setTitle(Bundle.get("http.dialog.env.export"));
-        FileChooserFactory.getInstance().createFileChooser(descriptor, project, requestPanel);
+        FileChooserFactory.getInstance().createFileChooser(descriptor, project, this);
         return FileChooser.chooseFile(descriptor, project, null);
     }
 }

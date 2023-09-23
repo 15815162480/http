@@ -13,17 +13,15 @@ import com.zys.http.service.Bundle;
 import com.zys.http.tool.HttpServiceTool;
 import com.zys.http.tool.ui.DialogTool;
 import com.zys.http.ui.table.EnvHeaderTable;
-import com.zys.http.ui.table.EnvListTable;
 import jdk.jfr.Description;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 import static com.zys.http.constant.HttpEnum.Protocol;
 
@@ -34,29 +32,35 @@ import static com.zys.http.constant.HttpEnum.Protocol;
 @Description("添加或修改环境配置的对话框")
 public class EnvAddOrEditDialog extends DialogWrapper {
 
-    @Description("数据表格")
-    private final EnvHeaderTable envAddOrEditTable;
-    @Description("添加/修改后方便刷新数据")
-    private final EnvListTable envShowTable;
     @Description("是否是添加")
     private final boolean isAdd;
+
+    @Description("环境配置工具类")
     private final HttpServiceTool serviceTool;
+
     @Description("配置名称")
     private JTextField configNameTF;
     @Description("IP:PORT/域名")
     private JTextField hostTF;
     @Description("协议选择框")
     private ComboBox<Protocol> protocolCB;
-    @Setter
-    @Description("编辑成功回调")
-    private Consumer<String> editOkCallback;
 
-    public EnvAddOrEditDialog(Project project, boolean isAdd, String selectEnv, EnvListTable envShowTable) {
+    @Description("数据表格")
+    private final EnvHeaderTable envAddOrEditTable;
+
+    @Setter
+    @Description("添加的回调, <新增的环境配置名, 环境配置>")
+    private BiConsumer<String, HttpConfig> addCallback;
+
+    @Setter
+    @Description("添加的回调, <新增的环境配置名, 环境配置>")
+    private BiConsumer<String, HttpConfig> editCallback;
+
+    public EnvAddOrEditDialog(Project project, boolean isAdd, String selectEnv) {
         super(project, true);
         serviceTool = HttpServiceTool.getInstance(project);
-        envAddOrEditTable = new EnvHeaderTable(serviceTool, isAdd);
+        envAddOrEditTable = new EnvHeaderTable(project, isAdd);
 
-        this.envShowTable = envShowTable;
         this.isAdd = isAdd;
         init();
         getRootPane().setMinimumSize(new Dimension(500, 400));
@@ -152,21 +156,13 @@ public class EnvAddOrEditDialog extends DialogWrapper {
         HttpConfig httpConfig = new HttpConfig();
         httpConfig.setHeaders(header);
         httpConfig.setHostValue(host);
-        httpConfig.setProtocol((Protocol) protocolCB.getSelectedItem());
+        httpConfig.setProtocol(protocol);
 
         serviceTool.putHttpConfig(configName, httpConfig);
-        if (Objects.nonNull(envShowTable)) {
-            DefaultTableModel model = (DefaultTableModel) envShowTable.getValueTable().getModel();
-            if (isAdd) {
-                model.addRow(new String[]{configName, protocol.toString(), host});
-            } else {
-                int selectedRow = envShowTable.getValueTable().getSelectedRow();
-                model.setValueAt(protocol.toString(), selectedRow, 1);
-                model.setValueAt(host, selectedRow, 2);
-                if (Objects.nonNull(editOkCallback)) {
-                    editOkCallback.accept(configName);
-                }
-            }
+        if (isAdd) {
+            addCallback.accept(configName, httpConfig);
+        } else {
+            editCallback.accept(configName, httpConfig);
         }
         super.doOKAction();
     }

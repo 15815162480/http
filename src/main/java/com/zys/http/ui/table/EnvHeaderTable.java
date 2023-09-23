@@ -5,11 +5,11 @@ import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionPlaces;
 import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
+import com.intellij.openapi.project.Project;
 import com.zys.http.action.AddAction;
 import com.zys.http.action.RemoveAction;
 import com.zys.http.entity.HttpConfig;
 import com.zys.http.service.Bundle;
-import com.zys.http.tool.HttpServiceTool;
 import jdk.jfr.Description;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
@@ -38,8 +38,8 @@ public class EnvHeaderTable extends AbstractTable {
     @Description("选中的环境名, isAdd 为 true 时忽略")
     private String selectEnv;
 
-    public EnvHeaderTable(HttpServiceTool serviceTool, boolean isAdd) {
-        super(serviceTool, true);
+    public EnvHeaderTable(Project project, boolean isAdd) {
+        super(project, true);
         this.isAdd = isAdd;
         if (!isAdd) {
             this.selectEnv = serviceTool.getSelectedEnv();

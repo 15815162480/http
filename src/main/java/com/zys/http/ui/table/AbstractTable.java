@@ -1,6 +1,7 @@
 package com.zys.http.ui.table;
 
 import com.intellij.openapi.actionSystem.ActionToolbar;
+import com.intellij.openapi.project.Project;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
 import com.intellij.util.ui.JBUI;
@@ -25,9 +26,13 @@ import java.util.Objects;
  * @since 2023-09-03
  */
 public abstract class AbstractTable extends JPanel {
+
+    protected final transient Project project;
     protected final transient HttpServiceTool serviceTool;
+
     @Description("单元格是否能编辑")
     private final boolean cellEditable;
+
     @Getter
     @Description("数据展示表格")
     protected JBTable valueTable;
@@ -35,10 +40,11 @@ public abstract class AbstractTable extends JPanel {
     @Description("表格上方的工具栏")
     private transient ActionToolbar toolbar;
 
-    protected AbstractTable(HttpServiceTool serviceTool, boolean cellEditable) {
+    protected AbstractTable(Project project, boolean cellEditable) {
         super(new BorderLayout(0, 0));
         this.cellEditable = cellEditable;
-        this.serviceTool = serviceTool;
+        this.project = project;
+        this.serviceTool = HttpServiceTool.getInstance(project);
     }
 
     @Description("子类需要自己调用")
