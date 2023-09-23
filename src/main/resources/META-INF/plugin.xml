@@ -44,10 +44,18 @@
 
   <!-- 更新公告 -->
   <change-notes><![CDATA[
+     <b>1.2.1</b><br>
+     <ol>
+       <li>
+         feature: Response now can be viewed in a dialog, but edit it will not echo
+         <br>
+         新功能: 响应体能在一个新的对话框中查看, 但修改不会回显到原位置
+       </li>
+     </ol>
     <b>1.2.0</b><br>
     <ol>
       <li>
-        feature: Support for exporting postman environment configuration
+        feature: Support for exporting postman environment configuration, api list
         <br>
         新功能: 支持导出 Postman 环境配置、分模块 API 列表导出
       </li>

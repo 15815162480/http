@@ -1,5 +1,6 @@
 package com.zys.http.ui.window.panel;
 
+import cn.hutool.core.text.CharSequenceUtil;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl;
@@ -10,6 +11,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiMethod;
+import com.intellij.ui.JBColor;
 import com.intellij.ui.JBSplitter;
 import com.intellij.ui.tabs.JBTabs;
 import com.intellij.ui.tabs.TabInfo;
@@ -89,7 +91,14 @@ public class RequestPanel extends JBSplitter {
     private transient TabInfo responseTabInfo;
     @Description("响应体类型")
     private CustomEditor responseEditor;
+
+    @Description("缓存每次请求的参数类型")
     private transient Map<String, ParamProperty> paramPropertyMap;
+
+    @Description("请求结果文本")
+    private JLabel requestResult = new JLabel();
+
+    private static final String REQUEST_RESULT_TEXT = "STATUS: {}";
 
     public RequestPanel(Project project) {
         super(true, Window.class.getName(), 0.5F);
@@ -146,9 +155,7 @@ public class RequestPanel extends JBSplitter {
         bodyTabInfo.setText(Bundle.get("http.tab.request.body"));
         tabs.addTab(bodyTabInfo);
         // 响应体
-        responseEditor = new CustomEditor(project);
-        responseEditor.setBorder(JBUI.Borders.customLineLeft(UIConstant.EDITOR_BORDER_COLOR));
-        responseTabInfo = new TabInfo(responseEditor);
+        responseTabInfo = new TabInfo(initResponseTabInfoPanel());
         responseTabInfo.setText(Bundle.get("http.tab.request.return"));
         tabs.addTab(responseTabInfo);
 
@@ -182,19 +189,40 @@ public class RequestPanel extends JBSplitter {
 
             tabs.select(responseTabInfo, true);
             responseEditor.setText("");
+            requestResult.setText("");
             HttpClient.run(
                     HttpClient.newRequest(httpMethod, url, header, parameter, bodyText),
                     response -> {
                         final FileType fileType = HttpClient.parseFileType(response);
                         final String responseBody = response.body();
+                        int status = response.getStatus();
                         ApplicationManager.getApplication().invokeLater(
-                                () -> responseEditor.setText(responseBody, fileType)
+                                () -> {
+                                    responseEditor.setText(responseBody, fileType);
+                                    if (status >= 200 && status < 300) {
+                                        // 成功
+                                        requestResult.setText(CharSequenceUtil.format(REQUEST_RESULT_TEXT, status));
+                                        requestResult.setForeground(JBColor.GREEN);
+                                    } else if (status >= 300 && status < 400) {
+                                        // 重定向
+                                        requestResult.setText(CharSequenceUtil.format(REQUEST_RESULT_TEXT, status));
+                                        requestResult.setForeground(JBColor.YELLOW);
+                                    } else {
+                                        // 错误
+                                        requestResult.setText(CharSequenceUtil.format(REQUEST_RESULT_TEXT, status));
+                                        requestResult.setForeground(JBColor.RED);
+                                    }
+                                }
                         );
                     },
                     e -> {
                         final String response = String.format("%s", e);
                         ApplicationManager.getApplication().invokeLater(
-                                () -> responseEditor.setText(response, CustomEditor.TEXT_FILE_TYPE)
+                                () -> {
+                                    responseEditor.setText(response, CustomEditor.TEXT_FILE_TYPE);
+                                    requestResult.setText(CharSequenceUtil.format(REQUEST_RESULT_TEXT, 404));
+                                    requestResult.setForeground(JBColor.RED);
+                                }
                         );
                     },
                     null
@@ -253,6 +281,31 @@ public class RequestPanel extends JBSplitter {
         return bodyPanel;
     }
 
+    @Description("初始化响应体面板")
+    private JPanel initResponseTabInfoPanel() {
+        JPanel respPanel = new JPanel(new BorderLayout(0, 0));
+        responseEditor = new CustomEditor(project);
+        responseEditor.setBorder(JBUI.Borders.customLineLeft(UIConstant.EDITOR_BORDER_COLOR));
+        respPanel.add(responseEditor, BorderLayout.CENTER);
+        JPanel respExpandPanel = new JPanel(new BorderLayout(0, 0));
+        CommonAction action = new CommonAction(Bundle.get("http.editor.response.action"), "", HttpIcons.General.FULL_SCREEN);
+        action.setAction(e -> {
+            CustomEditor editor = new CustomEditor(project, responseEditor.getFileType());
+            editor.setText(responseEditor.getText());
+            new EditorDialog(project, Bundle.get("http.editor.response.action.dialog"), editor).show();
+        });
+        DefaultActionGroup group = new DefaultActionGroup();
+        group.add(action);
+        ActionToolbarImpl component = (ActionToolbarImpl) ActionManager.getInstance()
+                .createActionToolbar("http.body.editor", group, true).getComponent();
+        component.setReservePlaceAutoPopupIcon(false);
+        component.setTargetComponent(responseEditor);
+        respExpandPanel.add(requestResult, BorderLayout.WEST);
+        respExpandPanel.add(component, BorderLayout.EAST);
+        respPanel.add(respExpandPanel, BorderLayout.SOUTH);
+        return respPanel;
+    }
+
     public void reload(BaseNode<?> chooseNode) {
         if (Objects.nonNull(chooseNode) && chooseNode instanceof MethodNode m) {
             chooseEvent(m);
@@ -285,6 +338,7 @@ public class RequestPanel extends JBSplitter {
         parameterTable.reloadTableModel();
         bodyEditor.setText("");
         responseEditor.setText("");
+        requestResult.setText("");
         paramPropertyMap = ParamConvert.parsePsiMethodParams(psiMethod, true);
 
         for (Map.Entry<String, ParamProperty> entry : paramPropertyMap.entrySet()) {

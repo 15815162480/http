@@ -62,6 +62,7 @@ public class EnvActionGroup extends DefaultActionGroup {
         actions[2] = action;
 
         DefaultActionGroup exportGroup = new DefaultActionGroup(Bundle.get("http.action.group.export.env"), true);
+        exportGroup.getTemplatePresentation().setIcon(HttpIcons.General.EXPORT);
         CommonAction exportOne = new CommonAction(Bundle.get("http.action.export.current.env"), "Export Current Env", HttpIcons.General.EXPORT);
         exportOne.setAction(event -> {
             String selectedEnv = serviceTool.getSelectedEnv();
