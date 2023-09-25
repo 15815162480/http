@@ -1,7 +1,10 @@
 package com.zys.http.ui.window;
 
 import com.intellij.openapi.Disposable;
-import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.ActionPlaces;
+import com.intellij.openapi.actionSystem.ActionToolbar;
+import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.fileChooser.FileChooser;
@@ -24,6 +27,7 @@ import com.zys.http.ui.dialog.EnvAddOrEditDialog;
 import com.zys.http.ui.dialog.EnvListShowDialog;
 import com.zys.http.ui.icon.HttpIcons;
 import com.zys.http.ui.popup.MethodFilterPopup;
+import com.zys.http.ui.popup.NodeShowFilterPopup;
 import com.zys.http.ui.tree.HttpApiTreePanel;
 import com.zys.http.ui.window.panel.RequestPanel;
 import jdk.jfr.Description;
@@ -45,6 +49,8 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
 
     @Description("请求方式过滤菜单")
     private final MethodFilterPopup methodFilterPopup;
+    @Description("结点展示过滤")
+    private final NodeShowFilterPopup nodeShowFilterPopup;
 
     private final transient ExecutorService executorTaskBounded = new ThreadPoolExecutor(
             1,
@@ -63,8 +69,12 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
                 Arrays.stream(HttpEnum.HttpMethod.values()).filter(o -> !o.equals(HttpEnum.HttpMethod.REQUEST))
                         .toList()
         );
+        this.nodeShowFilterPopup = new NodeShowFilterPopup();
         methodFilterPopup.setChangeAllCb((list, b) -> refreshTree(true));
         methodFilterPopup.setChangeCb((method, b) -> refreshTree(true));
+
+        nodeShowFilterPopup.setChangeAllCb((list, b) -> refreshTree(true));
+        nodeShowFilterPopup.setChangeCb((method, b) -> refreshTree(true));
         init();
     }
 
@@ -92,7 +102,7 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
         CommonAction envListAction = new CommonAction(Bundle.get("http.action.show.env"), "Env list", null);
         envListAction.setAction(event -> {
             EnvListShowDialog dialog = new EnvListShowDialog(requestPanel.getProject());
-            dialog.getEnvShowTable().setEditOKCb(n-> requestPanel.reload(requestPanel.getHttpApiTreePanel().getChooseNode()));
+            dialog.getEnvShowTable().setEditOKCb(n -> requestPanel.reload(requestPanel.getHttpApiTreePanel().getChooseNode()));
             dialog.show();
         });
         envActionGroup.add(envListAction);
@@ -122,6 +132,10 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
         group.add(collapseAction);
 
         group.addSeparator();
+        CommonAction settingAction = new CommonAction(Bundle.get("http.filter.action.node.show"), "Setting", HttpIcons.General.SETTING);
+        settingAction.setAction(e -> nodeShowFilterPopup.show(requestPanel, nodeShowFilterPopup.getX(), nodeShowFilterPopup.getY()));
+        group.add(settingAction);
+
         FilterAction filterAction = new FilterAction(Bundle.get("http.filter.action"));
         filterAction.setAction(e -> methodFilterPopup.show(requestPanel, methodFilterPopup.getX(), methodFilterPopup.getY()));
         group.add(filterAction);
@@ -136,7 +150,8 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
                 () -> {
                     HttpApiTreePanel httpApiTreePanel = requestPanel.getHttpApiTreePanel();
                     List<HttpEnum.HttpMethod> selectedValues = methodFilterPopup.getSelectedValues();
-                    ReadAction.nonBlocking(() -> httpApiTreePanel.initNodes(selectedValues))
+                    List<String> nodeShowValues = nodeShowFilterPopup.getSelectedValues();
+                    ReadAction.nonBlocking(() -> httpApiTreePanel.initNodes(selectedValues, nodeShowValues))
                             .inSmartMode(project)
                             .finishOnUiThread(ModalityState.defaultModalityState(), root -> {
                                 httpApiTreePanel.render(root);

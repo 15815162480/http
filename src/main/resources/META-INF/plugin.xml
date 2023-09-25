@@ -47,6 +47,11 @@
      <b>1.2.1</b><br>
      <ol>
        <li>
+         feature: Ability to choose whether to show package nodes or class nodes
+         <br>
+         新功能: 能够选择是否展示包结点或类结点
+       </li>
+       <li>
          feature: Response now can be viewed in a dialog, but edit it will not echo
          <br>
          新功能: 响应体能在一个新的对话框中查看, 但修改不会回显到原位置
