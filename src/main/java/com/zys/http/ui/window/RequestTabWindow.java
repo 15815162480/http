@@ -123,6 +123,22 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
         group.add(refreshAction);
 
         group.addSeparator();
+        DefaultActionGroup filterActionGroup = new DefaultActionGroup();
+        filterActionGroup.getTemplatePresentation().setIcon(HttpIcons.General.FILTER);
+        filterActionGroup.getTemplatePresentation().setText(Bundle.get("http.filter.action.node.filter"));
+        filterActionGroup.setPopup(true);
+
+        FilterAction settingAction = new FilterAction(Bundle.get("http.filter.action.node.show"));
+        settingAction.setAction(e -> nodeShowFilterPopup.show(requestPanel, nodeShowFilterPopup.getX(), nodeShowFilterPopup.getY()));
+
+        filterActionGroup.add(settingAction);
+
+        FilterAction filterAction = new FilterAction(Bundle.get("http.filter.action"));
+        filterAction.setAction(e -> methodFilterPopup.show(requestPanel, methodFilterPopup.getX(), methodFilterPopup.getY()));
+        filterActionGroup.add(filterAction);
+
+        group.add(filterActionGroup);
+
         ExpandAction expandAction = new ExpandAction();
         expandAction.setAction(event -> requestPanel.getHttpApiTreePanel().treeExpand());
         group.add(expandAction);
@@ -130,15 +146,6 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
         CollapseAction collapseAction = new CollapseAction();
         collapseAction.setAction(event -> requestPanel.getHttpApiTreePanel().treeCollapse());
         group.add(collapseAction);
-
-        group.addSeparator();
-        CommonAction settingAction = new CommonAction(Bundle.get("http.filter.action.node.show"), "Setting", HttpIcons.General.SETTING);
-        settingAction.setAction(e -> nodeShowFilterPopup.show(requestPanel, nodeShowFilterPopup.getX(), nodeShowFilterPopup.getY()));
-        group.add(settingAction);
-
-        FilterAction filterAction = new FilterAction(Bundle.get("http.filter.action"));
-        filterAction.setAction(e -> methodFilterPopup.show(requestPanel, methodFilterPopup.getX(), methodFilterPopup.getY()));
-        group.add(filterAction);
 
         ActionToolbar topToolBar = ActionManager.getInstance().createActionToolbar(ActionPlaces.TOOLBAR, group, true);
         topToolBar.setTargetComponent(this);
