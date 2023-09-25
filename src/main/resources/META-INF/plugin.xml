@@ -52,9 +52,14 @@
          新功能: 响应体能在一个新的对话框中查看, 但修改不会回显到原位置
        </li>
        <li>
-         feature: Remove request header and prohibit duplication
+         fix bug: Remove request header and prohibit duplication
          <br>
-         新功能: 移除请求头禁止重复
+         bug 修复: 移除请求头禁止重复
+       </li>
+       <li>
+         fix bug: No method node selected can still initiate a request
+         <br>
+         bug 修复: 没有选中节点仍然能够发起请求
        </li>
      </ol>
     <b>1.2.0</b><br>
