@@ -1,6 +1,6 @@
 <idea-plugin>
   <id>com.zys.http</id>
-  <version>1.2.0</version>
+  <version>1.2.1</version>
 
   <name>ApiTool</name>
 
@@ -50,6 +50,16 @@
          feature: Response now can be viewed in a dialog, but edit it will not echo
          <br>
          新功能: 响应体能在一个新的对话框中查看, 但修改不会回显到原位置
+       </li>
+       <li>
+         fix bug: Remove request header and prohibit duplication
+         <br>
+         bug 修复: 移除请求头禁止重复
+       </li>
+       <li>
+         fix bug: No method node selected can still initiate a request
+         <br>
+         bug 修复: 没有选中节点仍然能够发起请求
        </li>
      </ol>
     <b>1.2.0</b><br>
