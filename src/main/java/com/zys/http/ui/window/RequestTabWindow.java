@@ -82,25 +82,29 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
 
     @Description("初始化顶部工具栏")
     private ActionToolbar requestToolBar() {
+        DefaultActionGroup group = new DefaultActionGroup();
+
+        // 环境操作菜单组
+        EnvActionGroup envActionGroup = new EnvActionGroup();
         AddAction addAction = new AddAction(Bundle.get("http.action.add.env"));
         addAction.setAction(event -> new EnvAddOrEditDialog(project, true, "").show());
-
+        envActionGroup.add(addAction);
         CommonAction envListAction = new CommonAction(Bundle.get("http.action.show.env"), "Env list", HttpIcons.General.LIST);
         envListAction.setAction(event -> {
             EnvListShowDialog dialog = new EnvListShowDialog(requestPanel.getProject());
             dialog.getEnvShowTable().setEditOKCb(n -> requestPanel.reload(requestPanel.getHttpApiTreePanel().getChooseNode()));
             dialog.show();
         });
-
+        envActionGroup.add(envListAction);
         SelectActionGroup selectActionGroup = new SelectActionGroup();
         selectActionGroup.setCallback(s -> requestPanel.reload(requestPanel.getHttpApiTreePanel().getChooseNode()));
-
-        EnvActionGroup envActionGroup = new EnvActionGroup();
-        envActionGroup.add(addAction);
-        envActionGroup.add(envListAction);
         envActionGroup.add(selectActionGroup);
+
         envActionGroup.add(createExportActionGroup());
 
+        group.add(envActionGroup);
+
+        // 刷新菜单
         RefreshAction refreshAction = new RefreshAction();
         refreshAction.setAction(event -> {
             requestPanel.reload(null);
@@ -112,30 +116,28 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
                 }
             }, 500);
         });
+        group.add(refreshAction);
+        group.addSeparator();
 
+        // 节点过滤操作菜单组
         NodeFilterActionGroup filterActionGroup = new NodeFilterActionGroup();
         FilterAction settingAction = new FilterAction(Bundle.get("http.filter.action.node.show"));
         settingAction.setAction(e -> nodeShowFilterPopup.show(requestPanel, nodeShowFilterPopup.getX(), nodeShowFilterPopup.getY()));
-
+        filterActionGroup.add(settingAction);
         FilterAction filterAction = new FilterAction(Bundle.get("http.filter.action"));
         filterAction.setAction(e -> methodFilterPopup.show(requestPanel, methodFilterPopup.getX(), methodFilterPopup.getY()));
-
-        filterActionGroup.add(settingAction);
         filterActionGroup.add(filterAction);
 
+        group.add(filterActionGroup);
+
+        // 展开操作菜单
         ExpandAction expandAction = new ExpandAction();
         expandAction.setAction(event -> requestPanel.getHttpApiTreePanel().treeExpand());
+        group.add(expandAction);
 
+        // 收起操作菜单
         CollapseAction collapseAction = new CollapseAction();
         collapseAction.setAction(event -> requestPanel.getHttpApiTreePanel().treeCollapse());
-
-
-        DefaultActionGroup group = new DefaultActionGroup();
-        group.add(envActionGroup);
-        group.add(refreshAction);
-        group.addSeparator();
-        group.add(filterActionGroup);
-        group.add(expandAction);
         group.add(collapseAction);
 
         ActionToolbar topToolBar = ActionManager.getInstance().createActionToolbar(ActionPlaces.TOOLBAR, group, true);
