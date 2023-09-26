@@ -12,6 +12,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.SimpleToolWindowPanel;
 import com.zys.http.action.*;
 import com.zys.http.action.group.EnvActionGroup;
+import com.zys.http.action.group.NodeFilterActionGroup;
 import com.zys.http.action.group.SelectActionGroup;
 import com.zys.http.constant.HttpEnum;
 import com.zys.http.service.Bundle;
@@ -81,28 +82,29 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
 
     @Description("初始化顶部工具栏")
     private ActionToolbar requestToolBar() {
-        DefaultActionGroup group = new DefaultActionGroup();
-        EnvActionGroup envActionGroup = new EnvActionGroup();
 
+        EnvActionGroup envActionGroup = new EnvActionGroup();
         AddAction addAction = new AddAction(Bundle.get("http.action.add.env"));
         addAction.setAction(event -> new EnvAddOrEditDialog(project, true, "").show());
         envActionGroup.add(addAction);
 
-        SelectActionGroup selectActionGroup = new SelectActionGroup();
-        selectActionGroup.setPopup(true);
-        selectActionGroup.setCallback(s -> requestPanel.reload(requestPanel.getHttpApiTreePanel().getChooseNode()));
-        envActionGroup.add(selectActionGroup);
-
-        CommonAction envListAction = new CommonAction(Bundle.get("http.action.show.env"), "Env list", null);
+        CommonAction envListAction = new CommonAction(Bundle.get("http.action.show.env"), "Env list", HttpIcons.General.LIST);
         envListAction.setAction(event -> {
             EnvListShowDialog dialog = new EnvListShowDialog(requestPanel.getProject());
             dialog.getEnvShowTable().setEditOKCb(n -> requestPanel.reload(requestPanel.getHttpApiTreePanel().getChooseNode()));
             dialog.show();
         });
         envActionGroup.add(envListAction);
+
+        SelectActionGroup selectActionGroup = new SelectActionGroup();
+        selectActionGroup.setPopup(true);
+        selectActionGroup.setCallback(s -> requestPanel.reload(requestPanel.getHttpApiTreePanel().getChooseNode()));
+        envActionGroup.add(selectActionGroup);
+
         envActionGroup.add(createExportActionGroup());
 
-        group.add(envActionGroup);
+
+
         RefreshAction refreshAction = new RefreshAction();
         refreshAction.setAction(event -> {
             requestPanel.reload(null);
@@ -114,31 +116,32 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
                 }
             }, 500);
         });
-        group.add(refreshAction);
 
-        group.addSeparator();
-        DefaultActionGroup filterActionGroup = new DefaultActionGroup();
-        filterActionGroup.getTemplatePresentation().setIcon(HttpIcons.General.FILTER);
-        filterActionGroup.getTemplatePresentation().setText(Bundle.get("http.filter.action.node.filter"));
-        filterActionGroup.setPopup(true);
 
+        NodeFilterActionGroup filterActionGroup = new NodeFilterActionGroup();
         FilterAction settingAction = new FilterAction(Bundle.get("http.filter.action.node.show"));
         settingAction.setAction(e -> nodeShowFilterPopup.show(requestPanel, nodeShowFilterPopup.getX(), nodeShowFilterPopup.getY()));
 
-        filterActionGroup.add(settingAction);
 
         FilterAction filterAction = new FilterAction(Bundle.get("http.filter.action"));
         filterAction.setAction(e -> methodFilterPopup.show(requestPanel, methodFilterPopup.getX(), methodFilterPopup.getY()));
-        filterActionGroup.add(filterAction);
 
-        group.add(filterActionGroup);
+        filterActionGroup.add(settingAction);
+        filterActionGroup.add(filterAction);
 
         ExpandAction expandAction = new ExpandAction();
         expandAction.setAction(event -> requestPanel.getHttpApiTreePanel().treeExpand());
-        group.add(expandAction);
 
         CollapseAction collapseAction = new CollapseAction();
         collapseAction.setAction(event -> requestPanel.getHttpApiTreePanel().treeCollapse());
+
+
+        DefaultActionGroup group = new DefaultActionGroup();
+        group.add(envActionGroup);
+        group.add(refreshAction);
+        group.addSeparator();
+        group.add(filterActionGroup);
+        group.add(expandAction);
         group.add(collapseAction);
 
         ActionToolbar topToolBar = ActionManager.getInstance().createActionToolbar(ActionPlaces.TOOLBAR, group, true);

@@ -32,6 +32,7 @@ public final class HttpIcons {
         public static final Icon COLLAPSE = IconLoader.getIcon("/icon/general/collapse.svg", HttpIcons.class);
         public static final Icon FILTER = IconLoader.getIcon("/icon/general/filter.svg", HttpIcons.class);
         public static final Icon LIST = IconLoader.getIcon("/icon/general/list.svg", HttpIcons.class);
+        public static final Icon TREE = IconLoader.getIcon("/icon/general/tree.svg", HttpIcons.class);
         public static final Icon DEFAULT = IconLoader.getIcon("/icon/general/default.svg", HttpIcons.class);
         public static final Icon LOCATE = IconLoader.getIcon("/icon/general/locate.svg", HttpIcons.class);
         public static final Icon FULL_SCREEN = IconLoader.getIcon("/icon/general/fullScreen.svg", HttpIcons.class);

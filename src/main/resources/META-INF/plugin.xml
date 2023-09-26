@@ -191,5 +191,10 @@
     <projectService serviceImplementation="com.zys.http.service.NotifyService"/>
     <notificationGroup id="http.notify" displayType="BALLOON" toolWindowId="http"/>
   </extensions>
+  <!--    AllIcons.Actions.AddList-->
+<!--  <actions>-->
+
+<!--    <action class="" icon="AllIcons.Actions.InlayRenameInNoCodeFilesActive"-->
+<!--  </actions>-->
 
 </idea-plugin>
