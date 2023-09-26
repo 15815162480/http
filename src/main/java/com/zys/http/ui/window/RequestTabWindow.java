@@ -82,11 +82,8 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
 
     @Description("初始化顶部工具栏")
     private ActionToolbar requestToolBar() {
-
-        EnvActionGroup envActionGroup = new EnvActionGroup();
         AddAction addAction = new AddAction(Bundle.get("http.action.add.env"));
         addAction.setAction(event -> new EnvAddOrEditDialog(project, true, "").show());
-        envActionGroup.add(addAction);
 
         CommonAction envListAction = new CommonAction(Bundle.get("http.action.show.env"), "Env list", HttpIcons.General.LIST);
         envListAction.setAction(event -> {
@@ -94,16 +91,15 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
             dialog.getEnvShowTable().setEditOKCb(n -> requestPanel.reload(requestPanel.getHttpApiTreePanel().getChooseNode()));
             dialog.show();
         });
-        envActionGroup.add(envListAction);
 
         SelectActionGroup selectActionGroup = new SelectActionGroup();
-        selectActionGroup.setPopup(true);
         selectActionGroup.setCallback(s -> requestPanel.reload(requestPanel.getHttpApiTreePanel().getChooseNode()));
+
+        EnvActionGroup envActionGroup = new EnvActionGroup();
+        envActionGroup.add(addAction);
+        envActionGroup.add(envListAction);
         envActionGroup.add(selectActionGroup);
-
         envActionGroup.add(createExportActionGroup());
-
-
 
         RefreshAction refreshAction = new RefreshAction();
         refreshAction.setAction(event -> {
@@ -117,11 +113,9 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
             }, 500);
         });
 
-
         NodeFilterActionGroup filterActionGroup = new NodeFilterActionGroup();
         FilterAction settingAction = new FilterAction(Bundle.get("http.filter.action.node.show"));
         settingAction.setAction(e -> nodeShowFilterPopup.show(requestPanel, nodeShowFilterPopup.getX(), nodeShowFilterPopup.getY()));
-
 
         FilterAction filterAction = new FilterAction(Bundle.get("http.filter.action"));
         filterAction.setAction(e -> methodFilterPopup.show(requestPanel, methodFilterPopup.getX(), methodFilterPopup.getY()));
