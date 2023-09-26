@@ -42,7 +42,6 @@ public class SelectActionGroup extends DefaultActionGroup {
         for (String s : set) {
             SelectAction action = new SelectAction(s);
             action.setAction(event -> {
-                event.getPresentation().setIcon(HttpIcons.General.ADD);
                 String selectEnv = event.getPresentation().getText();
                 tool.setSelectedEnv(selectEnv);
                 callback.accept(selectEnv);

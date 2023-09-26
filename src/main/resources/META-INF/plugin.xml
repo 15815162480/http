@@ -44,6 +44,19 @@
 
   <!-- 更新公告 -->
   <change-notes><![CDATA[
+    <b>1.2.2</b><br>
+    <ol>
+      <li>
+        Improve: Integration of node filtering functions
+        <br>
+        优化: 节点过滤功能整合
+      </li>
+      <li>
+        Improve: Change the window name to ApiTool
+        <br>
+        优化: 将窗口名修改为 ApiTool
+      </li>
+    </ol>
      <b>1.2.1</b><br>
      <ol>
        <li>
@@ -171,7 +184,7 @@
   <depends>org.jetbrains.kotlin</depends>
 
   <extensions defaultExtensionNs="com.intellij">
-    <toolWindow id="http" secondary="true" anchor="right" icon="com.zys.http.ui.icon.HttpIcons.PLUGIN_ICON"
+    <toolWindow id="ApiTool" secondary="true" anchor="right" icon="com.zys.http.ui.icon.HttpIcons.PLUGIN_ICON"
                 doNotActivateOnStart="true" factoryClass="com.zys.http.HttpMainWindowFactory"
     />
     <projectService serviceImplementation="com.zys.http.service.HttpService"/>

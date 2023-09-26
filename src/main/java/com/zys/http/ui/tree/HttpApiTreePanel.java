@@ -1,6 +1,5 @@
 package com.zys.http.ui.tree;
 
-import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.module.Module;
@@ -13,6 +12,7 @@ import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiMethod;
 import com.intellij.ui.treeStructure.SimpleTree;
 import com.zys.http.action.CommonAction;
+import com.zys.http.action.CopyAction;
 import com.zys.http.action.ExpandAction;
 import com.zys.http.constant.HttpEnum;
 import com.zys.http.constant.SpringEnum;
@@ -295,16 +295,15 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
             navigation.setAction(event -> mn.getValue().getPsiElement().navigate(true));
             group.add(navigation);
 
-            CommonAction copyFullPath = new CommonAction(Bundle.get("http.tree.right.item.copy.full.path"), "", AllIcons.Actions.Copy);
+            CopyAction copyFullPath = new CopyAction(Bundle.get("http.tree.right.item.copy.full.path"));
             copyFullPath.setAction(event -> {
                 HttpConfig config = serviceTool.getDefaultHttpConfig();
-                String protocol = config.getProtocol().name().toLowerCase();
-                SystemTool.copy2Clipboard(protocol + "://" + config.getHostValue() + mn.getFragment());
+                SystemTool.copy2Clipboard(config.getProtocol().name().toLowerCase() + "://" + config.getHostValue() + mn.getFragment());
                 NotifyService.instance(project).info(Bundle.get("http.tree.right.item.copy.full.msg"));
             });
             group.add(copyFullPath);
 
-            CommonAction copyApiPath = new CommonAction(Bundle.get("http.tree.right.item.copy.api.path"), "", AllIcons.Actions.Copy);
+            CopyAction copyApiPath = new CopyAction(Bundle.get("http.tree.right.item.copy.api.path"));
             copyApiPath.setAction(event -> {
                 SystemTool.copy2Clipboard(mn.getFragment());
                 NotifyService.instance(project).info(Bundle.get("http.tree.right.item.copy.api.msg"));

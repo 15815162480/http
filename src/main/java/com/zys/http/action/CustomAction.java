@@ -8,6 +8,7 @@ import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
@@ -38,7 +39,7 @@ public abstract class CustomAction extends AnAction {
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
-        if (this.action != null) {
+        if (Objects.nonNull(action)) {
             action.accept(anActionEvent);
         }
     }
