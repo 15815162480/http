@@ -100,9 +100,11 @@ public class EnvListTable extends AbstractTable {
         group.add(editAction);
 
         HttpConfigExportAction exportAction = new HttpConfigExportAction(Bundle.get("http.action.export.select.env"), HttpEnum.ExportEnum.SPECIFY_ENV);
-        DefaultTableModel model = (DefaultTableModel) valueTable.getModel();
-        String envName = (String) model.getValueAt(valueTable.getSelectedRow(), 0);
-        exportAction.initAction(null, null, envName);
+        exportAction.setAction(e -> {
+            DefaultTableModel model = (DefaultTableModel) valueTable.getModel();
+            String envName = (String) model.getValueAt(valueTable.getSelectedRow(), 0);
+            exportAction.initAction(null, null, envName);
+        });
         exportAction.setEnabled(false);
         group.add(exportAction);
 

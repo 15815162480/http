@@ -11,6 +11,7 @@ import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.SimpleToolWindowPanel;
 import com.zys.http.action.*;
+import com.zys.http.action.group.ApiToolSettingActionGroup;
 import com.zys.http.action.group.EnvActionGroup;
 import com.zys.http.action.group.NodeFilterActionGroup;
 import com.zys.http.action.group.SelectActionGroup;
@@ -100,8 +101,6 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
         selectActionGroup.setCallback(s -> requestPanel.reload(requestPanel.getHttpApiTreePanel().getChooseNode()));
         envActionGroup.add(selectActionGroup);
 
-        envActionGroup.add(createExportActionGroup());
-
         group.add(envActionGroup);
 
         // 刷新菜单
@@ -117,6 +116,20 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
             }, 500);
         });
         group.add(refreshAction);
+
+        // 导出菜单操作组
+        group.add(createExportActionGroup());
+        group.addSeparator();
+
+        // 展开操作菜单
+        ExpandAction expandAction = new ExpandAction();
+        expandAction.setAction(event -> requestPanel.getHttpApiTreePanel().treeExpand());
+        group.add(expandAction);
+
+        // 收起操作菜单
+        CollapseAction collapseAction = new CollapseAction();
+        collapseAction.setAction(event -> requestPanel.getHttpApiTreePanel().treeCollapse());
+        group.add(collapseAction);
         group.addSeparator();
 
         // 节点过滤操作菜单组
@@ -130,15 +143,25 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
 
         group.add(filterActionGroup);
 
-        // 展开操作菜单
-        ExpandAction expandAction = new ExpandAction();
-        expandAction.setAction(event -> requestPanel.getHttpApiTreePanel().treeExpand());
-        group.add(expandAction);
 
-        // 收起操作菜单
-        CollapseAction collapseAction = new CollapseAction();
-        collapseAction.setAction(event -> requestPanel.getHttpApiTreePanel().treeCollapse());
-        group.add(collapseAction);
+        // 设置菜单组
+        ApiToolSettingActionGroup settingActionGroup = new ApiToolSettingActionGroup();
+        CommonAction commonAction = new CommonAction(Bundle.get("http.action.default.env"), "Generate Default", HttpIcons.General.DEFAULT);
+        commonAction.setAction(event -> {
+            HttpApiTreePanel treePanel = requestPanel.getHttpApiTreePanel();
+            treePanel.setGenerateDefault(!treePanel.isGenerateDefault());
+            boolean generateDefault = treePanel.isGenerateDefault();
+            commonAction.getTemplatePresentation().setIcon(generateDefault ? HttpIcons.General.DEFAULT : null);
+            requestPanel.getHttpApiTreePanel().clear();
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    refreshTree(false);
+                }
+            }, 500);
+        });
+        settingActionGroup.setCommonAction(commonAction);
+        group.add(settingActionGroup);
 
         ActionToolbar topToolBar = ActionManager.getInstance().createActionToolbar(ActionPlaces.TOOLBAR, group, true);
         topToolBar.setTargetComponent(this);

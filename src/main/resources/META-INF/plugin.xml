@@ -47,6 +47,16 @@
     <b>1.2.2</b><br>
     <ol>
       <li>
+        Feature: Can set whether to generate a default environment and remove the default environment
+        <br>
+        新功能: 能够设置是否生成默认环境并删除生成的默认环境
+      </li>
+      <li>
+        Improve: Modify the default port when there is no "server.port" to 8080
+        <br>
+        优化: 修改没有 server.port 配置时的默认端口为 8080
+      </li>
+      <li>
         Improve: Integration of node filtering functions
         <br>
         优化: 节点过滤功能整合
@@ -191,10 +201,4 @@
     <projectService serviceImplementation="com.zys.http.service.NotifyService"/>
     <notificationGroup id="http.notify" displayType="BALLOON" toolWindowId="http"/>
   </extensions>
-  <!--    AllIcons.Actions.AddList-->
-<!--  <actions>-->
-
-<!--    <action class="" icon="AllIcons.Actions.InlayRenameInNoCodeFilesActive"-->
-<!--  </actions>-->
-
 </idea-plugin>

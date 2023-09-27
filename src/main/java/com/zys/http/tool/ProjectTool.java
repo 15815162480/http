@@ -94,12 +94,12 @@ public class ProjectTool {
                 .toList();
     }
 
-    @Description("获取模块的 context-path")
+    @Description("获取模块的 port")
     public static String getModulePort(Project project, @NotNull Module module) {
         // 1 获取 SpringBoot 中有的配置文件
         PsiFile psiFile = getSpringApplicationFile(project, module);
         if (Objects.isNull(psiFile)) {
-            return "80";
+            return "8080";
         }
         // 如果是 yaml 文件
         if (psiFile instanceof YAMLFile yamlFile) {
@@ -108,15 +108,15 @@ public class ProjectTool {
                 PsiElement first = value.getFirst();
                 String text = first.getText(); // 获取到 server.servlet.context-path, 内容: context-path: /
                 String port = text.split(":")[0].trim();
-                return CharSequenceUtil.isEmpty(port) ? "80" : port;
+                return CharSequenceUtil.isEmpty(port) ? "8080" : port;
             }
         }
         if (psiFile instanceof PropertiesFile propertiesFile) {
             String port = propertiesFile.getNamesMap().get("server.port");
-            return CharSequenceUtil.isEmpty(port) ? "80" : port;
+            return CharSequenceUtil.isEmpty(port) ? "8080" : port;
         }
 
-        return "80";
+        return "8080";
     }
 
     @Description("获取模块中的 SpringBoot 优先级最高的配置文件")

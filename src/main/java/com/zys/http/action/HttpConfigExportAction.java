@@ -11,7 +11,7 @@ import com.zys.http.entity.HttpConfig;
 import com.zys.http.service.Bundle;
 import com.zys.http.service.NotifyService;
 import com.zys.http.tool.HttpServiceTool;
-import com.zys.http.tool.velocity.VelocityTool;
+import com.zys.http.tool.VelocityTool;
 import com.zys.http.ui.tree.node.MethodNode;
 import jdk.jfr.Description;
 import org.jetbrains.annotations.NotNull;

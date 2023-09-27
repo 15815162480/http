@@ -38,6 +38,8 @@ public final class HttpIcons {
         public static final Icon FULL_SCREEN = IconLoader.getIcon("/icon/general/fullScreen.svg", HttpIcons.class);
         public static final Icon EXPORT = IconLoader.getIcon("/icon/general/export.svg", HttpIcons.class);
         public static final Icon SETTING = IconLoader.getIcon("/icon/general/setting.svg", HttpIcons.class);
+        public static final Icon OUT = IconLoader.getIcon("/icon/general/out.svg", HttpIcons.class);
+        public static final Icon FILTER_GROUP = IconLoader.getIcon("/icon/general/filterGroup.svg", HttpIcons.class);
     }
 
     @Description("请求方法")

@@ -1,4 +1,4 @@
-package com.zys.http.tool.velocity;
+package com.zys.http.tool;
 
 import cn.hutool.core.text.CharSequenceUtil;
 import com.intellij.openapi.util.ClassLoaderUtil;
@@ -11,7 +11,6 @@ import com.zys.http.entity.HttpConfig;
 import com.zys.http.entity.param.ParamProperty;
 import com.zys.http.entity.tree.MethodNodeData;
 import com.zys.http.entity.velocity.MethodItem;
-import com.zys.http.tool.PsiTool;
 import com.zys.http.tool.convert.ParamConvert;
 import com.zys.http.ui.tree.node.MethodNode;
 import jdk.jfr.Description;
