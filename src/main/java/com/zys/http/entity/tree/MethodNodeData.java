@@ -16,6 +16,7 @@ import java.util.Map;
  */
 @Getter
 @Setter
+@Description("方法结点数据")
 @EqualsAndHashCode(callSuper = true)
 public class MethodNodeData extends NodeData {
 

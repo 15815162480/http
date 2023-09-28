@@ -32,10 +32,14 @@ public final class HttpIcons {
         public static final Icon COLLAPSE = IconLoader.getIcon("/icon/general/collapse.svg", HttpIcons.class);
         public static final Icon FILTER = IconLoader.getIcon("/icon/general/filter.svg", HttpIcons.class);
         public static final Icon LIST = IconLoader.getIcon("/icon/general/list.svg", HttpIcons.class);
+        public static final Icon TREE = IconLoader.getIcon("/icon/general/tree.svg", HttpIcons.class);
         public static final Icon DEFAULT = IconLoader.getIcon("/icon/general/default.svg", HttpIcons.class);
         public static final Icon LOCATE = IconLoader.getIcon("/icon/general/locate.svg", HttpIcons.class);
         public static final Icon FULL_SCREEN = IconLoader.getIcon("/icon/general/fullScreen.svg", HttpIcons.class);
         public static final Icon EXPORT = IconLoader.getIcon("/icon/general/export.svg", HttpIcons.class);
+        public static final Icon SETTING = IconLoader.getIcon("/icon/general/setting.svg", HttpIcons.class);
+        public static final Icon OUT = IconLoader.getIcon("/icon/general/out.svg", HttpIcons.class);
+        public static final Icon FILTER_GROUP = IconLoader.getIcon("/icon/general/filterGroup.svg", HttpIcons.class);
     }
 
     @Description("请求方法")

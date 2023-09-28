@@ -1,6 +1,5 @@
 package com.zys.http.ui.tree;
 
-import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.module.Module;
@@ -13,6 +12,7 @@ import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiMethod;
 import com.intellij.ui.treeStructure.SimpleTree;
 import com.zys.http.action.CommonAction;
+import com.zys.http.action.CopyAction;
 import com.zys.http.action.ExpandAction;
 import com.zys.http.constant.HttpEnum;
 import com.zys.http.constant.SpringEnum;
@@ -40,6 +40,8 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import static com.zys.http.ui.popup.NodeShowFilterPopup.SETTING_VALUES;
+
 /**
  * @author zys
  * @since 2023-09-08
@@ -60,10 +62,15 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
     private final transient Map<PsiClass, List<MethodNode>> methodNodeMap = new HashMap<>();
     private final transient HttpServiceTool serviceTool;
     private final transient Project project;
+
     @Getter
     @Setter
     @Description("选中方法节点后的回调")
     private transient Consumer<MethodNode> chooseCallback;
+
+    @Setter
+    @Getter
+    private boolean isGenerateDefault = true;
 
     public HttpApiTreePanel(Project project) {
         super(new SimpleTree());
@@ -71,12 +78,12 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
         this.serviceTool = HttpServiceTool.getInstance(project);
     }
 
-    public ModuleNode initNodes(List<HttpEnum.HttpMethod> methods) {
-        return initModuleNodes(methods);
+    public ModuleNode initNodes(List<HttpEnum.HttpMethod> methods, List<String> nodeShowValues) {
+        return initModuleNodes(methods, nodeShowValues);
     }
 
     @Description("初始化模块结点, 可能有多层级")
-    private ModuleNode initModuleNodes(List<HttpEnum.HttpMethod> methods) {
+    private ModuleNode initModuleNodes(List<HttpEnum.HttpMethod> methods, List<String> nodeShowValues) {
         Collection<Module> modules = ProjectTool.moduleList(project);
         Module rootModule = ProjectTool.getRootModule(project);
         if (modules.isEmpty() || Objects.isNull(rootModule)) {
@@ -118,15 +125,19 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
             controllers = ProjectTool.getModuleControllers(project, m);
             if (!controllers.isEmpty()) {
                 moduleControllerMap.put(moduleName, controllers);
-                String host = "127.0.0.1:" + ProjectTool.getModulePort(project, m);
-                serviceTool.putHttpConfig(moduleName, new HttpConfig(HttpEnum.Protocol.HTTP, host, Collections.emptyMap()));
+                if (isGenerateDefault) {
+                    String host = "127.0.0.1:" + ProjectTool.getModulePort(project, m);
+                    serviceTool.putHttpConfig(moduleName, new HttpConfig(HttpEnum.Protocol.HTTP, host, Collections.emptyMap()));
+                } else {
+                    serviceTool.removeHttpConfig(moduleName);
+                }
                 String controllerPath;
                 for (PsiClass c : controllers) {
                     controllerPath = PsiTool.getControllerPath(c);
                     contextPath = ProjectTool.getModuleContextPath(project, m);
                     methodNodeMap.put(c, buildMethodNodes(c, contextPath, controllerPath));
                 }
-                initPackageNodes(moduleName, methods).forEach(mn::add);
+                initPackageNodes(moduleName, methods, nodeShowValues).forEach(mn::add);
             }
         }
 
@@ -135,9 +146,11 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
     }
 
     @Description("初始化包结点、类结点、方法结点")
-    private List<BaseNode<? extends NodeData>> initPackageNodes(String moduleName, List<HttpEnum.HttpMethod> methods) {
+    private List<BaseNode<? extends NodeData>> initPackageNodes(String moduleName, List<HttpEnum.HttpMethod> methods, List<String> nodeShowValues) {
         // 获取当前模块的所有 controller
         List<PsiClass> psiClasses = moduleControllerMap.get(moduleName);
+        boolean isFilterPackage = nodeShowValues.contains(SETTING_VALUES.get(0));
+        boolean isFilterClass = nodeShowValues.contains(SETTING_VALUES.get(1));
 
         if (Objects.isNull(psiClasses) || psiClasses.isEmpty()) {
             return Collections.emptyList();
@@ -157,20 +170,26 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
             String s = PsiTool.getSwaggerAnnotation(k, "CLASS_");
             data.setDescription(s);
             ClassNode classNode = new ClassNode(data);
-
             v.forEach(methodNode -> {
                 HttpEnum.HttpMethod httpMethod = methodNode.getValue().getHttpMethod();
                 if (methods.contains(httpMethod)) {
                     classNode.add(methodNode);
                 }
             });
-            String packageName = PsiTool.getPackageName(k);
-            if (classNode.getChildCount() > 0) {
-                if (Objects.isNull(packageName)) {
-                    // 没有包名则直接添加到 module 节点
-                    unKnownPackage.add(classNode);
-                } else {
-                    createPackageNodes(packageNodeMap, packageName).add(classNode);
+
+            if (!isFilterPackage) {
+                // 不显示包名则直接添加到 module 节点
+                children.addAll(filterClass(classNode, isFilterClass));
+            } else {
+                String packageName = PsiTool.getPackageName(k);
+                if (classNode.getChildCount() > 0) {
+                    if (Objects.isNull(packageName)) {
+                        // 没有包名则直接添加到 module 节点
+                        unKnownPackage.addAll(filterClass(classNode, isFilterClass));
+                    } else {
+                        PackageNode node = createPackageNodes(packageNodeMap, packageName);
+                        filterClass(classNode, isFilterClass).forEach(node::add);
+                    }
                 }
             }
         }
@@ -220,6 +239,16 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
             curr = child;
         }
         return curr;
+    }
+
+    private List<BaseNode<?>> filterClass(BaseNode<?> classNode, boolean isFilterClass) {
+        List<BaseNode<?>> needToAddNode = new ArrayList<>();
+        if (isFilterClass) {
+            needToAddNode.add(classNode);
+        } else {
+            return TreeTool.findChildren(classNode);
+        }
+        return needToAddNode;
     }
 
     @Description("移除空模块节点")
@@ -274,16 +303,15 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
             navigation.setAction(event -> mn.getValue().getPsiElement().navigate(true));
             group.add(navigation);
 
-            CommonAction copyFullPath = new CommonAction(Bundle.get("http.tree.right.item.copy.full.path"), "", AllIcons.Actions.Copy);
+            CopyAction copyFullPath = new CopyAction(Bundle.get("http.tree.right.item.copy.full.path"));
             copyFullPath.setAction(event -> {
                 HttpConfig config = serviceTool.getDefaultHttpConfig();
-                String protocol = config.getProtocol().name().toLowerCase();
-                SystemTool.copy2Clipboard(protocol + "://" + config.getHostValue() + mn.getFragment());
+                SystemTool.copy2Clipboard(config.getProtocol().name().toLowerCase() + "://" + config.getHostValue() + mn.getFragment());
                 NotifyService.instance(project).info(Bundle.get("http.tree.right.item.copy.full.msg"));
             });
             group.add(copyFullPath);
 
-            CommonAction copyApiPath = new CommonAction(Bundle.get("http.tree.right.item.copy.api.path"), "", AllIcons.Actions.Copy);
+            CopyAction copyApiPath = new CopyAction(Bundle.get("http.tree.right.item.copy.api.path"));
             copyApiPath.setAction(event -> {
                 SystemTool.copy2Clipboard(mn.getFragment());
                 NotifyService.instance(project).info(Bundle.get("http.tree.right.item.copy.api.msg"));

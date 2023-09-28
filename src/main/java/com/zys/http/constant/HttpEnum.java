@@ -57,4 +57,13 @@ public interface HttpEnum {
         @Description("注解上说明功能的属性")
         private final String value;
     }
+
+
+    @Description("导出类型")
+    enum ExportEnum {
+        /**
+         * 指定环境、所有环境, 所有 API
+         */
+        SPECIFY_ENV, ALL_ENV, API
+    }
 }

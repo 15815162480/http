@@ -27,6 +27,7 @@ import com.zys.http.tool.HttpClient;
 import com.zys.http.tool.HttpServiceTool;
 import com.zys.http.tool.PsiTool;
 import com.zys.http.tool.convert.ParamConvert;
+import com.zys.http.tool.ui.DialogTool;
 import com.zys.http.ui.dialog.EditorDialog;
 import com.zys.http.ui.editor.CustomEditor;
 import com.zys.http.ui.icon.HttpIcons;
@@ -176,7 +177,10 @@ public class RequestPanel extends JBSplitter {
             if (httpMethod == null) {
                 httpMethod = HttpMethod.GET;
             }
-
+            if (Objects.isNull(paramPropertyMap) || CharSequenceUtil.isBlank(url)) {
+                DialogTool.error(Bundle.get("http.dialog.error.no.selected"));
+                return;
+            }
             for (Map.Entry<String, ParamProperty> entry : paramPropertyMap.entrySet()) {
                 String k = entry.getKey();
                 ParamProperty v = entry.getValue();

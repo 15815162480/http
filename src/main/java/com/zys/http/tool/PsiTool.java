@@ -164,15 +164,6 @@ public class PsiTool {
 
     // ========================== 请求参数 ==========================================
 
-    @Description("获取方法的所有参数")
-    private static List<PsiParameter> getPsiParameterOfPsiMethod(PsiMethod psiMethod) {
-        PsiParameterList parameterList = psiMethod.getParameterList();
-        if (parameterList.isEmpty()) {
-            return Collections.emptyList();
-        }
-        return Arrays.asList(parameterList.getParameters());
-    }
-
     @Description("获取当前类的请求类型")
     public static HttpEnum.ContentType contentTypeHeader(@Nullable PsiClass psiClass) {
         if (Objects.isNull(psiClass)) {
@@ -260,14 +251,6 @@ public class PsiTool {
 
         public void addFieldSetter(@NotNull PsiMethod fieldSetter) {
             this.fieldSetters.add(fieldSetter);
-        }
-
-        public boolean emptyGetter() {
-            return fieldGetters.isEmpty();
-        }
-
-        public boolean emptySetter() {
-            return fieldSetters.isEmpty();
         }
     }
 }

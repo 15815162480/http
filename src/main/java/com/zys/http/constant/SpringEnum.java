@@ -30,8 +30,7 @@ public interface SpringEnum {
     enum Controller {
         CONTROLLER("org.springframework.stereotype.Controller"),
         REST_CONTROLLER("org.springframework.web.bind.annotation.RestController"),
-        RESPONSE_BODY("org.springframework.web.bind.annotation.ResponseBody"),
-        ;
+        RESPONSE_BODY("org.springframework.web.bind.annotation.ResponseBody");
 
         private final String clazz;
 

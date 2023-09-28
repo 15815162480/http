@@ -15,7 +15,6 @@ import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
@@ -45,17 +44,6 @@ public class EnvHeaderTable extends AbstractTable {
             this.selectEnv = serviceTool.getSelectedEnv();
         }
         init();
-    }
-
-    @Description("请求头是否重复")
-    private static boolean isDuplicateData(JTable table, String header) {
-        for (int row = 0; row < table.getRowCount() - 1; row++) {
-            String existingHeader = (String) table.getValueAt(row, 0);
-            if (header.equals(existingHeader)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     @Override
@@ -125,7 +113,7 @@ public class EnvHeaderTable extends AbstractTable {
             int updateCol = e.getColumn();
             if (e.getType() == TableModelEvent.UPDATE) {// 最新一行且最新一行的请求头为空, 清除最新一行
                 String header = (String) model.getValueAt(updateRow, updateCol);
-                if (CharSequenceUtil.isEmpty(header) || isDuplicateData(valueTable, header)) {
+                if (CharSequenceUtil.isEmpty(header)) {
                     model.removeRow(updateRow);
                 }
             }

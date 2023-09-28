@@ -2,6 +2,7 @@ package com.zys.http.entity.tree;
 
 import com.zys.http.tool.ui.ThemeTool;
 import com.zys.http.ui.icon.HttpIcons;
+import jdk.jfr.Description;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
@@ -10,6 +11,7 @@ import lombok.Getter;
  * @since 2023-09-08
  */
 @Getter
+@Description("模块结点数据")
 @EqualsAndHashCode(callSuper = true)
 public class ModuleNodeData extends NodeData {
 

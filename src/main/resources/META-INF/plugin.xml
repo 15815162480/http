@@ -1,6 +1,6 @@
 <idea-plugin>
   <id>com.zys.http</id>
-  <version>1.2.0</version>
+  <version>1.2.2</version>
 
   <name>ApiTool</name>
 
@@ -40,18 +40,66 @@
       <li>默认环境是按 bootstrap.(properties、yaml、yml)、application.(properties、yaml、yml) 优先级顺序读取其中的 port</li>
     </ol>
     <br>
-     ]]></description>
+    ]]></description>
 
   <!-- 更新公告 -->
   <change-notes><![CDATA[
-     <b>1.2.1</b><br>
-     <ol>
-       <li>
-         feature: Response now can be viewed in a dialog, but edit it will not echo
-         <br>
-         新功能: 响应体能在一个新的对话框中查看, 但修改不会回显到原位置
-       </li>
-     </ol>
+    <b>1.2.2</b><br>
+    <ol>
+      <li>
+        Feature: Can set whether to generate a default environment and remove the default environment
+        <br>
+        新功能: 能够设置是否生成默认环境并删除生成的默认环境
+      </li>
+      <li>
+        Improve: Modify the default port when there is no "server.port" to 8080
+        <br>
+        优化: 修改没有 server.port 配置时的默认端口为 8080
+      </li>
+      <li>
+        Improve: Integration of node filtering functions
+        <br>
+        优化: 节点过滤功能整合
+      </li>
+      <li>
+        Fix bug: export postman data encoding error
+        <br>
+        bug修复: 导出 postman 数据编码问题
+      </li>
+      <li>
+        Fix bug: export postman data protocol, host, path lost
+        <br>
+        bug修复: 导出 postman 数据请求协议、请求地址、请求路径丢失
+      </li>
+      <li>
+        Improve: Change the window name to ApiTool
+        <br>
+        优化: 将窗口名修改为 ApiTool
+      </li>
+    </ol>
+    <b>1.2.1</b><br>
+    <ol>
+      <li>
+        feature: Ability to choose whether to show package nodes or class nodes
+        <br>
+        新功能: 能够选择是否展示包结点或类结点
+      </li>
+      <li>
+        feature: Response now can be viewed in a dialog, but edit it will not echo
+        <br>
+        新功能: 响应体能在一个新的对话框中查看, 但修改不会回显到原位置
+      </li>
+      <li>
+        fix bug: Remove request header and prohibit duplication
+        <br>
+        bug 修复: 移除请求头禁止重复
+      </li>
+      <li>
+        fix bug: No method node selected can still initiate a request
+        <br>
+        bug 修复: 没有选中节点仍然能够发起请求
+      </li>
+    </ol>
     <b>1.2.0</b><br>
     <ol>
       <li>
@@ -60,7 +108,8 @@
         新功能: 支持导出 Postman 环境配置、分模块 API 列表导出
       </li>
       <li>
-        feature: Expand and collapse function optimization, if there is selected node, only the selected nodes will be
+        feature: Expand and collapse function optimization, if there is selected node, only the selected nodes
+        will be
         expanded or collapse.
         <br>
         新功能: 展开、收起功能优化, 如果有选中节点, 则只会展开/收起选中的节点
@@ -156,12 +205,11 @@
   <depends>org.jetbrains.kotlin</depends>
 
   <extensions defaultExtensionNs="com.intellij">
-    <toolWindow id="http" secondary="true" anchor="right" icon="com.zys.http.ui.icon.HttpIcons.PLUGIN_ICON"
+    <toolWindow id="ApiTool" secondary="true" anchor="right" icon="com.zys.http.ui.icon.HttpIcons.PLUGIN_ICON"
                 doNotActivateOnStart="true" factoryClass="com.zys.http.HttpMainWindowFactory"
     />
     <projectService serviceImplementation="com.zys.http.service.HttpService"/>
     <projectService serviceImplementation="com.zys.http.service.NotifyService"/>
     <notificationGroup id="http.notify" displayType="BALLOON" toolWindowId="http"/>
   </extensions>
-
 </idea-plugin>
