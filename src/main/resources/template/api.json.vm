@@ -64,7 +64,22 @@
                       ## url 参数
                     "url": {
                         ## 请求地址
-                      "raw": "{{protocol}}://{{hostValue}}$method.uri"
+                      "raw": "{{protocol}}://{{hostValue}}$method.uri",
+                      "protocol": "{{protocol}}",
+                      "host": [
+                        "{{hostValue}}"
+                      ]
+                        #if($method.uri && $method.uri.length() > 0)
+                        ,
+                          "path": [
+                              #foreach($p in $method.uri.split("/"))
+                                  #if($p && $p.length() > 0)
+                                      "$p"#if(!$foreach.last), #end
+                                  #end
+                              #end
+                          ]
+                        #end
+
                         #set($queryKey =$method.queryKey)
                         #if($queryKey && $queryKey.size() > 0)
                         ,

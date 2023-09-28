@@ -112,7 +112,7 @@ public class VelocityTool {
                 for (MethodNode methodNode : methodNodes) {
                     item = new MethodItem();
                     MethodNodeData value = methodNode.getValue();
-                    item.setUri(methodNode.getFragment());
+                    item.setUri(value.getNodeName());
                     // 请求方式
                     HttpEnum.HttpMethod httpMethod = value.getHttpMethod();
                     item.setMethod(httpMethod.name());
@@ -185,12 +185,12 @@ public class VelocityTool {
 
     private static void renderTemplate(VelocityContext context, String templateFilePath, String templateExportFilename, String filename, String exportPath) throws IOException {
         // 加载模板
-        Template template = ENGINE.getTemplate(templateFilePath);
+        Template template = ENGINE.getTemplate(templateFilePath, StandardCharsets.UTF_8.name());
         // 加载模板
         String fileName = CharSequenceUtil.format(templateExportFilename, filename);
         try (
                 StringWriter sw = new StringWriter();
-                FileWriter fw = new FileWriter(exportPath + "/" + fileName)
+                FileWriter fw = new FileWriter(exportPath + "/" + fileName, StandardCharsets.UTF_8)
         ) {
             template.merge(context, sw);
             fw.write(sw.toString());
