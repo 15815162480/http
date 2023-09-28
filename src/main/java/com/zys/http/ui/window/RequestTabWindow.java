@@ -207,7 +207,7 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
 
         HttpConfigExportAction exportAllApi = new HttpConfigExportAction(Bundle.get("http.action.export.all.api"), HttpEnum.ExportEnum.API);
         HttpApiTreePanel treePanel = requestPanel.getHttpApiTreePanel();
-        exportAll.initAction(treePanel.getModuleControllerMap(), treePanel.getMethodNodeMap(), null);
+        exportAllApi.initAction(treePanel.getModuleControllerMap(), treePanel.getMethodNodeMap(), null);
         exportGroup.add(exportAllApi);
 
         return exportGroup;

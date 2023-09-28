@@ -59,7 +59,7 @@ public class HttpConfigExportAction extends ExportAction {
                 HttpConfig config = serviceTool.getDefaultHttpConfig();
                 selectedFile = createFileChooser(project);
                 String path = selectedFile.getPath();
-                String exportEnv = Objects.isNull(selectedEnv)? serviceTool.getSelectedEnv(): selectedEnv;
+                String exportEnv = Objects.isNull(selectedEnv) ? serviceTool.getSelectedEnv() : selectedEnv;
                 switch (exportEnum) {
                     case API -> {
                         if (moduleControllerMap != null) {
@@ -90,7 +90,7 @@ public class HttpConfigExportAction extends ExportAction {
         FileChooserFactory.getInstance().createFileChooser(descriptor, project, null);
         VirtualFile selectedFile = FileChooser.chooseFile(descriptor, project, null);
         if (Objects.isNull(selectedFile)) {
-            NotifyService.instance(project).error("http.message.export.unselect.folder");
+            NotifyService.instance(project).error(Bundle.get("http.message.export.unselect.folder"));
             throw new IOException("A");
         }
         return selectedFile;

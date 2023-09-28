@@ -16,6 +16,7 @@ public class NodeShowFilterPopup extends AbstractFilterPopup<String> {
             Bundle.get("http.filter.popup.node.show.package"),
             Bundle.get("http.filter.popup.node.show.class")
     );
+
     public NodeShowFilterPopup() {
         super(SETTING_VALUES);
     }

@@ -10,6 +10,6 @@ import jdk.jfr.Description;
 @Description("删除操作")
 public class RemoveAction extends CustomAction {
     public RemoveAction(String text) {
-        super(text,"Remove", HttpIcons.General.REMOVE);
+        super(text, "Remove", HttpIcons.General.REMOVE);
     }
 }
