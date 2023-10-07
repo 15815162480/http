@@ -26,7 +26,7 @@ public class HttpMainWindowFactory implements ToolWindowFactory, DumbAware {
 
         RequestTabWindow requestTabWindow = new RequestTabWindow(new RequestPanel(project));
         EnvironmentTabWindow environmentTabWindow = new EnvironmentTabWindow(new EnvListTable(project));
-        requestTabWindow.setGenerateDefaultCb(v-> environmentTabWindow.reloadEnv());
+        requestTabWindow.setGenerateDefaultCb(v -> environmentTabWindow.reloadEnv());
 
         Content apiContent = contentFactory.createContent(requestTabWindow, Bundle.get("http.window.api"), false);
         toolWindow.getContentManager().addContent(apiContent);
