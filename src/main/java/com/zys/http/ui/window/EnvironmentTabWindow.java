@@ -21,10 +21,10 @@ public class EnvironmentTabWindow extends SimpleToolWindowPanel {
     public EnvironmentTabWindow(EnvListTable envListTable) {
         super(true, true);
         this.envListTable = envListTable;
+        envListTable.setEditOKCb(v -> reloadEnv());
         JComponent component = envListTable.getToolbar().getComponent();
         component.setBorder(JBUI.Borders.customLine(UIConstant.BORDER_COLOR, 0, 0, 1, 0));
         setContent(envListTable);
-        reloadEnv();
     }
 
     public void reloadEnv() {
@@ -34,6 +34,5 @@ public class EnvironmentTabWindow extends SimpleToolWindowPanel {
                 envListTable.reloadTableModel();
             }
         }, 800);
-
     }
 }
