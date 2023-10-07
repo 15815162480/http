@@ -68,9 +68,6 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
     @Description("选中方法节点后的回调")
     private transient Consumer<MethodNode> chooseCallback;
 
-    @Setter
-    @Getter
-    private boolean isGenerateDefault = true;
 
     public HttpApiTreePanel(Project project) {
         super(new SimpleTree());
@@ -125,7 +122,7 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
             controllers = ProjectTool.getModuleControllers(project, m);
             if (!controllers.isEmpty()) {
                 moduleControllerMap.put(moduleName, controllers);
-                if (isGenerateDefault) {
+                if (serviceTool.getGenerateDefault()) {
                     String host = "127.0.0.1:" + ProjectTool.getModulePort(project, m);
                     serviceTool.putHttpConfig(moduleName, new HttpConfig(HttpEnum.Protocol.HTTP, host, Collections.emptyMap()));
                 } else {

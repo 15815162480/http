@@ -58,4 +58,12 @@ public class HttpServiceTool {
     public void setSelectedEnv(String key) {
         httpService.setSelectedEnv(key);
     }
+
+    public void refreshGenerateDefault() {
+        httpService.setGenerateDefault(!httpService.getGenerateDefault());
+    }
+
+    public boolean getGenerateDefault() {
+        return httpService.getGenerateDefault();
+    }
 }
