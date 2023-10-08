@@ -17,7 +17,9 @@ import com.zys.http.action.group.NodeFilterActionGroup;
 import com.zys.http.action.group.SelectActionGroup;
 import com.zys.http.constant.HttpEnum;
 import com.zys.http.service.Bundle;
+import com.zys.http.tool.Entrust;
 import com.zys.http.tool.HttpServiceTool;
+import com.zys.http.tool.SystemTool;
 import com.zys.http.ui.dialog.EnvAddOrEditDialog;
 import com.zys.http.ui.icon.HttpIcons;
 import com.zys.http.ui.popup.MethodFilterPopup;
@@ -29,10 +31,7 @@ import lombok.Setter;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.*;
-import java.util.function.Consumer;
 
 /**
  * @author zys
@@ -52,7 +51,7 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
 
     @Setter
     @Description("是否生成默认")
-    private transient Consumer<Void> generateDefaultCb;
+    private transient Entrust generateDefaultCb;
 
     private final transient ExecutorService executorTaskBounded = new ThreadPoolExecutor(
             1,
@@ -107,12 +106,7 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
         refreshAction.setAction(event -> {
             requestPanel.reload(null);
             requestPanel.getHttpApiTreePanel().clear();
-            new Timer().schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    refreshTree(false);
-                }
-            }, 500);
+            SystemTool.schedule(() -> refreshTree(false), 500);
         });
         group.add(refreshAction);
 
@@ -151,14 +145,8 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
             serviceTool.refreshGenerateDefault();
             commonAction.getTemplatePresentation().setIcon(serviceTool.getGenerateDefault() ? HttpIcons.General.DEFAULT : null);
             requestPanel.getHttpApiTreePanel().clear();
-            generateDefaultCb.accept(null);
-            new Timer().schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    refreshTree(false);
-                }
-            }, 500);
-
+            generateDefaultCb.run();
+            SystemTool.schedule(() -> refreshTree(false), 500);
         });
         settingActionGroup.setCommonAction(commonAction);
         group.add(settingActionGroup);

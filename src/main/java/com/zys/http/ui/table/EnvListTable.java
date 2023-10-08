@@ -9,6 +9,7 @@ import com.zys.http.action.*;
 import com.zys.http.constant.HttpEnum;
 import com.zys.http.entity.HttpConfig;
 import com.zys.http.service.Bundle;
+import com.zys.http.tool.Entrust;
 import com.zys.http.ui.dialog.EnvAddOrEditDialog;
 import jdk.jfr.Description;
 import lombok.Setter;
@@ -20,7 +21,6 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Consumer;
 
 /**
  * @author zys
@@ -31,7 +31,7 @@ public class EnvListTable extends AbstractTable {
 
     @Setter
     @Description("修改选中环境回调")
-    private transient Consumer<Void> editOKCb;
+    private transient Entrust editOKCb;
 
     public EnvListTable(Project project) {
         super(project, false);
@@ -91,7 +91,7 @@ public class EnvListTable extends AbstractTable {
                 int selectedRow = valueTable.getSelectedRow();
                 model.setValueAt(config.getProtocol().toString(), selectedRow, 1);
                 model.setValueAt(config.getHostValue(), selectedRow, 2);
-                editOKCb.accept(null);
+                editOKCb.run();
             });
             dialog.show();
         });
