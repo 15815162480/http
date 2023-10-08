@@ -38,6 +38,7 @@
       <li>双击方法结点直接跳转到对应的方法定义</li>
       <li>可配置多环境</li>
       <li>默认环境是按 bootstrap.(properties、yaml、yml)、application.(properties、yaml、yml) 优先级顺序读取其中的 port</li>
+      <li><a href="https://gitee.com/zhou-sheng1/http/issues/I851R7">关于导出 postman 数据不兼容 ApiPost 和 ApiFox 的问题</a></li>
     </ol>
     <br>
     ]]></description>
@@ -109,8 +110,7 @@
       </li>
       <li>
         feature: Expand and collapse function optimization, if there is selected node, only the selected nodes
-        will be
-        expanded or collapse.
+        will be expanded or collapse.
         <br>
         新功能: 展开、收起功能优化, 如果有选中节点, 则只会展开/收起选中的节点
       </li>
