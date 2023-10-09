@@ -11,7 +11,6 @@ import jdk.jfr.Description;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -21,7 +20,6 @@ import java.util.function.Consumer;
  */
 @Description("选择环境菜单组")
 public class SelectActionGroup extends DefaultActionGroup {
-
 
     @Setter
     private Consumer<String> callback;
@@ -34,7 +32,7 @@ public class SelectActionGroup extends DefaultActionGroup {
     @Override
     @Description("实现动态菜单的关键方法")
     public AnAction @NotNull [] getChildren(AnActionEvent e) {
-        HttpServiceTool tool = HttpServiceTool.getInstance(Objects.requireNonNull(Objects.requireNonNull(e).getProject()));
+        HttpServiceTool tool = HttpServiceTool.getInstance(e);
         Set<String> set = tool.getHttpConfigs().keySet();
         AnAction[] anActions = new AnAction[set.size()];
 

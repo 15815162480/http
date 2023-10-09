@@ -25,6 +25,7 @@ import java.util.Objects;
  * @author zys
  * @since 2023-09-03
  */
+@Description("带有工具栏的表格")
 public abstract class AbstractTable extends JPanel {
 
     protected final transient Project project;
@@ -36,14 +37,15 @@ public abstract class AbstractTable extends JPanel {
     @Getter
     @Description("数据展示表格")
     protected JBTable valueTable;
+
     @Getter
     @Description("表格上方的工具栏")
     private transient ActionToolbar toolbar;
 
     protected AbstractTable(Project project, boolean cellEditable) {
         super(new BorderLayout(0, 0));
-        this.cellEditable = cellEditable;
         this.project = project;
+        this.cellEditable = cellEditable;
         this.serviceTool = HttpServiceTool.getInstance(project);
     }
 
@@ -58,7 +60,7 @@ public abstract class AbstractTable extends JPanel {
     }
 
 
-    @Description("初始化表格各个选项")
+    @Description("初始化表格")
     private JBScrollPane initTable() {
         valueTable = new JBTable(this.initTableModel()) {
             @Override

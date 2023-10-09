@@ -318,6 +318,8 @@ public class RequestPanel extends JBSplitter {
             this.parameterTable.reloadTableModel();
             this.hostTextField.setText("");
             this.httpMethodComboBox.setSelectedItem(HttpMethod.GET);
+            this.bodyEditor.setText("");
+            this.responseEditor.setText("");
         }
     }
 

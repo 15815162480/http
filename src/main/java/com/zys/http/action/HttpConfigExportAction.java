@@ -62,7 +62,7 @@ public class HttpConfigExportAction extends ExportAction {
                 String exportEnv = Objects.isNull(selectedEnv) ? serviceTool.getSelectedEnv() : selectedEnv;
                 switch (exportEnum) {
                     case API -> {
-                        if (moduleControllerMap != null) {
+                        if (Objects.nonNull(moduleControllerMap)) {
                             VelocityTool.exportAllModuleApi(moduleControllerMap, methodNodeMap, path);
                         }
                     }

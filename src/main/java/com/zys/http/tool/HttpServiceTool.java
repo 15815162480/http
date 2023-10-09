@@ -1,5 +1,6 @@
 package com.zys.http.tool;
 
+import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import com.zys.http.constant.HttpEnum;
 import com.zys.http.entity.HttpConfig;
@@ -28,6 +29,10 @@ public class HttpServiceTool {
 
     public static HttpServiceTool getInstance(@NotNull Project project) {
         return new HttpServiceTool(project);
+    }
+
+    public static HttpServiceTool getInstance(@NotNull AnActionEvent e) {
+        return new HttpServiceTool(Objects.requireNonNull(e.getProject()));
     }
 
     public Map<String, HttpConfig> getHttpConfigs() {

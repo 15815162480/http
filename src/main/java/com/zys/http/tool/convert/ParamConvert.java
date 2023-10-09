@@ -88,7 +88,7 @@ public class ParamConvert {
                 }
             }
         }
-        Object paramDefaultTypeValue = DataTypeTool.getDefaultValueOfPsiType(parameterType);
+        Object paramDefaultTypeValue = DataTypeTool.getDefaultValueOfPsiType(parameterType, parameter.getProject());
         if (Objects.nonNull(paramDefaultTypeValue)) {
             if (paramDefaultTypeValue instanceof Map<?, ?> paramMap) {
                 PsiAnnotation requestBodyAnno = parameter.getAnnotation(SpringEnum.Param.REQUEST_BODY.getClazz());

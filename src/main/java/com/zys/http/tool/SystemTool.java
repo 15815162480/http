@@ -29,12 +29,12 @@ public class SystemTool {
     }
 
     @Description("延时任务")
-    public static void schedule(Entrust entrust, int delay) {
+    public static void schedule(Runnable runnable, int delay) {
         Timer timer = new Timer();
         TimerTask task1 = new TimerTask() {
             @Override
             public void run() {
-                entrust.run();
+                runnable.run();
             }
         };
         timer.schedule(task1, delay);

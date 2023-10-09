@@ -1,19 +1,22 @@
 package com.zys.http.tool;
 
 import com.intellij.psi.*;
+import com.intellij.psi.PsiModifier.ModifierConstant;
 import com.zys.http.constant.HttpEnum;
 import com.zys.http.constant.SpringEnum;
 import jdk.jfr.Description;
 import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
+
+import static com.zys.http.tool.PsiTool.Method.hasPublicModifier;
+import static com.zys.http.tool.PsiTool.Method.hasStaticModifier;
 
 /**
  * @author zhou ys
@@ -23,8 +26,6 @@ import java.util.stream.Stream;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class PsiTool {
 
-    private static final String GETTER_PREFIX = "get";
-    private static final String SETTER_PREFIX = "set";
 
 
     @Description("获取 Controller 上 RequestMapping 的请求路径")
@@ -43,7 +44,7 @@ public class PsiTool {
     }
 
     @Description("获取 Controller 上 @Api 或 @Tag/方法上的 @ApiOperation 或 @Operation")
-    public static String getSwaggerAnnotation(@NotNull PsiTarget psiTarget, String prefix) {
+    public static String getSwaggerAnnotation(@NotNull PsiTarget psiTarget, HttpEnum.AnnotationPlace place) {
         PsiModifierList modifierList;
         if (psiTarget instanceof PsiClass psiClass) {
             modifierList = psiClass.getModifierList();
@@ -56,7 +57,7 @@ public class PsiTool {
             return "";
         }
         List<HttpEnum.Swagger> swagger = new ArrayList<>(List.of(HttpEnum.Swagger.values())).stream()
-                .filter(o -> o.name().startsWith(prefix))
+                .filter(o -> o.getAnnotationPlace().equals(place))
                 .toList();
         List<PsiAnnotation> list = Stream.of(modifierList.getAnnotations())
                 .filter(o -> swagger.stream().map(HttpEnum.Swagger::getClazz).toList().contains(o.getQualifiedName()))
@@ -93,74 +94,6 @@ public class PsiTool {
         return initializerList.isEmpty() ? "" : initializerList.get(0).getText().replace("\"", "");
     }
 
-    @Description("获取指定 PsiClass 中所有的字段及对应的 Getter/Setter")
-    public static List<FieldMethod> getPsiMethods(@NotNull PsiClass psiClass) {
-        Map<String, FieldMethod> map = Arrays.stream(psiClass.getAllFields())
-                .filter(o -> !hasStaticModifier(o.getModifierList()))
-                .filter(o -> !hasFinalModifier(o.getModifierList()))
-                .collect(Collectors.toMap(PsiField::getName, o -> new FieldMethod(o.getName(), o)));
-
-        List<PsiMethod> methods = Arrays.stream(psiClass.getAllMethods())
-                // 过滤出长度大于 3 的方法
-                .filter(o -> o.getName().length() > 3)
-                // 过滤出以 get 和 set 开头的方法
-                .filter(o -> methodNameStartWithGetOrSet(o.getName()))
-                // 过滤出有 public 修饰的方法
-                .filter(o -> hasPublicModifier(o.getModifierList()))
-                // 过滤出没有 static 修饰的方法
-                .filter(o -> !hasStaticModifier(o.getModifierList()))
-                .toList();
-
-        FieldMethod fieldMethod;
-        for (PsiMethod method : methods) {
-            String name = method.getName();
-            // 获取字段名
-            final String fieldName = name.substring(3, 4).toLowerCase() + name.substring(4);
-            // 如果 map 中有对应的字段, 说明不为 null
-            fieldMethod = map.get(fieldName);
-            if (Objects.nonNull(fieldMethod)) {
-                PsiField field = fieldMethod.getField();
-                if (Objects.nonNull(field) && hasPublicModifier(field.getModifierList())) {
-                    // 如果字段 Field 不为空且是 public 修饰则跳过检查 Getter|Setter
-                    continue;
-                }
-            } else {
-                PsiField field = psiClass.findFieldByName(fieldName, true);
-                // 如果 field 不为 null, 且没有 static 和 final 修饰
-                if (Objects.nonNull(field) && hasNotStaticFinalModifier(field.getModifierList())) {
-                    fieldMethod = new FieldMethod(fieldName, field);
-                    map.put(fieldName, fieldMethod);
-                }
-            }
-            if (Objects.nonNull(fieldMethod)) {
-                if (name.startsWith(GETTER_PREFIX)) {
-                    fieldMethod.addFieldGetter(method);
-                } else {
-                    fieldMethod.addFieldSetter(method);
-                }
-            }
-        }
-        return new ArrayList<>(map.values());
-    }
-
-    @Description("获取指定类的包名")
-    public static @Nullable String getPackageName(@NotNull PsiClass psiClass) {
-        String qualifiedName = psiClass.getQualifiedName();
-        if (qualifiedName == null) {
-            return null;
-        }
-
-        String fileName = psiClass.getName();
-        if (fileName == null) {
-            return null;
-        }
-
-        if (qualifiedName.endsWith(fileName)) {
-            return qualifiedName.substring(0, qualifiedName.lastIndexOf('.'));
-        }
-
-        return null;
-    }
 
     // ========================== 请求参数 ==========================================
 
@@ -191,66 +124,128 @@ public class PsiTool {
         return Objects.isNull(responseBody) ? null : HttpEnum.ContentType.APPLICATION_JSON;
     }
 
+    @Description("类操作工具类")
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    public static class Class {
 
-    @Description("方法名是否以 get 或 set 开头")
-    private static boolean methodNameStartWithGetOrSet(String name) {
-        return name.startsWith(GETTER_PREFIX) || name.startsWith(SETTER_PREFIX);
-    }
-
-    private static boolean hasPublicModifier(@Nullable PsiModifierList target) {
-        return hasModifier(target, PsiModifier.PUBLIC);
-    }
-
-    private static boolean hasStaticModifier(@Nullable PsiModifierList target) {
-        return hasModifier(target, PsiModifier.STATIC);
-    }
-
-    private static boolean hasFinalModifier(@Nullable PsiModifierList target) {
-        return hasModifier(target, PsiModifier.FINAL);
-    }
-
-    private static boolean hasNotStaticFinalModifier(@Nullable PsiModifierList target) {
-        return !(hasStaticModifier(target) && hasFinalModifier(target));
-    }
-
-    @Description("是否有指定的修饰符")
-    private static boolean hasModifier(@Nullable PsiModifierList target, @PsiModifier.ModifierConstant @NotNull String modifier) {
-        return Objects.nonNull(target) && target.hasModifierProperty(modifier);
-    }
-
-    @Getter
-    public static class FieldMethod {
-
-        @Description("Getter 方法, 可能有多个")
-        private final List<PsiMethod> fieldGetters = new ArrayList<>();
-
-        @Description("Setter 方法, 可能有多个")
-        private final List<PsiMethod> fieldSetters = new ArrayList<>();
-
-        @Setter
-        private String fieldName;
-
-        @Setter
-        private PsiField field;
-
-        @Setter
-        @Description("Getter 的无参方法")
-        private PsiMethod noParameterMethodOfGetter;
-
-        public FieldMethod(@NotNull String fieldName, @Nullable PsiField field) {
-            this.fieldName = fieldName;
-            this.field = field;
-        }
-
-        public void addFieldGetter(@NotNull PsiMethod fieldGetter) {
-            this.fieldGetters.add(fieldGetter);
-            if (fieldGetter.getParameterList().isEmpty()) {
-                this.noParameterMethodOfGetter = fieldGetter;
+        @Description("获取指定类的包名")
+        public static @Nullable String getPackageName(@NotNull PsiClass psiClass) {
+            String qualifiedName = psiClass.getQualifiedName();
+            if (Objects.isNull(qualifiedName)) {
+                return null;
             }
+
+            String fileName = psiClass.getName();
+            if (Objects.isNull(fileName)) {
+                return null;
+            }
+
+            if (qualifiedName.endsWith(fileName)) {
+                return qualifiedName.substring(0, qualifiedName.lastIndexOf('.'));
+            }
+
+            return null;
+        }
+    }
+
+    @Description("方法操作工具类")
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    public static class Method {
+        private static final String GETTER_PREFIX = "get";
+        private static final String SETTER_PREFIX = "set";
+
+        @Description("获取对象属性对应的 getter 和 setter")
+        public static List<PsiMethod> getPropertyGetterAndSetter(@NotNull PsiField psiField, @NotNull List<PsiMethod> propertiesMethods) {
+            if (propertiesMethods.isEmpty()) {
+                return Collections.emptyList();
+            }
+            String fieldName = psiField.getName();
+            PsiType fieldType = psiField.getType();
+            String targetFieldName = fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
+            return propertiesMethods.stream().filter(m -> m.getName().endsWith(targetFieldName))
+                    .filter(m -> {
+                        String methodName = m.getName();
+                        int parametersCount = m.getParameterList().getParametersCount();
+                        if (methodName.startsWith(GETTER_PREFIX)) {
+                            // getter 应是无参且返回值类型与字段类型一致
+                            return fieldType.equals(m.getReturnType()) && parametersCount == 0;
+                        }
+
+                        if (methodName.startsWith(SETTER_PREFIX) && parametersCount == 1) {
+                            // setter 应是单个参数的且参数类型与字段类型一致
+                            PsiParameter parameter = m.getParameterList().getParameters()[0];
+                            return fieldType.equals(parameter.getType());
+                        }
+                        return false;
+                    })
+                    .toList();
         }
 
-        public void addFieldSetter(@NotNull PsiMethod fieldSetter) {
-            this.fieldSetters.add(fieldSetter);
+        @Description("方法名是否以 get 或 set 开头")
+        public static boolean methodNameStartWithGetOrSet(String name) {
+            return name.startsWith(GETTER_PREFIX) || name.startsWith(SETTER_PREFIX);
+        }
+
+        @Description("是否有 static 修饰")
+        public static boolean hasStaticModifier(@Nullable PsiModifierList target) {
+            return hasModifier(target, PsiModifier.STATIC);
+        }
+
+        @Description("是否有 final 修饰")
+        public static boolean hasFinalModifier(@Nullable PsiModifierList target) {
+            return hasModifier(target, PsiModifier.FINAL);
+        }
+
+        @Description("是否有 private 修饰")
+        public static boolean hasPrivateModifier(@Nullable PsiModifierList target) {
+            return hasModifier(target, PsiModifier.PRIVATE);
+        }
+
+        @Description("是否有 protected 修饰")
+        public static boolean hasProtectedModifier(@Nullable PsiModifierList target) {
+            return hasModifier(target, PsiModifier.PROTECTED);
+        }
+
+        @Description("是否有 public 修饰")
+        public static boolean hasPublicModifier(@Nullable PsiModifierList target) {
+            return hasModifier(target, PsiModifier.PUBLIC);
+        }
+
+        @Description("是否有指定的修饰符")
+        private static boolean hasModifier(@Nullable PsiModifierList target, @ModifierConstant @NotNull String modifier) {
+            return Objects.nonNull(target) && target.hasModifierProperty(modifier);
+        }
+    }
+
+    @Description("字段操作工具类")
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    public static class Field {
+        @Description("获取类中所有对象属性, 无 static 和 public 修饰(标准的 JavaBean)")
+        public static List<PsiField> getAllObjectPropertiesWithoutStaticAndPublic(@NotNull PsiClass psiClass) {
+            return Arrays.stream(psiClass.getAllFields())
+                    .filter(field -> !hasStaticModifier(field.getModifierList()))
+                    .filter(field -> !hasPublicModifier(field.getModifierList()))
+                    .toList();
+        }
+
+        @Description("获取类中所有类属性, 有 static 修饰")
+        public static List<PsiField> getAllClassPropertiesWithStatic(@NotNull PsiClass psiClass) {
+            return Arrays.stream(psiClass.getAllFields())
+                    .filter(field -> hasStaticModifier(field.getModifierList()))
+                    .toList();
+        }
+    }
+
+    @Description("泛型操作工具类")
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    public static class Generics {
+        private static final Pattern GENERICS_PATTERN = Pattern.compile("<(.+?)>");
+
+        @Description("获取泛型")
+        public static String getGenericsType(@NotNull PsiType psiType) {
+            String canonicalText = psiType.getCanonicalText();
+            Matcher matcher = GENERICS_PATTERN.matcher(canonicalText);
+            return matcher.find() ? matcher.group(1) : "";
         }
     }
 }

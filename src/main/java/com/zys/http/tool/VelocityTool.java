@@ -101,7 +101,7 @@ public class VelocityTool {
             Map<String, List<MethodItem>> methodMap = new HashMap<>();
             for (PsiClass controller : controllers) {
                 HttpEnum.ContentType contentType = PsiTool.contentTypeHeader(controller);
-                String classSwagger = PsiTool.getSwaggerAnnotation(controller, "CLASS_");
+                String classSwagger = PsiTool.getSwaggerAnnotation(controller, HttpEnum.AnnotationPlace.CLASS);
                 classSwagger = CharSequenceUtil.isEmpty(classSwagger) ? controller.getName() : classSwagger;
                 List<MethodNode> methodNodes = methodNodeMap.get(controller);
                 if (methodNodes.isEmpty()) {
@@ -119,7 +119,7 @@ public class VelocityTool {
 
                     // 请求名字
                     NavigatablePsiElement psiElement = value.getPsiElement();
-                    String methodSwagger = PsiTool.getSwaggerAnnotation((PsiTarget) psiElement, "METHOD_");
+                    String methodSwagger = PsiTool.getSwaggerAnnotation((PsiTarget) psiElement, HttpEnum.AnnotationPlace.METHOD);
                     methodSwagger = CharSequenceUtil.isEmpty(methodSwagger) ? methodNode.getFragment() : methodSwagger;
                     item.setName(methodSwagger);
 

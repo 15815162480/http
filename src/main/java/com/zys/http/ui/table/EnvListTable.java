@@ -9,7 +9,6 @@ import com.zys.http.action.*;
 import com.zys.http.constant.HttpEnum;
 import com.zys.http.entity.HttpConfig;
 import com.zys.http.service.Bundle;
-import com.zys.http.tool.Entrust;
 import com.zys.http.ui.dialog.EnvAddOrEditDialog;
 import jdk.jfr.Description;
 import lombok.Setter;
@@ -31,7 +30,7 @@ public class EnvListTable extends AbstractTable {
 
     @Setter
     @Description("修改选中环境回调")
-    private transient Entrust editOKCb;
+    private transient Runnable editOKCb;
 
     public EnvListTable(Project project) {
         super(project, false);
@@ -124,6 +123,4 @@ public class EnvListTable extends AbstractTable {
             });
         };
     }
-
-
 }

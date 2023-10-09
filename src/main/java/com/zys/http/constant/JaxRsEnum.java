@@ -11,6 +11,7 @@ import static com.zys.http.constant.HttpEnum.ParamUsage;
  * @author zys
  * @since 2023-08-19
  */
+@Description("JaxRs 不确定是否要接入")
 public interface JaxRsEnum {
 
     @Description("JaxRs 请求路径")
