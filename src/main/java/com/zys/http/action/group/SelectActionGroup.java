@@ -6,6 +6,7 @@ import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.zys.http.action.SelectAction;
 import com.zys.http.service.Bundle;
 import com.zys.http.tool.HttpServiceTool;
+import com.zys.http.tool.ui.ThemeTool;
 import com.zys.http.ui.icon.HttpIcons;
 import jdk.jfr.Description;
 import lombok.Setter;
@@ -45,7 +46,7 @@ public class SelectActionGroup extends DefaultActionGroup {
                 callback.accept(selectEnv);
             });
             if (s.equals(tool.getSelectedEnv())) {
-                action.setIcon(HttpIcons.General.DEFAULT);
+                action.setIcon(ThemeTool.isDark() ? HttpIcons.General.DEFAULT : HttpIcons.General.DEFAULT_LIGHT);
             }
             anActions[i++] = action;
         }

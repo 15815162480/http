@@ -9,7 +9,6 @@ import com.intellij.ui.content.ContentFactory;
 import com.zys.http.service.Bundle;
 import com.zys.http.ui.window.EnvironmentTabWindow;
 import com.zys.http.ui.window.RequestTabWindow;
-import com.zys.http.ui.window.panel.RequestPanel;
 import jdk.jfr.Description;
 import org.jetbrains.annotations.NotNull;
 
@@ -23,7 +22,7 @@ public class HttpMainWindowFactory implements ToolWindowFactory, DumbAware {
     public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
         ContentFactory contentFactory = ContentFactory.getInstance();
 
-        RequestTabWindow requestTabWindow = new RequestTabWindow(new RequestPanel(project));
+        RequestTabWindow requestTabWindow = new RequestTabWindow(project);
         EnvironmentTabWindow environmentTabWindow = new EnvironmentTabWindow(project);
         requestTabWindow.setGenerateDefaultCb(environmentTabWindow::reloadEnv);
 

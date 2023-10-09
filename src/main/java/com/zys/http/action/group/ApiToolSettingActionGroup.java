@@ -5,6 +5,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.zys.http.action.CommonAction;
 import com.zys.http.service.Bundle;
+import com.zys.http.tool.ui.ThemeTool;
 import com.zys.http.ui.icon.HttpIcons;
 import jdk.jfr.Description;
 import lombok.Setter;
@@ -22,7 +23,8 @@ public class ApiToolSettingActionGroup extends DefaultActionGroup {
     private CommonAction commonAction;
 
     public ApiToolSettingActionGroup() {
-        super(Bundle.get("http.action.group.setting"), "Setting", HttpIcons.General.SETTING);
+        super(Bundle.get("http.action.group.setting"), "Setting",
+                ThemeTool.isDark() ? HttpIcons.General.SETTING : HttpIcons.General.SETTING_LIGHT);
         setPopup(true);
     }
 

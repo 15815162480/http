@@ -15,9 +15,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-import static com.zys.http.tool.PsiTool.Method.hasPublicModifier;
-import static com.zys.http.tool.PsiTool.Method.hasStaticModifier;
-
 /**
  * @author zhou ys
  * @since 2023-09-07
@@ -25,8 +22,6 @@ import static com.zys.http.tool.PsiTool.Method.hasStaticModifier;
 @Description("读取项目的文件 Psi 工具类")
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class PsiTool {
-
-
 
     @Description("获取 Controller 上 RequestMapping 的请求路径")
     public static String getControllerPath(@NotNull PsiClass psiClass) {
@@ -95,8 +90,6 @@ public class PsiTool {
     }
 
 
-    // ========================== 请求参数 ==========================================
-
     @Description("获取当前类的请求类型")
     public static HttpEnum.ContentType contentTypeHeader(@Nullable PsiClass psiClass) {
         if (Objects.isNull(psiClass)) {
@@ -122,6 +115,36 @@ public class PsiTool {
                 .filter(o -> SpringEnum.Controller.RESPONSE_BODY.getClazz().equals(o.getQualifiedName()))
                 .findFirst().orElse(null);
         return Objects.isNull(responseBody) ? null : HttpEnum.ContentType.APPLICATION_JSON;
+    }
+
+    @Description("是否有 static 修饰")
+    public static boolean hasStaticModifier(@Nullable PsiModifierList target) {
+        return hasModifier(target, PsiModifier.STATIC);
+    }
+
+    @Description("是否有 final 修饰")
+    public static boolean hasFinalModifier(@Nullable PsiModifierList target) {
+        return hasModifier(target, PsiModifier.FINAL);
+    }
+
+    @Description("是否有 private 修饰")
+    public static boolean hasPrivateModifier(@Nullable PsiModifierList target) {
+        return hasModifier(target, PsiModifier.PRIVATE);
+    }
+
+    @Description("是否有 protected 修饰")
+    public static boolean hasProtectedModifier(@Nullable PsiModifierList target) {
+        return hasModifier(target, PsiModifier.PROTECTED);
+    }
+
+    @Description("是否有 public 修饰")
+    public static boolean hasPublicModifier(@Nullable PsiModifierList target) {
+        return hasModifier(target, PsiModifier.PUBLIC);
+    }
+
+    @Description("是否有指定的修饰符")
+    private static boolean hasModifier(@Nullable PsiModifierList target, @ModifierConstant @NotNull String modifier) {
+        return Objects.nonNull(target) && target.hasModifierProperty(modifier);
     }
 
     @Description("类操作工具类")
@@ -184,36 +207,6 @@ public class PsiTool {
         @Description("方法名是否以 get 或 set 开头")
         public static boolean methodNameStartWithGetOrSet(String name) {
             return name.startsWith(GETTER_PREFIX) || name.startsWith(SETTER_PREFIX);
-        }
-
-        @Description("是否有 static 修饰")
-        public static boolean hasStaticModifier(@Nullable PsiModifierList target) {
-            return hasModifier(target, PsiModifier.STATIC);
-        }
-
-        @Description("是否有 final 修饰")
-        public static boolean hasFinalModifier(@Nullable PsiModifierList target) {
-            return hasModifier(target, PsiModifier.FINAL);
-        }
-
-        @Description("是否有 private 修饰")
-        public static boolean hasPrivateModifier(@Nullable PsiModifierList target) {
-            return hasModifier(target, PsiModifier.PRIVATE);
-        }
-
-        @Description("是否有 protected 修饰")
-        public static boolean hasProtectedModifier(@Nullable PsiModifierList target) {
-            return hasModifier(target, PsiModifier.PROTECTED);
-        }
-
-        @Description("是否有 public 修饰")
-        public static boolean hasPublicModifier(@Nullable PsiModifierList target) {
-            return hasModifier(target, PsiModifier.PUBLIC);
-        }
-
-        @Description("是否有指定的修饰符")
-        private static boolean hasModifier(@Nullable PsiModifierList target, @ModifierConstant @NotNull String modifier) {
-            return Objects.nonNull(target) && target.hasModifierProperty(modifier);
         }
     }
 

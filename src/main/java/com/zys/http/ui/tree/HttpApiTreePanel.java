@@ -24,6 +24,7 @@ import com.zys.http.tool.HttpServiceTool;
 import com.zys.http.tool.ProjectTool;
 import com.zys.http.tool.PsiTool;
 import com.zys.http.tool.SystemTool;
+import com.zys.http.tool.ui.ThemeTool;
 import com.zys.http.tool.ui.TreeTool;
 import com.zys.http.ui.icon.HttpIcons;
 import com.zys.http.ui.tree.node.*;
@@ -296,7 +297,8 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
             expandAction.setAction(event -> treeExpand());
             group.add(expandAction);
         } else {
-            CommonAction navigation = new CommonAction(Bundle.get("http.tree.right.item.navigation"), "", HttpIcons.General.LOCATE);
+            CommonAction navigation = new CommonAction(Bundle.get("http.tree.right.item.navigation"), "",
+                    ThemeTool.isDark() ? HttpIcons.General.LOCATE : HttpIcons.General.LOCATE_LIGHT);
             navigation.setAction(event -> mn.getValue().getPsiElement().navigate(true));
             group.add(navigation);
 

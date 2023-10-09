@@ -28,6 +28,7 @@ import com.zys.http.tool.HttpServiceTool;
 import com.zys.http.tool.PsiTool;
 import com.zys.http.tool.convert.ParamConvert;
 import com.zys.http.tool.ui.DialogTool;
+import com.zys.http.tool.ui.ThemeTool;
 import com.zys.http.ui.dialog.EditorDialog;
 import com.zys.http.ui.editor.CustomEditor;
 import com.zys.http.ui.icon.HttpIcons;
@@ -268,7 +269,8 @@ public class RequestPanel extends JBSplitter {
         bodySelectPanel.add(label, BorderLayout.WEST);
         bodySelectPanel.add(bodyFileType, BorderLayout.CENTER);
         DefaultActionGroup group = new DefaultActionGroup();
-        CommonAction action = new CommonAction(Bundle.get("http.editor.body.action"), "", HttpIcons.General.FULL_SCREEN);
+        CommonAction action = new CommonAction(Bundle.get("http.editor.body.action"), "",
+                ThemeTool.isDark() ? HttpIcons.General.FULL_SCREEN : HttpIcons.General.FULL_SCREEN_LIGHT);
         action.setAction(e -> {
             CustomEditor editor = new CustomEditor(project, bodyEditor.getFileType());
             editor.setText(bodyEditor.getText());
@@ -292,7 +294,8 @@ public class RequestPanel extends JBSplitter {
         responseEditor.setBorder(JBUI.Borders.customLineLeft(UIConstant.EDITOR_BORDER_COLOR));
         respPanel.add(responseEditor, BorderLayout.CENTER);
         JPanel respExpandPanel = new JPanel(new BorderLayout(0, 0));
-        CommonAction action = new CommonAction(Bundle.get("http.editor.response.action"), "", HttpIcons.General.FULL_SCREEN);
+        CommonAction action = new CommonAction(Bundle.get("http.editor.response.action"), "",
+                ThemeTool.isDark() ? HttpIcons.General.FULL_SCREEN : HttpIcons.General.FULL_SCREEN_LIGHT);
         action.setAction(e -> {
             CustomEditor editor = new CustomEditor(project, responseEditor.getFileType());
             editor.setText(responseEditor.getText());

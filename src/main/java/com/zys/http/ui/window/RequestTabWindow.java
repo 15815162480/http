@@ -1,15 +1,18 @@
 package com.zys.http.ui.window;
 
+import com.intellij.ide.ui.LafManagerListener;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionPlaces;
 import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.SimpleToolWindowPanel;
+import com.intellij.util.messages.MessageBusConnection;
 import com.zys.http.action.*;
 import com.zys.http.action.group.ApiToolSettingActionGroup;
 import com.zys.http.action.group.EnvActionGroup;
@@ -19,6 +22,7 @@ import com.zys.http.constant.HttpEnum;
 import com.zys.http.service.Bundle;
 import com.zys.http.tool.HttpServiceTool;
 import com.zys.http.tool.SystemTool;
+import com.zys.http.tool.ui.ThemeTool;
 import com.zys.http.ui.dialog.EnvAddOrEditDialog;
 import com.zys.http.ui.icon.HttpIcons;
 import com.zys.http.ui.popup.MethodFilterPopup;
@@ -27,7 +31,9 @@ import com.zys.http.ui.tree.HttpApiTreePanel;
 import com.zys.http.ui.window.panel.RequestPanel;
 import jdk.jfr.Description;
 import lombok.Setter;
+import org.jetbrains.annotations.NotNull;
 
+import javax.swing.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.*;
@@ -61,10 +67,10 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
             new ThreadPoolExecutor.DiscardOldestPolicy()
     );
 
-    public RequestTabWindow(RequestPanel requestPanel) {
+    public RequestTabWindow(@NotNull Project project) {
         super(true, true);
-        this.requestPanel = requestPanel;
-        this.project = requestPanel.getProject();
+        this.project = project;
+        this.requestPanel = new RequestPanel(project);
         this.methodFilterPopup = new MethodFilterPopup(
                 Arrays.stream(HttpEnum.HttpMethod.values()).filter(o -> !o.equals(HttpEnum.HttpMethod.REQUEST))
                         .toList()
@@ -76,6 +82,12 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
         nodeShowFilterPopup.setChangeAllCb((list, b) -> refreshTree(true));
         nodeShowFilterPopup.setChangeCb((method, b) -> refreshTree(true));
         init();
+
+        MessageBusConnection connection = ApplicationManager.getApplication().getMessageBus().connect(this);
+        connection.subscribe(LafManagerListener.TOPIC, (LafManagerListener) lafManager -> {
+            setToolbar(null);
+            init();
+        });
     }
 
     @Description("初始化")
@@ -139,10 +151,12 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
         // 设置菜单组
         ApiToolSettingActionGroup settingActionGroup = new ApiToolSettingActionGroup();
         HttpServiceTool serviceTool = requestPanel.getServiceTool();
-        CommonAction commonAction = new CommonAction(Bundle.get("http.action.default.env"), "Generate Default", serviceTool.getGenerateDefault() ? HttpIcons.General.DEFAULT : null);
+        Icon icon = ThemeTool.isDark() ? HttpIcons.General.DEFAULT : HttpIcons.General.DEFAULT_LIGHT;
+        CommonAction commonAction = new CommonAction(Bundle.get("http.action.default.env"), "Generate Default",
+                serviceTool.getGenerateDefault() ? icon : null);
         commonAction.setAction(event -> {
             serviceTool.refreshGenerateDefault();
-            commonAction.getTemplatePresentation().setIcon(serviceTool.getGenerateDefault() ? HttpIcons.General.DEFAULT : null);
+            commonAction.getTemplatePresentation().setIcon(serviceTool.getGenerateDefault() ? icon : null);
             requestPanel.getHttpApiTreePanel().clear();
             SystemTool.schedule(() -> refreshTree(false), 500);
             SystemTool.schedule(() -> generateDefaultCb.run(), 600);
@@ -183,7 +197,7 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
     @Description("创建导出操作菜单组")
     private DefaultActionGroup createExportActionGroup() {
         DefaultActionGroup exportGroup = new DefaultActionGroup(Bundle.get("http.action.group.export.env"), true);
-        exportGroup.getTemplatePresentation().setIcon(HttpIcons.General.EXPORT);
+        exportGroup.getTemplatePresentation().setIcon(ThemeTool.isDark() ? HttpIcons.General.OUT : HttpIcons.General.OUT_LIGHT);
         HttpConfigExportAction exportOne = new HttpConfigExportAction(Bundle.get("http.action.export.current.env"), HttpEnum.ExportEnum.SPECIFY_ENV);
         exportOne.initAction(null, null, null);
         exportGroup.add(exportOne);

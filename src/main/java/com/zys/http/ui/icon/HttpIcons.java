@@ -25,21 +25,33 @@ public final class HttpIcons {
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class General {
         public static final Icon ENVIRONMENT = IconLoader.getIcon("/icon/general/environment.svg", HttpIcons.class);
+        public static final Icon ENVIRONMENT_LIGHT = IconLoader.getIcon("/icon/general/light/environment.svg", HttpIcons.class);
         public static final Icon ADD = IconLoader.getIcon("/icon/general/add.svg", HttpIcons.class);
         public static final Icon REMOVE = IconLoader.getIcon("/icon/general/remove.svg", HttpIcons.class);
         public static final Icon REFRESH = IconLoader.getIcon("/icon/general/refresh.svg", HttpIcons.class);
         public static final Icon EXPAND = IconLoader.getIcon("/icon/general/expand.svg", HttpIcons.class);
+        public static final Icon EXPAND_LIGHT = IconLoader.getIcon("/icon/general/light/expand.svg", HttpIcons.class);
         public static final Icon COLLAPSE = IconLoader.getIcon("/icon/general/collapse.svg", HttpIcons.class);
+        public static final Icon COLLAPSE_LIGHT = IconLoader.getIcon("/icon/general/light/collapse.svg", HttpIcons.class);
         public static final Icon FILTER = IconLoader.getIcon("/icon/general/filter.svg", HttpIcons.class);
+        public static final Icon FILTER_LIGHT = IconLoader.getIcon("/icon/general/light/filter.svg", HttpIcons.class);
         public static final Icon LIST = IconLoader.getIcon("/icon/general/list.svg", HttpIcons.class);
+        public static final Icon LIST_LIGHT = IconLoader.getIcon("/icon/general/light/list.svg", HttpIcons.class);
         public static final Icon TREE = IconLoader.getIcon("/icon/general/tree.svg", HttpIcons.class);
         public static final Icon DEFAULT = IconLoader.getIcon("/icon/general/default.svg", HttpIcons.class);
+        public static final Icon DEFAULT_LIGHT = IconLoader.getIcon("/icon/general/light/default.svg", HttpIcons.class);
         public static final Icon LOCATE = IconLoader.getIcon("/icon/general/locate.svg", HttpIcons.class);
+        public static final Icon LOCATE_LIGHT = IconLoader.getIcon("/icon/general/light/locate.svg", HttpIcons.class);
         public static final Icon FULL_SCREEN = IconLoader.getIcon("/icon/general/fullScreen.svg", HttpIcons.class);
+        public static final Icon FULL_SCREEN_LIGHT = IconLoader.getIcon("/icon/general/light/fullScreen.svg", HttpIcons.class);
         public static final Icon EXPORT = IconLoader.getIcon("/icon/general/export.svg", HttpIcons.class);
+        public static final Icon EXPORT_LIGHT = IconLoader.getIcon("/icon/general/light/export.svg", HttpIcons.class);
         public static final Icon SETTING = IconLoader.getIcon("/icon/general/setting.svg", HttpIcons.class);
+        public static final Icon SETTING_LIGHT = IconLoader.getIcon("/icon/general/light/setting.svg", HttpIcons.class);
         public static final Icon OUT = IconLoader.getIcon("/icon/general/out.svg", HttpIcons.class);
+        public static final Icon OUT_LIGHT = IconLoader.getIcon("/icon/general/light/out.svg", HttpIcons.class);
         public static final Icon FILTER_GROUP = IconLoader.getIcon("/icon/general/filterGroup.svg", HttpIcons.class);
+        public static final Icon FILTER_GROUP_LIGHT = IconLoader.getIcon("/icon/general/light/filterGroup.svg", HttpIcons.class);
     }
 
     @Description("请求方法")

@@ -2,6 +2,7 @@ package com.zys.http.action.group;
 
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.zys.http.service.Bundle;
+import com.zys.http.tool.ui.ThemeTool;
 import com.zys.http.ui.icon.HttpIcons;
 import jdk.jfr.Description;
 
@@ -13,7 +14,8 @@ import jdk.jfr.Description;
 public class NodeFilterActionGroup extends DefaultActionGroup {
 
     public NodeFilterActionGroup() {
-        super(Bundle.get("http.filter.action.node.filter"), "Node filter", HttpIcons.General.FILTER_GROUP);
+        super(Bundle.get("http.filter.action.node.filter"), "Node filter",
+                ThemeTool.isDark() ? HttpIcons.General.FILTER_GROUP : HttpIcons.General.FILTER_GROUP_LIGHT);
         setPopup(true);
     }
 }
