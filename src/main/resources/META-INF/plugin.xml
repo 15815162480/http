@@ -45,6 +45,19 @@
 
   <!-- 更新公告 -->
   <change-notes><![CDATA[
+    <b>1.3.1</b><br>
+    <ol>
+      <li>
+        fix bugs: Toolbar icons do not refresh synchronously when switching themes
+        <br>
+        bug 修复: 切换主题时工具栏图标没有同步刷新
+      </li>
+      <li>
+        Improve: Adapt to light color mode
+        <br>
+        优化: 适配浅色模式
+      </li>
+    </ol>
     <b>1.3.0</b><br>
     <ol>
       <li>
