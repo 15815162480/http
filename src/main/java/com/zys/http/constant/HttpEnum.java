@@ -11,6 +11,7 @@ import lombok.Getter;
  */
 public interface HttpEnum {
     @Getter
+    @Description("Content-Type")
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     enum ContentType {
         TEXT_XML("text/xml"),
@@ -29,11 +30,12 @@ public interface HttpEnum {
         }
     }
 
-
+    @Description("请求方式")
     enum HttpMethod {
         REQUEST, GET, POST, PUT, DELETE, PATCH
     }
 
+    @Description("请求协议")
     enum Protocol {
         HTTP, HTTPS
     }
@@ -44,18 +46,19 @@ public interface HttpEnum {
         USELESS, PATH, URL, BODY, HEADER
     }
 
-
     @Getter
+    @Description("swagger 注解")
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     enum Swagger {
-        CLASS_API("io.swagger.annotations.Api", "tags"),
-        CLASS_TAG("io.swagger.v3.oas.annotations.tags.Tag", "name"),
-        METHOD_API_OPERATION("io.swagger.annotations.ApiOperation", "value"),
-        METHOD_OPERATION("io.swagger.v3.oas.annotations.Operation", "summary");
+        API("io.swagger.annotations.Api", "tags", AnnotationPlace.CLASS),
+        TAG("io.swagger.v3.oas.annotations.tags.Tag", "name", AnnotationPlace.CLASS),
+        API_OPERATION("io.swagger.annotations.ApiOperation", "value", AnnotationPlace.METHOD),
+        OPERATION("io.swagger.v3.oas.annotations.Operation", "summary", AnnotationPlace.METHOD);
 
         private final String clazz;
         @Description("注解上说明功能的属性")
         private final String value;
+        private final AnnotationPlace annotationPlace;
     }
 
 
@@ -65,5 +68,10 @@ public interface HttpEnum {
          * 指定环境、所有环境, 所有 API
          */
         SPECIFY_ENV, ALL_ENV, API
+    }
+
+    @Description("注解所在的位置")
+    enum AnnotationPlace {
+        CLASS, METHOD, PARAMETER, FIELD
     }
 }

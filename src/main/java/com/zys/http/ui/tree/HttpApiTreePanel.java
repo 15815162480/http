@@ -68,9 +68,6 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
     @Description("选中方法节点后的回调")
     private transient Consumer<MethodNode> chooseCallback;
 
-    @Setter
-    @Getter
-    private boolean isGenerateDefault = true;
 
     public HttpApiTreePanel(Project project) {
         super(new SimpleTree());
@@ -125,7 +122,7 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
             controllers = ProjectTool.getModuleControllers(project, m);
             if (!controllers.isEmpty()) {
                 moduleControllerMap.put(moduleName, controllers);
-                if (isGenerateDefault) {
+                if (serviceTool.getGenerateDefault()) {
                     String host = "127.0.0.1:" + ProjectTool.getModulePort(project, m);
                     serviceTool.putHttpConfig(moduleName, new HttpConfig(HttpEnum.Protocol.HTTP, host, Collections.emptyMap()));
                 } else {
@@ -167,7 +164,7 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
                 continue;
             }
             ClassNodeData data = new ClassNodeData(k);
-            String s = PsiTool.getSwaggerAnnotation(k, "CLASS_");
+            String s = PsiTool.getSwaggerAnnotation(k, HttpEnum.AnnotationPlace.CLASS);
             data.setDescription(s);
             ClassNode classNode = new ClassNode(data);
             v.forEach(methodNode -> {
@@ -181,7 +178,7 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
                 // 不显示包名则直接添加到 module 节点
                 children.addAll(filterClass(classNode, isFilterClass));
             } else {
-                String packageName = PsiTool.getPackageName(k);
+                String packageName = PsiTool.Class.getPackageName(k);
                 if (classNode.getChildCount() > 0) {
                     if (Objects.isNull(packageName)) {
                         // 没有包名则直接添加到 module 节点
@@ -342,7 +339,7 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
                 MethodNodeData data1 = buildMethodNodeData(annotation, contextPath, controllerPath, method);
                 if (Objects.nonNull(data1)) {
                     data = new MethodNode(data1);
-                    data1.setDescription(PsiTool.getSwaggerAnnotation(method, "METHOD_"));
+                    data1.setDescription(PsiTool.getSwaggerAnnotation(method, HttpEnum.AnnotationPlace.METHOD));
                     dataList.add(data);
                 }
             }

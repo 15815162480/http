@@ -55,3 +55,4 @@
 6. export: export the simple postman json data
 7. right-click menu: if you click on the node, in addition to method nodes, all with the expanding operation, the method
    nodes have three operations, jump to method, copy full path and copy api
+8. filter node: You can choose whether to show package nodes or class nodes

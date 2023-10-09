@@ -61,9 +61,18 @@ public class HttpService implements PersistentStateComponent<HttpService.State> 
         }
     }
 
+    public boolean getGenerateDefault() {
+        return state.generateDefault;
+    }
+
+    public void setGenerateDefault(boolean status) {
+        state.generateDefault = status;
+    }
+
     @Data
     public static class State {
         private String selectedEnv;
+        private boolean generateDefault;
         private Map<String, HttpConfig> httpConfigs = new LinkedHashMap<>();
     }
 }

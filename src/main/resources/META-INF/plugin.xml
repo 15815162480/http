@@ -1,6 +1,6 @@
 <idea-plugin>
   <id>com.zys.http</id>
-  <version>1.2.2</version>
+  <version>1.3.0</version>
 
   <name>ApiTool</name>
 
@@ -45,6 +45,32 @@
 
   <!-- 更新公告 -->
   <change-notes><![CDATA[
+    <b>1.3.0</b><br>
+    <ol>
+      <li>
+        fix bugs: Refresh does not clear the request header, parameters, request body, and return body.
+        <br>
+        bug 修复: 刷新没有清空请求头、参数、请求体、返回体
+      </li>
+      <li>
+        Improve: Request body support Generics Type(Do not nest parameters with each other, Will cause Stack Overflow)
+        <br>
+        优化: 请求体支持泛型参数(不要互相嵌套参数, 会造成 Stack Overflow)
+      </li>
+      <li>
+        fix bugs: "java.lang.Boolean" generates error value
+        <br>
+        bug 修复: java.lang.Boolean 生成类型错误
+      </li>
+    </ol>
+    <b>1.2.3</b><br>
+    <ol>
+      <li>
+        Improve: Move "Env List" to new tab
+        <br>
+        优化: 移动"环境列表"到一个新的标签页面
+      </li>
+    </ol>
     <b>1.2.2</b><br>
     <ol>
       <li>

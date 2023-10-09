@@ -17,19 +17,19 @@ import com.zys.http.action.group.NodeFilterActionGroup;
 import com.zys.http.action.group.SelectActionGroup;
 import com.zys.http.constant.HttpEnum;
 import com.zys.http.service.Bundle;
+import com.zys.http.tool.HttpServiceTool;
+import com.zys.http.tool.SystemTool;
 import com.zys.http.ui.dialog.EnvAddOrEditDialog;
-import com.zys.http.ui.dialog.EnvListShowDialog;
 import com.zys.http.ui.icon.HttpIcons;
 import com.zys.http.ui.popup.MethodFilterPopup;
 import com.zys.http.ui.popup.NodeShowFilterPopup;
 import com.zys.http.ui.tree.HttpApiTreePanel;
 import com.zys.http.ui.window.panel.RequestPanel;
 import jdk.jfr.Description;
+import lombok.Setter;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.*;
 
 /**
@@ -47,6 +47,10 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
     private final MethodFilterPopup methodFilterPopup;
     @Description("结点展示过滤")
     private final NodeShowFilterPopup nodeShowFilterPopup;
+
+    @Setter
+    @Description("是否生成默认")
+    private transient Runnable generateDefaultCb;
 
     private final transient ExecutorService executorTaskBounded = new ThreadPoolExecutor(
             1,
@@ -90,13 +94,6 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
         AddAction addAction = new AddAction(Bundle.get("http.action.add.env"));
         addAction.setAction(event -> new EnvAddOrEditDialog(project, true, "").show());
         envActionGroup.add(addAction);
-        CommonAction envListAction = new CommonAction(Bundle.get("http.action.show.env"), "Env list", HttpIcons.General.LIST);
-        envListAction.setAction(event -> {
-            EnvListShowDialog dialog = new EnvListShowDialog(requestPanel.getProject());
-            dialog.getEnvShowTable().setEditOKCb(n -> requestPanel.reload(requestPanel.getHttpApiTreePanel().getChooseNode()));
-            dialog.show();
-        });
-        envActionGroup.add(envListAction);
         SelectActionGroup selectActionGroup = new SelectActionGroup();
         selectActionGroup.setCallback(s -> requestPanel.reload(requestPanel.getHttpApiTreePanel().getChooseNode()));
         envActionGroup.add(selectActionGroup);
@@ -108,12 +105,7 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
         refreshAction.setAction(event -> {
             requestPanel.reload(null);
             requestPanel.getHttpApiTreePanel().clear();
-            new Timer().schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    refreshTree(false);
-                }
-            }, 500);
+            SystemTool.schedule(() -> refreshTree(false), 500);
         });
         group.add(refreshAction);
 
@@ -146,19 +138,14 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
 
         // 设置菜单组
         ApiToolSettingActionGroup settingActionGroup = new ApiToolSettingActionGroup();
-        CommonAction commonAction = new CommonAction(Bundle.get("http.action.default.env"), "Generate Default", HttpIcons.General.DEFAULT);
+        HttpServiceTool serviceTool = requestPanel.getServiceTool();
+        CommonAction commonAction = new CommonAction(Bundle.get("http.action.default.env"), "Generate Default", serviceTool.getGenerateDefault() ? HttpIcons.General.DEFAULT : null);
         commonAction.setAction(event -> {
-            HttpApiTreePanel treePanel = requestPanel.getHttpApiTreePanel();
-            treePanel.setGenerateDefault(!treePanel.isGenerateDefault());
-            boolean generateDefault = treePanel.isGenerateDefault();
-            commonAction.getTemplatePresentation().setIcon(generateDefault ? HttpIcons.General.DEFAULT : null);
+            serviceTool.refreshGenerateDefault();
+            commonAction.getTemplatePresentation().setIcon(serviceTool.getGenerateDefault() ? HttpIcons.General.DEFAULT : null);
             requestPanel.getHttpApiTreePanel().clear();
-            new Timer().schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    refreshTree(false);
-                }
-            }, 500);
+            SystemTool.schedule(() -> refreshTree(false), 500);
+            SystemTool.schedule(() -> generateDefaultCb.run(), 600);
         });
         settingActionGroup.setCommonAction(commonAction);
         group.add(settingActionGroup);

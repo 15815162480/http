@@ -6,6 +6,7 @@ import com.intellij.util.ui.JBUI;
 import com.zys.http.constant.UIConstant;
 import com.zys.http.service.Bundle;
 import com.zys.http.ui.editor.CustomEditor;
+import jdk.jfr.Description;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.jetbrains.annotations.NotNull;
@@ -22,11 +23,13 @@ import java.util.function.Consumer;
  */
 
 @Accessors(chain = true)
+@Description("编辑器对话框")
 public class EditorDialog extends DialogWrapper {
 
     private final CustomEditor customEditor;
 
     @Setter
+    @Nullable
     private Consumer<String> okCallBack;
 
     public EditorDialog(Project project, String title, CustomEditor customEditor) {

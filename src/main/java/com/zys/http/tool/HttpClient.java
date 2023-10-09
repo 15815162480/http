@@ -33,9 +33,9 @@ public class HttpClient {
     private static final int REDIRECT_MAX_COUNT = 3;
 
     private static final ExecutorService EXECUTOR = ThreadUtil.newSingleExecutor();
-    private static final Pattern jsonPattern = Pattern.compile("application/json", Pattern.CASE_INSENSITIVE);
-    private static final Pattern htmlPattern = Pattern.compile("text/html", Pattern.CASE_INSENSITIVE);
-    private static final Pattern xmlPattern = Pattern.compile("text/xml", Pattern.CASE_INSENSITIVE);
+    private static final Pattern JSON_PATTERN = Pattern.compile("application/json", Pattern.CASE_INSENSITIVE);
+    private static final Pattern HTML_PATTERN = Pattern.compile("text/html", Pattern.CASE_INSENSITIVE);
+    private static final Pattern XML_PATTERN = Pattern.compile("text/xml", Pattern.CASE_INSENSITIVE);
 
 
     public static HttpRequest newRequest(
@@ -100,11 +100,11 @@ public class HttpClient {
         final String contentType = response.header(Header.CONTENT_TYPE);
 
         if (contentType != null) {
-            if (jsonPattern.matcher(contentType).find()) {
+            if (JSON_PATTERN.matcher(contentType).find()) {
                 fileType = CustomEditor.JSON_FILE_TYPE;
-            } else if (htmlPattern.matcher(contentType).find()) {
+            } else if (HTML_PATTERN.matcher(contentType).find()) {
                 fileType = CustomEditor.HTML_FILE_TYPE;
-            } else if (xmlPattern.matcher(contentType).find()) {
+            } else if (XML_PATTERN.matcher(contentType).find()) {
                 fileType = CustomEditor.XML_FILE_TYPE;
             }
         }

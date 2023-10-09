@@ -1,25 +1,23 @@
 package com.zys.http.tool;
 
 import cn.hutool.core.text.CharSequenceUtil;
+import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiClassType;
 import com.intellij.psi.PsiField;
 import com.intellij.psi.PsiType;
 import com.intellij.psi.impl.source.PsiClassReferenceType;
+import com.intellij.psi.search.GlobalSearchScope;
 import jdk.jfr.Description;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.regex.Pattern;
 
-import static com.zys.http.tool.PsiTool.FieldMethod;
-import static com.zys.http.tool.PsiTool.getPsiMethods;
 
 /**
  * @author zhou ys
@@ -53,7 +51,7 @@ public class DataTypeTool {
         PSI_PRIMITIVE_TYPE_OBJECT_MAP.put(PsiType.LONG, 0);
         PSI_PRIMITIVE_TYPE_OBJECT_MAP.put(PsiType.FLOAT, 0.0);
         PSI_PRIMITIVE_TYPE_OBJECT_MAP.put(PsiType.DOUBLE, 0.0);
-        BASIC_DATA_TYPE_OBJECT_MAP.put("java.util.Boolean", false);
+        BASIC_DATA_TYPE_OBJECT_MAP.put("java.lang.Boolean", false);
         BASIC_DATA_TYPE_OBJECT_MAP.put("java.lang.String", "");
         BASIC_DATA_TYPE_OBJECT_MAP.put("java.lang.Byte", 0);
         BASIC_DATA_TYPE_OBJECT_MAP.put("java.lang.Short", 0);
@@ -63,6 +61,13 @@ public class DataTypeTool {
         BASIC_DATA_TYPE_OBJECT_MAP.put("java.lang.Double", 0);
         BASIC_DATA_TYPE_OBJECT_MAP.put("java.math.BigInteger", 0);
         BASIC_DATA_TYPE_OBJECT_MAP.put("java.math.BigDecimal", 0.0);
+        BASIC_DATA_TYPE_OBJECT_MAP.put("boolean", false);
+        BASIC_DATA_TYPE_OBJECT_MAP.put("byte", 0);
+        BASIC_DATA_TYPE_OBJECT_MAP.put("short", 0);
+        BASIC_DATA_TYPE_OBJECT_MAP.put("int", 0);
+        BASIC_DATA_TYPE_OBJECT_MAP.put("long", 0);
+        BASIC_DATA_TYPE_OBJECT_MAP.put("float", 0);
+        BASIC_DATA_TYPE_OBJECT_MAP.put("double", 0);
     }
 
     @Description("是否是 Java 的基础类型")
@@ -87,83 +92,113 @@ public class DataTypeTool {
         return false;
     }
 
-    public static Object getDefaultValueOfPsiType(PsiType psiType) {
+    @Description("根据参数类型获取默认值")
+    public static Object getDefaultValueOfPsiType(PsiType psiType, Project project) {
+        // 基元类型
         Object value = PSI_PRIMITIVE_TYPE_OBJECT_MAP.get(psiType);
         if (Objects.nonNull(value)) {
             return value;
         }
 
         final String canonicalText = psiType.getCanonicalText();
+        // 基元类型对应的包装类
         value = BASIC_DATA_TYPE_OBJECT_MAP.get(canonicalText);
         if (Objects.nonNull(value)) {
             return value;
         }
 
-        // 数组类型
-        if (canonicalText.contains("[]")) {
-            return new Object[0];
+        if ("java.lang.Object".equals(canonicalText)) {
+            return Collections.emptyMap();
         }
 
-        if (canonicalText.startsWith("java.util.")) {
-            if (canonicalText.contains("Map")) {
-                return Collections.emptyMap();
-            }
-            if (canonicalText.contains("List")) {
-                return Collections.emptyList();
-            }
+        // 应该是基元类型和包装类才返回空数组类型,如果是类应该处理
+        Object arrayResult = processArrayType(psiType, project);
+        if (Objects.nonNull(arrayResult)) {
+            return arrayResult;
+        }
+
+        // 如果是 Map, 直接返回空 map, 泛型也不知道 key 是啥
+        Object collectionsResult = processCollectionsType(psiType, project);
+        if (Objects.nonNull(collectionsResult)) {
+            return collectionsResult;
         }
 
         if (psiType instanceof PsiClassReferenceType type) {
-            // Object | List<?> | Map<K, V>
+            // 处理实体类类型
             PsiClass psiClass = type.resolve();
             if (Objects.isNull(psiClass)) {
                 return null;
             }
-            final Object hasResult = getDefaultData(psiClass);
+            // 对几个比较常用的类型进行特殊处理
+            Object hasResult = processDateType(psiClass);
             if (Objects.nonNull(hasResult)) {
                 return hasResult;
             }
-
+            // 类所有对象属性
             Map<String, Object> result = new LinkedHashMap<>();
-
-            List<FieldMethod> fieldMethods = getPsiMethods(psiClass);
-            for (FieldMethod fieldMethod : fieldMethods) {
-                PsiField psiField = fieldMethod.getField();
-                if (Objects.nonNull(psiField)) {
-                    // 如果该 Getter|Setter 方法所对应的Field不为空
-                    PsiType psiFieldType = psiField.getType();
-                    if (psiFieldType.equals(psiType)) {
-                        result.put(fieldMethod.getFieldName(), null);
-                        continue;
-                    }
-
-                    result.put(fieldMethod.getFieldName(), getDefaultValueOfPsiType(psiFieldType));
-                }
+            List<PsiField> objectProperties = PsiTool.Field.getAllObjectPropertiesWithoutStaticAndPublic(psiClass);
+            for (PsiField property : objectProperties) {
+                result.put(property.getName(), getDefaultValueOfPsiType(property.getType(), project));
             }
-
             return result;
         }
         return null;
     }
 
+    @Description("处理数组类型")
+    private static Object processArrayType(PsiType psiType, Project project) {
+        String canonicalText = psiType.getCanonicalText();
+        if (canonicalText.contains("[]")) {
+            String arrayCanonicalText = canonicalText.substring(0, canonicalText.indexOf("["));
+            // 是否是基元类型或对应包装类型的数组
+            if (Objects.nonNull(BASIC_DATA_TYPE_OBJECT_MAP.get(arrayCanonicalText))) {
+                return new Object[0];
+            }
+            PsiClassType type = PsiType.getTypeByName(arrayCanonicalText, project, GlobalSearchScope.allScope(project));
+            Object defaultValue = getDefaultValueOfPsiType(type, project);
+            if (Objects.isNull(defaultValue)) {
+                return new Object[0];
+            } else {
+                return List.of(defaultValue);
+            }
+        }
+        return null;
+    }
 
-    @Nullable
-    public static Object getDefaultData(@Nullable PsiClass psiClass) {
-        if (psiClass == null) {
+    @Description("处理集合类型")
+    private static Object processCollectionsType(PsiType psiType, Project project) {
+        final String canonicalText = psiType.getCanonicalText();
+        if (canonicalText.startsWith("java.util.")) {
+            if (canonicalText.contains("Map")) {
+                return Collections.emptyMap();
+            }
+            // 如果是 List/Set 考虑泛型
+            if (canonicalText.contains("List") || canonicalText.contains("Set")) {
+                String genericsType = PsiTool.Generics.getGenericsType(psiType);
+                if (CharSequenceUtil.isNotEmpty(genericsType) && (Objects.nonNull(BASIC_DATA_TYPE_OBJECT_MAP.get(genericsType)) || "java.lang.Object".equals(genericsType))) {
+                    // 说明是基元类型
+                    return Collections.emptyList();
+                }
+                PsiClassType type = PsiType.getTypeByName(Objects.requireNonNull(genericsType), project, GlobalSearchScope.allScope(project));
+                Object defaultValue = getDefaultValueOfPsiType(type, project);
+                if (Objects.isNull(defaultValue)) {
+                    return new Object[0];
+                } else {
+                    return List.of(defaultValue);
+                }
+            }
+        }
+        return null;
+    }
+
+    @Description("处理日期类型")
+    private static Object processDateType(PsiClass psiClass) {
+        if (Objects.isNull(psiClass)) {
             return null;
         }
         String qualifiedName = psiClass.getQualifiedName();
-        if (qualifiedName == null) {
+        if (Objects.isNull(qualifiedName)) {
             return null;
-        }
-        if (qualifiedName.equals(List.class.getName())) {
-            return Collections.emptyList();
-        }
-        if (qualifiedName.equals(Set.class.getName())) {
-            return Collections.emptySet();
-        }
-        if (qualifiedName.equals(Map.class.getName())) {
-            return Collections.emptyMap();
         }
         if (qualifiedName.equals(Date.class.getName()) || qualifiedName.equals(LocalDateTime.class.getName())) {
             return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime());
@@ -171,53 +206,6 @@ public class DataTypeTool {
         if (qualifiedName.equals(LocalDate.class.getName())) {
             return new SimpleDateFormat("yyyy-MM-dd").format(Calendar.getInstance().getTime());
         }
-
-        final String libPackage = "java.util(.concurrent)?.[a-zA-Z0-9]*";
-        @Language("RegExp") final String regList = libPackage + "List";
-        @Language("RegExp") final String regSet = libPackage + "Set";
-        @Language("RegExp") final String regMap = libPackage + "Map";
-        if (Pattern.compile(regList).matcher(qualifiedName).find()) {
-            return Collections.emptyList();
-        }
-        if (Pattern.compile(regSet).matcher(qualifiedName).find()) {
-            return Collections.emptySet();
-        }
-        if (Pattern.compile(regMap).matcher(qualifiedName).find()) {
-            return Collections.emptyMap();
-        }
-
-        if (Pattern.compile(libPackage).matcher(qualifiedName).find()) {
-            return "NULL";
-        }
-
-        if (psiClass.getName() != null) {
-            return getDefaultData(psiClass.getName());
-        }
-
         return null;
-    }
-
-    @Nullable
-    public static Object getDefaultData(@NotNull String classType) {
-        switch (classType.toLowerCase(Locale.ROOT)) {
-            case "string" -> {
-                return "";
-            }
-            case "char", "character" -> {
-                return 'A';
-            }
-            case "byte", "short", "int", "integer", "long" -> {
-                return 0;
-            }
-            case "float", "double" -> {
-                return 0.0;
-            }
-            case "boolean" -> {
-                return true;
-            }
-            default -> {
-                return null;
-            }
-        }
     }
 }

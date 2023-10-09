@@ -20,7 +20,6 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Consumer;
 
 /**
  * @author zys
@@ -31,7 +30,7 @@ public class EnvListTable extends AbstractTable {
 
     @Setter
     @Description("修改选中环境回调")
-    private transient Consumer<Void> editOKCb;
+    private transient Runnable editOKCb;
 
     public EnvListTable(Project project) {
         super(project, false);
@@ -91,7 +90,7 @@ public class EnvListTable extends AbstractTable {
                 int selectedRow = valueTable.getSelectedRow();
                 model.setValueAt(config.getProtocol().toString(), selectedRow, 1);
                 model.setValueAt(config.getHostValue(), selectedRow, 2);
-                editOKCb.accept(null);
+                editOKCb.run();
             });
             dialog.show();
         });
@@ -124,6 +123,4 @@ public class EnvListTable extends AbstractTable {
             });
         };
     }
-
-
 }
