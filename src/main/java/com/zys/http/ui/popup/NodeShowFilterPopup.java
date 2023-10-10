@@ -1,5 +1,6 @@
 package com.zys.http.ui.popup;
 
+import com.intellij.openapi.project.Project;
 import com.zys.http.service.Bundle;
 import jdk.jfr.Description;
 
@@ -17,7 +18,7 @@ public class NodeShowFilterPopup extends AbstractFilterPopup<String> {
             Bundle.get("http.filter.popup.node.show.class")
     );
 
-    public NodeShowFilterPopup() {
-        super(SETTING_VALUES);
+    public NodeShowFilterPopup(Project project) {
+        super(project, SETTING_VALUES);
     }
 }

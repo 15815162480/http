@@ -107,7 +107,7 @@ public class DataTypeTool {
             return value;
         }
 
-        if ("java.lang.Object".equals(canonicalText)) {
+        if (Object.class.getName().equals(canonicalText)) {
             return Collections.emptyMap();
         }
 
@@ -117,7 +117,6 @@ public class DataTypeTool {
             return arrayResult;
         }
 
-        // 如果是 Map, 直接返回空 map, 泛型也不知道 key 是啥
         Object collectionsResult = processCollectionsType(psiType, project);
         if (Objects.nonNull(collectionsResult)) {
             return collectionsResult;
@@ -150,9 +149,13 @@ public class DataTypeTool {
         String canonicalText = psiType.getCanonicalText();
         if (canonicalText.contains("[]")) {
             String arrayCanonicalText = canonicalText.substring(0, canonicalText.indexOf("["));
-            // 是否是基元类型或对应包装类型的数组
-            if (Objects.nonNull(BASIC_DATA_TYPE_OBJECT_MAP.get(arrayCanonicalText))) {
+            if (Object.class.getName().equals(arrayCanonicalText)) {
                 return new Object[0];
+            }
+            // 是否是基元类型或对应包装类型的数组
+            Object o = BASIC_DATA_TYPE_OBJECT_MAP.get(arrayCanonicalText);
+            if (Objects.nonNull(o)) {
+                return new Object[]{o};
             }
             PsiClassType type = PsiType.getTypeByName(arrayCanonicalText, project, GlobalSearchScope.allScope(project));
             Object defaultValue = getDefaultValueOfPsiType(type, project);
@@ -168,24 +171,35 @@ public class DataTypeTool {
     @Description("处理集合类型")
     private static Object processCollectionsType(PsiType psiType, Project project) {
         final String canonicalText = psiType.getCanonicalText();
-        if (canonicalText.startsWith("java.util.")) {
-            if (canonicalText.contains("Map")) {
-                return Collections.emptyMap();
+        if (!canonicalText.startsWith("java.util.")) {
+            return null;
+        }
+        // Map 直接返回空 Map, 反正不知道 key
+        if (canonicalText.contains("Map")) {
+            return Collections.emptyMap();
+        }
+        // 如果是 List/Set 考虑泛型
+        if (canonicalText.contains("List") || canonicalText.contains("Set")) {
+            String genericsType = PsiTool.Generics.getGenericsType(psiType);
+            // 如果泛型是 java.lang.Object
+            if (Object.class.getName().equals(genericsType)) {
+                return new Object[0];
             }
-            // 如果是 List/Set 考虑泛型
-            if (canonicalText.contains("List") || canonicalText.contains("Set")) {
-                String genericsType = PsiTool.Generics.getGenericsType(psiType);
-                if (CharSequenceUtil.isNotEmpty(genericsType) && (Objects.nonNull(BASIC_DATA_TYPE_OBJECT_MAP.get(genericsType)) || "java.lang.Object".equals(genericsType))) {
-                    // 说明是基元类型
-                    return Collections.emptyList();
-                }
-                PsiClassType type = PsiType.getTypeByName(Objects.requireNonNull(genericsType), project, GlobalSearchScope.allScope(project));
-                Object defaultValue = getDefaultValueOfPsiType(type, project);
-                if (Objects.isNull(defaultValue)) {
-                    return new Object[0];
-                } else {
-                    return List.of(defaultValue);
-                }
+            // ? extends ?, ? super ?
+            if (CharSequenceUtil.isNotEmpty(genericsType) && (genericsType.contains(" extends ") || genericsType.contains(" super "))) {
+                return new Object[0];
+            }
+            Object o = BASIC_DATA_TYPE_OBJECT_MAP.get(genericsType);
+            if (Objects.nonNull(o)) {
+                // 说明是基元类型
+                return new Object[]{o};
+            }
+            PsiClassType type = PsiType.getTypeByName(Objects.requireNonNull(genericsType), project, GlobalSearchScope.allScope(project));
+            Object defaultValue = getDefaultValueOfPsiType(type, project);
+            if (Objects.isNull(defaultValue)) {
+                return new Object[0];
+            } else {
+                return List.of(defaultValue);
             }
         }
         return null;

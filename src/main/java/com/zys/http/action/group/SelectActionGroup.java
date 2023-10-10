@@ -3,17 +3,18 @@ package com.zys.http.action.group;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
+import com.intellij.openapi.project.Project;
 import com.zys.http.action.SelectAction;
 import com.zys.http.service.Bundle;
+import com.zys.http.service.topic.EnvChangeTopic;
 import com.zys.http.tool.HttpServiceTool;
 import com.zys.http.tool.ui.ThemeTool;
 import com.zys.http.ui.icon.HttpIcons;
 import jdk.jfr.Description;
-import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
 import java.util.Set;
-import java.util.function.Consumer;
 
 /**
  * @author zhou ys
@@ -22,8 +23,8 @@ import java.util.function.Consumer;
 @Description("选择环境菜单组")
 public class SelectActionGroup extends DefaultActionGroup {
 
-    @Setter
-    private Consumer<String> callback;
+    // @Setter
+    // private Consumer<String> callback;
 
     public SelectActionGroup() {
         super(Bundle.get("http.action.group.select.env"), "Select env", HttpIcons.General.TREE);
@@ -33,9 +34,13 @@ public class SelectActionGroup extends DefaultActionGroup {
     @Override
     @Description("实现动态菜单的关键方法")
     public AnAction @NotNull [] getChildren(AnActionEvent e) {
+        if (Objects.isNull(e) || Objects.isNull(e.getProject())) {
+            return new AnAction[0];
+        }
         HttpServiceTool tool = HttpServiceTool.getInstance(e);
         Set<String> set = tool.getHttpConfigs().keySet();
         AnAction[] anActions = new AnAction[set.size()];
+        Project project = e.getProject();
 
         int i = 0;
         for (String s : set) {
@@ -43,7 +48,9 @@ public class SelectActionGroup extends DefaultActionGroup {
             action.setAction(event -> {
                 String selectEnv = event.getPresentation().getText();
                 tool.setSelectedEnv(selectEnv);
-                callback.accept(selectEnv);
+                project.getMessageBus().syncPublisher(EnvChangeTopic.TOPIC).change();
+
+                // callback.accept(selectEnv);
             });
             if (s.equals(tool.getSelectedEnv())) {
                 action.setIcon(ThemeTool.isDark() ? HttpIcons.General.DEFAULT : HttpIcons.General.DEFAULT_LIGHT);

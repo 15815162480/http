@@ -20,6 +20,8 @@ import com.zys.http.action.group.NodeFilterActionGroup;
 import com.zys.http.action.group.SelectActionGroup;
 import com.zys.http.constant.HttpEnum;
 import com.zys.http.service.Bundle;
+import com.zys.http.service.topic.EnvChangeTopic;
+import com.zys.http.service.topic.RefreshTreeTopic;
 import com.zys.http.tool.HttpServiceTool;
 import com.zys.http.tool.SystemTool;
 import com.zys.http.tool.ui.ThemeTool;
@@ -50,9 +52,9 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
     private final RequestPanel requestPanel;
 
     @Description("请求方式过滤菜单")
-    private final MethodFilterPopup methodFilterPopup;
+    private MethodFilterPopup methodFilterPopup;
     @Description("结点展示过滤")
-    private final NodeShowFilterPopup nodeShowFilterPopup;
+    private NodeShowFilterPopup nodeShowFilterPopup;
 
     @Setter
     @Description("是否生成默认")
@@ -71,23 +73,12 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
         super(true, true);
         this.project = project;
         this.requestPanel = new RequestPanel(project);
-        this.methodFilterPopup = new MethodFilterPopup(
+        this.methodFilterPopup = new MethodFilterPopup(project,
                 Arrays.stream(HttpEnum.HttpMethod.values()).filter(o -> !o.equals(HttpEnum.HttpMethod.REQUEST))
                         .toList()
         );
-        this.nodeShowFilterPopup = new NodeShowFilterPopup();
-        methodFilterPopup.setChangeAllCb((list, b) -> refreshTree(true));
-        methodFilterPopup.setChangeCb((method, b) -> refreshTree(true));
-
-        nodeShowFilterPopup.setChangeAllCb((list, b) -> refreshTree(true));
-        nodeShowFilterPopup.setChangeCb((method, b) -> refreshTree(true));
+        this.nodeShowFilterPopup = new NodeShowFilterPopup(project);
         init();
-
-        MessageBusConnection connection = ApplicationManager.getApplication().getMessageBus().connect(this);
-        connection.subscribe(LafManagerListener.TOPIC, (LafManagerListener) lafManager -> {
-            setToolbar(null);
-            init();
-        });
     }
 
     @Description("初始化")
@@ -95,6 +86,31 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
         setToolbar(requestToolBar().getComponent());
         setContent(requestPanel);
         refreshTree(false);
+        initTopic();
+    }
+
+    @Description("监听事件通知")
+    private void initTopic() {
+        MessageBusConnection connection = ApplicationManager.getApplication().getMessageBus().connect(this);
+        connection.subscribe(LafManagerListener.TOPIC, (LafManagerListener) lafManager -> {
+            setToolbar(null);
+            init();
+            this.methodFilterPopup = new MethodFilterPopup(project,
+                    Arrays.stream(HttpEnum.HttpMethod.values()).filter(o -> !o.equals(HttpEnum.HttpMethod.REQUEST))
+                            .toList()
+            );
+            this.nodeShowFilterPopup = new NodeShowFilterPopup(project);
+        });
+
+        project.getMessageBus().connect()
+                .subscribe(RefreshTreeTopic.TOPIC, (RefreshTreeTopic) b -> {
+                    requestPanel.reload(null);
+                    requestPanel.getHttpApiTreePanel().clear();
+                    refreshTree(b);
+                });
+
+        project.getMessageBus().connect().subscribe(EnvChangeTopic.TOPIC,
+                (EnvChangeTopic) () -> requestPanel.reload(requestPanel.getHttpApiTreePanel().getChooseNode()));
     }
 
     @Description("初始化顶部工具栏")
@@ -106,19 +122,13 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
         AddAction addAction = new AddAction(Bundle.get("http.action.add.env"));
         addAction.setAction(event -> new EnvAddOrEditDialog(project, true, "").show());
         envActionGroup.add(addAction);
-        SelectActionGroup selectActionGroup = new SelectActionGroup();
-        selectActionGroup.setCallback(s -> requestPanel.reload(requestPanel.getHttpApiTreePanel().getChooseNode()));
-        envActionGroup.add(selectActionGroup);
+        envActionGroup.add(new SelectActionGroup());
 
         group.add(envActionGroup);
 
         // 刷新菜单
         RefreshAction refreshAction = new RefreshAction();
-        refreshAction.setAction(event -> {
-            requestPanel.reload(null);
-            requestPanel.getHttpApiTreePanel().clear();
-            SystemTool.schedule(() -> refreshTree(false), 500);
-        });
+        refreshAction.setAction(event -> project.getMessageBus().syncPublisher(RefreshTreeTopic.TOPIC).refresh(false));
         group.add(refreshAction);
 
         // 导出菜单操作组
@@ -157,8 +167,7 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
         commonAction.setAction(event -> {
             serviceTool.refreshGenerateDefault();
             commonAction.getTemplatePresentation().setIcon(serviceTool.getGenerateDefault() ? icon : null);
-            requestPanel.getHttpApiTreePanel().clear();
-            SystemTool.schedule(() -> refreshTree(false), 500);
+            project.getMessageBus().syncPublisher(RefreshTreeTopic.TOPIC).refresh(false);
             SystemTool.schedule(() -> generateDefaultCb.run(), 600);
         });
         settingActionGroup.setCommonAction(commonAction);
