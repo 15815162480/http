@@ -27,14 +27,18 @@ import com.zys.http.ui.dialog.EnvAddOrEditDialog;
 import com.zys.http.ui.icon.HttpIcons;
 import com.zys.http.ui.popup.MethodFilterPopup;
 import com.zys.http.ui.popup.NodeShowFilterPopup;
+import com.zys.http.ui.search.ApiSearchAction;
 import com.zys.http.ui.tree.HttpApiTreePanel;
+import com.zys.http.ui.tree.node.MethodNode;
 import com.zys.http.ui.window.panel.RequestPanel;
 import jdk.jfr.Description;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.*;
 
@@ -57,6 +61,8 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
     @Setter
     @Description("是否生成默认")
     private transient Runnable generateDefaultCb;
+
+    private ApiSearchAction searchApiAction;
 
     private final transient ExecutorService executorTaskBounded = new ThreadPoolExecutor(
             1,
@@ -81,9 +87,9 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
 
     @Description("初始化")
     private void init() {
-        setToolbar(requestToolBar().getComponent());
         setContent(requestPanel);
         refreshTree(false);
+        setToolbar(requestToolBar().getComponent());
         initTopic();
     }
 
@@ -147,6 +153,11 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
         group.add(collapseAction);
         group.addSeparator();
 
+        // 搜索 API
+
+        searchApiAction = new ApiSearchAction("搜索API");
+        group.add(searchApiAction);
+
         // 节点过滤操作菜单组
         DefaultActionGroup filterActionGroup = new DefaultActionGroup(Bundle.get("http.filter.action.node.filter"), true);
         filterActionGroup.getTemplatePresentation().setIcon(ThemeTool.isDark() ? HttpIcons.General.FILTER_GROUP : HttpIcons.General.FILTER_GROUP_LIGHT);
@@ -194,6 +205,10 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
                                 if (isExpand) {
                                     requestPanel.getHttpApiTreePanel().expandAll();
                                 }
+                                List<MethodNode> methodNodes = new ArrayList<>();
+                                Collection<List<MethodNode>> values = requestPanel.getHttpApiTreePanel().getMethodNodeMap().values();
+                                values.forEach(methodNodes::addAll);
+                                searchApiAction.setMethodNodeList(methodNodes);
                             })
                             .submit(executorTaskBounded);
                 }

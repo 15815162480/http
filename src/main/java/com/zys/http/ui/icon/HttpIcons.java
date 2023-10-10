@@ -52,6 +52,9 @@ public final class HttpIcons {
         public static final Icon OUT_LIGHT = IconLoader.getIcon("/icon/general/light/out.svg", HttpIcons.class);
         public static final Icon FILTER_GROUP = IconLoader.getIcon("/icon/general/filterGroup.svg", HttpIcons.class);
         public static final Icon FILTER_GROUP_LIGHT = IconLoader.getIcon("/icon/general/light/filterGroup.svg", HttpIcons.class);
+
+        public static final Icon SEARCH = IconLoader.getIcon("/icon/general/search.svg", HttpIcons.class);
+        public static final Icon SEARCH_LIGHT = IconLoader.getIcon("/icon/general/light/search.svg", HttpIcons.class);
     }
 
     @Description("请求方法")
