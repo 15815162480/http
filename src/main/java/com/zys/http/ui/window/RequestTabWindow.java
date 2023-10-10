@@ -12,11 +12,9 @@ import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.SimpleToolWindowPanel;
+import com.intellij.util.messages.MessageBus;
 import com.intellij.util.messages.MessageBusConnection;
 import com.zys.http.action.*;
-import com.zys.http.action.group.ApiToolSettingActionGroup;
-import com.zys.http.action.group.EnvActionGroup;
-import com.zys.http.action.group.NodeFilterActionGroup;
 import com.zys.http.action.group.SelectActionGroup;
 import com.zys.http.constant.HttpEnum;
 import com.zys.http.service.Bundle;
@@ -102,12 +100,13 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
             this.nodeShowFilterPopup = new NodeShowFilterPopup(project);
         });
 
-        project.getMessageBus().connect()
-                .subscribe(RefreshTreeTopic.TOPIC, (RefreshTreeTopic) b -> {
-                    requestPanel.reload(null);
-                    requestPanel.getHttpApiTreePanel().clear();
-                    refreshTree(b);
-                });
+        MessageBus messageBus = project.getMessageBus();
+        MessageBusConnection connect = messageBus.connect();
+        connect.subscribe(RefreshTreeTopic.TOPIC, (RefreshTreeTopic) b -> {
+            requestPanel.reload(null);
+            requestPanel.getHttpApiTreePanel().clear();
+            refreshTree(b);
+        });
 
         project.getMessageBus().connect().subscribe(EnvChangeTopic.TOPIC,
                 (EnvChangeTopic) () -> requestPanel.reload(requestPanel.getHttpApiTreePanel().getChooseNode()));
@@ -118,7 +117,9 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
         DefaultActionGroup group = new DefaultActionGroup();
 
         // 环境操作菜单组
-        EnvActionGroup envActionGroup = new EnvActionGroup();
+        DefaultActionGroup envActionGroup = new DefaultActionGroup(Bundle.get("http.action.group.env"), true);
+        envActionGroup.getTemplatePresentation().setIcon(ThemeTool.isDark() ? HttpIcons.General.ENVIRONMENT : HttpIcons.General.ENVIRONMENT_LIGHT);
+
         AddAction addAction = new AddAction(Bundle.get("http.action.add.env"));
         addAction.setAction(event -> new EnvAddOrEditDialog(project, true, "").show());
         envActionGroup.add(addAction);
@@ -147,7 +148,8 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
         group.addSeparator();
 
         // 节点过滤操作菜单组
-        NodeFilterActionGroup filterActionGroup = new NodeFilterActionGroup();
+        DefaultActionGroup filterActionGroup = new DefaultActionGroup(Bundle.get("http.filter.action.node.filter"), true);
+        filterActionGroup.getTemplatePresentation().setIcon(ThemeTool.isDark() ? HttpIcons.General.FILTER_GROUP : HttpIcons.General.FILTER_GROUP_LIGHT);
         FilterAction settingAction = new FilterAction(Bundle.get("http.filter.action.node.show"));
         settingAction.setAction(e -> nodeShowFilterPopup.show(requestPanel, nodeShowFilterPopup.getX(), nodeShowFilterPopup.getY()));
         filterActionGroup.add(settingAction);
@@ -159,7 +161,8 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
 
 
         // 设置菜单组
-        ApiToolSettingActionGroup settingActionGroup = new ApiToolSettingActionGroup();
+        DefaultActionGroup settingActionGroup = new DefaultActionGroup(Bundle.get("http.action.group.setting"), true);
+        settingActionGroup.getTemplatePresentation().setIcon(ThemeTool.isDark() ? HttpIcons.General.SETTING : HttpIcons.General.SETTING_LIGHT);
         HttpServiceTool serviceTool = requestPanel.getServiceTool();
         Icon icon = ThemeTool.isDark() ? HttpIcons.General.DEFAULT : HttpIcons.General.DEFAULT_LIGHT;
         CommonAction commonAction = new CommonAction(Bundle.get("http.action.default.env"), "Generate Default",
@@ -170,7 +173,7 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
             project.getMessageBus().syncPublisher(RefreshTreeTopic.TOPIC).refresh(false);
             SystemTool.schedule(() -> generateDefaultCb.run(), 600);
         });
-        settingActionGroup.setCommonAction(commonAction);
+        settingActionGroup.add(commonAction);
         group.add(settingActionGroup);
 
         ActionToolbar topToolBar = ActionManager.getInstance().createActionToolbar(ActionPlaces.TOOLBAR, group, true);
@@ -207,6 +210,7 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
     private DefaultActionGroup createExportActionGroup() {
         DefaultActionGroup exportGroup = new DefaultActionGroup(Bundle.get("http.action.group.export.env"), true);
         exportGroup.getTemplatePresentation().setIcon(ThemeTool.isDark() ? HttpIcons.General.OUT : HttpIcons.General.OUT_LIGHT);
+
         HttpConfigExportAction exportOne = new HttpConfigExportAction(Bundle.get("http.action.export.current.env"), HttpEnum.ExportEnum.SPECIFY_ENV);
         exportOne.initAction(null, null, null);
         exportGroup.add(exportOne);

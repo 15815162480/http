@@ -23,9 +23,6 @@ import java.util.Set;
 @Description("选择环境菜单组")
 public class SelectActionGroup extends DefaultActionGroup {
 
-    // @Setter
-    // private Consumer<String> callback;
-
     public SelectActionGroup() {
         super(Bundle.get("http.action.group.select.env"), "Select env", HttpIcons.General.TREE);
         setPopup(true);
@@ -46,11 +43,8 @@ public class SelectActionGroup extends DefaultActionGroup {
         for (String s : set) {
             SelectAction action = new SelectAction(s);
             action.setAction(event -> {
-                String selectEnv = event.getPresentation().getText();
-                tool.setSelectedEnv(selectEnv);
+                tool.setSelectedEnv(event.getPresentation().getText());
                 project.getMessageBus().syncPublisher(EnvChangeTopic.TOPIC).change();
-
-                // callback.accept(selectEnv);
             });
             if (s.equals(tool.getSelectedEnv())) {
                 action.setIcon(ThemeTool.isDark() ? HttpIcons.General.DEFAULT : HttpIcons.General.DEFAULT_LIGHT);
