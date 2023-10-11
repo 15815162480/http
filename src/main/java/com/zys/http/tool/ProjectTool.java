@@ -11,7 +11,9 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
 import com.intellij.psi.impl.java.stubs.index.JavaAnnotationIndex;
 import com.intellij.psi.search.GlobalSearchScope;
+import com.zys.http.constant.HttpEnum;
 import com.zys.http.constant.SpringEnum;
+import com.zys.http.entity.tree.MethodNodeData;
 import jdk.jfr.Description;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -129,5 +131,53 @@ public class ProjectTool {
             }
         }
         return null;
+    }
+
+    @Description("获取项目中所有的接口")
+    public static List<MethodNodeData> methodNodeDataList(Project project) {
+        Collection<Module> moduleList = moduleList(project);
+        List<MethodNodeData> methodNodeDataList = new ArrayList<>();
+        Map<String, HttpEnum.HttpMethod> httpMethodMap = Arrays.stream(SpringEnum.Method.values())
+                .collect(Collectors.toMap(SpringEnum.Method::getClazz, SpringEnum.Method::getHttpMethod));
+        for (Module m : moduleList) {
+            String controllerPath;
+            String contextPath;
+            List<PsiClass> controllers = getModuleControllers(project, m).stream()
+                    .filter(c -> c.getAllMethods().length > 0).toList();
+            for (PsiClass c : controllers) {
+                controllerPath = PsiTool.getControllerPath(c);
+                contextPath = ProjectTool.getModuleContextPath(project, m);
+                PsiMethod[] methods = c.getAllMethods();
+                for (PsiMethod method : methods) {
+                    PsiAnnotation[] annotations = method.getAnnotations();
+                    for (PsiAnnotation annotation : annotations) {
+                        String qualifiedName = annotation.getQualifiedName();
+                        if (httpMethodMap.containsKey(qualifiedName)) {
+                            methodNodeDataList.add(buildMethodNodeData(annotation, contextPath, controllerPath, method));
+                        }
+                    }
+                }
+            }
+        }
+
+        return methodNodeDataList;
+    }
+
+    @Description("构建方法结点数据")
+    public static MethodNodeData buildMethodNodeData(@NotNull PsiAnnotation annotation, String contextPath, String controllerPath, PsiMethod psiElement) {
+        Map<String, HttpEnum.HttpMethod> httpMethodMap = Arrays.stream(SpringEnum.Method.values())
+                .collect(Collectors.toMap(SpringEnum.Method::getClazz, SpringEnum.Method::getHttpMethod));
+        String qualifiedName = annotation.getQualifiedName();
+        if (!httpMethodMap.containsKey(qualifiedName)) {
+            return null;
+        }
+        HttpEnum.HttpMethod httpMethod = httpMethodMap.get(qualifiedName);
+        if (httpMethod.equals(HttpEnum.HttpMethod.REQUEST)) {
+            httpMethod = HttpEnum.HttpMethod.GET;
+        }
+        String name = PsiTool.getAnnotationValue(annotation, new String[]{"value", "path"});
+        MethodNodeData data = new MethodNodeData(httpMethod, name, controllerPath, contextPath);
+        data.setPsiElement(psiElement);
+        return data;
     }
 }

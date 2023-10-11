@@ -3,7 +3,7 @@ package com.zys.http.ui.search;
 import com.intellij.navigation.ChooseByNameContributor;
 import com.intellij.navigation.NavigationItem;
 import com.intellij.openapi.project.Project;
-import com.zys.http.ui.tree.node.MethodNode;
+import com.zys.http.entity.tree.MethodNodeData;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 
@@ -11,22 +11,22 @@ import java.util.List;
 
 /**
  * @author zhou ys
- * @since 2023-10-10
+ * @since 2023-10-11
  */
 @AllArgsConstructor
-public class ApiSearchChooseByNameContributor implements ChooseByNameContributor {
+public class GotoApiChooseByNameContributor implements ChooseByNameContributor {
 
-    private final List<MethodNode> methodNodeList;
+    private final List<MethodNodeData> dataList;
     @Override
     public String @NotNull [] getNames(Project project, boolean includeNonProjectItems) {
-        return methodNodeList.stream().map(v -> v.getValue().getNodeName()).toList().toArray(new String[0]);
+        return dataList.stream().map(MethodNodeData::getNodeName).toList().toArray(new String[0]);
     }
 
     @Override
     public NavigationItem @NotNull [] getItemsByName(String name, String pattern, Project project, boolean includeNonProjectItems) {
-        return methodNodeList.stream()
-                .filter(item -> item.getValue().getNodeName() != null && item.getValue().getNodeName().equals(name))
-                .map(v -> new ApiSearchItem(v.getValue()))
+        return dataList.stream()
+                .filter(item -> item.getNodeName() != null && item.getNodeName().equals(name))
+                .map(GotoApiItem::new)
                 .toList().toArray(new NavigationItem[0]);
     }
 }

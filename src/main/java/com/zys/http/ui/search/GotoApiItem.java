@@ -18,11 +18,11 @@ import javax.swing.*;
  * @since 2023-10-10
  */
 @Getter
-public class ApiSearchItem implements NavigationItem {
+public class GotoApiItem implements NavigationItem {
 
     private final MethodNodeData methodNodeData;
 
-    public ApiSearchItem(MethodNodeData methodNodeData) {
+    public GotoApiItem(MethodNodeData methodNodeData) {
         this.methodNodeData = methodNodeData;
     }
 
@@ -62,7 +62,7 @@ public class ApiSearchItem implements NavigationItem {
     @Override
     public void navigate(boolean requestFocus) {
         NavigatablePsiElement psiElement = methodNodeData.getPsiElement();
-        if (psiElement != null) {
+        if (psiElement instanceof PsiMethod) {
             psiElement.navigate(requestFocus);
         }
     }
