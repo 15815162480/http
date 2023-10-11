@@ -7,8 +7,12 @@ import com.intellij.ide.util.gotoByName.FilteringGotoByModel;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import com.zys.http.constant.HttpConstant;
+import com.zys.http.entity.tree.MethodNodeData;
+import com.zys.http.tool.ProjectTool;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 /**
  * @author zys
@@ -19,7 +23,9 @@ public class GotoApiSearchEverywhereContributor extends AbstractGotoSEContributo
 
     public GotoApiSearchEverywhereContributor(@NotNull AnActionEvent event) {
         super(event);
-        this.apiModel = GotoApiModel.getInstance(event.getProject());
+        Project project = event.getProject();
+        List<MethodNodeData> dataList = ProjectTool.methodNodeDataList(project);
+        this.apiModel =  new GotoApiModel(project, new GotoApiChooseByNameContributor(dataList));
     }
 
     @Override

@@ -7,7 +7,6 @@ import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import com.zys.http.constant.HttpEnum;
 import com.zys.http.entity.tree.MethodNodeData;
-import com.zys.http.tool.ProjectTool;
 import jdk.jfr.Description;
 import lombok.Getter;
 import org.jetbrains.annotations.Nls;
@@ -26,11 +25,10 @@ public class GotoApiModel extends FilteringGotoByModel<HttpEnum.HttpMethod> impl
 
     private final List<MethodNodeData> nodeDataList;
 
-    private GotoApiModel(Project project, GotoApiChooseByNameContributor contributor) {
+    public GotoApiModel(Project project, GotoApiChooseByNameContributor contributor) {
         super(project, new ChooseByNameContributor[]{contributor});
         this.nodeDataList = contributor.getDataList();
     }
-
 
     @Override
     public @Nls(capitalization = Nls.Capitalization.Sentence) String getPromptText() {
@@ -83,11 +81,6 @@ public class GotoApiModel extends FilteringGotoByModel<HttpEnum.HttpMethod> impl
     @Override
     public boolean willOpenEditor() {
         return true;
-    }
-
-    public static GotoApiModel getInstance(Project project) {
-        List<MethodNodeData> dataList = ProjectTool.methodNodeDataList(project);
-        return new GotoApiModel(project, new GotoApiChooseByNameContributor(dataList));
     }
 
     @Override
