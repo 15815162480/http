@@ -1,4 +1,4 @@
-package com.zys.http.ui.search;
+package com.zys.http.extension.search.everywhere;
 
 import com.intellij.ide.util.gotoByName.FilteringGotoByModel;
 import com.intellij.navigation.ChooseByNameContributor;
@@ -8,6 +8,8 @@ import com.intellij.openapi.project.Project;
 import com.zys.http.constant.HttpEnum;
 import com.zys.http.entity.tree.MethodNodeData;
 import com.zys.http.tool.ProjectTool;
+import jdk.jfr.Description;
+import lombok.Getter;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -18,15 +20,17 @@ import java.util.List;
  * @author zys
  * @since 2023-10-10
  */
+@Getter
+@Description("数据模型")
 public class GotoApiModel extends FilteringGotoByModel<HttpEnum.HttpMethod> implements DumbAware {
 
     private final List<MethodNodeData> nodeDataList;
 
-
-    public GotoApiModel(Project project, List<MethodNodeData> nodeDataList, GotoApiChooseByNameContributor contributor) {
+    private GotoApiModel(Project project, GotoApiChooseByNameContributor contributor) {
         super(project, new ChooseByNameContributor[]{contributor});
-        this.nodeDataList = nodeDataList;
+        this.nodeDataList = contributor.getDataList();
     }
+
 
     @Override
     public @Nls(capitalization = Nls.Capitalization.Sentence) String getPromptText() {
@@ -64,7 +68,6 @@ public class GotoApiModel extends FilteringGotoByModel<HttpEnum.HttpMethod> impl
                 .filter(v -> v.getNodeName().equals(name) || v.getNodeName().contains(pattern))
                 .map(GotoApiItem::new)
                 .toList().toArray(new GotoApiItem[0]);
-
     }
 
     @Override
@@ -84,20 +87,11 @@ public class GotoApiModel extends FilteringGotoByModel<HttpEnum.HttpMethod> impl
 
     public static GotoApiModel getInstance(Project project) {
         List<MethodNodeData> dataList = ProjectTool.methodNodeDataList(project);
-        return new GotoApiModel(project, dataList, new GotoApiChooseByNameContributor(dataList));
+        return new GotoApiModel(project, new GotoApiChooseByNameContributor(dataList));
     }
 
     @Override
     protected @Nullable HttpEnum.HttpMethod filterValueFor(NavigationItem item) {
-        if (item instanceof GotoApiItem apiItem) {
-            return apiItem.getMethodNodeData().getHttpMethod();
-        }
         return null;
     }
-
-    // @Override
-    // public boolean matches(@NotNull String popupItem, @NotNull String userPattern) {
-    //     return true;
-    // }
-
 }

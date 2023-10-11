@@ -1,5 +1,6 @@
-package com.zys.http.ui.search;
+package com.zys.http.extension.search.everywhere;
 
+import com.intellij.ide.projectView.PresentationData;
 import com.intellij.navigation.ItemPresentation;
 import com.intellij.navigation.NavigationItem;
 import com.intellij.psi.NavigatablePsiElement;
@@ -7,18 +8,21 @@ import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiMethod;
 import com.zys.http.entity.tree.MethodNodeData;
 import com.zys.http.ui.icon.HttpIcons;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import java.util.Objects;
 
 /**
  * @author zhou ys
  * @since 2023-10-10
  */
 @Getter
-public class GotoApiItem implements NavigationItem {
+@EqualsAndHashCode
+public class GotoApiItem implements NavigationItem, Comparable<GotoApiItem> {
 
     private final MethodNodeData methodNodeData;
 
@@ -33,30 +37,16 @@ public class GotoApiItem implements NavigationItem {
 
     @Override
     public @Nullable ItemPresentation getPresentation() {
-        return new ItemPresentation() {
-            @Override
-            public @Nullable String getPresentableText() {
-                return getName();
-            }
-
-            @Override
-            public @NotNull String getLocationString() {
-                String location = "";
-                NavigatablePsiElement psiElement = methodNodeData.getPsiElement();
-                PsiMethod psiMethod = ((PsiMethod) psiElement);
-                PsiClass psiClass = psiMethod.getContainingClass();
-                if (psiClass != null) {
-                    location = psiClass.getName();
-                }
-                location += "#" + psiMethod.getName();
-                return location;
-            }
-
-            @Override
-            public @Nullable Icon getIcon(boolean unused) {
-                return HttpIcons.HttpMethod.getHttpMethodIcon(methodNodeData.getHttpMethod());
-            }
-        };
+        String location = "";
+        NavigatablePsiElement psiElement = methodNodeData.getPsiElement();
+        PsiMethod psiMethod = ((PsiMethod) psiElement);
+        PsiClass psiClass = psiMethod.getContainingClass();
+        if (psiClass != null) {
+            location = psiClass.getName();
+        }
+        location += "#" + psiMethod.getName();
+        Icon icon = HttpIcons.HttpMethod.getHttpMethodIcon(methodNodeData.getHttpMethod());
+        return new PresentationData(getName(), location, icon, null);
     }
 
     @Override
@@ -75,5 +65,10 @@ public class GotoApiItem implements NavigationItem {
     @Override
     public boolean canNavigateToSource() {
         return true;
+    }
+
+    @Override
+    public int compareTo(@NotNull GotoApiItem o) {
+        return Objects.requireNonNull(getName()).compareTo(Objects.requireNonNull(o.getName()));
     }
 }

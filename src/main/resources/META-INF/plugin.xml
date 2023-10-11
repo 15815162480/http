@@ -259,9 +259,8 @@
         />
         <projectService serviceImplementation="com.zys.http.service.HttpService"/>
         <projectService serviceImplementation="com.zys.http.service.NotifyService"/>
-        <projectService serviceImplementation="com.zys.http.service.configuration.ApiSearchConfiguration"/>
         <notificationGroup id="http.notify" displayType="BALLOON" toolWindowId="http"/>
         <searchEverywhereContributor
-                implementation="com.zys.http.ui.search.GotoApiSearchEverywhereContributor$Factory"/>
+                implementation="com.zys.http.extension.search.everywhere.GotoApiSearchEverywhereContributor$Factory"/>
     </extensions>
 </idea-plugin>
