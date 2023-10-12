@@ -46,11 +46,11 @@ public class EnvHeaderTable extends AbstractTable implements EditAsProperties {
 
     private static final String TEMPLATE = "{}={}";
 
-    public EnvHeaderTable(Project project, boolean isAdd) {
+    public EnvHeaderTable(Project project, boolean isAdd, String selectEnv) {
         super(project, true);
         this.isAdd = isAdd;
         if (!isAdd) {
-            this.selectEnv = serviceTool.getSelectedEnv();
+            this.selectEnv = selectEnv;
         }
         init();
 
