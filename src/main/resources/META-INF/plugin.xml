@@ -62,6 +62,11 @@
                 新功能: 添加一个图标在请求方法的左边(IDEA官方称为装订区域), 点击生成对应的请求和将树展开到对应的结点
             </li>
             <li>
+                Feature: Header and Param can edit as a properties
+                <br>
+                新功能: 请求头和请求参数能以一个 properties 文件的形式进行编辑
+            </li>
+            <li>
                 fix bugs: Toolwindow theme do not refresh synchronously when switching themes
                 <br>
                 bug 修复: 切换主题时窗口主题没有同步刷新
