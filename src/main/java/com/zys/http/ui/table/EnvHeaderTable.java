@@ -193,9 +193,9 @@ public class EnvHeaderTable extends AbstractTable implements EditAsProperties {
             for (String header : split) {
                 if (header.contains("=")) {
                     int i = header.indexOf("=");
-                    String key = header.substring(0, i);
-                    String value = header.substring(i + 1);
-                    if (CharSequenceUtil.isNotBlank(key.trim())) {
+                    String key = header.substring(0, i).trim();
+                    String value = header.substring(i + 1).trim();
+                    if (CharSequenceUtil.isNotBlank(key)) {
                         headerMap.put(key, value);
                     }
                 }

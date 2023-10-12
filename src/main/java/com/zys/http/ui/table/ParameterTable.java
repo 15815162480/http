@@ -56,9 +56,9 @@ public class ParameterTable extends EnvHeaderTable {
             for (String param : split) {
                 if (param.contains("=")) {
                     int idx = param.indexOf("=");
-                    String key = param.substring(0, idx);
-                    String value = param.substring(idx + 1);
-                    if (CharSequenceUtil.isNotBlank(key.trim())) {
+                    String key = param.substring(0, idx).trim();
+                    String value = param.substring(idx + 1).trim();
+                    if (CharSequenceUtil.isNotBlank(key)) {
                         getTableModel().addRow(new String[]{key, value});
                     }
                 }
