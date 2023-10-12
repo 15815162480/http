@@ -8,10 +8,12 @@ import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.project.Project;
 import com.zys.http.action.AddAction;
+import com.zys.http.action.CustomAction;
 import com.zys.http.action.EditAction;
 import com.zys.http.action.RemoveAction;
 import com.zys.http.entity.HttpConfig;
 import com.zys.http.service.Bundle;
+import com.zys.http.tool.ui.DialogTool;
 import com.zys.http.ui.dialog.EditorDialog;
 import com.zys.http.ui.editor.CustomEditor;
 import jdk.jfr.Description;
@@ -19,6 +21,7 @@ import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
@@ -50,6 +53,7 @@ public class EnvHeaderTable extends AbstractTable implements EditAsProperties {
             this.selectEnv = serviceTool.getSelectedEnv();
         }
         init();
+
     }
 
     @Override
@@ -129,6 +133,19 @@ public class EnvHeaderTable extends AbstractTable implements EditAsProperties {
         };
     }
 
+    @Override
+    protected @NotNull ListSelectionListener initListSelectionListener() {
+        return e -> getToolbar().getActions().forEach(v -> {
+            if (v instanceof CustomAction c) {
+                if (v instanceof AddAction || v instanceof EditAction) {
+                    c.setEnabled(true);
+                } else {
+                    c.setEnabled(valueTable.getSelectedRow() != -1);
+                }
+            }
+        });
+    }
+
     public void addContentType(String contentType) {
         // 是否有 contentType
         TableModel model = valueTable.getModel();
@@ -167,8 +184,12 @@ public class EnvHeaderTable extends AbstractTable implements EditAsProperties {
     public void run() {
         CustomEditor editor = new CustomEditor(project, PropertiesFileType.INSTANCE);
         HttpConfig httpConfig = serviceTool.getHttpConfig(selectEnv);
-        Map<String, String> headers = httpConfig.getHeaders();
+        if (Objects.isNull(httpConfig)) {
+            DialogTool.error("请选择环境");
+            return;
+        }
 
+        Map<String, String> headers = httpConfig.getHeaders();
         if (Objects.nonNull(headers) && !headers.isEmpty()) {
             int i = 1;
             int size = headers.size();
@@ -182,6 +203,7 @@ public class EnvHeaderTable extends AbstractTable implements EditAsProperties {
             }
             editor.setText(all.toString());
         }
+
 
         EditorDialog dialog = new EditorDialog(project, Bundle.get("http.editor.body.action.dialog"), editor);
         dialog.setOkCallBack(s -> {

@@ -15,10 +15,12 @@ import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -121,6 +123,20 @@ public class EnvListTable extends AbstractTable {
                     c.setEnabled(false);
                 }
             });
+        };
+    }
+
+    @Override
+    protected @NotNull ListSelectionListener initListSelectionListener() {
+        return e -> {
+            ActionToolbar toolbar = getToolbar();
+            if (!e.getValueIsAdjusting() && Objects.nonNull(toolbar)) {
+                toolbar.getActions().forEach(v -> {
+                    if (v instanceof CustomAction c && !(v instanceof AddAction)) {
+                        c.setEnabled(valueTable.getSelectedRow() != -1);
+                    }
+                });
+            }
         };
     }
 }
