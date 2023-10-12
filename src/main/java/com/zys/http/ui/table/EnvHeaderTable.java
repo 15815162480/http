@@ -112,8 +112,8 @@ public class EnvHeaderTable extends AbstractTable implements EditAsProperties {
         });
         removeAction.setEnabled(false);
         group.add(removeAction);
-        EditAction action = new EditAction("Edit As Properties");
-        action.setAction(e -> run());
+        EditAction action = new EditAction(Bundle.get("http.table.edit.properties"));
+        action.setAction(e -> edit());
         group.add(action);
         return ActionManager.getInstance().createActionToolbar(ActionPlaces.TOOLBAR, group, true);
     }
@@ -181,7 +181,7 @@ public class EnvHeaderTable extends AbstractTable implements EditAsProperties {
     }
 
     @Override
-    public void run() {
+    public void edit() {
         CustomEditor editor = new CustomEditor(project, PropertiesFileType.INSTANCE);
         HttpConfig httpConfig = serviceTool.getHttpConfig(selectEnv);
         if (Objects.isNull(httpConfig)) {
