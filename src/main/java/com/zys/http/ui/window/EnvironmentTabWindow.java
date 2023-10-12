@@ -1,7 +1,6 @@
 package com.zys.http.ui.window;
 
 import com.intellij.openapi.Disposable;
-import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.SimpleToolWindowPanel;
@@ -11,7 +10,6 @@ import com.zys.http.ui.table.EnvListTable;
 import jdk.jfr.Description;
 
 import javax.swing.*;
-import java.util.concurrent.*;
 
 /**
  * @author zhou ys
@@ -21,15 +19,6 @@ import java.util.concurrent.*;
 public class EnvironmentTabWindow extends SimpleToolWindowPanel implements Disposable {
     private final transient Project project;
     private final EnvListTable envListTable;
-
-    private final transient ExecutorService executorTaskBounded = new ThreadPoolExecutor(
-            1,
-            1,
-            5L, TimeUnit.SECONDS,
-            new LinkedBlockingQueue<>(),
-            Executors.defaultThreadFactory(),
-            new ThreadPoolExecutor.DiscardOldestPolicy()
-    );
 
     public EnvironmentTabWindow(Project project) {
         super(true, true);
@@ -42,15 +31,11 @@ public class EnvironmentTabWindow extends SimpleToolWindowPanel implements Dispo
     }
 
     public void reloadEnv() {
-        DumbService.getInstance(project).smartInvokeLater(
-                () -> ReadAction.nonBlocking(envListTable::reloadTableModel)
-                        .inSmartMode(project)
-                        .submit(executorTaskBounded)
-        );
+        DumbService.getInstance(project).smartInvokeLater(envListTable::reloadTableModel);
     }
 
     @Override
     public void dispose() {
-        executorTaskBounded.shutdown();
+        // 不处理
     }
 }

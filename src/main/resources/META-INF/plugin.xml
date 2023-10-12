@@ -1,6 +1,6 @@
 <idea-plugin>
     <id>com.zys.http</id>
-    <version>1.3.1</version>
+    <version>1.4.0</version>
 
     <name>ApiTool</name>
 
@@ -48,12 +48,18 @@
 
     <!-- 更新公告 -->
     <change-notes><![CDATA[
-        <b>1.3.1</b><br>
+        <b>1.4.0</b><br>
         <ol>
             <li>
                 Feature: Add a "ApiTool" tab into Search Everywhere, api can be matched based on / split
                 <br>
                 新功能: 往 Search Everywhere(随处搜索, 双击 Shift)添加 ApiTool, 可根据 / 分割对接口进行匹配
+            </li>
+            <li>
+                Feature: Add an icon to the left of the request method (officially called the binding area), click to
+                generate the corresponding request and expand the tree to the corresponding node
+                <br>
+                新功能: 添加一个图标在请求方法的左边(IDEA官方称为装订区域), 点击生成对应的请求和将树展开到对应的结点
             </li>
             <li>
                 fix bugs: Toolwindow theme do not refresh synchronously when switching themes
@@ -64,6 +70,17 @@
                 Improve: Adapt to light color mode(Mainly new UI)
                 <br>
                 优化: 适配浅色模式(以新UI为准)
+            </li>
+            <li>
+                fix bugs: When the node is selected, the environment is switched, and the request header does not change
+                accordingly.
+                <br>
+                bug 修复: 选中节点时，切换环境, 请求头没有发生变化
+            </li>
+            <li>
+                fix bugs: API tab add environment function exception
+                <br>
+                bug 修复: Api 标签页面添加环境功能异常
             </li>
         </ol>
         <b>1.3.0</b><br>
@@ -262,5 +279,8 @@
         <notificationGroup id="http.notify" displayType="BALLOON" toolWindowId="http"/>
         <searchEverywhereContributor
                 implementation="com.zys.http.extension.search.everywhere.GotoApiSearchEverywhereContributor$Factory"/>
+
+        <codeInsight.lineMarkerProvider language="JAVA"
+                                        implementationClass="com.zys.http.extension.gutter.HttpLineMarkerProvider"/>
     </extensions>
 </idea-plugin>

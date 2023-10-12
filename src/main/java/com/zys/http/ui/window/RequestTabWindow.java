@@ -7,8 +7,6 @@ import com.intellij.openapi.actionSystem.ActionPlaces;
 import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.application.ModalityState;
-import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.SimpleToolWindowPanel;
@@ -28,15 +26,16 @@ import com.zys.http.ui.icon.HttpIcons;
 import com.zys.http.ui.popup.MethodFilterPopup;
 import com.zys.http.ui.popup.NodeShowFilterPopup;
 import com.zys.http.ui.tree.HttpApiTreePanel;
+import com.zys.http.ui.tree.node.ModuleNode;
 import com.zys.http.ui.window.panel.RequestPanel;
 import jdk.jfr.Description;
+import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.*;
 
 /**
  * @author zys
@@ -47,6 +46,7 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
 
     private final transient Project project;
 
+    @Getter
     private final RequestPanel requestPanel;
 
     @Description("请求方式过滤菜单")
@@ -58,15 +58,6 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
     @Description("是否生成默认")
     private transient Runnable generateDefaultCb;
 
-
-    private final transient ExecutorService executorTaskBounded = new ThreadPoolExecutor(
-            1,
-            1,
-            5L, TimeUnit.SECONDS,
-            new LinkedBlockingQueue<>(),
-            Executors.defaultThreadFactory(),
-            new ThreadPoolExecutor.DiscardOldestPolicy()
-    );
 
     public RequestTabWindow(@NotNull Project project) {
         super(true, true);
@@ -81,7 +72,7 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
     }
 
     @Description("初始化")
-    private void init() {
+    public void init() {
         setContent(requestPanel);
         refreshTree(false);
         setToolbar(requestToolBar().getComponent());
@@ -122,7 +113,12 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
         envActionGroup.getTemplatePresentation().setIcon(ThemeTool.isDark() ? HttpIcons.General.ENVIRONMENT : HttpIcons.General.ENVIRONMENT_LIGHT);
 
         AddAction addAction = new AddAction(Bundle.get("http.action.add.env"));
-        addAction.setAction(event -> new EnvAddOrEditDialog(project, true, "").show());
+        addAction.setAction(event -> {
+            EnvAddOrEditDialog dialog = new EnvAddOrEditDialog(project, true, "");
+            dialog.setAddCallback((configName, httpConfig) -> SystemTool.schedule(() -> generateDefaultCb.run(), 600));
+            dialog.show();
+
+        });
         envActionGroup.add(addAction);
         envActionGroup.add(new SelectActionGroup());
 
@@ -183,27 +179,23 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
     }
 
     private void refreshTree(boolean isExpand) {
-        DumbService.getInstance(project).smartInvokeLater(
+        DumbService.getInstance(project).runWhenSmart(
                 () -> {
                     HttpApiTreePanel httpApiTreePanel = requestPanel.getHttpApiTreePanel();
                     List<HttpEnum.HttpMethod> selectedValues = methodFilterPopup.getSelectedValues();
                     List<String> nodeShowValues = nodeShowFilterPopup.getSelectedValues();
-                    ReadAction.nonBlocking(() -> httpApiTreePanel.initNodes(selectedValues, nodeShowValues))
-                            .inSmartMode(project)
-                            .finishOnUiThread(ModalityState.defaultModalityState(), root -> {
-                                httpApiTreePanel.render(root);
-                                if (isExpand) {
-                                    requestPanel.getHttpApiTreePanel().expandAll();
-                                }
-                            })
-                            .submit(executorTaskBounded);
+                    ModuleNode moduleNode = httpApiTreePanel.initNodes(selectedValues, nodeShowValues);
+                    httpApiTreePanel.render(moduleNode);
+                    if (isExpand) {
+                        requestPanel.getHttpApiTreePanel().expandAll();
+                    }
                 }
         );
     }
 
     @Override
     public void dispose() {
-        executorTaskBounded.shutdown();
+        // 不处理
     }
 
 

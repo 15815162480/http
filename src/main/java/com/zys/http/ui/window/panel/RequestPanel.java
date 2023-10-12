@@ -315,6 +315,7 @@ public class RequestPanel extends JBSplitter {
 
     public void reload(BaseNode<?> chooseNode) {
         if (Objects.nonNull(chooseNode) && chooseNode instanceof MethodNode m) {
+            this.headerTable.reloadTableModel();
             chooseEvent(m);
         } else {
             this.headerTable.reloadTableModel();
@@ -355,6 +356,7 @@ public class RequestPanel extends JBSplitter {
             ParamProperty v = entry.getValue();
             HttpEnum.ParamUsage usage = v.getParamUsage();
             switch (usage) {
+                case HEADER -> headerTable.getTableModel().addRow(new String[]{k, v.getDefaultValue() + ""});
                 case PATH -> {
                     tabs.select(parameterTabInfo, true);
                     parameterTable.getTableModel().addRow(new String[]{k, v.getDefaultValue() + ""});
