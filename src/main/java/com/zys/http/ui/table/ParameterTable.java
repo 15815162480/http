@@ -35,7 +35,7 @@ public class ParameterTable extends EnvHeaderTable {
     }
 
     @Override
-    public void run() {
+    public void edit() {
         CustomEditor editor = new CustomEditor(project, PropertiesFileType.INSTANCE);
         DefaultTableModel model = getTableModel();
         int count = model.getRowCount();
