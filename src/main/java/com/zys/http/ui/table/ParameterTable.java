@@ -22,7 +22,7 @@ public class ParameterTable extends EnvHeaderTable {
     private static final String TEMPLATE = "{}={}";
 
     public ParameterTable(Project project) {
-        super(project, true);
+        super(project, true, "");
     }
 
     @Override
