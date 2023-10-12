@@ -195,7 +195,9 @@ public class EnvHeaderTable extends AbstractTable implements EditAsProperties {
                     int i = header.indexOf("=");
                     String key = header.substring(0, i);
                     String value = header.substring(i + 1);
-                    headerMap.put(key, value);
+                    if (CharSequenceUtil.isNotBlank(key.trim())) {
+                        headerMap.put(key, value);
+                    }
                 }
             }
             httpConfig.setHeaders(headerMap);
