@@ -1,241 +1,291 @@
 <idea-plugin>
-  <id>com.zys.http</id>
-  <version>1.3.0</version>
+    <id>com.zys.http</id>
+    <version>1.4.0</version>
 
-  <name>ApiTool</name>
+    <name>ApiTool</name>
 
-  <vendor email="1083734160@qq.com" url="">zys</vendor>
+    <vendor email="1083734160@qq.com" url="">zys</vendor>
 
-  <!-- 插件作用说明 -->
-  <description><![CDATA[
-    <h3>A request service development aid plugin.</h3>
-    <ol>
-      <li>
-        <a href="https://gitee.com/zhou-sheng1/http">gitee</a>|
-        <a href="https://github.com/15815162480/http">github</a>
-      </li>
-      <li>Only Java language is supported.</li>
-      <li>Language Supported: English, Chinese</li>
-      <li>Support for Spring annotation system (Spring MVC / Spring Boot)</li>
-      <li>Provides a regional display API interface</li>
-      <li>Double-click a method node to jump directly to the corresponding method definition</li>
-      <li>Configurable multiple environments</li>
-      <li>The default environment is to read the ports in order of bootstrap.(properties, yaml, yml) and
-        application.(properties, yaml, yml) priority.
-      </li>
-    </ol>
-    <br>
-    <h3>一个请求服务开发辅助工具插件</h3>
-    <ol>
-      <li>
-        <a href="https://gitee.com/zhou-sheng1/http">gitee</a>|
-        <a href="https://github.com/15815162480/http">github</a>
-      </li>
-      <li>只支持 java 语言</li>
-      <li>语言支持: 英语、中文</li>
-      <li>支持 Spring 注解体系(Spring MVC / Spring Boot)</li>
-      <li>提供了一块区域展示 API 接口</li>
-      <li>双击方法结点直接跳转到对应的方法定义</li>
-      <li>可配置多环境</li>
-      <li>默认环境是按 bootstrap.(properties、yaml、yml)、application.(properties、yaml、yml) 优先级顺序读取其中的 port</li>
-      <li><a href="https://gitee.com/zhou-sheng1/http/issues/I851R7">关于导出 postman 数据不兼容 ApiPost 和 ApiFox 的问题</a></li>
-    </ol>
-    <br>
-    ]]></description>
+    <!-- 插件作用说明 -->
+    <description><![CDATA[
+        <h3>A request service development aid plugin.</h3>
+        <ol>
+            <li>
+                <a href="https://gitee.com/zhou-sheng1/http">gitee</a>|
+                <a href="https://github.com/15815162480/http">github</a>
+            </li>
+            <li>Only Java language is supported.</li>
+            <li>Language Supported: English, Chinese</li>
+            <li>Support for Spring annotation system (Spring MVC / Spring Boot)</li>
+            <li>Provides a regional display API interface</li>
+            <li>Double-click a method node to jump directly to the corresponding method definition</li>
+            <li>Configurable multiple environments</li>
+            <li>The default environment is to read the ports in order of bootstrap.(properties, yaml, yml) and
+                application.(properties, yaml, yml) priority.
+            </li>
+        </ol>
+        <br>
+        <h3>一个请求服务开发辅助工具插件</h3>
+        <ol>
+            <li>
+                <a href="https://gitee.com/zhou-sheng1/http">gitee</a>|
+                <a href="https://github.com/15815162480/http">github</a>
+            </li>
+            <li>只支持 java 语言</li>
+            <li>语言支持: 英语、中文</li>
+            <li>支持 Spring 注解体系(Spring MVC / Spring Boot)</li>
+            <li>提供了一块区域展示 API 接口</li>
+            <li>双击方法结点直接跳转到对应的方法定义</li>
+            <li>可配置多环境</li>
+            <li>默认环境是按 bootstrap.(properties、yaml、yml)、application.(properties、yaml、yml) 优先级顺序读取其中的
+                port
+            </li>
+            <li><a href="https://gitee.com/zhou-sheng1/http/issues/I851R7">关于导出 postman 数据不兼容 ApiPost 和 ApiFox
+                的问题</a></li>
+        </ol>
+        <br>
+        ]]></description>
 
-  <!-- 更新公告 -->
-  <change-notes><![CDATA[
-    <b>1.3.0</b><br>
-    <ol>
-      <li>
-        fix bugs: Refresh does not clear the request header, parameters, request body, and return body.
-        <br>
-        bug 修复: 刷新没有清空请求头、参数、请求体、返回体
-      </li>
-      <li>
-        Improve: Request body support Generics Type(Do not nest parameters with each other, Will cause Stack Overflow)
-        <br>
-        优化: 请求体支持泛型参数(不要互相嵌套参数, 会造成 Stack Overflow)
-      </li>
-      <li>
-        fix bugs: "java.lang.Boolean" generates error value
-        <br>
-        bug 修复: java.lang.Boolean 生成类型错误
-      </li>
-    </ol>
-    <b>1.2.3</b><br>
-    <ol>
-      <li>
-        Improve: Move "Env List" to new tab
-        <br>
-        优化: 移动"环境列表"到一个新的标签页面
-      </li>
-    </ol>
-    <b>1.2.2</b><br>
-    <ol>
-      <li>
-        Feature: Can set whether to generate a default environment and remove the default environment
-        <br>
-        新功能: 能够设置是否生成默认环境并删除生成的默认环境
-      </li>
-      <li>
-        Improve: Modify the default port when there is no "server.port" to 8080
-        <br>
-        优化: 修改没有 server.port 配置时的默认端口为 8080
-      </li>
-      <li>
-        Improve: Integration of node filtering functions
-        <br>
-        优化: 节点过滤功能整合
-      </li>
-      <li>
-        Fix bug: export postman data encoding error
-        <br>
-        bug修复: 导出 postman 数据编码问题
-      </li>
-      <li>
-        Fix bug: export postman data protocol, host, path lost
-        <br>
-        bug修复: 导出 postman 数据请求协议、请求地址、请求路径丢失
-      </li>
-      <li>
-        Improve: Change the window name to ApiTool
-        <br>
-        优化: 将窗口名修改为 ApiTool
-      </li>
-    </ol>
-    <b>1.2.1</b><br>
-    <ol>
-      <li>
-        feature: Ability to choose whether to show package nodes or class nodes
-        <br>
-        新功能: 能够选择是否展示包结点或类结点
-      </li>
-      <li>
-        feature: Response now can be viewed in a dialog, but edit it will not echo
-        <br>
-        新功能: 响应体能在一个新的对话框中查看, 但修改不会回显到原位置
-      </li>
-      <li>
-        fix bug: Remove request header and prohibit duplication
-        <br>
-        bug 修复: 移除请求头禁止重复
-      </li>
-      <li>
-        fix bug: No method node selected can still initiate a request
-        <br>
-        bug 修复: 没有选中节点仍然能够发起请求
-      </li>
-    </ol>
-    <b>1.2.0</b><br>
-    <ol>
-      <li>
-        feature: Support for exporting postman environment configuration, api list
-        <br>
-        新功能: 支持导出 Postman 环境配置、分模块 API 列表导出
-      </li>
-      <li>
-        feature: Expand and collapse function optimization, if there is selected node, only the selected nodes
-        will be expanded or collapse.
-        <br>
-        新功能: 展开、收起功能优化, 如果有选中节点, 则只会展开/收起选中的节点
-      </li>
-      <li>
-        feature: Module Node, Package Node, Class Node add the right-click menu: expand all child node
-        <br>
-        新功能: 模块结点、包结点、类结点添加右键菜单功能: 展开所有子节点
-      </li>
-      <li>
-        fix bug: Send a new request, the older request do not clear the response editor
-        <br>
-        bug 修复: 发送一个新请求时, 旧请求的结果没有被清空
-      </li>
-    </ol>
-    <b>1.1.0</b><br>
-    <ol>
-      <li>
-        feature: Request Method Filter
-        <br>
-        新功能: 请求方式过滤
-      </li>
-      <li>
-        feature: Method node add right-click menu: Jump to Method, Copy Full Path, Copy Api
-        <br>
-        新功能: 方法结点添加右键菜单: 跳转到方法、复制完整路径、复制 API
-      </li>
-      <li>
-        feature: Request body editor can open in new dialog to edit
-        <br>
-        新功能: 请求体内容能打开在一个新的对话框中编辑
-      </li>
-      <li>
-        fix bug: change env does not change the host value, header and so on
-        <br>
-        bug 修复: 切换环境时地址栏、请求头不会随之切换
-      </li>
-      <li>
-        fix bug: When the selected environment configuration is edited, the host value and request header will not
-        change.
-        <br>
-        bug 修复: 选中环境配置在编辑完成时, 地址栏、请求头不会随之切换
-      </li>
-    </ol>
-    <b>1.0.2</b><br>
-    <ol>
-      <li>
-        fix bugs: Package and class are at the same level, class node is missing
-        <br>
-        bug 修复: 包和类处于同一级别，类节点丢失
-      </li>
-      <li>
-        fix bugs: choose a new request, the older request do not clear the response editor
-        <br>
-        bug 修复: 选择一个新节点, 旧节点的请求结果没有清除
-      </li>
-    </ol>
-    <b>1.0.1</b><br>
-    <ol>
-      <li>Change plugin name —— ApiTool<br>更改插件名为 ApiTool</li>
-    </ol>
-    <b>1.0.0</b><br>
-    <ol>
-      <li>
-        Read all annotation request interface methods in Spring MVC
-        <br>
-        读取 Spring MVC 中所有注解请求接口方法
-      </li>
-      <li>
-        Multi Environment configuration, by default, reads the context-path and port of each module and
-        generates a local environment for each module (refresh will still take effect after deletion)
-        <br/>
-        多环境配置, 默认读取每个模块的 context-path 和 port 并为每个模块生成本地环境(删除后刷新仍会生效)
-      </li>
-      <li>
-        If the project refers to Swagger2 and Swagger3 annotations, hover the mouse over the corresponding
-        node will display the corresponding description
-        <br/>
-        如果项目引用了 Swagger2 和 Swagger3 注解, 将鼠标悬浮在对应的结点上会显示对应的说明
-      </li>
-      <li>
-        Double-click the method node to jump to the specified method
-        <br/>
-        双击方法结点可以跳转到指定方法处
-      </li>
-    </ol>
-    ]]></change-notes>
+    <!-- 更新公告 -->
+    <change-notes><![CDATA[
+        <b>1.4.0</b><br>
+        <ol>
+            <li>
+                Feature: Add a "ApiTool" tab into Search Everywhere, api can be matched based on / split
+                <br>
+                新功能: 往 Search Everywhere(随处搜索, 双击 Shift)添加 ApiTool, 可根据 / 分割对接口进行匹配
+            </li>
+            <li>
+                Feature: Add an icon to the left of the request method (officially called the binding area), click to
+                generate the corresponding request and expand the tree to the corresponding node
+                <br>
+                新功能: 添加一个图标在请求方法的左边(IDEA官方称为装订区域), 点击生成对应的请求和将树展开到对应的结点
+            </li>
+            <li>
+                Feature: Header and Param can edit as a properties
+                <br>
+                新功能: 请求头和请求参数能以一个 properties 文件的形式进行编辑
+            </li>
+            <li>
+                fix bugs: Toolwindow theme do not refresh synchronously when switching themes
+                <br>
+                bug 修复: 切换主题时窗口主题没有同步刷新
+            </li>
+            <li>
+                Improve: Adapt to light color mode(Mainly new UI)
+                <br>
+                优化: 适配浅色模式(以新UI为准)
+            </li>
+            <li>
+                fix bugs: When the node is selected, the environment is switched, and the request header does not change
+                accordingly.
+                <br>
+                bug 修复: 选中节点时，切换环境, 请求头没有发生变化
+            </li>
+            <li>
+                fix bugs: API tab add environment function exception
+                <br>
+                bug 修复: Api 标签页面添加环境功能异常
+            </li>
+        </ol>
+        <b>1.3.0</b><br>
+        <ol>
+            <li>
+                fix bugs: Refresh does not clear the request header, parameters, request body, and return body.
+                <br>
+                bug 修复: 刷新没有清空请求头、参数、请求体、返回体
+            </li>
+            <li>
+                Improve: Request body support Generics Type(Do not nest parameters with each other, Will cause Stack
+                Overflow)
+                <br>
+                优化: 请求体支持泛型参数(不要互相嵌套参数, 会造成 Stack Overflow)
+            </li>
+            <li>
+                fix bugs: "java.lang.Boolean" generates error value
+                <br>
+                bug 修复: java.lang.Boolean 生成类型错误
+            </li>
+        </ol>
+        <b>1.2.3</b><br>
+        <ol>
+            <li>
+                Improve: Move "Env List" to new tab
+                <br>
+                优化: 移动"环境列表"到一个新的标签页面
+            </li>
+        </ol>
+        <b>1.2.2</b><br>
+        <ol>
+            <li>
+                Feature: Can set whether to generate a default environment and remove the default environment
+                <br>
+                新功能: 能够设置是否生成默认环境并删除生成的默认环境
+            </li>
+            <li>
+                Improve: Modify the default port when there is no "server.port" to 8080
+                <br>
+                优化: 修改没有 server.port 配置时的默认端口为 8080
+            </li>
+            <li>
+                Improve: Integration of node filtering functions
+                <br>
+                优化: 节点过滤功能整合
+            </li>
+            <li>
+                Fix bug: export postman data encoding error
+                <br>
+                bug修复: 导出 postman 数据编码问题
+            </li>
+            <li>
+                Fix bug: export postman data protocol, host, path lost
+                <br>
+                bug修复: 导出 postman 数据请求协议、请求地址、请求路径丢失
+            </li>
+            <li>
+                Improve: Change the window name to ApiTool
+                <br>
+                优化: 将窗口名修改为 ApiTool
+            </li>
+        </ol>
+        <b>1.2.1</b><br>
+        <ol>
+            <li>
+                feature: Ability to choose whether to show package nodes or class nodes
+                <br>
+                新功能: 能够选择是否展示包结点或类结点
+            </li>
+            <li>
+                feature: Response now can be viewed in a dialog, but edit it will not echo
+                <br>
+                新功能: 响应体能在一个新的对话框中查看, 但修改不会回显到原位置
+            </li>
+            <li>
+                fix bug: Remove request header and prohibit duplication
+                <br>
+                bug 修复: 移除请求头禁止重复
+            </li>
+            <li>
+                fix bug: No method node selected can still initiate a request
+                <br>
+                bug 修复: 没有选中节点仍然能够发起请求
+            </li>
+        </ol>
+        <b>1.2.0</b><br>
+        <ol>
+            <li>
+                feature: Support for exporting postman environment configuration, api list
+                <br>
+                新功能: 支持导出 Postman 环境配置、分模块 API 列表导出
+            </li>
+            <li>
+                feature: Expand and collapse function optimization, if there is selected node, only the selected nodes
+                will be expanded or collapse.
+                <br>
+                新功能: 展开、收起功能优化, 如果有选中节点, 则只会展开/收起选中的节点
+            </li>
+            <li>
+                feature: Module Node, Package Node, Class Node add the right-click menu: expand all child node
+                <br>
+                新功能: 模块结点、包结点、类结点添加右键菜单功能: 展开所有子节点
+            </li>
+            <li>
+                fix bug: Send a new request, the older request do not clear the response editor
+                <br>
+                bug 修复: 发送一个新请求时, 旧请求的结果没有被清空
+            </li>
+        </ol>
+        <b>1.1.0</b><br>
+        <ol>
+            <li>
+                feature: Request Method Filter
+                <br>
+                新功能: 请求方式过滤
+            </li>
+            <li>
+                feature: Method node add right-click menu: Jump to Method, Copy Full Path, Copy Api
+                <br>
+                新功能: 方法结点添加右键菜单: 跳转到方法、复制完整路径、复制 API
+            </li>
+            <li>
+                feature: Request body editor can open in new dialog to edit
+                <br>
+                新功能: 请求体内容能打开在一个新的对话框中编辑
+            </li>
+            <li>
+                fix bug: change env does not change the host value, header and so on
+                <br>
+                bug 修复: 切换环境时地址栏、请求头不会随之切换
+            </li>
+            <li>
+                fix bug: When the selected environment configuration is edited, the host value and request header will
+                not
+                change.
+                <br>
+                bug 修复: 选中环境配置在编辑完成时, 地址栏、请求头不会随之切换
+            </li>
+        </ol>
+        <b>1.0.2</b><br>
+        <ol>
+            <li>
+                fix bugs: Package and class are at the same level, class node is missing
+                <br>
+                bug 修复: 包和类处于同一级别，类节点丢失
+            </li>
+            <li>
+                fix bugs: choose a new request, the older request do not clear the response editor
+                <br>
+                bug 修复: 选择一个新节点, 旧节点的请求结果没有清除
+            </li>
+        </ol>
+        <b>1.0.1</b><br>
+        <ol>
+            <li>Change plugin name —— ApiTool<br>更改插件名为 ApiTool</li>
+        </ol>
+        <b>1.0.0</b><br>
+        <ol>
+            <li>
+                Read all annotation request interface methods in Spring MVC
+                <br>
+                读取 Spring MVC 中所有注解请求接口方法
+            </li>
+            <li>
+                Multi Environment configuration, by default, reads the context-path and port of each module and
+                generates a local environment for each module (refresh will still take effect after deletion)
+                <br/>
+                多环境配置, 默认读取每个模块的 context-path 和 port 并为每个模块生成本地环境(删除后刷新仍会生效)
+            </li>
+            <li>
+                If the project refers to Swagger2 and Swagger3 annotations, hover the mouse over the corresponding
+                node will display the corresponding description
+                <br/>
+                如果项目引用了 Swagger2 和 Swagger3 注解, 将鼠标悬浮在对应的结点上会显示对应的说明
+            </li>
+            <li>
+                Double-click the method node to jump to the specified method
+                <br/>
+                双击方法结点可以跳转到指定方法处
+            </li>
+        </ol>
+        ]]></change-notes>
 
-  <depends>com.intellij.modules.platform</depends>
-  <depends>com.intellij.modules.java</depends>
-  <depends>com.intellij.properties</depends>
-  <depends>org.jetbrains.plugins.yaml</depends>
-  <depends>org.jetbrains.kotlin</depends>
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.java</depends>
+    <depends>com.intellij.properties</depends>
+    <depends>org.jetbrains.plugins.yaml</depends>
+    <depends>org.jetbrains.kotlin</depends>
 
-  <extensions defaultExtensionNs="com.intellij">
-    <toolWindow id="ApiTool" secondary="true" anchor="right" icon="com.zys.http.ui.icon.HttpIcons.PLUGIN_ICON"
-                doNotActivateOnStart="true" factoryClass="com.zys.http.HttpMainWindowFactory"
-    />
-    <projectService serviceImplementation="com.zys.http.service.HttpService"/>
-    <projectService serviceImplementation="com.zys.http.service.NotifyService"/>
-    <notificationGroup id="http.notify" displayType="BALLOON" toolWindowId="http"/>
-  </extensions>
+    <extensions defaultExtensionNs="com.intellij">
+        <toolWindow id="ApiTool" secondary="true" anchor="right" icon="com.zys.http.ui.icon.HttpIcons.PLUGIN_ICON"
+                    doNotActivateOnStart="true" factoryClass="com.zys.http.HttpMainWindowFactory"
+        />
+        <projectService serviceImplementation="com.zys.http.service.HttpService"/>
+        <projectService serviceImplementation="com.zys.http.service.NotifyService"/>
+        <notificationGroup id="http.notify" displayType="BALLOON" toolWindowId="http"/>
+        <searchEverywhereContributor
+                implementation="com.zys.http.extension.search.everywhere.GotoApiSearchEverywhereContributor$Factory"/>
+
+        <codeInsight.lineMarkerProvider language="JAVA"
+                                        implementationClass="com.zys.http.extension.gutter.HttpLineMarkerProvider"/>
+    </extensions>
 </idea-plugin>

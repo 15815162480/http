@@ -24,6 +24,7 @@ import com.zys.http.tool.HttpServiceTool;
 import com.zys.http.tool.ProjectTool;
 import com.zys.http.tool.PsiTool;
 import com.zys.http.tool.SystemTool;
+import com.zys.http.tool.ui.ThemeTool;
 import com.zys.http.tool.ui.TreeTool;
 import com.zys.http.ui.icon.HttpIcons;
 import com.zys.http.ui.tree.node.*;
@@ -296,7 +297,8 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
             expandAction.setAction(event -> treeExpand());
             group.add(expandAction);
         } else {
-            CommonAction navigation = new CommonAction(Bundle.get("http.tree.right.item.navigation"), "", HttpIcons.General.LOCATE);
+            CommonAction navigation = new CommonAction(Bundle.get("http.tree.right.item.navigation"), "",
+                    ThemeTool.isDark() ? HttpIcons.General.LOCATE : HttpIcons.General.LOCATE_LIGHT);
             navigation.setAction(event -> mn.getValue().getPsiElement().navigate(true));
             group.add(navigation);
 
@@ -336,7 +338,7 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
                 if (!httpMethodMap.containsKey(qualifiedName)) {
                     continue;
                 }
-                MethodNodeData data1 = buildMethodNodeData(annotation, contextPath, controllerPath, method);
+                MethodNodeData data1 = ProjectTool.buildMethodNodeData(annotation, contextPath, controllerPath, method);
                 if (Objects.nonNull(data1)) {
                     data = new MethodNode(data1);
                     data1.setDescription(PsiTool.getSwaggerAnnotation(method, HttpEnum.AnnotationPlace.METHOD));
@@ -345,22 +347,5 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
             }
         }
         return dataList;
-    }
-
-    private MethodNodeData buildMethodNodeData(@NotNull PsiAnnotation annotation, String contextPath, String controllerPath, PsiMethod psiElement) {
-        Map<String, HttpEnum.HttpMethod> httpMethodMap = Arrays.stream(SpringEnum.Method.values())
-                .collect(Collectors.toMap(SpringEnum.Method::getClazz, SpringEnum.Method::getHttpMethod));
-        String qualifiedName = annotation.getQualifiedName();
-        if (!httpMethodMap.containsKey(qualifiedName)) {
-            return null;
-        }
-        HttpEnum.HttpMethod httpMethod = httpMethodMap.get(qualifiedName);
-        if (httpMethod.equals(HttpEnum.HttpMethod.REQUEST)) {
-            httpMethod = HttpEnum.HttpMethod.GET;
-        }
-        String name = PsiTool.getAnnotationValue(annotation, new String[]{"value", "path"});
-        MethodNodeData data = new MethodNodeData(httpMethod, name, controllerPath, contextPath);
-        data.setPsiElement(psiElement);
-        return data;
     }
 }

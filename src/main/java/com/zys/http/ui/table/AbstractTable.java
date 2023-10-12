@@ -5,8 +5,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
 import com.intellij.util.ui.JBUI;
-import com.zys.http.action.AddAction;
-import com.zys.http.action.CustomAction;
 import com.zys.http.constant.UIConstant;
 import com.zys.http.tool.HttpServiceTool;
 import jdk.jfr.Description;
@@ -15,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
@@ -94,15 +93,7 @@ public abstract class AbstractTable extends JPanel {
         valueTable.getModel().addTableModelListener(initTableModelListener());
 
         // 选中时, 工具栏的某些按钮才可以使用
-        valueTable.getSelectionModel().addListSelectionListener(e -> {
-            if (!e.getValueIsAdjusting() && Objects.nonNull(toolbar)) {
-                toolbar.getActions().forEach(v -> {
-                    if (v instanceof CustomAction c && !(v instanceof AddAction)) {
-                        c.setEnabled(valueTable.getSelectedRow() != -1);
-                    }
-                });
-            }
-        });
+        valueTable.getSelectionModel().addListSelectionListener(initListSelectionListener());
         return scrollPane;
     }
 
@@ -138,4 +129,6 @@ public abstract class AbstractTable extends JPanel {
 
     @Description("初始化表格模型数据变化监听器")
     protected abstract @NotNull TableModelListener initTableModelListener();
+    @Description("初始化表格模型选择监听器")
+    protected abstract @NotNull ListSelectionListener initListSelectionListener();
 }

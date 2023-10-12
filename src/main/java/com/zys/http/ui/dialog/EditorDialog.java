@@ -38,6 +38,7 @@ public class EditorDialog extends DialogWrapper {
         customEditor.setBorder(JBUI.Borders.customLine(UIConstant.EDITOR_BORDER_COLOR, 1, 1, 1, 1));
         init();
         getRootPane().setMinimumSize(new Dimension(800, 600));
+        getRootPane().setMaximumSize(new Dimension(800, 600));
         setOKButtonText(Bundle.get("http.text.ok"));
         setAutoAdjustable(true);
         setTitle(title);

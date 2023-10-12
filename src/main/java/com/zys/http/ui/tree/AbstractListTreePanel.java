@@ -155,6 +155,14 @@ public abstract class AbstractListTreePanel extends JBScrollPane implements Tree
         }
     }
 
+    public void setSelectedNode(DefaultMutableTreeNode node) {
+        if (node != null) {
+            TreePath path = new TreePath(node.getPath());
+            tree.setSelectionPath(path);
+            expandAll(path, true);
+        }
+    }
+
     @Override
     public void expandAll() {
         expandAll(new TreePath(tree.getModel().getRoot()), true);
