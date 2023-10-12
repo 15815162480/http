@@ -12,16 +12,14 @@ import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentManager;
 import com.zys.http.action.CommonAction;
 import com.zys.http.constant.HttpConstant;
+import com.zys.http.constant.SpringEnum;
 import com.zys.http.ui.icon.HttpIcons;
 import com.zys.http.ui.tree.node.MethodNode;
 import com.zys.http.ui.window.RequestTabWindow;
 import com.zys.http.ui.window.panel.RequestPanel;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @author zhou ys
@@ -40,6 +38,9 @@ public class HttpLineMarkerInfo extends LineMarkerInfo<PsiIdentifier> {
     public GutterIconRenderer createGutterRenderer() {
         PsiElement parent = element.getParent();
         if (!(parent instanceof PsiMethod psiMethod)) {
+            return null;
+        }
+        if (Arrays.stream(SpringEnum.Method.values()).map(SpringEnum.Method::getClazz).noneMatch(psiMethod::hasAnnotation)) {
             return null;
         }
 

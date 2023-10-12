@@ -384,8 +384,13 @@ public class RequestPanel extends JBSplitter {
                             bodyFileType.setSelectedItem(CustomEditor.TEXT_FILE_TYPE);
                         }
                     } else {
-                        bodyEditor.setText(v.getDefaultValue().toString(), CustomEditor.TEXT_FILE_TYPE);
-                        bodyFileType.setSelectedItem(CustomEditor.TEXT_FILE_TYPE);
+                        if (type.equals(HttpEnum.ContentType.APPLICATION_JSON)) {
+                            bodyEditor.setText(v.getDefaultValue().toString(), CustomEditor.JSON_FILE_TYPE);
+                            bodyFileType.setSelectedItem(CustomEditor.JSON_FILE_TYPE);
+                        } else {
+                            bodyEditor.setText(v.getDefaultValue().toString(), CustomEditor.TEXT_FILE_TYPE);
+                            bodyFileType.setSelectedItem(CustomEditor.TEXT_FILE_TYPE);
+                        }
                     }
                 }
                 default -> {

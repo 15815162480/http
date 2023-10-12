@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author zys
@@ -42,6 +43,9 @@ public class HttpService implements PersistentStateComponent<HttpService.State> 
     }
 
     public void removeHttpConfig(@NotNull String key) {
+        if (Objects.isNull(state.selectedEnv)){
+            return;
+        }
         if (state.selectedEnv.equals(key)) {
             state.selectedEnv = "";
         }

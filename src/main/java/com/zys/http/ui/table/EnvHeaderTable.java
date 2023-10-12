@@ -1,15 +1,19 @@
 package com.zys.http.ui.table;
 
 import cn.hutool.core.text.CharSequenceUtil;
+import com.intellij.lang.properties.PropertiesFileType;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionPlaces;
 import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.project.Project;
 import com.zys.http.action.AddAction;
+import com.zys.http.action.EditAction;
 import com.zys.http.action.RemoveAction;
 import com.zys.http.entity.HttpConfig;
 import com.zys.http.service.Bundle;
+import com.zys.http.ui.dialog.EditorDialog;
+import com.zys.http.ui.editor.CustomEditor;
 import jdk.jfr.Description;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
@@ -28,7 +32,7 @@ import java.util.Objects;
  * @since 2023-09-03
  */
 @Description("请求头表格")
-public class EnvHeaderTable extends AbstractTable {
+public class EnvHeaderTable extends AbstractTable implements EditAsProperties {
 
     @Getter
     @Description("添加(true)/修改(false)")
@@ -36,6 +40,8 @@ public class EnvHeaderTable extends AbstractTable {
 
     @Description("选中的环境名, isAdd 为 true 时忽略")
     private String selectEnv;
+
+    private static final String TEMPLATE = "{}={}";
 
     public EnvHeaderTable(Project project, boolean isAdd) {
         super(project, true);
@@ -102,6 +108,9 @@ public class EnvHeaderTable extends AbstractTable {
         });
         removeAction.setEnabled(false);
         group.add(removeAction);
+        EditAction action = new EditAction("Edit As Properties");
+        action.setAction(e -> run());
+        group.add(action);
         return ActionManager.getInstance().createActionToolbar(ActionPlaces.TOOLBAR, group, true);
     }
 
@@ -152,5 +161,47 @@ public class EnvHeaderTable extends AbstractTable {
             map.put((String) model.getValueAt(i, 0), (String) model.getValueAt(i, 1));
         }
         return map;
+    }
+
+    @Override
+    public void run() {
+        CustomEditor editor = new CustomEditor(project, PropertiesFileType.INSTANCE);
+        HttpConfig httpConfig = serviceTool.getHttpConfig(selectEnv);
+        Map<String, String> headers = httpConfig.getHeaders();
+
+        if (Objects.nonNull(headers) && !headers.isEmpty()) {
+            int i = 1;
+            int size = headers.size();
+            StringBuilder all = new StringBuilder();
+            for (Map.Entry<String, String> entry : headers.entrySet()) {
+                String s = CharSequenceUtil.format(TEMPLATE, entry.getKey(), entry.getValue());
+                if (i++ < size) {
+                    s += "\n";
+                }
+                all.append(s);
+            }
+            editor.setText(all.toString());
+        }
+
+        EditorDialog dialog = new EditorDialog(project, Bundle.get("http.editor.body.action.dialog"), editor);
+        dialog.setOkCallBack(s -> {
+            if (Objects.isNull(s) || s.isEmpty()) {
+                return;
+            }
+            Map<String, String> headerMap = new HashMap<>();
+            String[] split = s.split("\n");
+            for (String header : split) {
+                if (header.contains("=")) {
+                    int i = header.indexOf("=");
+                    String key = header.substring(0, i);
+                    String value = header.substring(i + 1);
+                    headerMap.put(key, value);
+                }
+            }
+            httpConfig.setHeaders(headerMap);
+            serviceTool.putHttpConfig(selectEnv, httpConfig);
+            reloadTableModel();
+        });
+        dialog.show();
     }
 }

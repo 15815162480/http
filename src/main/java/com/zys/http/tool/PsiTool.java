@@ -110,11 +110,9 @@ public class PsiTool {
         if (Objects.isNull(psiMethod)) {
             return HttpEnum.ContentType.APPLICATION_X_FORM_URLENCODED;
         }
-        PsiModifierList modifierList = psiMethod.getModifierList();
-        PsiAnnotation responseBody = Stream.of(modifierList.getAnnotations())
-                .filter(o -> SpringEnum.Controller.RESPONSE_BODY.getClazz().equals(o.getQualifiedName()))
-                .findFirst().orElse(null);
-        return Objects.isNull(responseBody) ? null : HttpEnum.ContentType.APPLICATION_JSON;
+
+        return psiMethod.hasAnnotation(SpringEnum.Controller.RESPONSE_BODY.getClazz()) ?
+                HttpEnum.ContentType.APPLICATION_JSON : null;
     }
 
     @Description("是否有 static 修饰")
