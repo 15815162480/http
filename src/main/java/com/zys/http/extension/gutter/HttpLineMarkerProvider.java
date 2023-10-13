@@ -12,6 +12,7 @@ import jdk.jfr.Description;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.swing.*;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -53,5 +54,10 @@ public class HttpLineMarkerProvider extends LineMarkerProviderDescriptor {
     @Override
     public @Nullable("null means disabled") @GutterName String getName() {
         return Bundle.get("http.gutter.config");
+    }
+
+    @Override
+    public @Nullable Icon getIcon() {
+        return HttpIcons.HttpMethod.REQUEST;
     }
 }
