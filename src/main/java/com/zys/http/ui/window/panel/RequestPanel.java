@@ -141,7 +141,7 @@ public class RequestPanel extends JBSplitter {
         JPanel tabsPanel = new JPanel(new BorderLayout(0, 0));
         tabs = new JBTabsImpl(project);
         // 请求头标签页
-        headerTable = new EnvHeaderTable(project, false, null);
+        headerTable = new EnvHeaderTable(project, false, serviceTool.getSelectedEnv(),false);
         headerTable.getToolbar().getComponent().setBorder(JBUI.Borders.customLineBottom(UIConstant.BORDER_COLOR));
         TabInfo tabInfo = new TabInfo(headerTable);
         tabInfo.setText(Bundle.get("http.tab.request.header"));

@@ -13,7 +13,6 @@ import com.zys.http.action.EditAction;
 import com.zys.http.action.RemoveAction;
 import com.zys.http.entity.HttpConfig;
 import com.zys.http.service.Bundle;
-import com.zys.http.tool.ui.DialogTool;
 import com.zys.http.ui.dialog.EditorDialog;
 import com.zys.http.ui.editor.CustomEditor;
 import jdk.jfr.Description;
@@ -27,6 +26,7 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -41,14 +41,18 @@ public class EnvHeaderTable extends AbstractTable implements EditAsProperties {
     @Description("添加(true)/修改(false)")
     private final boolean isAdd;
 
+    @Description("环境/请求头")
+    private final boolean isEnv;
+
     @Description("选中的环境名, isAdd 为 true 时忽略")
     private String selectEnv;
 
     private static final String TEMPLATE = "{}={}";
 
-    public EnvHeaderTable(Project project, boolean isAdd, String selectEnv) {
+    public EnvHeaderTable(Project project, boolean isAdd, String selectEnv, boolean isEnv) {
         super(project, true);
         this.isAdd = isAdd;
+        this.isEnv = isEnv;
         if (!isAdd) {
             this.selectEnv = selectEnv;
         }
@@ -183,35 +187,23 @@ public class EnvHeaderTable extends AbstractTable implements EditAsProperties {
     @Override
     public void edit() {
         CustomEditor editor = new CustomEditor(project, PropertiesFileType.INSTANCE);
-        HttpConfig httpConfig = serviceTool.getHttpConfig(selectEnv);
-        if (Objects.isNull(httpConfig)) {
-            DialogTool.error("请选择环境");
-            return;
+        DefaultTableModel model = getTableModel();
+        StringBuilder all = new StringBuilder();
+        int count = model.getRowCount();
+        for (int i = 0; i < count; i++) {
+            String value = model.getValueAt(i, 1) + "\n";
+            String key = (String) model.getValueAt(i, 0);
+            all.append(CharSequenceUtil.format(TEMPLATE, key, value));
         }
-
-        Map<String, String> headers = httpConfig.getHeaders();
-        if (Objects.nonNull(headers) && !headers.isEmpty()) {
-            int i = 1;
-            int size = headers.size();
-            StringBuilder all = new StringBuilder();
-            for (Map.Entry<String, String> entry : headers.entrySet()) {
-                String s = CharSequenceUtil.format(TEMPLATE, entry.getKey(), entry.getValue());
-                if (i++ < size) {
-                    s += "\n";
-                }
-                all.append(s);
-            }
-            editor.setText(all.toString());
-        }
-
+        editor.setText(all.toString());
 
         EditorDialog dialog = new EditorDialog(project, Bundle.get("http.editor.body.action.dialog"), editor);
         dialog.setOkCallBack(s -> {
             if (Objects.isNull(s) || s.isEmpty()) {
                 return;
             }
-            Map<String, String> headerMap = new HashMap<>();
             String[] split = s.split("\n");
+            Map<String, String> headerMap = new LinkedHashMap<>();
             for (String header : split) {
                 if (header.contains("=")) {
                     int i = header.indexOf("=");
@@ -222,9 +214,22 @@ public class EnvHeaderTable extends AbstractTable implements EditAsProperties {
                     }
                 }
             }
-            httpConfig.setHeaders(headerMap);
-            serviceTool.putHttpConfig(selectEnv, httpConfig);
-            reloadTableModel();
+            if (isEnv) {
+                HttpConfig httpConfig = serviceTool.getHttpConfig(selectEnv);
+                if (Objects.nonNull(httpConfig)) {
+                    httpConfig.setHeaders(headerMap);
+                    serviceTool.putHttpConfig(selectEnv, httpConfig);
+                    reloadTableModel();
+                }
+            } else {
+                // 重新渲染请求头数据
+                String[] columnNames = {
+                        Bundle.get("http.table.header"),
+                        Bundle.get("http.table.value")
+                };
+                valueTable.setModel(new DefaultTableModel(null, columnNames));
+                headerMap.forEach((k, v) -> getTableModel().addRow(new String[]{k, v}));
+            }
         });
         dialog.show();
     }
