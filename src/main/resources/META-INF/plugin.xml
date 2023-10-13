@@ -1,6 +1,6 @@
 <idea-plugin>
     <id>com.zys.http</id>
-    <version>1.4.0</version>
+    <version>1.4.1</version>
 
     <name>ApiTool</name>
 
@@ -48,6 +48,24 @@
 
     <!-- 更新公告 -->
     <change-notes><![CDATA[
+        <b>1.4.1</b><br>
+        <ol>
+            <li>
+                improve: Special treatment of enumeration parameters, only enumeration values are displayed
+                <br>
+                优化: 对枚举参数进行特殊处理，只显示枚举值
+            </li>
+            <li>
+                fix bugs: Exception in editing request header data
+                <br>
+                bug 修复: 编辑请求头数据出现异常
+            </li>
+            <li>
+                fix bugs: Whether the binding icon area is set to display, the icon is missing
+                <br>
+                bug 修复: 装订图标区域设置是否显示, 图标丢失
+            </li>
+        </ol>
         <b>1.4.0</b><br>
         <ol>
             <li>
