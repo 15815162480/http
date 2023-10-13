@@ -200,23 +200,10 @@ public class RequestPanel extends JBSplitter {
                     response -> {
                         final FileType fileType = HttpClient.parseFileType(response);
                         final String responseBody = response.body();
-                        int status = response.getStatus();
                         ApplicationManager.getApplication().invokeLater(
                                 () -> {
                                     responseEditor.setText(responseBody, fileType);
-                                    if (status >= 200 && status < 300) {
-                                        // 成功
-                                        requestResult.setText(CharSequenceUtil.format(REQUEST_RESULT_TEXT, status));
-                                        requestResult.setForeground(JBColor.GREEN);
-                                    } else if (status >= 300 && status < 400) {
-                                        // 重定向
-                                        requestResult.setText(CharSequenceUtil.format(REQUEST_RESULT_TEXT, status));
-                                        requestResult.setForeground(JBColor.YELLOW);
-                                    } else {
-                                        // 错误
-                                        requestResult.setText(CharSequenceUtil.format(REQUEST_RESULT_TEXT, status));
-                                        requestResult.setForeground(JBColor.RED);
-                                    }
+                                    resultText(response.getStatus());
                                 }
                         );
                     },
@@ -341,7 +328,8 @@ public class RequestPanel extends JBSplitter {
         HttpEnum.ContentType contentType = PsiTool.contentTypeHeader((PsiClass) psiMethod.getParent());
         HttpEnum.ContentType type = PsiTool.contentTypeHeader(psiMethod);
         type = httpMethod.equals(HttpMethod.GET) ? HttpEnum.ContentType.APPLICATION_X_FORM_URLENCODED : type;
-        headerTable.addContentType(Objects.isNull(type) ? contentType.getValue() : type.getValue());
+        type = Objects.isNull(type) ? contentType : type;
+        headerTable.addContentType(type.getValue());
 
         // 填充参数
         // 先清空 model
@@ -375,28 +363,35 @@ public class RequestPanel extends JBSplitter {
                 }
                 case BODY -> {
                     tabs.select(bodyTabInfo, true);
-                    if (Objects.isNull(type)) {
-                        if (contentType.equals(HttpEnum.ContentType.APPLICATION_JSON)) {
-                            bodyEditor.setText(v.getDefaultValue().toString(), CustomEditor.JSON_FILE_TYPE);
-                            bodyFileType.setSelectedItem(CustomEditor.JSON_FILE_TYPE);
-                        } else {
-                            bodyEditor.setText(v.getDefaultValue().toString(), CustomEditor.TEXT_FILE_TYPE);
-                            bodyFileType.setSelectedItem(CustomEditor.TEXT_FILE_TYPE);
-                        }
+                    if (type.equals(HttpEnum.ContentType.APPLICATION_JSON)) {
+                        bodyEditor.setText(v.getDefaultValue().toString(), CustomEditor.JSON_FILE_TYPE);
+                        bodyFileType.setSelectedItem(CustomEditor.JSON_FILE_TYPE);
                     } else {
-                        if (type.equals(HttpEnum.ContentType.APPLICATION_JSON)) {
-                            bodyEditor.setText(v.getDefaultValue().toString(), CustomEditor.JSON_FILE_TYPE);
-                            bodyFileType.setSelectedItem(CustomEditor.JSON_FILE_TYPE);
-                        } else {
-                            bodyEditor.setText(v.getDefaultValue().toString(), CustomEditor.TEXT_FILE_TYPE);
-                            bodyFileType.setSelectedItem(CustomEditor.TEXT_FILE_TYPE);
-                        }
+                        bodyEditor.setText(v.getDefaultValue().toString(), CustomEditor.TEXT_FILE_TYPE);
+                        bodyFileType.setSelectedItem(CustomEditor.TEXT_FILE_TYPE);
                     }
                 }
                 default -> {
                     // 不处理
                 }
             }
+        }
+    }
+
+    @Description("结果状态文本")
+    private void resultText(int status) {
+        if (status >= 200 && status < 300) {
+            // 成功
+            requestResult.setText(CharSequenceUtil.format(REQUEST_RESULT_TEXT, status));
+            requestResult.setForeground(JBColor.GREEN);
+        } else if (status >= 300 && status < 400) {
+            // 重定向
+            requestResult.setText(CharSequenceUtil.format(REQUEST_RESULT_TEXT, status));
+            requestResult.setForeground(JBColor.YELLOW);
+        } else {
+            // 错误
+            requestResult.setText(CharSequenceUtil.format(REQUEST_RESULT_TEXT, status));
+            requestResult.setForeground(JBColor.RED);
         }
     }
 }

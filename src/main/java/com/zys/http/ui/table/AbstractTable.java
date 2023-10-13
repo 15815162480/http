@@ -129,6 +129,7 @@ public abstract class AbstractTable extends JPanel {
 
     @Description("初始化表格模型数据变化监听器")
     protected abstract @NotNull TableModelListener initTableModelListener();
+
     @Description("初始化表格模型选择监听器")
     protected abstract @NotNull ListSelectionListener initListSelectionListener();
 }

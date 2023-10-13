@@ -104,7 +104,7 @@ public class EnvListTable extends AbstractTable {
         exportAction.setAction(e -> {
             DefaultTableModel model = (DefaultTableModel) valueTable.getModel();
             String envName = (String) model.getValueAt(valueTable.getSelectedRow(), 0);
-            exportAction.initAction(null, null, envName);
+            exportAction.initAction(envName);
         });
         exportAction.setEnabled(false);
         group.add(exportAction);
