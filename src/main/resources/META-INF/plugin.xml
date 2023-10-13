@@ -65,6 +65,12 @@
                 <br>
                 bug 修复: 装订图标区域设置是否显示, 图标丢失
             </li>
+            <li>
+                fix bug: When the selected environment configuration is edited, the host value and request header will
+                not change.
+                <br>
+                bug 修复: 选中环境配置在编辑完成时, 地址栏、请求头不会随之切换
+            </li>
         </ol>
         <b>1.4.0</b><br>
         <ol>
@@ -237,8 +243,7 @@
             </li>
             <li>
                 fix bug: When the selected environment configuration is edited, the host value and request header will
-                not
-                change.
+                not change.
                 <br>
                 bug 修复: 选中环境配置在编辑完成时, 地址栏、请求头不会随之切换
             </li>
