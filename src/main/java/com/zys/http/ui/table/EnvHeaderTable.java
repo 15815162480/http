@@ -30,6 +30,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import static com.zys.http.constant.HttpConstant.EDIT_AS_PROPERTIES_TEMPLATE;
+
 /**
  * @author zys
  * @since 2023-09-03
@@ -46,8 +48,6 @@ public class EnvHeaderTable extends AbstractTable implements EditAsProperties {
 
     @Description("选中的环境名, isAdd 为 true 时忽略")
     private String selectEnv;
-
-    private static final String TEMPLATE = "{}={}";
 
     public EnvHeaderTable(Project project, boolean isAdd, String selectEnv, boolean isEnv) {
         super(project, true);
@@ -193,7 +193,7 @@ public class EnvHeaderTable extends AbstractTable implements EditAsProperties {
         for (int i = 0; i < count; i++) {
             String value = model.getValueAt(i, 1) + "\n";
             String key = (String) model.getValueAt(i, 0);
-            all.append(CharSequenceUtil.format(TEMPLATE, key, value));
+            all.append(CharSequenceUtil.format(EDIT_AS_PROPERTIES_TEMPLATE, key, value));
         }
         editor.setText(all.toString());
 

@@ -3,6 +3,7 @@ package com.zys.http.ui.table;
 import cn.hutool.core.text.CharSequenceUtil;
 import com.intellij.lang.properties.PropertiesFileType;
 import com.intellij.openapi.project.Project;
+import com.zys.http.constant.HttpConstant;
 import com.zys.http.service.Bundle;
 import com.zys.http.ui.dialog.EditorDialog;
 import com.zys.http.ui.editor.CustomEditor;
@@ -18,8 +19,6 @@ import java.util.Objects;
  */
 @Description("请求参数(path、param 参数)表格")
 public class ParameterTable extends EnvHeaderTable {
-
-    private static final String TEMPLATE = "{}={}";
 
     public ParameterTable(Project project) {
         super(project, true, "", false);
@@ -43,7 +42,7 @@ public class ParameterTable extends EnvHeaderTable {
         for (int i = 0; i < count; i++) {
             String key = (String) model.getValueAt(i, 0);
             String value = model.getValueAt(i, 1) + "\n";
-            all.append(CharSequenceUtil.format(TEMPLATE, key, value));
+            all.append(CharSequenceUtil.format(HttpConstant.EDIT_AS_PROPERTIES_TEMPLATE, key, value));
         }
         editor.setText(all.toString());
         reloadTableModel();
