@@ -13,9 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @author zhou ys
@@ -40,7 +38,7 @@ public class HttpLineMarkerProvider extends LineMarkerProviderDescriptor {
     ) {
         for (PsiElement element : elements) {
             if (!(element instanceof PsiMethod psiMethod)) {
-                continue;
+                return;
             }
             for (SpringEnum.Method value : SpringEnum.Method.values()) {
                 if (psiMethod.hasAnnotation(value.getClazz())) {
@@ -48,7 +46,6 @@ public class HttpLineMarkerProvider extends LineMarkerProviderDescriptor {
                 }
             }
         }
-
     }
 
     @Override
