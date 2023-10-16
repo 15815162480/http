@@ -99,39 +99,28 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
             return moduleNodeMap.get(project.getName());
         }
 
-        String moduleName;
-        String parentName;
-        VirtualFile[] contentRoots;
-        ModuleNode pn;
-        ModuleNode mn;
-        List<PsiClass> controllers;
         // 构建模块结点层级
         for (Module m : modules) {
-            moduleName = m.getName();
-            contentRoots = ModuleRootManager.getInstance(m).getContentRoots();
+            String moduleName = m.getName();
+            VirtualFile[] contentRoots = ModuleRootManager.getInstance(m).getContentRoots();
             if (contentRoots.length < 1) {
                 continue;
             }
             // 获取当前模块的父模块名称
-            parentName = contentRoots[0].getParent().getName();
-            pn = moduleNodeMap.get(parentName);
-            mn = moduleNodeMap.get(moduleName);
+            String parentName = contentRoots[0].getParent().getName();
+            ModuleNode pn = moduleNodeMap.get(parentName);
+            ModuleNode mn = moduleNodeMap.get(moduleName);
             if (!"Project".equals(parentName) && Objects.nonNull(pn)) {
                 pn.add(mn);
             }
 
-            controllers = ProjectTool.getModuleControllers(project, m);
+            List<PsiClass> controllers = ProjectTool.getModuleControllers(project, m);
             if (!controllers.isEmpty()) {
                 moduleControllerMap.put(moduleName, controllers);
-                if (serviceTool.getGenerateDefault()) {
-                    String host = "127.0.0.1:" + ProjectTool.getModulePort(project, m);
-                    serviceTool.putHttpConfig(moduleName, new HttpConfig(HttpEnum.Protocol.HTTP, host, Collections.emptyMap()));
-                } else {
-                    serviceTool.removeHttpConfig(moduleName);
-                }
+                isGenerateDefaultEnv(m);
                 String controllerPath;
                 for (PsiClass c : controllers) {
-                    controllerPath = PsiTool.getControllerPath(c);
+                    controllerPath = PsiTool.Annotation.getControllerPath(c);
                     contextPath = ProjectTool.getModuleContextPath(project, m);
                     methodNodeMap.put(c, buildMethodNodes(c, contextPath, controllerPath));
                 }
@@ -143,14 +132,25 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
         return moduleNodeMap.get(project.getName());
     }
 
+    @Description("是否生成默认环境")
+    private void isGenerateDefaultEnv(Module m) {
+        String moduleName = m.getName();
+        if (serviceTool.getGenerateDefault()) {
+            String host = "127.0.0.1:" + ProjectTool.getModulePort(project, m);
+            serviceTool.putHttpConfig(moduleName, new HttpConfig(HttpEnum.Protocol.HTTP, host, Collections.emptyMap()));
+        } else {
+            serviceTool.removeHttpConfig(moduleName);
+        }
+    }
+
     @Description("初始化包结点、类结点、方法结点")
     private List<BaseNode<? extends NodeData>> initPackageNodes(String moduleName, List<HttpEnum.HttpMethod> methods, List<String> nodeShowValues) {
         // 获取当前模块的所有 controller
-        List<PsiClass> psiClasses = moduleControllerMap.get(moduleName);
+        List<PsiClass> controllers = moduleControllerMap.get(moduleName);
         boolean isFilterPackage = nodeShowValues.contains(SETTING_VALUES.get(0));
         boolean isFilterClass = nodeShowValues.contains(SETTING_VALUES.get(1));
 
-        if (Objects.isNull(psiClasses) || psiClasses.isEmpty()) {
+        if (Objects.isNull(controllers) || controllers.isEmpty()) {
             return Collections.emptyList();
         }
 
@@ -161,19 +161,14 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
         for (Map.Entry<PsiClass, List<MethodNode>> e : methodNodeMap.entrySet()) {
             PsiClass k = e.getKey();
             List<MethodNode> v = e.getValue();
-            if (!psiClasses.contains(k)) {
+            if (!controllers.contains(k)) {
                 continue;
             }
             ClassNodeData data = new ClassNodeData(k);
-            String s = PsiTool.getSwaggerAnnotation(k, HttpEnum.AnnotationPlace.CLASS);
+            String s = PsiTool.Annotation.getSwaggerAnnotation(k, HttpEnum.AnnotationPlace.CLASS);
             data.setDescription(s);
             ClassNode classNode = new ClassNode(data);
-            v.forEach(methodNode -> {
-                HttpEnum.HttpMethod httpMethod = methodNode.getValue().getHttpMethod();
-                if (methods.contains(httpMethod)) {
-                    classNode.add(methodNode);
-                }
-            });
+            v.stream().filter(m -> methods.contains(m.getValue().getHttpMethod())).forEach(classNode::add);
 
             if (!isFilterPackage) {
                 // 不显示包名则直接添加到 module 节点
@@ -265,8 +260,7 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
 
 
     @Override
-    @Nullable
-    protected Consumer<BaseNode<?>> getChooseListener() {
+    protected @Nullable Consumer<BaseNode<?>> getChooseListener() {
         return node -> {
             if (node instanceof MethodNode methodNode && Objects.nonNull(chooseCallback)) {
                 chooseCallback.accept(methodNode);
@@ -275,9 +269,8 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
     }
 
     @Override
-    @Nullable
     @Description("双击跳转到指定的方法")
-    protected Consumer<BaseNode<?>> getDoubleClickListener() {
+    protected @Nullable Consumer<BaseNode<?>> getDoubleClickListener() {
         return node -> {
             if (node instanceof MethodNode m) {
                 NavigatablePsiElement psiElement = m.getValue().getPsiElement();
@@ -341,7 +334,7 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
                 MethodNodeData data1 = ProjectTool.buildMethodNodeData(annotation, contextPath, controllerPath, method);
                 if (Objects.nonNull(data1)) {
                     data = new MethodNode(data1);
-                    data1.setDescription(PsiTool.getSwaggerAnnotation(method, HttpEnum.AnnotationPlace.METHOD));
+                    data1.setDescription(PsiTool.Annotation.getSwaggerAnnotation(method, HttpEnum.AnnotationPlace.METHOD));
                     dataList.add(data);
                 }
             }

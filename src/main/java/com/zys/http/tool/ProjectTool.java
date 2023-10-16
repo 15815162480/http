@@ -140,15 +140,15 @@ public class ProjectTool {
         Map<String, HttpEnum.HttpMethod> httpMethodMap = Arrays.stream(SpringEnum.Method.values())
                 .collect(Collectors.toMap(SpringEnum.Method::getClazz, SpringEnum.Method::getHttpMethod));
         for (Module m : moduleList) {
-            String controllerPath;
-            String contextPath;
             List<PsiClass> controllers = getModuleControllers(project, m).stream()
-                    .filter(c -> c.getAllMethods().length > 0).toList();
+                    .filter(c -> c.getAllMethods().length > 0)
+                    .filter(c -> !PsiTool.Class.getAllXxxMappingMethods(c).isEmpty())
+                    .toList();
             for (PsiClass c : controllers) {
-                controllerPath = PsiTool.getControllerPath(c);
-                contextPath = ProjectTool.getModuleContextPath(project, m);
-                PsiMethod[] methods = c.getAllMethods();
-                for (PsiMethod method : methods) {
+                List<PsiMethod> xxxMappingMethods = PsiTool.Class.getAllXxxMappingMethods(c);
+                String controllerPath = PsiTool.Annotation.getControllerPath(c);
+                String contextPath = ProjectTool.getModuleContextPath(project, m);
+                for (PsiMethod method : xxxMappingMethods) {
                     PsiAnnotation[] annotations = method.getAnnotations();
                     for (PsiAnnotation annotation : annotations) {
                         String qualifiedName = annotation.getQualifiedName();
@@ -175,7 +175,7 @@ public class ProjectTool {
         if (httpMethod.equals(HttpEnum.HttpMethod.REQUEST)) {
             httpMethod = HttpEnum.HttpMethod.GET;
         }
-        String name = PsiTool.getAnnotationValue(annotation, new String[]{"value", "path"});
+        String name = PsiTool.Annotation.getAnnotationValue(annotation, new String[]{"value", "path"});
         MethodNodeData data = new MethodNodeData(httpMethod, name, controllerPath, contextPath);
         data.setPsiElement(psiElement);
         return data;

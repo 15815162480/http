@@ -214,14 +214,15 @@ public class EnvHeaderTable extends AbstractTable implements EditAsProperties {
                     }
                 }
             }
-            if (isEnv) {
+            if (isEnv && !isAdd) {
                 HttpConfig httpConfig = serviceTool.getHttpConfig(selectEnv);
                 if (Objects.nonNull(httpConfig)) {
                     httpConfig.setHeaders(headerMap);
                     serviceTool.putHttpConfig(selectEnv, httpConfig);
                     reloadTableModel();
                 }
-            } else {
+            }
+            if (!isEnv || isAdd) {
                 // 重新渲染请求头数据
                 String[] columnNames = {
                         Bundle.get("http.table.header"),

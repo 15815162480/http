@@ -100,7 +100,7 @@ public class VelocityTool {
             Map<String, List<MethodItem>> methodMap = new HashMap<>();
 
             for (PsiClass c : controllers) {
-                String classSwagger = PsiTool.getSwaggerAnnotation(c, HttpEnum.AnnotationPlace.CLASS);
+                String classSwagger = PsiTool.Annotation.getSwaggerAnnotation(c, HttpEnum.AnnotationPlace.CLASS);
                 classSwagger = CharSequenceUtil.isEmpty(classSwagger) ? c.getName() : classSwagger;
                 List<MethodItem> methodItemList = createMethodItems(c, contextPath);
                 if (!methodItemList.isEmpty()) {
@@ -119,7 +119,7 @@ public class VelocityTool {
     private static List<MethodItem> createMethodItems(PsiClass c, String contextPath) {
         HttpEnum.ContentType classContentType = PsiTool.contentTypeHeader(c);
 
-        String controllerPath = PsiTool.getControllerPath(c);
+        String controllerPath = PsiTool.Annotation.getControllerPath(c);
         PsiMethod[] methods = c.getAllMethods();
         if (methods.length < 1) {
             return Collections.emptyList();
@@ -139,7 +139,7 @@ public class VelocityTool {
         PsiAnnotation[] annotations = method.getAnnotations();
         MethodItem item = new MethodItem();
         // 方法名
-        String methodSwagger = PsiTool.getSwaggerAnnotation(method, HttpEnum.AnnotationPlace.METHOD);
+        String methodSwagger = PsiTool.Annotation.getSwaggerAnnotation(method, HttpEnum.AnnotationPlace.METHOD);
         methodSwagger = CharSequenceUtil.isEmpty(methodSwagger) ? method.getName() : methodSwagger;
         item.setName(methodSwagger);
 
@@ -155,7 +155,7 @@ public class VelocityTool {
                 item.setMethod(httpMethod.name());
 
                 // 请求 uri
-                String path = PsiTool.getAnnotationValue(annotation, new String[]{"value", "path"});
+                String path = PsiTool.Annotation.getAnnotationValue(annotation, new String[]{"value", "path"});
                 item.setUri(UrlTool.buildMethodUri(contextPath, controllerPath, path));
 
                 // 请求头类型
