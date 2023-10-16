@@ -30,7 +30,7 @@ public class HttpLineMarkerInfo extends LineMarkerInfo<PsiIdentifier> {
 
     public HttpLineMarkerInfo(@NotNull PsiIdentifier element) {
         super(element, element.getTextRange(), HttpIcons.HttpMethod.REQUEST, null,
-                null, GutterIconRenderer.Alignment.LEFT, () -> "111");
+                null, GutterIconRenderer.Alignment.LEFT, () -> "");
         this.element = element;
     }
 

@@ -13,6 +13,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -22,73 +23,6 @@ import java.util.stream.Stream;
 @Description("读取项目的文件 Psi 工具类")
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class PsiTool {
-
-    @Description("获取 Controller 上 RequestMapping 的请求路径")
-    public static String getControllerPath(@NotNull PsiClass psiClass) {
-        PsiModifierList modifierList = psiClass.getModifierList();
-        if (Objects.isNull(modifierList)) {
-            return "";
-        }
-        PsiAnnotation requestMapping = Stream.of(modifierList.getAnnotations())
-                .filter(o -> SpringEnum.Method.REQUEST.getClazz().equals(o.getQualifiedName()))
-                .findFirst().orElse(null);
-        if (Objects.isNull(requestMapping)) {
-            return "";
-        }
-        return getAnnotationValue(requestMapping, new String[]{"value", "path"});
-    }
-
-    @Description("获取 Controller 上 @Api 或 @Tag/方法上的 @ApiOperation 或 @Operation")
-    public static String getSwaggerAnnotation(@NotNull PsiTarget psiTarget, HttpEnum.AnnotationPlace place) {
-        PsiModifierList modifierList;
-        if (psiTarget instanceof PsiClass psiClass) {
-            modifierList = psiClass.getModifierList();
-        } else if (psiTarget instanceof PsiMethod psiMethod) {
-            modifierList = psiMethod.getModifierList();
-        } else {
-            return "";
-        }
-        if (Objects.isNull(modifierList)) {
-            return "";
-        }
-        List<HttpEnum.Swagger> swagger = new ArrayList<>(List.of(HttpEnum.Swagger.values())).stream()
-                .filter(o -> o.getAnnotationPlace().equals(place))
-                .toList();
-        List<PsiAnnotation> list = Stream.of(modifierList.getAnnotations())
-                .filter(o -> swagger.stream().map(HttpEnum.Swagger::getClazz).toList().contains(o.getQualifiedName()))
-                .toList();
-
-        if (list.isEmpty()) {
-            return "";
-        }
-        PsiAnnotation annotation = list.get(0);
-        HttpEnum.Swagger operation = swagger.stream().filter(o -> o.getClazz().equals(annotation.getQualifiedName()))
-                .findFirst().orElse(null);
-        if (Objects.isNull(operation)) {
-            return "";
-        }
-        return getAnnotationValue(annotation, new String[]{operation.getValue()});
-    }
-
-    @Description("获取 @xxxMapping 上的 value 或 path 属性")
-    public static String getAnnotationValue(PsiAnnotation annotation, String[] attributeNames) {
-        List<PsiAnnotationMemberValue> initializerList = new ArrayList<>();
-        for (String attributeName : attributeNames) {
-            PsiAnnotationMemberValue annoValue = annotation.findAttributeValue(attributeName);
-            if (annoValue instanceof PsiArrayInitializerMemberValue arrayAnnoValues) {
-                PsiAnnotationMemberValue[] initializers = arrayAnnoValues.getInitializers();
-                if (initializers.length > 0) {
-                    initializerList.addAll(List.of(initializers));
-                }
-            } else {
-                if (annoValue != null) {
-                    initializerList.add(annoValue);
-                }
-            }
-        }
-        return initializerList.isEmpty() ? "" : initializerList.get(0).getText().replace("\"", "");
-    }
-
 
     @Description("获取当前类的请求类型")
     public static HttpEnum.ContentType contentTypeHeader(@Nullable PsiClass psiClass) {
@@ -145,6 +79,77 @@ public class PsiTool {
         return Objects.nonNull(target) && target.hasModifierProperty(modifier);
     }
 
+    @Description("注解操作工具类")
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    public static class Annotation {
+
+        @Description("获取 Controller 上 RequestMapping 的请求路径")
+        public static String getControllerPath(@NotNull PsiClass psiClass) {
+            PsiModifierList modifierList = psiClass.getModifierList();
+            if (Objects.isNull(modifierList)) {
+                return "";
+            }
+            PsiAnnotation requestMapping = Stream.of(modifierList.getAnnotations())
+                    .filter(o -> SpringEnum.Method.REQUEST.getClazz().equals(o.getQualifiedName()))
+                    .findFirst().orElse(null);
+            if (Objects.isNull(requestMapping)) {
+                return "";
+            }
+            return getAnnotationValue(requestMapping, new String[]{"value", "path"});
+        }
+
+        @Description("获取 @xxxMapping 上的 value 或 path 属性")
+        public static String getAnnotationValue(PsiAnnotation annotation, String[] attributeNames) {
+            List<PsiAnnotationMemberValue> initializerList = new ArrayList<>();
+            for (String attributeName : attributeNames) {
+                PsiAnnotationMemberValue annoValue = annotation.findAttributeValue(attributeName);
+                if (annoValue instanceof PsiArrayInitializerMemberValue arrayAnnoValues) {
+                    PsiAnnotationMemberValue[] initializers = arrayAnnoValues.getInitializers();
+                    if (initializers.length > 0) {
+                        initializerList.addAll(List.of(initializers));
+                    }
+                } else {
+                    if (annoValue != null) {
+                        initializerList.add(annoValue);
+                    }
+                }
+            }
+            return initializerList.isEmpty() ? "" : initializerList.get(0).getText().replace("\"", "");
+        }
+
+        @Description("获取 Controller 上 @Api 或 @Tag/方法上的 @ApiOperation 或 @Operation")
+        public static String getSwaggerAnnotation(@NotNull PsiTarget psiTarget, HttpEnum.AnnotationPlace place) {
+            PsiModifierList modifierList;
+            if (psiTarget instanceof PsiClass psiClass) {
+                modifierList = psiClass.getModifierList();
+            } else if (psiTarget instanceof PsiMethod psiMethod) {
+                modifierList = psiMethod.getModifierList();
+            } else {
+                return "";
+            }
+            if (Objects.isNull(modifierList)) {
+                return "";
+            }
+            List<HttpEnum.Swagger> swagger = new ArrayList<>(List.of(HttpEnum.Swagger.values())).stream()
+                    .filter(o -> o.getAnnotationPlace().equals(place))
+                    .toList();
+            List<PsiAnnotation> list = Stream.of(modifierList.getAnnotations())
+                    .filter(o -> swagger.stream().map(HttpEnum.Swagger::getClazz).toList().contains(o.getQualifiedName()))
+                    .toList();
+
+            if (list.isEmpty()) {
+                return "";
+            }
+            PsiAnnotation annotation = list.get(0);
+            HttpEnum.Swagger operation = swagger.stream().filter(o -> o.getClazz().equals(annotation.getQualifiedName()))
+                    .findFirst().orElse(null);
+            if (Objects.isNull(operation)) {
+                return "";
+            }
+            return getAnnotationValue(annotation, new String[]{operation.getValue()});
+        }
+    }
+
     @Description("类操作工具类")
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class Class {
@@ -166,6 +171,28 @@ public class PsiTool {
             }
 
             return null;
+        }
+
+        @Description("获取所有 @xxxMapping 的方法")
+        public static List<PsiMethod> getAllXxxMappingMethods(@NotNull PsiClass psiClass) {
+            PsiMethod[] methods = psiClass.getAllMethods();
+            if (methods.length == 0) {
+                return Collections.emptyList();
+            }
+            Map<String, HttpEnum.HttpMethod> httpMethodMap = Arrays.stream(SpringEnum.Method.values())
+                    .collect(Collectors.toMap(SpringEnum.Method::getClazz, SpringEnum.Method::getHttpMethod));
+            List<PsiMethod> target = new ArrayList<>();
+            for (PsiMethod method : methods) {
+                PsiAnnotation[] annotations = method.getAnnotations();
+                for (PsiAnnotation annotation : annotations) {
+                    if (httpMethodMap.containsKey(annotation.getQualifiedName())) {
+                        target.add(method);
+                        break;
+                    }
+                }
+            }
+
+            return target.stream().sorted(Comparator.comparing(PsiMethod::getName)).toList();
         }
     }
 

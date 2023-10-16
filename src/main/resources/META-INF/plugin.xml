@@ -1,6 +1,6 @@
 <idea-plugin>
     <id>com.zys.http</id>
-    <version>1.4.0</version>
+    <version>1.4.1</version>
 
     <name>ApiTool</name>
 
@@ -20,6 +20,7 @@
             <li>Provides a regional display API interface</li>
             <li>Double-click a method node to jump directly to the corresponding method definition</li>
             <li>Configurable multiple environments</li>
+            <li>Support for multiple project modules, that is, there is some support for Spring Cloud projects.</li>
             <li>The default environment is to read the ports in order of bootstrap.(properties, yaml, yml) and
                 application.(properties, yaml, yml) priority.
             </li>
@@ -37,6 +38,7 @@
             <li>提供了一块区域展示 API 接口</li>
             <li>双击方法结点直接跳转到对应的方法定义</li>
             <li>可配置多环境</li>
+            <li>支持项目多模块, 即对 Spring Cloud 项目有一定的支持</li>
             <li>默认环境是按 bootstrap.(properties、yaml、yml)、application.(properties、yaml、yml) 优先级顺序读取其中的
                 port
             </li>
@@ -48,6 +50,38 @@
 
     <!-- 更新公告 -->
     <change-notes><![CDATA[
+        <b>1.4.2</b><br>
+        <ol>
+            <li>
+                fix bugs: Collection or array generate error data
+                <br>
+                bug 修复: Collection/数组数据生成错误
+            </li>
+        </ol>
+        <b>1.4.1</b><br>
+        <ol>
+            <li>
+                improve: Special treatment of enumeration parameters, only enumeration values are displayed
+                <br>
+                优化: 对枚举参数进行特殊处理，只显示枚举值
+            </li>
+            <li>
+                fix bugs: Exception in editing request header feature
+                <br>
+                bug 修复: 编辑请求头数据功能异常
+            </li>
+            <li>
+                fix bugs: Whether the binding icon area is set to display, the icon is missing
+                <br>
+                bug 修复: 装订图标区域设置是否显示, 图标丢失
+            </li>
+            <li>
+                fix bug: When the selected environment configuration is edited, the host value and request header will
+                not change.
+                <br>
+                bug 修复: 选中环境配置在编辑完成时, 地址栏、请求头不会随之切换
+            </li>
+        </ol>
         <b>1.4.0</b><br>
         <ol>
             <li>
@@ -219,8 +253,7 @@
             </li>
             <li>
                 fix bug: When the selected environment configuration is edited, the host value and request header will
-                not
-                change.
+                not change.
                 <br>
                 bug 修复: 选中环境配置在编辑完成时, 地址栏、请求头不会随之切换
             </li>

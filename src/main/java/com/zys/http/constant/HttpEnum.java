@@ -10,6 +10,7 @@ import lombok.Getter;
  * @since 2023-08-19
  */
 public interface HttpEnum {
+
     @Getter
     @Description("Content-Type")
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
