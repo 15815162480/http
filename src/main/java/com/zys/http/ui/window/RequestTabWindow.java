@@ -205,16 +205,15 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
         exportGroup.getTemplatePresentation().setIcon(ThemeTool.isDark() ? HttpIcons.General.OUT : HttpIcons.General.OUT_LIGHT);
 
         HttpConfigExportAction exportOne = new HttpConfigExportAction(Bundle.get("http.action.export.current.env"), HttpEnum.ExportEnum.SPECIFY_ENV);
-        exportOne.initAction(null, null, null);
+        exportOne.initAction(null);
         exportGroup.add(exportOne);
 
         HttpConfigExportAction exportAll = new HttpConfigExportAction(Bundle.get("http.action.export.all.env"), HttpEnum.ExportEnum.ALL_ENV);
-        exportAll.initAction(null, null, null);
+        exportAll.initAction(null);
         exportGroup.add(exportAll);
 
         HttpConfigExportAction exportAllApi = new HttpConfigExportAction(Bundle.get("http.action.export.all.api"), HttpEnum.ExportEnum.API);
-        HttpApiTreePanel treePanel = requestPanel.getHttpApiTreePanel();
-        exportAllApi.initAction(treePanel.getModuleControllerMap(), treePanel.getMethodNodeMap(), null);
+        exportAllApi.initAction(null);
         exportGroup.add(exportAllApi);
 
         return exportGroup;

@@ -34,10 +34,10 @@ public class SelectActionGroup extends DefaultActionGroup {
         if (Objects.isNull(e) || Objects.isNull(e.getProject())) {
             return new AnAction[0];
         }
-        HttpServiceTool tool = HttpServiceTool.getInstance(e);
+        Project project = e.getProject();
+        HttpServiceTool tool = HttpServiceTool.getInstance(project);
         Set<String> set = tool.getHttpConfigs().keySet();
         AnAction[] anActions = new AnAction[set.size()];
-        Project project = e.getProject();
 
         int i = 0;
         for (String s : set) {

@@ -19,6 +19,7 @@ import java.util.List;
 public class GotoApiChooseByNameContributor implements ChooseByNameContributor {
 
     private final List<MethodNodeData> dataList;
+
     @Override
     public String @NotNull [] getNames(Project project, boolean includeNonProjectItems) {
         return dataList.stream().map(MethodNodeData::getNodeName).sorted().toList().toArray(new String[0]);

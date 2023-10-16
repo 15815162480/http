@@ -2,10 +2,7 @@ package com.zys.http.tool;
 
 import cn.hutool.core.text.CharSequenceUtil;
 import com.intellij.openapi.project.Project;
-import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiClassType;
-import com.intellij.psi.PsiField;
-import com.intellij.psi.PsiType;
+import com.intellij.psi.*;
 import com.intellij.psi.impl.source.PsiClassReferenceType;
 import com.intellij.psi.search.GlobalSearchScope;
 import jdk.jfr.Description;
@@ -111,6 +108,11 @@ public class DataTypeTool {
             return Collections.emptyMap();
         }
 
+        if ("org.springframework.web.servlet.ModelAndView".equals(canonicalText)
+                || "org.springframework.ui.ModelMap".equals(canonicalText)){
+            return Collections.emptyMap();
+        }
+
         // 应该是基元类型和包装类才返回空数组类型,如果是类应该处理
         Object arrayResult = processArrayType(psiType, project);
         if (Objects.nonNull(arrayResult)) {
@@ -125,8 +127,14 @@ public class DataTypeTool {
         if (psiType instanceof PsiClassReferenceType type) {
             // 处理实体类类型
             PsiClass psiClass = type.resolve();
+
             if (Objects.isNull(psiClass)) {
                 return null;
+            }
+            if (psiClass.isEnum()){
+                return Arrays.stream(psiClass.getFields()).filter(PsiEnumConstant.class::isInstance)
+                        .map(PsiField::getName)
+                        .findFirst().orElse("");
             }
             // 对几个比较常用的类型进行特殊处理
             Object hasResult = processDateType(psiClass);

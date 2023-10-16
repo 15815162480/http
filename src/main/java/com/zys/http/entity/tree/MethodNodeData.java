@@ -2,6 +2,7 @@ package com.zys.http.entity.tree;
 
 import com.intellij.psi.NavigatablePsiElement;
 import com.zys.http.constant.HttpEnum;
+import com.zys.http.tool.UrlTool;
 import com.zys.http.ui.icon.HttpIcons;
 import jdk.jfr.Description;
 import lombok.EqualsAndHashCode;
@@ -39,15 +40,6 @@ public class MethodNodeData extends NodeData {
 
     @Override
     public String getNodeName() {
-        String name = contextPath.isEmpty() ? "/" : contextPath;
-        String text = controllerPath.endsWith("/") ? controllerPath.substring(0, controllerPath.length() - 2) : controllerPath;
-        if ("/".equals(name)) {
-            name += !text.startsWith("/") ? text : text.substring(1);
-        } else {
-            name += !text.startsWith("/") ? "/" + text : text;
-        }
-        name += path.startsWith("/") ? path : "/" + path;
-        this.setNodeName(name);
-        return name;
+        return UrlTool.buildMethodUri(contextPath, controllerPath, path);
     }
 }

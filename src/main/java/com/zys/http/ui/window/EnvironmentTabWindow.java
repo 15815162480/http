@@ -6,6 +6,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.SimpleToolWindowPanel;
 import com.intellij.util.ui.JBUI;
 import com.zys.http.constant.UIConstant;
+import com.zys.http.service.topic.RefreshTreeTopic;
 import com.zys.http.ui.table.EnvListTable;
 import jdk.jfr.Description;
 

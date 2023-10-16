@@ -5,21 +5,17 @@ import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.fileChooser.FileChooserFactory;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.PsiClass;
 import com.zys.http.constant.HttpEnum;
 import com.zys.http.entity.HttpConfig;
 import com.zys.http.service.Bundle;
 import com.zys.http.service.NotifyService;
 import com.zys.http.tool.HttpServiceTool;
 import com.zys.http.tool.VelocityTool;
-import com.zys.http.ui.tree.node.MethodNode;
 import jdk.jfr.Description;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -35,19 +31,8 @@ public class HttpConfigExportAction extends ExportAction {
         this.exportEnum = exportEnum;
     }
 
-    /**
-     * 根据枚举类型对不同数据进行导出
-     *
-     * @param moduleControllerMap 树形结构中的 module controllers Map
-     * @param methodNodeMap       树形结构中的 class methods Map
-     * @param selectedEnv         选中的环境
-     */
-    public void initAction(
-            @Nullable Map<String, List<PsiClass>> moduleControllerMap,
-            @Nullable Map<PsiClass, List<MethodNode>> methodNodeMap,
-            @Nullable String selectedEnv
-    ) {
-
+    @Description("根据枚举类型对不同数据进行导出")
+    public void initAction(@Nullable String selectedEnv) {
         this.setAction(e -> {
             Project project = e.getProject();
             if (null == project) {
@@ -61,11 +46,7 @@ public class HttpConfigExportAction extends ExportAction {
                 String path = selectedFile.getPath();
                 String exportEnv = Objects.isNull(selectedEnv) ? serviceTool.getSelectedEnv() : selectedEnv;
                 switch (exportEnum) {
-                    case API -> {
-                        if (Objects.nonNull(moduleControllerMap)) {
-                            VelocityTool.exportAllModuleApi(moduleControllerMap, methodNodeMap, path);
-                        }
-                    }
+                    case API -> VelocityTool.exportAllModuleApi(project, path);
                     case ALL_ENV -> VelocityTool.exportAllEnv(serviceTool.getHttpConfigs(), path);
                     case SPECIFY_ENV -> VelocityTool.exportEnv(exportEnv, config, path);
                     default -> {
@@ -79,7 +60,6 @@ public class HttpConfigExportAction extends ExportAction {
                 }
             }
         });
-
     }
 
 

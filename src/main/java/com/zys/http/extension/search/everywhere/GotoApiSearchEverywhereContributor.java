@@ -25,7 +25,7 @@ public class GotoApiSearchEverywhereContributor extends AbstractGotoSEContributo
         super(event);
         Project project = event.getProject();
         List<MethodNodeData> dataList = ProjectTool.methodNodeDataList(project);
-        this.apiModel =  new GotoApiModel(project, new GotoApiChooseByNameContributor(dataList));
+        this.apiModel = new GotoApiModel(project, new GotoApiChooseByNameContributor(dataList));
     }
 
     @Override

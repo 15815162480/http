@@ -1,12 +1,13 @@
 package com.zys.http.tool.convert;
 
+import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.json.JSONUtil;
 import com.intellij.psi.*;
-import com.intellij.psi.impl.source.tree.java.PsiLiteralExpressionImpl;
 import com.zys.http.constant.HttpEnum;
 import com.zys.http.constant.SpringEnum;
 import com.zys.http.entity.param.ParamProperty;
 import com.zys.http.tool.DataTypeTool;
+import com.zys.http.tool.PsiTool;
 import jdk.jfr.Description;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -14,10 +15,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @author zys
@@ -48,6 +46,7 @@ public class ParamConvert {
     }
 
 
+    @Description("解析参数并转换")
     private static void parsePsiParameter(PsiParameter parameter, Map<String, ParamProperty> map, boolean isJsonPretty) {
         String parameterName = parameter.getName();
         PsiType parameterType = parameter.getType();
@@ -59,17 +58,12 @@ public class ParamConvert {
         }
         HttpEnum.ParamUsage paramUsage = HttpEnum.ParamUsage.URL;
         PsiAnnotation requestParamAnno = parameter.getAnnotation(SpringEnum.Param.REQUEST_PARAM.getClazz());
+
         if (Objects.nonNull(requestParamAnno)) {
             // @RequestParam 是否有 value 或 name 属性, 如果有会将请求参数名变为那个
-            PsiAnnotationMemberValue attrValue = requestParamAnno.findAttributeValue(ANNO_VALUE);
-            if (Objects.isNull(attrValue)) {
-                attrValue = requestParamAnno.findDeclaredAttributeValue(ANNO_NAME);
-            }
-            if (attrValue instanceof PsiLiteralExpressionImpl pe) {
-                Object value = pe.getValue();
-                if (Objects.nonNull(value)) {
-                    parameterName = value.toString();
-                }
+            String annotationValue = PsiTool.Annotation.getAnnotationValue(requestParamAnno, new String[]{ANNO_VALUE, ANNO_NAME});
+            if (CharSequenceUtil.isNotEmpty(annotationValue)) {
+                parameterName = annotationValue;
             }
         }
 
@@ -77,17 +71,12 @@ public class ParamConvert {
         if (Objects.nonNull(pathVariableAnno)) {
             paramUsage = HttpEnum.ParamUsage.PATH;
             // @PathVariable 是否有 value 或 name 属性, 如果有会将请求参数名变为那个
-            PsiAnnotationMemberValue attrValue = pathVariableAnno.findDeclaredAttributeValue(ANNO_VALUE);
-            if (Objects.isNull(attrValue)) {
-                attrValue = pathVariableAnno.findDeclaredAttributeValue(ANNO_NAME);
-            }
-            if (attrValue instanceof PsiLiteralExpressionImpl pe) {
-                Object value = pe.getValue();
-                if (value != null) {
-                    parameterName = value.toString();
-                }
+            String annotationValue = PsiTool.Annotation.getAnnotationValue(pathVariableAnno, new String[]{ANNO_VALUE, ANNO_NAME});
+            if (CharSequenceUtil.isNotEmpty(annotationValue)) {
+                parameterName = annotationValue;
             }
         }
+
         Object paramDefaultTypeValue = DataTypeTool.getDefaultValueOfPsiType(parameterType, parameter.getProject());
         if (Objects.nonNull(paramDefaultTypeValue)) {
             if (paramDefaultTypeValue instanceof Map<?, ?> paramMap) {
@@ -98,6 +87,14 @@ public class ParamConvert {
                     map.put(parameterName, new ParamProperty(jsonStr, HttpEnum.ParamUsage.BODY));
                 } else {
                     paramMap.forEach((k, v) -> map.put(k.toString(), new ParamProperty(v, HttpEnum.ParamUsage.URL)));
+                }
+            } else if (paramDefaultTypeValue instanceof Collection<?> || paramDefaultTypeValue instanceof Object[]) {
+                PsiAnnotation requestBodyAnno = parameter.getAnnotation(SpringEnum.Param.REQUEST_BODY.getClazz());
+                if (Objects.nonNull(requestBodyAnno)) {
+                    String jsonStr = isJsonPretty ? JSONUtil.toJsonPrettyStr(paramDefaultTypeValue) : JSONUtil.toJsonStr(paramDefaultTypeValue);
+                    map.put(parameterName, new ParamProperty(jsonStr, HttpEnum.ParamUsage.BODY));
+                } else {
+                    map.put(parameterName, new ParamProperty(paramDefaultTypeValue, paramUsage));
                 }
             } else {
                 map.put(parameterName, new ParamProperty(paramDefaultTypeValue, paramUsage));
