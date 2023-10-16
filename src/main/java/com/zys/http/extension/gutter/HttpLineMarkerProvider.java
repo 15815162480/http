@@ -40,7 +40,7 @@ public class HttpLineMarkerProvider extends LineMarkerProviderDescriptor {
     ) {
         for (PsiElement element : elements) {
             if (!(element instanceof PsiMethod psiMethod)) {
-                return;
+                continue;
             }
             for (SpringEnum.Method value : SpringEnum.Method.values()) {
                 if (psiMethod.hasAnnotation(value.getClazz())) {
