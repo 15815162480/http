@@ -45,12 +45,13 @@ public class ParameterTable extends EnvHeaderTable {
             all.append(CharSequenceUtil.format(HttpConstant.EDIT_AS_PROPERTIES_TEMPLATE, key, value));
         }
         editor.setText(all.toString());
-        reloadTableModel();
+
         EditorDialog dialog = new EditorDialog(project, Bundle.get("http.editor.body.action.dialog"), editor);
         dialog.setOkCallBack(s -> {
             if (Objects.isNull(s) || s.isEmpty()) {
                 return;
             }
+            reloadTableModel();
             String[] split = s.split("\n");
             for (String param : split) {
                 if (param.contains("=")) {
