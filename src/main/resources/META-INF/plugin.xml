@@ -57,6 +57,11 @@
                 <br>
                 bug 修复: Collection/数组数据生成错误
             </li>
+            <li>
+                fix bugs: Spring mvc param type: ModelMap and ModelAndView generate error data
+                <br>
+                bug 修复: Spring mvc 参数类型: ModelMap 和 ModelAndView 生成错误数据
+            </li>
         </ol>
         <b>1.4.1</b><br>
         <ol>
@@ -76,7 +81,7 @@
                 bug 修复: 装订图标区域设置是否显示, 图标丢失
             </li>
             <li>
-                fix bug: When the selected environment configuration is edited, the host value and request header will
+                fix bugs: When the selected environment configuration is edited, the host value and request header will
                 not change.
                 <br>
                 bug 修复: 选中环境配置在编辑完成时, 地址栏、请求头不会随之切换
@@ -85,18 +90,18 @@
         <b>1.4.0</b><br>
         <ol>
             <li>
-                Feature: Add a "ApiTool" tab into Search Everywhere, api can be matched based on / split
+                feature: Add a "ApiTool" tab into Search Everywhere, api can be matched based on / split
                 <br>
                 新功能: 往 Search Everywhere(随处搜索, 双击 Shift)添加 ApiTool, 可根据 / 分割对接口进行匹配
             </li>
             <li>
-                Feature: Add an icon to the left of the request method (officially called the binding area), click to
+                feature: Add an icon to the left of the request method (officially called the binding area), click to
                 generate the corresponding request and expand the tree to the corresponding node
                 <br>
                 新功能: 添加一个图标在请求方法的左边(IDEA官方称为装订区域), 点击生成对应的请求和将树展开到对应的结点
             </li>
             <li>
-                Feature: Header and Param can edit as a properties
+                feature: Header and Param can edit as a properties
                 <br>
                 新功能: 请求头和请求参数能以一个 properties 文件的形式进行编辑
             </li>
@@ -106,7 +111,7 @@
                 bug 修复: 切换主题时窗口主题没有同步刷新
             </li>
             <li>
-                Improve: Adapt to light color mode(Mainly new UI)
+                improve: Adapt to light color mode(Mainly new UI)
                 <br>
                 优化: 适配浅色模式(以新UI为准)
             </li>
@@ -130,7 +135,7 @@
                 bug 修复: 刷新没有清空请求头、参数、请求体、返回体
             </li>
             <li>
-                Improve: Request body support Generics Type(Do not nest parameters with each other, Will cause Stack
+                improve: Request body support Generics Type(Do not nest parameters with each other, Will cause Stack
                 Overflow)
                 <br>
                 优化: 请求体支持泛型参数(不要互相嵌套参数, 会造成 Stack Overflow)
@@ -144,7 +149,7 @@
         <b>1.2.3</b><br>
         <ol>
             <li>
-                Improve: Move "Env List" to new tab
+                improve: Move "Env List" to new tab
                 <br>
                 优化: 移动"环境列表"到一个新的标签页面
             </li>
@@ -152,32 +157,32 @@
         <b>1.2.2</b><br>
         <ol>
             <li>
-                Feature: Can set whether to generate a default environment and remove the default environment
+                feature: Can set whether to generate a default environment and remove the default environment
                 <br>
                 新功能: 能够设置是否生成默认环境并删除生成的默认环境
             </li>
             <li>
-                Improve: Modify the default port when there is no "server.port" to 8080
+                improve: Modify the default port when there is no "server.port" to 8080
                 <br>
                 优化: 修改没有 server.port 配置时的默认端口为 8080
             </li>
             <li>
-                Improve: Integration of node filtering functions
+                improve: Integration of node filtering functions
                 <br>
                 优化: 节点过滤功能整合
             </li>
             <li>
-                Fix bug: export postman data encoding error
+                fix bugs: export postman data encoding error
                 <br>
                 bug修复: 导出 postman 数据编码问题
             </li>
             <li>
-                Fix bug: export postman data protocol, host, path lost
+                fix bugs: export postman data protocol, host, path lost
                 <br>
                 bug修复: 导出 postman 数据请求协议、请求地址、请求路径丢失
             </li>
             <li>
-                Improve: Change the window name to ApiTool
+                improve: Change the window name to ApiTool
                 <br>
                 优化: 将窗口名修改为 ApiTool
             </li>
@@ -195,12 +200,12 @@
                 新功能: 响应体能在一个新的对话框中查看, 但修改不会回显到原位置
             </li>
             <li>
-                fix bug: Remove request header and prohibit duplication
+                fix bugs: Remove request header and prohibit duplication
                 <br>
                 bug 修复: 移除请求头禁止重复
             </li>
             <li>
-                fix bug: No method node selected can still initiate a request
+                fix bugs: No method node selected can still initiate a request
                 <br>
                 bug 修复: 没有选中节点仍然能够发起请求
             </li>
@@ -224,7 +229,7 @@
                 新功能: 模块结点、包结点、类结点添加右键菜单功能: 展开所有子节点
             </li>
             <li>
-                fix bug: Send a new request, the older request do not clear the response editor
+                fix bugs: Send a new request, the older request do not clear the response editor
                 <br>
                 bug 修复: 发送一个新请求时, 旧请求的结果没有被清空
             </li>

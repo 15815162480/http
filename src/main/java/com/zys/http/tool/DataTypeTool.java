@@ -64,7 +64,8 @@ public class DataTypeTool {
         BASIC_DATA_TYPE_OBJECT_MAP.put("int", 0);
         BASIC_DATA_TYPE_OBJECT_MAP.put("long", 0);
         BASIC_DATA_TYPE_OBJECT_MAP.put("float", 0);
-        BASIC_DATA_TYPE_OBJECT_MAP.put("double", 0);
+        BASIC_DATA_TYPE_OBJECT_MAP.put("org.springframework.web.servlet.ModelAndView", Collections.emptyMap());
+        BASIC_DATA_TYPE_OBJECT_MAP.put("org.springframework.ui.ModelMap", Collections.emptyMap());
     }
 
     @Description("是否是 Java 的基础类型")
@@ -108,11 +109,6 @@ public class DataTypeTool {
             return Collections.emptyMap();
         }
 
-        if ("org.springframework.web.servlet.ModelAndView".equals(canonicalText)
-                || "org.springframework.ui.ModelMap".equals(canonicalText)){
-            return Collections.emptyMap();
-        }
-
         // 应该是基元类型和包装类才返回空数组类型,如果是类应该处理
         Object arrayResult = processArrayType(psiType, project);
         if (Objects.nonNull(arrayResult)) {
@@ -131,7 +127,7 @@ public class DataTypeTool {
             if (Objects.isNull(psiClass)) {
                 return null;
             }
-            if (psiClass.isEnum()){
+            if (psiClass.isEnum()) {
                 return Arrays.stream(psiClass.getFields()).filter(PsiEnumConstant.class::isInstance)
                         .map(PsiField::getName)
                         .findFirst().orElse("");
