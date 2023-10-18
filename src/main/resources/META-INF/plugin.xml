@@ -1,6 +1,6 @@
 <idea-plugin>
     <id>com.zys.http</id>
-    <version>1.4.1</version>
+    <version>1.4.2</version>
 
     <name>ApiTool</name>
 
@@ -61,6 +61,11 @@
                 fix bugs: Spring mvc param type: ModelMap and ModelAndView generate error data
                 <br>
                 bug 修复: Spring mvc 参数类型: ModelMap 和 ModelAndView 生成错误数据
+            </li>
+            <li>
+                fix bugs: The newly written request method clicks the icon on the left and no data is generated
+                <br>
+                bug 修复: 新编写的请求方法点击左边的图标没有生成对应的数据
             </li>
         </ol>
         <b>1.4.1</b><br>
