@@ -13,7 +13,9 @@ import com.intellij.ui.content.ContentManager;
 import com.zys.http.action.CommonAction;
 import com.zys.http.constant.HttpConstant;
 import com.zys.http.constant.SpringEnum;
+import com.zys.http.service.topic.RefreshTreeTopic;
 import com.zys.http.ui.icon.HttpIcons;
+import com.zys.http.ui.tree.HttpApiTreePanel;
 import com.zys.http.ui.tree.node.MethodNode;
 import com.zys.http.ui.window.RequestTabWindow;
 import com.zys.http.ui.window.panel.RequestPanel;
@@ -53,17 +55,18 @@ public class HttpLineMarkerInfo extends LineMarkerInfo<PsiIdentifier> {
                 ContentManager contentManager = toolWindow.getContentManager();
                 Content content = contentManager.getContent(0);
                 if (Objects.nonNull(content) && content.getComponent() instanceof RequestTabWindow requestTabWindow) {
+                    event.getProject().getMessageBus().syncPublisher(RefreshTreeTopic.TOPIC).refresh(false);
                     RequestPanel requestPanel = requestTabWindow.getRequestPanel();
-                    Map<PsiClass, List<MethodNode>> methodNodeMap = requestPanel.getHttpApiTreePanel().getMethodNodeMap();
+                    HttpApiTreePanel httpApiTreePanel = requestPanel.getHttpApiTreePanel();
+                    Map<PsiClass, List<MethodNode>> methodNodeMap = httpApiTreePanel.getMethodNodeMap();
                     PsiClass containingClass = psiMethod.getContainingClass();
                     MethodNode methodNode = methodNodeMap.getOrDefault(containingClass, new ArrayList<>()).stream()
                             .filter(v -> v.getValue().getPsiElement().equals(psiMethod)).findFirst().orElse(null);
-                    requestPanel.getHttpApiTreePanel().setSelectedNode(methodNode);
+                    httpApiTreePanel.setSelectedNode(methodNode);
                     requestPanel.reload(methodNode);
                 }
             }
         });
         return new HttpGutterIconRenderer(this, commonAction);
     }
-
 }
