@@ -48,7 +48,7 @@ public interface SpringEnum {
         MATRIX_VARIABLE("org.springframework.web.bind.annotation.MatrixVariable", ParamUsage.USELESS),
         MODEL_ATTRIBUTE("org.springframework.web.bind.annotation.ModelAttribute", ParamUsage.URL),
         REQUEST_HEADER("org.springframework.web.bind.annotation.RequestHeader", ParamUsage.HEADER),
-        REQUEST_PART("org.springframework.web.bind.annotation.RequestPart", ParamUsage.USELESS),
+        REQUEST_PART("org.springframework.web.bind.annotation.RequestPart", ParamUsage.FILE),
         COOKIE_VALUE("org.springframework.web.bind.annotation.CookieValue", ParamUsage.USELESS),
         SESSION_ATTRIBUTE("org.springframework.web.bind.annotation.SessionAttribute", ParamUsage.USELESS),
         REQUEST_ATTRIBUTE("org.springframework.web.bind.annotation.RequestAttribute", ParamUsage.USELESS);

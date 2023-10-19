@@ -36,14 +36,14 @@ public class FileUploadTable extends AbstractTable {
 
     @Override
     protected @NotNull DefaultTableModel initTableModel() {
-        String[] columnNames = {"文件路径"};
+        String[] columnNames = {Bundle.get("http.table.file.header")};
         return new DefaultTableModel(null, columnNames);
     }
 
     @Override
     protected @Nullable ActionToolbar initActionToolbar() {
         DefaultActionGroup group = new DefaultActionGroup();
-        AddAction addAction = new AddAction(Bundle.get("http.action.add"));
+        AddAction addAction = new AddAction(Bundle.get("http.table.file.add"));
         addAction.setAction(event -> {
             DefaultTableModel model = (DefaultTableModel) valueTable.getModel();
             VirtualFile[] virtualFiles = createFileChooser(project);
@@ -107,11 +107,11 @@ public class FileUploadTable extends AbstractTable {
     @Description("创建文件选择对话框")
     private VirtualFile[] createFileChooser(Project project) {
         FileChooserDescriptor descriptor = new FileChooserDescriptor(true, false, false, false, false, true);
-        descriptor.setTitle("选择上传的文件列表");
+        descriptor.setTitle(Bundle.get("http.table.file.editor.title"));
         FileChooserFactory.getInstance().createFileChooser(descriptor, project, null);
         VirtualFile[] selectedFiles = FileChooser.chooseFiles(descriptor, project, null);
         if (selectedFiles.length < 1) {
-            NotifyService.instance(project).error("未选择文件");
+            NotifyService.instance(project).error(Bundle.get("http.table.file.dialog.error"));
             return new VirtualFile[0];
         }
         return selectedFiles;

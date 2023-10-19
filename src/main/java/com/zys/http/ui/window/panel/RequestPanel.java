@@ -90,6 +90,8 @@ public class RequestPanel extends JBSplitter {
     private CustomEditor bodyEditor;
     @Description("请求体类型")
     private ComboBox<FileType> bodyFileType;
+    @Description("文件上传部分名")
+    private JTextField partTextField;
     @Description("文件标签页面")
     private transient TabInfo fileTabInfo;
     @Description("文件上传选择器")
@@ -164,7 +166,7 @@ public class RequestPanel extends JBSplitter {
 
         // 上传文件
         fileTabInfo = new TabInfo(initFileTabInfoPanel());
-        fileTabInfo.setText("File");
+        fileTabInfo.setText(Bundle.get("http.tab.request.file"));
         tabs.addTab(fileTabInfo);
 
         // 响应体
@@ -199,8 +201,13 @@ public class RequestPanel extends JBSplitter {
                 ParamProperty v = entry.getValue();
 
                 if (v.getParamUsage().equals(HttpEnum.ParamUsage.PATH)) {
+
                     url = url.replace("{" + k + "}", parameter.get(k));
                     parameter.remove(k);
+                }
+                if (v.getParamUsage().equals(HttpEnum.ParamUsage.FILE) && fileUploadTable.getValueTable().getRowCount() < 0) {
+                    DialogTool.error(Bundle.get("http.table.file.dialog.error"));
+                    return;
                 }
             }
 
@@ -315,8 +322,16 @@ public class RequestPanel extends JBSplitter {
     @Description("初始化文件上传面板")
     private JPanel initFileTabInfoPanel() {
         JPanel filePanel = new JPanel(new BorderLayout(0, 0));
+
+        JPanel partNamePanel = new JPanel(new BorderLayout(0, 0));
+        JLabel label = new JLabel(Bundle.get("http.table.file.label") + " ");
+        partNamePanel.add(label, BorderLayout.WEST);
+        partTextField = new JTextField();
+        partNamePanel.add(partTextField, BorderLayout.CENTER);
+        filePanel.add(partNamePanel, BorderLayout.NORTH);
+
         fileUploadTable = new FileUploadTable(project);
-        fileUploadTable.getToolbar().getComponent().setBorder(JBUI.Borders.customLineBottom(UIConstant.BORDER_COLOR));
+        fileUploadTable.getToolbar().getComponent().setBorder(JBUI.Borders.customLine(UIConstant.BORDER_COLOR, 1, 0, 1, 0));
         filePanel.add(fileUploadTable, BorderLayout.CENTER);
 
         return filePanel;
@@ -333,6 +348,8 @@ public class RequestPanel extends JBSplitter {
             this.httpMethodComboBox.setSelectedItem(HttpMethod.GET);
             this.bodyEditor.setText("");
             this.responseEditor.setText("");
+            this.fileUploadTable.reloadTableModel();
+            this.partTextField.setText("");
         }
     }
 
@@ -360,6 +377,8 @@ public class RequestPanel extends JBSplitter {
         responseEditor.setText("");
         requestResult.setText("");
         paramPropertyMap = ParamConvert.parsePsiMethodParams(psiMethod, true);
+        fileUploadTable.reloadTableModel();
+        partTextField.setText("");
 
         for (Map.Entry<String, ParamProperty> entry : paramPropertyMap.entrySet()) {
             String k = entry.getKey();
@@ -392,6 +411,11 @@ public class RequestPanel extends JBSplitter {
                         bodyEditor.setText(v.getDefaultValue().toString(), CustomEditor.TEXT_FILE_TYPE);
                         bodyFileType.setSelectedItem(CustomEditor.TEXT_FILE_TYPE);
                     }
+                }
+                case FILE -> {
+                    tabs.select(fileTabInfo, true);
+                    partTextField.setText(k);
+                    headerTable.addContentType(HttpEnum.ContentType.MULTIPART_FORM_DATA.getValue());
                 }
                 default -> {
                     // 不处理

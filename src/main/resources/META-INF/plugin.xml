@@ -55,6 +55,19 @@
 
     <!-- 更新公告 -->
     <change-notes><![CDATA[
+         <b>1.4.3</b><br>
+         <ol>
+             <li>
+                 fix bugs: Request path generation error in specific cases
+                 <br>
+                 bug 修复: 特定情况下请求路径生成错误
+             </li>
+             <li>
+                 feature: Support file upload
+                 <br>
+                 新功能: 支持上传文件
+             </li>
+         </ol>
         <b>1.4.2</b><br>
         <ol>
             <li>

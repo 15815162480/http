@@ -67,6 +67,22 @@ public class ParamConvert {
             }
         }
 
+        String canonicalText = parameterType.getCanonicalText();
+        if (canonicalText.contains("org.springframework.web.multipart.MultipartFile")) {
+            // 说明是文件
+            PsiAnnotation requestPartAnno = parameter.getAnnotation(SpringEnum.Param.REQUEST_PART.getClazz());
+            if (Objects.nonNull(requestPartAnno)) {
+                // @RequestParam 是否有 value 或 name 属性, 如果有会将请求参数名变为那个
+                String annotationValue = PsiTool.Annotation.getAnnotationValue(requestPartAnno, new String[]{ANNO_VALUE, ANNO_NAME});
+                if (CharSequenceUtil.isNotEmpty(annotationValue)) {
+                    parameterName = annotationValue;
+                }
+            }
+
+            map.put(parameterName, new ParamProperty("", HttpEnum.ParamUsage.FILE));
+            return;
+        }
+
         PsiAnnotation pathVariableAnno = parameter.getAnnotation(SpringEnum.Param.PATH_VARIABLE.getClazz());
         if (Objects.nonNull(pathVariableAnno)) {
             paramUsage = HttpEnum.ParamUsage.PATH;
