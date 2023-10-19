@@ -1,5 +1,7 @@
 package com.zys.http.tool;
 
+import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.io.resource.MultiFileResource;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.http.*;
 import com.intellij.openapi.fileTypes.FileType;
@@ -11,13 +13,13 @@ import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
-import static cn.hutool.http.HttpUtil.createRequest;
 import static com.zys.http.constant.HttpEnum.HttpMethod;
 
 /**
@@ -43,9 +45,10 @@ public class HttpClient {
             @NotNull String url,
             @NotNull Map<String, String> headers,
             Map<String, String> parameters,
-            String body
+            String body,
+            String[] fileNames
     ) {
-        HttpRequest req = createRequest(Method.valueOf(method.name()), url).timeout(TIME_OUT);
+        HttpRequest req = HttpUtil.createRequest(Method.valueOf(method.name()), url).timeout(TIME_OUT);
         headers.forEach((name, value) -> req.header(name, String.valueOf(value)));
 
         if (Objects.nonNull(body) && !body.isBlank()) {
@@ -56,6 +59,11 @@ public class HttpClient {
             String s = ParamConvert.buildUrlParameters(parameters);
             url = url.endsWith("/") ? url.substring(0, url.lastIndexOf('/')) : url;
             req.setUrl(url + "?" + s);
+        }
+
+        if (Objects.nonNull(fileNames) && fileNames.length > 0) {
+            MultiFileResource resources = new MultiFileResource(Arrays.stream(fileNames).map(FileUtil::file).toList());
+            req.form("file", resources);
         }
 
         return req;

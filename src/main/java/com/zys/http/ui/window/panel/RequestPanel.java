@@ -33,6 +33,7 @@ import com.zys.http.ui.dialog.EditorDialog;
 import com.zys.http.ui.editor.CustomEditor;
 import com.zys.http.ui.icon.HttpIcons;
 import com.zys.http.ui.table.EnvHeaderTable;
+import com.zys.http.ui.table.FileUploadTable;
 import com.zys.http.ui.table.ParameterTable;
 import com.zys.http.ui.tree.HttpApiTreePanel;
 import com.zys.http.ui.tree.node.BaseNode;
@@ -89,6 +90,10 @@ public class RequestPanel extends JBSplitter {
     private CustomEditor bodyEditor;
     @Description("请求体类型")
     private ComboBox<FileType> bodyFileType;
+    @Description("文件标签页面")
+    private transient TabInfo fileTabInfo;
+    @Description("文件上传选择器")
+    private transient FileUploadTable fileUploadTable;
     @Description("响应体标签页面")
     private transient TabInfo responseTabInfo;
     @Description("响应体类型")
@@ -141,7 +146,7 @@ public class RequestPanel extends JBSplitter {
         JPanel tabsPanel = new JPanel(new BorderLayout(0, 0));
         tabs = new JBTabsImpl(project);
         // 请求头标签页
-        headerTable = new EnvHeaderTable(project, false, serviceTool.getSelectedEnv(),false);
+        headerTable = new EnvHeaderTable(project, false, serviceTool.getSelectedEnv(), false);
         headerTable.getToolbar().getComponent().setBorder(JBUI.Borders.customLineBottom(UIConstant.BORDER_COLOR));
         TabInfo tabInfo = new TabInfo(headerTable);
         tabInfo.setText(Bundle.get("http.tab.request.header"));
@@ -156,6 +161,12 @@ public class RequestPanel extends JBSplitter {
         bodyTabInfo = new TabInfo(initBodyTabInfoPanel());
         bodyTabInfo.setText(Bundle.get("http.tab.request.body"));
         tabs.addTab(bodyTabInfo);
+
+        // 上传文件
+        fileTabInfo = new TabInfo(initFileTabInfoPanel());
+        fileTabInfo.setText("File");
+        tabs.addTab(fileTabInfo);
+
         // 响应体
         responseTabInfo = new TabInfo(initResponseTabInfoPanel());
         responseTabInfo.setText(Bundle.get("http.tab.request.return"));
@@ -175,6 +186,7 @@ public class RequestPanel extends JBSplitter {
             Map<String, String> parameter = parameterTable.buildHttpHeader();
             String bodyText = bodyEditor.getText();
             HttpMethod httpMethod = (HttpMethod) httpMethodComboBox.getSelectedItem();
+            String[] fileNames = fileUploadTable.fileNames();
             if (httpMethod == null) {
                 httpMethod = HttpMethod.GET;
             }
@@ -196,7 +208,7 @@ public class RequestPanel extends JBSplitter {
             responseEditor.setText("");
             requestResult.setText("");
             HttpClient.run(
-                    HttpClient.newRequest(httpMethod, url, header, parameter, bodyText),
+                    HttpClient.newRequest(httpMethod, url, header, parameter, bodyText, fileNames),
                     response -> {
                         final FileType fileType = HttpClient.parseFileType(response);
                         final String responseBody = response.body();
@@ -298,6 +310,16 @@ public class RequestPanel extends JBSplitter {
         respExpandPanel.add(component, BorderLayout.EAST);
         respPanel.add(respExpandPanel, BorderLayout.SOUTH);
         return respPanel;
+    }
+
+    @Description("初始化文件上传面板")
+    private JPanel initFileTabInfoPanel() {
+        JPanel filePanel = new JPanel(new BorderLayout(0, 0));
+        fileUploadTable = new FileUploadTable(project);
+        fileUploadTable.getToolbar().getComponent().setBorder(JBUI.Borders.customLineBottom(UIConstant.BORDER_COLOR));
+        filePanel.add(fileUploadTable, BorderLayout.CENTER);
+
+        return filePanel;
     }
 
     public void reload(BaseNode<?> chooseNode) {
