@@ -46,6 +46,7 @@ public class HttpClient {
             @NotNull Map<String, String> headers,
             Map<String, String> parameters,
             String body,
+            String partName,
             String[] fileNames
     ) {
         HttpRequest req = HttpUtil.createRequest(Method.valueOf(method.name()), url).timeout(TIME_OUT);
@@ -63,7 +64,7 @@ public class HttpClient {
 
         if (Objects.nonNull(fileNames) && fileNames.length > 0) {
             MultiFileResource resources = new MultiFileResource(Arrays.stream(fileNames).map(FileUtil::file).toList());
-            req.form("file", resources);
+            req.form(partName, resources);
         }
 
         return req;

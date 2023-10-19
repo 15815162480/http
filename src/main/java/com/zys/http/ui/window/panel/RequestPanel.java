@@ -189,6 +189,7 @@ public class RequestPanel extends JBSplitter {
             String bodyText = bodyEditor.getText();
             HttpMethod httpMethod = (HttpMethod) httpMethodComboBox.getSelectedItem();
             String[] fileNames = fileUploadTable.fileNames();
+            String partName = partTextField.getText();
             if (httpMethod == null) {
                 httpMethod = HttpMethod.GET;
             }
@@ -205,9 +206,15 @@ public class RequestPanel extends JBSplitter {
                     url = url.replace("{" + k + "}", parameter.get(k));
                     parameter.remove(k);
                 }
-                if (v.getParamUsage().equals(HttpEnum.ParamUsage.FILE) && fileUploadTable.getValueTable().getRowCount() < 0) {
-                    DialogTool.error(Bundle.get("http.table.file.dialog.error"));
-                    return;
+                if (v.getParamUsage().equals(HttpEnum.ParamUsage.FILE)) {
+                    if (fileUploadTable.getValueTable().getRowCount() < 0) {
+                        DialogTool.error(Bundle.get("http.table.file.dialog.error"));
+                        return;
+                    }
+                    if (CharSequenceUtil.isEmpty(partName)) {
+                        DialogTool.error(Bundle.get("http.table.file.text"));
+                        return;
+                    }
                 }
             }
 
@@ -215,7 +222,7 @@ public class RequestPanel extends JBSplitter {
             responseEditor.setText("");
             requestResult.setText("");
             HttpClient.run(
-                    HttpClient.newRequest(httpMethod, url, header, parameter, bodyText, fileNames),
+                    HttpClient.newRequest(httpMethod, url, header, parameter, bodyText, partName, fileNames),
                     response -> {
                         final FileType fileType = HttpClient.parseFileType(response);
                         final String responseBody = response.body();
