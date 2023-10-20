@@ -55,19 +55,23 @@
 
     <!-- 更新公告 -->
     <change-notes><![CDATA[
-         <b>1.4.3</b><br>
-         <ol>
-             <li>
-                 fix bugs: Request path generation error in specific cases
-                 <br>
-                 bug 修复: 特定情况下请求路径生成错误
-             </li>
-             <li>
-                 feature: Support file upload
-                 <br>
-                 新功能: 支持上传文件
-             </li>
-         </ol>
+        <b>1.4.3</b><br>
+        <ol>
+            <li>
+                fix bugs: Request path generation error in specific cases
+                <br>
+                bug 修复: 特定情况下请求路径生成错误
+            </li>
+            <li>
+                feature: Support file upload, Only a single parameter <code>void a(MultipartFile[] file)</code> or
+                <code>void a(MultipartFile file)</code> is supported, and the file upload method with two parameters
+                such as <code>void a(MultipartFile[] file, MultipartFile[] file2)</code> is not supported (no suitable
+                UI is found for display)
+                <br>
+                新功能: 支持上传文件, 只支持单个参数<code>void a(MultipartFile[] file)</code>或<code>void
+                a(MultipartFile file)</code>, 不支持<code>void a(MultipartFile[] file, MultipartFile[] file2)</code>等两个参数的文件上传方法(没找到合适的UI进行展示)
+            </li>
+        </ol>
         <b>1.4.2</b><br>
         <ol>
             <li>
