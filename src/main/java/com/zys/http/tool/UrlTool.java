@@ -12,14 +12,28 @@ import lombok.NoArgsConstructor;
 public class UrlTool {
     @Description("构建方法请求 URI")
     public static String buildMethodUri(String contextPath, String controllerPath, String methodPath) {
-        String uri = contextPath.isEmpty() ? "/" : contextPath;
-        String text = controllerPath.endsWith("/") ? controllerPath.substring(0, controllerPath.length() - 2) : controllerPath;
-        if ("/".equals(uri)) {
-            uri += !text.startsWith("/") ? text : text.substring(1);
+        // context-path 只允许以 / 开头且不允许 / 结尾
+        StringBuilder uri = new StringBuilder();
+        contextPath = contextPath.isEmpty() ? "/" : contextPath;
+        uri.append(contextPath);
+
+        controllerPath = controllerPath.endsWith("/") && controllerPath.length() > 1 ?
+                controllerPath.substring(0, controllerPath.length() - 1) : controllerPath;
+
+        if ("/".equals(contextPath)) {
+            uri.append(controllerPath.startsWith("/") ? controllerPath.substring(1) : controllerPath);
         } else {
-            uri += !text.startsWith("/") ? "/" + text : text;
+            uri.append(controllerPath.startsWith("/") ? controllerPath : "/" + controllerPath);
         }
-        uri += methodPath.startsWith("/") ? methodPath : "/" + methodPath;
-        return uri;
+
+        if (controllerPath.endsWith("/") && methodPath.startsWith("/")) {
+            uri.append(methodPath.substring(1));
+        } else {
+            uri.append(methodPath.startsWith("/") ? methodPath : "/" + methodPath);
+        }
+
+        return uri.toString();
     }
+
+
 }

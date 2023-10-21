@@ -73,7 +73,7 @@ public class ProjectTool {
             }
         }
         if (psiFile instanceof PropertiesFile propertiesFile) {
-            return propertiesFile.getNamesMap().get("server.servlet.context-path");
+            return propertiesFile.getNamesMap().getOrDefault("server.servlet.context-path", "");
         }
 
         return "";

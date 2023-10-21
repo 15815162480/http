@@ -3,6 +3,11 @@
 <a href="https://gitee.com/zhou-sheng1/http">Gitee</a>|
 <a href="https://github.com/15815162480/http">GitHub</a>
 
+## Premise
+
+IDEA Version >= 222<br>
+version view way: IDEA top menu --> Help --> About --> Build
+
 ## Introduce
 
 #### A request service development aid plugin.
@@ -56,3 +61,5 @@
 7. right-click menu: if you click on the node, in addition to method nodes, all with the expanding operation, the method
    nodes have three operations, jump to method, copy full path and copy api
 8. filter node: You can choose whether to show package nodes or class nodes
+9. Click Icon: Click on the left icon of the method to generate the request
+10. Search Everywhere: Double Shift, select ApiTool, Find matching paths based on "/" split
