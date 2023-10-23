@@ -98,7 +98,7 @@ public class PsiTool {
             return getAnnotationValue(requestMapping, new String[]{"value", "path"});
         }
 
-        @Description("获取 @xxxMapping 上的 value 或 path 属性")
+        @Description("获取指定注解上指定属性中的值")
         public static String getAnnotationValue(PsiAnnotation annotation, String[] attributeNames) {
             List<PsiAnnotationMemberValue> initializerList = new ArrayList<>();
             for (String attributeName : attributeNames) {

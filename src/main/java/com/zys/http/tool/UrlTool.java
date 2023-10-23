@@ -34,6 +34,4 @@ public class UrlTool {
 
         return uri.toString();
     }
-
-
 }

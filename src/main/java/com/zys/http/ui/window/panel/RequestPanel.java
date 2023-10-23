@@ -180,7 +180,7 @@ public class RequestPanel extends JBSplitter {
         });
     }
 
-    private boolean cannotSendRequest(String url){
+    private boolean cannotSendRequest(String url) {
         return Objects.isNull(paramPropertyMap) || CharSequenceUtil.isBlank(url);
     }
 
