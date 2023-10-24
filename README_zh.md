@@ -21,6 +21,8 @@ IDEA 版本 >= 222<br>
 7. 默认环境是按 bootstrap.(properties、yaml、yml)、application.(properties、yaml、yml) 优先级顺序读取其中的 port
 
 ## Feature
+### 重要!!!!
+把根模块加入项目, 比如不要移除 maven 链接项目, maven 根项目请确保 pom.xml 中 artifactId 跟根目录保持一致
 
 ### Basic
 
