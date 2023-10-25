@@ -23,8 +23,6 @@ version view way: IDEA top menu --> Help --> About --> Build
 8. The context-path will be bound in the method node.
 
 ## Feature
-### Important!!!!
-Add the root module to the project, for example, do not remove the maven link project, make sure that the artifactId in the pom.xml for the maven root project is consistent with the root directory.
 
 ### Basic
 

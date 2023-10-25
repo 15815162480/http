@@ -83,20 +83,25 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
     @Description("初始化模块结点, 可能有多层级")
     private ModuleNode initModuleNodes(List<HttpEnum.HttpMethod> methods, List<String> nodeShowValues) {
         Collection<Module> modules = ProjectTool.moduleList(project);
-        Module rootModule = ProjectTool.getRootModule(project);
-        if (modules.isEmpty() || Objects.isNull(rootModule)) {
+        if (modules.isEmpty()) {
             return new ModuleNode(new ModuleNodeData("Empty Module", ""));
         }
 
         String contextPath;
+        moduleNodeMap.remove(project.getName());
         // 初始化所有的模块结点
         for (Module m : modules) {
             contextPath = ProjectTool.getModuleContextPath(project, m);
             moduleNodeMap.put(m.getName(), new ModuleNode(new ModuleNodeData(m.getName(), contextPath)));
         }
+        ModuleNode root = moduleNodeMap.get(project.getName());
+        if (Objects.isNull(root)){
+            root = new ModuleNode(new ModuleNodeData(project.getName(), ""));
+            moduleNodeMap.put(project.getName(), root);
+        }
 
         if (methods.isEmpty()) {
-            return moduleNodeMap.get(project.getName());
+            return root;
         }
 
         // 构建模块结点层级
@@ -129,7 +134,7 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
         }
 
         removeEmptyModule();
-        return moduleNodeMap.get(project.getName());
+        return root;
     }
 
     @Description("是否生成默认环境")

@@ -95,8 +95,8 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
         MessageBus messageBus = project.getMessageBus();
         MessageBusConnection connect = messageBus.connect();
         connect.subscribe(RefreshTreeTopic.TOPIC, (RefreshTreeTopic) b -> {
-            requestPanel.reload(null);
             requestPanel.getHttpApiTreePanel().clear();
+            requestPanel.reload(null);
             refreshTree(b);
         });
 
