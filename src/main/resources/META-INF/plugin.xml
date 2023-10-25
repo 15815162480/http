@@ -1,6 +1,6 @@
 <idea-plugin>
     <id>com.zys.http</id>
-    <version>1.4.3</version>
+    <version>1.4.4</version>
 
     <name>ApiTool</name>
 
@@ -55,6 +55,17 @@
 
     <!-- 更新公告 -->
     <change-notes><![CDATA[
+        <b>1.4.4</b><br>
+        <ol>
+            <li>
+                improve:If the root module is not linked (that is, the project is not introduced, for example, maven
+                does not reference the root module or the artifactId in pom is inconsistent with the project name), the
+                project name will be used as the root directory.
+                <br>
+                优化: 如果不链接根模块(即项目没有引入, 如 maven 不引用根模块或 pom 中的 artifactId 跟项目名不一致),
+                会以项目名称作为根目录
+            </li>
+        </ol>
         <b>1.4.3</b><br>
         <ol>
             <li>
