@@ -83,9 +83,6 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
     @Description("初始化模块结点, 可能有多层级")
     private ModuleNode initModuleNodes(List<HttpEnum.HttpMethod> methods, List<String> nodeShowValues) {
         Collection<Module> modules = ProjectTool.moduleList(project);
-        if (modules.isEmpty()) {
-            return new ModuleNode(new ModuleNodeData("Empty Module", ""));
-        }
 
         String contextPath;
         moduleNodeMap.remove(project.getName());

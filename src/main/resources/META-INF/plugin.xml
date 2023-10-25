@@ -60,10 +60,10 @@
             <li>
                 improve:If the root module is not linked (that is, the project is not introduced, for example, maven
                 does not reference the root module or the artifactId in pom is inconsistent with the project name), the
-                project name will be used as the root directory.
+                project name will be used as the root directory(The interfaces are all in the module and need to be introduced).
                 <br>
                 优化: 如果不链接根模块(即项目没有引入, 如 maven 不引用根模块或 pom 中的 artifactId 跟项目名不一致),
-                会以项目名称作为根目录
+                会以项目名称作为根目录, 但不会扫描接口(接口都是在模块中, 需要引入)
             </li>
         </ol>
         <b>1.4.3</b><br>
