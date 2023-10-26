@@ -55,12 +55,21 @@
 
     <!-- 更新公告 -->
     <change-notes><![CDATA[
+        <b>1.4.5</b><br>
+        <ol>
+            <li>
+                fix bugs: Path generates error when no path is requested on Controller
+                <br>
+                bug 修复: Controller 上没有请求路径时, 路径生成错误
+            </li>
+        </ol>
         <b>1.4.4</b><br>
         <ol>
             <li>
                 improve:If the root module is not linked (that is, the project is not introduced, for example, maven
                 does not reference the root module or the artifactId in pom is inconsistent with the project name), the
-                project name will be used as the root directory(The interfaces are all in the module and need to be introduced).
+                project name will be used as the root directory(The interfaces are all in the module and need to be
+                introduced).
                 <br>
                 优化: 如果不链接根模块(即项目没有引入, 如 maven 不引用根模块或 pom 中的 artifactId 跟项目名不一致),
                 会以项目名称作为根目录, 但不会扫描接口(接口都是在模块中, 需要引入)
