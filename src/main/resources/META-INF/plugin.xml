@@ -62,6 +62,11 @@
                 <br>
                 bug 修复: Controller 上没有请求路径时, 路径生成错误
             </li>
+            <li>
+                improve: Release the conditions for initiating a request: the node must be selected (can now initiate a request to a third party)
+                <br>
+                优化: 放开发起请求的条件: 必须选择节点(现可向第三方发起请求)
+            </li>
         </ol>
         <b>1.4.4</b><br>
         <ol>

@@ -34,10 +34,7 @@ import org.jdesktop.swingx.JXButton;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * @author zys
@@ -127,10 +124,11 @@ public class RequestPanel extends JBSplitter {
             String[] fileNames = fileUploadTable.fileNames();
             String partName = requestTabs.getPartTextField().getText();
 
-            if (cannotSendRequest(url)) {
+            if (CharSequenceUtil.isBlank(url)) {
                 DialogTool.error(Bundle.get("http.dialog.error.no.selected"));
                 return;
             }
+            makeSureParamPropertyMapNotNull();
             for (Map.Entry<String, ParamProperty> entry : paramPropertyMap.entrySet()) {
                 String k = entry.getKey();
                 ParamProperty v = entry.getValue();
@@ -180,8 +178,8 @@ public class RequestPanel extends JBSplitter {
         });
     }
 
-    private boolean cannotSendRequest(String url) {
-        return Objects.isNull(paramPropertyMap) || CharSequenceUtil.isBlank(url);
+    private void makeSureParamPropertyMapNotNull() {
+        paramPropertyMap = Objects.isNull(paramPropertyMap) ? new HashMap<>() : paramPropertyMap;
     }
 
     public void reload(BaseNode<?> chooseNode) {
