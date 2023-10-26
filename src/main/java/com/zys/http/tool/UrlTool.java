@@ -14,24 +14,42 @@ public class UrlTool {
     public static String buildMethodUri(String contextPath, String controllerPath, String methodPath) {
         // context-path 只允许以 / 开头且不允许 / 结尾
         StringBuilder uri = new StringBuilder();
-        contextPath = contextPath.isEmpty() ? "/" : contextPath;
+        contextPath = contextPath.isEmpty() || "/".equals(contextPath) ? "" : contextPath;
         uri.append(contextPath);
 
-        controllerPath = controllerPath.endsWith("/") && controllerPath.length() > 1 ?
-                controllerPath.substring(0, controllerPath.length() - 1) : controllerPath;
+        controllerPath = removePrefixSlash(controllerPath);
+        controllerPath = removeSuffixSlash(controllerPath);
 
-        if ("/".equals(contextPath)) {
-            uri.append(controllerPath.startsWith("/") ? controllerPath.substring(1) : controllerPath);
-        } else {
-            uri.append(controllerPath.startsWith("/") ? controllerPath : "/" + controllerPath);
-        }
+        methodPath = removePrefixSlash(methodPath);
+        methodPath = removeSuffixSlash(methodPath);
 
-        if (controllerPath.endsWith("/") && methodPath.startsWith("/")) {
-            uri.append(methodPath.substring(1));
-        } else {
-            uri.append(methodPath.startsWith("/") ? methodPath : "/" + methodPath);
+        if (controllerPath.isEmpty() && methodPath.isEmpty()) {
+            return uri.toString();
         }
+        if (controllerPath.isEmpty()) {
+            uri.append("/").append(methodPath);
+            return uri.toString();
+        }
+        if (methodPath.isEmpty()) {
+            uri.append("/").append(controllerPath);
+            return uri.toString();
+        }
+        uri.append("/").append(controllerPath).append("/").append(methodPath);
 
         return uri.toString();
+    }
+
+    private static String removePrefixSlash(String s) {
+        if (s.length() == 1 && "/".equals(s)) {
+            return "";
+        }
+        return s.startsWith("/") ? s.substring(1) : s;
+    }
+
+    private static String removeSuffixSlash(String s) {
+        if (s.length() == 1 && "/".equals(s)) {
+            return "";
+        }
+        return s.endsWith("/") ? s.substring(0, s.length() - 1) : s;
     }
 }
