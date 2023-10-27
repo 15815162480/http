@@ -1,6 +1,6 @@
 <idea-plugin>
     <id>com.zys.http</id>
-    <version>1.4.5</version>
+    <version>1.4.6</version>
 
     <name>ApiTool</name>
 
@@ -55,6 +55,14 @@
 
     <!-- 更新公告 -->
     <change-notes><![CDATA[
+        <b>1.4.6</b><br>
+        <ol>
+            <li>
+                improve: Add request success time statistics
+                <br>
+                优化: 添加请求成功耗时统计
+            </li>
+        </ol>
         <b>1.4.5</b><br>
         <ol>
             <li>

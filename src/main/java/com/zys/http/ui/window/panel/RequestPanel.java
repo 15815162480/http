@@ -152,6 +152,7 @@ public class RequestPanel extends JBSplitter {
             requestTabs.select(requestTabs.getResponseTabInfo(), true);
             requestTabs.getResponseEditor().setText("");
             requestTabs.getRequestResult().setText("");
+
             HttpClient.run(
                     HttpClient.newRequest(httpMethod, url, header, parameter, bodyText, partName, fileNames),
                     response -> {
@@ -173,7 +174,8 @@ public class RequestPanel extends JBSplitter {
                                 }
                         );
                     },
-                    null
+                    ms -> ApplicationManager.getApplication().invokeLater(()->
+                            this.requestTabs.getRequestResult().setText(this.requestTabs.getRequestResult().getText() + ", " + ms + "ms"))
             );
         });
     }

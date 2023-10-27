@@ -74,9 +74,11 @@ public class HttpClient {
             @NotNull HttpRequest request,
             @Nullable Consumer<HttpResponse> onResult,
             @Nullable Consumer<Exception> onError,
-            @Nullable Runnable onComplete
+            @Nullable Consumer<Long> onComplete
     ) {
         EXECUTOR.execute(() -> {
+            long startTime = System.currentTimeMillis();
+            long endTime = 0;
             try {
                 HttpResponse response = request.execute();
                 // 最大重定向的次数
@@ -88,15 +90,17 @@ public class HttpClient {
                 if (Objects.nonNull(onResult)) {
                     onResult.accept(response);
                 }
+                endTime = System.currentTimeMillis();
             } catch (Exception e) {
                 if (Objects.nonNull(onError)) {
                     onError.accept(e);
                     return;
                 }
+                endTime = System.currentTimeMillis();
                 throw e;
             } finally {
                 if (Objects.nonNull(onComplete)) {
-                    onComplete.run();
+                    onComplete.accept(endTime - startTime);
                 }
             }
         });

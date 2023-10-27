@@ -271,17 +271,15 @@ public class RequestTabs extends JBTabsImpl {
 
     @Description("结果状态文本")
     public void resultText(int status) {
+        requestResult.setText(CharSequenceUtil.format(REQUEST_RESULT_TEXT, status));
         if (status >= 200 && status < 300) {
             // 成功
-            requestResult.setText(CharSequenceUtil.format(REQUEST_RESULT_TEXT, status));
             requestResult.setForeground(JBColor.GREEN);
         } else if (status >= 300 && status < 400) {
             // 重定向
-            requestResult.setText(CharSequenceUtil.format(REQUEST_RESULT_TEXT, status));
             requestResult.setForeground(JBColor.YELLOW);
         } else {
             // 错误
-            requestResult.setText(CharSequenceUtil.format(REQUEST_RESULT_TEXT, status));
             requestResult.setForeground(JBColor.RED);
         }
     }
