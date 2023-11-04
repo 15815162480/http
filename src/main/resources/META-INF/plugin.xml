@@ -1,6 +1,6 @@
 <idea-plugin>
     <id>com.zys.http</id>
-    <version>1.4.6</version>
+    <version>1.4.7</version>
 
     <name>ApiTool</name>
 
