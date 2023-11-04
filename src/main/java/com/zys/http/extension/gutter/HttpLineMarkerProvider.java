@@ -3,6 +3,7 @@ package com.zys.http.extension.gutter;
 import com.intellij.codeInsight.daemon.GutterName;
 import com.intellij.codeInsight.daemon.LineMarkerInfo;
 import com.intellij.codeInsight.daemon.LineMarkerProviderDescriptor;
+import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiMethod;
 import com.zys.http.constant.SpringEnum;
@@ -13,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -26,10 +28,31 @@ public class HttpLineMarkerProvider extends LineMarkerProviderDescriptor {
 
     @Override
     public LineMarkerInfo<?> getLineMarkerInfo(@NotNull PsiElement element) {
-        if (httpGenerate.isEnabled() && element instanceof PsiMethod psiMethod && Objects.nonNull(psiMethod.getNameIdentifier())) {
-            return new HttpLineMarkerInfo(psiMethod.getNameIdentifier());
+        if (!httpGenerate.isEnabled()) {
+            return null;
         }
-        return null;
+        if (!(element instanceof PsiMethod psiMethod)) {
+            return null;
+        }
+
+        if (Objects.isNull(psiMethod.getNameIdentifier())) {
+            return null;
+        }
+
+        PsiClass psiClass = (PsiClass) psiMethod.getParent();
+        if (Objects.isNull(psiClass)) {
+            return null;
+        }
+
+        boolean hasController = Arrays.stream(psiClass.getAnnotations()).anyMatch(a ->
+                SpringEnum.Controller.CONTROLLER.getClazz().equals(a.getQualifiedName()) ||
+                SpringEnum.Controller.REST_CONTROLLER.getClazz().equals(a.getQualifiedName())
+        );
+        if (!hasController) {
+            return null;
+        }
+
+        return new HttpLineMarkerInfo(psiMethod.getNameIdentifier());
     }
 
     @Override
