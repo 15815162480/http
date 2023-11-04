@@ -65,7 +65,7 @@
              <li>
                  fix bugs: remove feign related interface binding area icon
                  <br>
-                 优化: 移除 Feign 相关接口的装订区域
+                 bug 修复: 移除 Feign 相关接口的装订区域
              </li>
          </ol>
         <b>1.4.6</b><br>
