@@ -10,6 +10,7 @@ import com.zys.http.constant.HttpEnum;
 import com.zys.http.entity.HttpConfig;
 import com.zys.http.service.Bundle;
 import com.zys.http.service.topic.EnvChangeTopic;
+import com.zys.http.tool.ui.DialogTool;
 import com.zys.http.ui.dialog.EnvAddOrEditDialog;
 import jdk.jfr.Description;
 import lombok.Setter;
@@ -78,7 +79,12 @@ public class EnvListTable extends AbstractTable {
         removeAction.setAction(event -> {
             DefaultTableModel model = (DefaultTableModel) valueTable.getModel();
             int selectedRow = valueTable.getSelectedRow();
-            serviceTool.removeHttpConfig((String) model.getValueAt(selectedRow, 0));
+            String envName = (String) model.getValueAt(selectedRow, 0);
+            if (envName.equals(serviceTool.getSelectedEnv())) {
+                DialogTool.error(Bundle.get("http.table.env.remove.msg"));
+                return;
+            }
+            serviceTool.removeHttpConfig(envName);
             model.removeRow(selectedRow);
         });
         removeAction.setEnabled(false);

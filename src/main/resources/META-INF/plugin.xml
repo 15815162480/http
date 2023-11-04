@@ -55,6 +55,19 @@
 
     <!-- 更新公告 -->
     <change-notes><![CDATA[
+         <b>1.4.7</b><br>
+         <ol>
+             <li>
+                 improve: The selected environment is not allowed to be deleted
+                 <br>
+                 优化: 选中环境不允许删除
+             </li>
+             <li>
+                 fix bugs: remove feign related interface binding area icon
+                 <br>
+                 优化: 移除 Feign 相关接口的装订区域
+             </li>
+         </ol>
         <b>1.4.6</b><br>
         <ol>
             <li>
