@@ -8,8 +8,8 @@ plugins {
     id("org.jetbrains.intellij") version "1.14.1"
 }
 
-group = properties("plugin.group")
-version = properties("plugin.version")
+group = properties("plugin.group").get()
+version = properties("plugin.version").get()
 
 repositories {
     mavenCentral()
@@ -28,12 +28,16 @@ dependencies {
 // Configure Gradle IntelliJ Plugin
 // Read more: https://plugins.jetbrains.com/docs/intellij/tools-gradle-intellij-plugin.html
 intellij {
-    version = properties("platform.version")
-    type = properties("platform.type")
+    version = properties("platform.version").get()
+    type = properties("platform.type").get()
     plugins = properties("platform.plugins").map { it.split(',').map(String::trim).filter(String::isNotEmpty) }
 }
 
 tasks {
+    wrapper {
+        gradleVersion = properties("gradle.version").get()
+    }
+
     // Set the JVM compatibility versions
     withType<JavaCompile> {
         options.encoding = Charsets.UTF_8.name()
