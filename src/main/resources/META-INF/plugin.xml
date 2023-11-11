@@ -1,6 +1,5 @@
 <idea-plugin>
   <id>com.zys.http</id>
-  <version>1.4.8</version>
   <name>ApiTool</name>
   <vendor email="1083734160@qq.com" url="">zys</vendor>
 
