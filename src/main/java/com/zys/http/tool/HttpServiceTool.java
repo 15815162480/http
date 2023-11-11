@@ -66,4 +66,12 @@ public class HttpServiceTool {
     public boolean getGenerateDefault() {
         return httpService.getGenerateDefault();
     }
+
+    public void refreshWhenVcsChange() {
+        httpService.setRefreshWhenVcsChange(!httpService.getRefreshWhenVcsChange());
+    }
+
+    public boolean getRefreshWhenVcsChange() {
+        return httpService.getRefreshWhenVcsChange();
+    }
 }

@@ -74,10 +74,19 @@ public class HttpService implements PersistentStateComponent<HttpService.State> 
         state.generateDefault = status;
     }
 
+    public boolean getRefreshWhenVcsChange() {
+        return state.refreshWhenVcsChange;
+    }
+
+    public void setRefreshWhenVcsChange(boolean status) {
+        state.refreshWhenVcsChange = status;
+    }
+
     @Data
     public static class State {
         private String selectedEnv;
         private boolean generateDefault;
+        private boolean refreshWhenVcsChange = false;
         private Map<String, HttpConfig> httpConfigs = new LinkedHashMap<>();
     }
 }

@@ -10,6 +10,7 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.SimpleToolWindowPanel;
+import com.intellij.openapi.vcs.BranchChangeListener;
 import com.intellij.util.messages.MessageBus;
 import com.intellij.util.messages.MessageBusConnection;
 import com.zys.http.action.*;
@@ -102,6 +103,23 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
 
         project.getMessageBus().connect().subscribe(EnvChangeTopic.TOPIC,
                 (EnvChangeTopic) () -> requestPanel.reload(requestPanel.getHttpApiTreePanel().getChooseNode()));
+
+        project.getMessageBus().connect().subscribe(BranchChangeListener.VCS_BRANCH_CHANGED, new BranchChangeListener() {
+            @Override
+            public void branchWillChange(@NotNull String branchName) {
+                if (HttpServiceTool.getInstance(project).getRefreshWhenVcsChange()) {
+                    requestPanel.getHttpApiTreePanel().clear();
+                }
+            }
+
+            @Override
+            public void branchHasChanged(@NotNull String branchName) {
+                if (HttpServiceTool.getInstance(project).getRefreshWhenVcsChange()) {
+                    requestPanel.reload(null);
+                    refreshTree(false);
+                }
+            }
+        });
     }
 
     @Description("初始化顶部工具栏")
@@ -171,6 +189,15 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
             SystemTool.schedule(() -> generateDefaultCb.run(), 600);
         });
         settingActionGroup.add(commonAction);
+
+        CommonAction commonAction2 = new CommonAction(Bundle.get("http.action.vcs.change"), "Vcs Change",
+                serviceTool.getRefreshWhenVcsChange() ? icon : null);
+        commonAction2.setAction(event -> {
+            serviceTool.refreshWhenVcsChange();
+            commonAction2.getTemplatePresentation().setIcon(serviceTool.getGenerateDefault() ? icon : null);
+        });
+        settingActionGroup.add(commonAction2);
+
         group.add(settingActionGroup);
 
         ActionToolbar topToolBar = ActionManager.getInstance().createActionToolbar(ActionPlaces.TOOLBAR, group, true);

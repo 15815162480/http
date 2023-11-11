@@ -1,12 +1,15 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+fun properties(key: String) = providers.gradleProperty(key)
+
 plugins {
     id("java")
     id("org.jetbrains.kotlin.jvm") version "1.8.22"
     id("org.jetbrains.intellij") version "1.14.1"
 }
 
-group = "com.zys"
+group = properties("plugin.group")
+version = properties("plugin.version")
 
 repositories {
     mavenCentral()
@@ -17,7 +20,6 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok:1.18.26")
     implementation("cn.hutool:hutool-http:5.8.22")
     implementation("cn.hutool:hutool-json:5.8.22")
-    // 很坑的一个点, 自己测试时需要注释 velocity 依赖包, 打包时需要打开
     implementation("org.apache.velocity:velocity-engine-core:2.3") {
         exclude("org.slf4j")
     }
@@ -26,10 +28,9 @@ dependencies {
 // Configure Gradle IntelliJ Plugin
 // Read more: https://plugins.jetbrains.com/docs/intellij/tools-gradle-intellij-plugin.html
 intellij {
-    version.set("2022.2.5")
-    type.set("IC") // Target IDE Platform
-
-    plugins.set(listOf("java", "properties", "yaml", "Kotlin", "gradle"))
+    version = properties("platform.version")
+    type = properties("platform.type")
+    plugins = properties("platform.plugins").map { it.split(',').map(String::trim).filter(String::isNotEmpty) }
 }
 
 tasks {
