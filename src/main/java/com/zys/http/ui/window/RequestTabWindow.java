@@ -15,6 +15,7 @@ import com.intellij.util.messages.MessageBus;
 import com.intellij.util.messages.MessageBusConnection;
 import com.zys.http.action.*;
 import com.zys.http.action.group.SelectActionGroup;
+import com.zys.http.action.group.SettingActionGroup;
 import com.zys.http.constant.HttpEnum;
 import com.zys.http.service.Bundle;
 import com.zys.http.service.topic.EnvChangeTopic;
@@ -34,7 +35,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.*;
 import java.util.Arrays;
 import java.util.List;
 
@@ -99,6 +99,7 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
             requestPanel.getHttpApiTreePanel().clear();
             requestPanel.reload(null);
             refreshTree(b);
+            SystemTool.schedule(() -> generateDefaultCb.run(), 600);
         });
 
         project.getMessageBus().connect().subscribe(EnvChangeTopic.TOPIC,
@@ -176,29 +177,7 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
 
 
         // 设置菜单组
-        DefaultActionGroup settingActionGroup = new DefaultActionGroup(Bundle.get("http.action.group.setting"), true);
-        settingActionGroup.getTemplatePresentation().setIcon(ThemeTool.isDark() ? HttpIcons.General.SETTING : HttpIcons.General.SETTING_LIGHT);
-        HttpServiceTool serviceTool = requestPanel.getServiceTool();
-        Icon icon = ThemeTool.isDark() ? HttpIcons.General.DEFAULT : HttpIcons.General.DEFAULT_LIGHT;
-        CommonAction commonAction = new CommonAction(Bundle.get("http.action.default.env"), "Generate Default",
-                serviceTool.getGenerateDefault() ? icon : null);
-        commonAction.setAction(event -> {
-            serviceTool.refreshGenerateDefault();
-            commonAction.getTemplatePresentation().setIcon(serviceTool.getGenerateDefault() ? icon : null);
-            project.getMessageBus().syncPublisher(RefreshTreeTopic.TOPIC).refresh(false);
-            SystemTool.schedule(() -> generateDefaultCb.run(), 600);
-        });
-        settingActionGroup.add(commonAction);
-
-        CommonAction commonAction2 = new CommonAction(Bundle.get("http.action.vcs.change"), "Vcs Change",
-                serviceTool.getRefreshWhenVcsChange() ? icon : null);
-        commonAction2.setAction(event -> {
-            serviceTool.refreshWhenVcsChange();
-            commonAction2.getTemplatePresentation().setIcon(serviceTool.getGenerateDefault() ? icon : null);
-        });
-        settingActionGroup.add(commonAction2);
-
-        group.add(settingActionGroup);
+        group.add(new SettingActionGroup());
 
         ActionToolbar topToolBar = ActionManager.getInstance().createActionToolbar(ActionPlaces.TOOLBAR, group, true);
         topToolBar.setTargetComponent(this);
