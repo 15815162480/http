@@ -1,4 +1,4 @@
-package com.zys.http.service;
+package com.zys.http.extension.service;
 
 import com.intellij.DynamicBundle;
 import com.intellij.ide.plugins.PluginManager;
@@ -22,10 +22,10 @@ public class Bundle extends DynamicBundle {
     public static final String I18N = "messages.http";
 
     @NotNull
-    private static final Bundle INSTANCE = new Bundle(I18N);
+    private static final Bundle INSTANCE = new Bundle();
 
-    private Bundle(@NonNls @NotNull String pathToBundle) {
-        super(pathToBundle);
+    private Bundle() {
+        super(I18N);
     }
 
     @Nls

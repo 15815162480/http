@@ -1,4 +1,4 @@
-package com.zys.http.service;
+package com.zys.http.extension.service;
 
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;

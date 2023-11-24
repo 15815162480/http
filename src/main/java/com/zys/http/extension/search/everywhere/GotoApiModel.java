@@ -27,7 +27,7 @@ public class GotoApiModel extends FilteringGotoByModel<HttpEnum.HttpMethod> impl
 
     public GotoApiModel(Project project, GotoApiChooseByNameContributor contributor) {
         super(project, new ChooseByNameContributor[]{contributor});
-        this.nodeDataList = contributor.getDataList();
+        this.nodeDataList = contributor.dataList();
     }
 
     @Override

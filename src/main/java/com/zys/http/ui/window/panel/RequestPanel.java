@@ -14,7 +14,7 @@ import com.zys.http.constant.HttpEnum.HttpMethod;
 import com.zys.http.constant.UIConstant;
 import com.zys.http.entity.HttpConfig;
 import com.zys.http.entity.param.ParamProperty;
-import com.zys.http.service.Bundle;
+import com.zys.http.extension.service.Bundle;
 import com.zys.http.tool.HttpClient;
 import com.zys.http.tool.HttpServiceTool;
 import com.zys.http.tool.PsiTool;

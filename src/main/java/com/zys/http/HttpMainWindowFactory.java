@@ -6,7 +6,7 @@ import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
-import com.zys.http.service.Bundle;
+import com.zys.http.extension.service.Bundle;
 import com.zys.http.ui.window.EnvironmentTabWindow;
 import com.zys.http.ui.window.RequestTabWindow;
 import jdk.jfr.Description;

@@ -9,7 +9,7 @@ import com.intellij.ui.SeparatorOrientation;
 import com.intellij.util.ui.JBUI;
 import com.zys.http.constant.UIConstant;
 import com.zys.http.entity.HttpConfig;
-import com.zys.http.service.Bundle;
+import com.zys.http.extension.service.Bundle;
 import com.zys.http.tool.HttpServiceTool;
 import com.zys.http.tool.ui.DialogTool;
 import com.zys.http.ui.table.EnvHeaderTable;
@@ -39,9 +39,9 @@ public class EnvAddOrEditDialog extends DialogWrapper {
     private final HttpServiceTool serviceTool;
 
     @Description("配置名称")
-    private JTextField configNameTF;
+    private final JTextField configNameTF = new JTextField();
     @Description("IP:PORT/域名")
-    private JTextField hostTF;
+    private final JTextField hostTF  = new JTextField();
     @Description("协议选择框")
     private ComboBox<Protocol> protocolCB;
 
@@ -98,7 +98,7 @@ public class EnvAddOrEditDialog extends DialogWrapper {
         gbc.gridy = 0;
         gbc.weightx = 1.0;
         gbc.gridwidth = GridBagConstraints.REMAINDER;
-        configNameTF = new JTextField();
+
         configNameTF.setToolTipText(Bundle.get("http.dialog.env.config.name.tooltip"));
         first.add(configNameTF, gbc);
 
@@ -110,7 +110,6 @@ public class EnvAddOrEditDialog extends DialogWrapper {
 
         // IP/HOST
         gbc.gridy = 2;
-        hostTF = new JTextField();
         hostTF.setToolTipText(Bundle.get("http.dialog.env.config.ip.tooltip"));
         first.add(hostTF, gbc);
 

@@ -4,7 +4,7 @@ import cn.hutool.core.text.CharSequenceUtil;
 import com.intellij.lang.properties.PropertiesFileType;
 import com.intellij.openapi.project.Project;
 import com.zys.http.constant.HttpConstant;
-import com.zys.http.service.Bundle;
+import com.zys.http.extension.service.Bundle;
 import com.zys.http.ui.dialog.EditorDialog;
 import com.zys.http.ui.editor.CustomEditor;
 import jdk.jfr.Description;

@@ -1,7 +1,7 @@
 package com.zys.http.ui.popup;
 
 import com.intellij.openapi.project.Project;
-import com.zys.http.service.Bundle;
+import com.zys.http.extension.service.Bundle;
 import jdk.jfr.Description;
 
 import java.util.List;

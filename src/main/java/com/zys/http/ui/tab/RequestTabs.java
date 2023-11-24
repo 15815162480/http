@@ -16,7 +16,7 @@ import com.zys.http.action.CommonAction;
 import com.zys.http.constant.HttpEnum;
 import com.zys.http.constant.UIConstant;
 import com.zys.http.entity.param.ParamProperty;
-import com.zys.http.service.Bundle;
+import com.zys.http.extension.service.Bundle;
 import com.zys.http.tool.HttpServiceTool;
 import com.zys.http.tool.convert.ParamConvert;
 import com.zys.http.tool.ui.ThemeTool;

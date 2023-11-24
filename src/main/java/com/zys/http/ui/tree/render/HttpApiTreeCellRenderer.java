@@ -2,6 +2,7 @@ package com.zys.http.ui.tree.render;
 
 import cn.hutool.core.text.CharSequenceUtil;
 import com.intellij.ui.ColoredTreeCellRenderer;
+import com.intellij.ui.SimpleTextAttributes;
 import com.zys.http.entity.tree.NodeData;
 import com.zys.http.ui.tree.node.BaseNode;
 import jdk.jfr.Description;
@@ -27,7 +28,7 @@ public class HttpApiTreeCellRenderer extends ColoredTreeCellRenderer {
     ) {
         if (value instanceof BaseNode<? extends NodeData> node) {
             setIcon(node.getIcon());
-            append(node.getFragment(), node.getTextAttributes());
+            append(node.getFragment(), SimpleTextAttributes.REGULAR_ATTRIBUTES);
             String description = node.getValue().getDescription();
             if (CharSequenceUtil.isNotEmpty(description)) {
                 setToolTipText(description);

@@ -8,8 +8,8 @@ import com.intellij.openapi.project.Project;
 import com.zys.http.action.*;
 import com.zys.http.constant.HttpEnum;
 import com.zys.http.entity.HttpConfig;
-import com.zys.http.service.Bundle;
-import com.zys.http.service.topic.EnvChangeTopic;
+import com.zys.http.extension.service.Bundle;
+import com.zys.http.extension.topic.EnvChangeTopic;
 import com.zys.http.tool.ui.DialogTool;
 import com.zys.http.ui.dialog.EnvAddOrEditDialog;
 import jdk.jfr.Description;
@@ -90,6 +90,23 @@ public class EnvListTable extends AbstractTable {
         removeAction.setEnabled(false);
         group.add(removeAction);
 
+        EditAction editAction = createEditAction();
+        group.add(editAction);
+
+        HttpConfigExportAction exportAction = new HttpConfigExportAction(Bundle.get("http.action.export.select.env"), HttpEnum.ExportEnum.SPECIFY_ENV);
+        exportAction.setAction(e -> {
+            DefaultTableModel model = (DefaultTableModel) valueTable.getModel();
+            String envName = (String) model.getValueAt(valueTable.getSelectedRow(), 0);
+            exportAction.initAction(envName);
+        });
+        exportAction.setEnabled(false);
+        group.add(exportAction);
+
+        return ActionManager.getInstance().createActionToolbar(ActionPlaces.TOOLBAR, group, true);
+    }
+
+    @NotNull
+    private EditAction createEditAction() {
         EditAction editAction = new EditAction(Bundle.get("http.action.edit"));
         editAction.setAction(event -> {
             DefaultTableModel model = (DefaultTableModel) valueTable.getModel();
@@ -106,18 +123,7 @@ public class EnvListTable extends AbstractTable {
         });
 
         editAction.setEnabled(false);
-        group.add(editAction);
-
-        HttpConfigExportAction exportAction = new HttpConfigExportAction(Bundle.get("http.action.export.select.env"), HttpEnum.ExportEnum.SPECIFY_ENV);
-        exportAction.setAction(e -> {
-            DefaultTableModel model = (DefaultTableModel) valueTable.getModel();
-            String envName = (String) model.getValueAt(valueTable.getSelectedRow(), 0);
-            exportAction.initAction(envName);
-        });
-        exportAction.setEnabled(false);
-        group.add(exportAction);
-
-        return ActionManager.getInstance().createActionToolbar(ActionPlaces.TOOLBAR, group, true);
+        return editAction;
     }
 
     @Override

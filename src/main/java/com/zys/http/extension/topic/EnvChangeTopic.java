@@ -1,4 +1,4 @@
-package com.zys.http.service.topic;
+package com.zys.http.extension.topic;
 
 import com.intellij.util.messages.Topic;
 import jdk.jfr.Description;
