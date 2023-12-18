@@ -105,8 +105,7 @@ public class RequestPanel extends JBSplitter {
         // 标签页面
         JPanel tabsPanel = new JPanel(new BorderLayout(0, 0));
         requestTabs = new RequestTabs(project);
-        tabsPanel.add(requestTabs);
-        tabsPanel.add(requestTabs.getComponent(), BorderLayout.CENTER);
+        tabsPanel.add(requestTabs, BorderLayout.CENTER);
         secondPanel.add(tabsPanel, BorderLayout.CENTER);
         this.setSecondComponent(secondPanel);
     }
