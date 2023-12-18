@@ -211,10 +211,8 @@ public class RequestPanel extends JBSplitter {
         httpMethodComboBox.setSelectedItem(httpMethod);
         // 获取选中节点的参数类型
         PsiMethod psiMethod = (PsiMethod) methodNode.getValue().getPsiElement();
-        HttpEnum.ContentType contentType = PsiTool.contentTypeHeader((PsiClass) psiMethod.getParent());
-        HttpEnum.ContentType type = PsiTool.contentTypeHeader(psiMethod);
-        type = httpMethod.equals(HttpMethod.GET) ? HttpEnum.ContentType.APPLICATION_X_FORM_URLENCODED : type;
-        type = Objects.isNull(type) ? contentType : type;
+        HttpEnum.ContentType contentType = PsiTool.Class.contentTypeHeader((PsiClass) psiMethod.getParent());
+        HttpEnum.ContentType type = PsiTool.Method.contentType(contentType, psiMethod);
         this.requestTabs.getHeaderTable().addContentType(type.getValue());
 
         // 填充参数

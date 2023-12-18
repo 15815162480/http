@@ -24,22 +24,6 @@ import java.util.stream.Stream;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class PsiTool {
 
-    @Description("获取当前类的请求类型")
-    public static HttpEnum.ContentType contentTypeHeader(@Nullable PsiClass psiClass) {
-        if (Objects.isNull(psiClass)) {
-            return HttpEnum.ContentType.APPLICATION_X_FORM_URLENCODED;
-        }
-        PsiModifierList modifierList = psiClass.getModifierList();
-        if (Objects.isNull(modifierList)) {
-            return HttpEnum.ContentType.APPLICATION_X_FORM_URLENCODED;
-        }
-
-        PsiAnnotation controller = Stream.of(modifierList.getAnnotations())
-                .filter(o -> SpringEnum.Controller.REST_CONTROLLER.getClazz().equals(o.getQualifiedName()))
-                .findFirst().orElse(null);
-        return Objects.isNull(controller) ? HttpEnum.ContentType.APPLICATION_X_FORM_URLENCODED : HttpEnum.ContentType.APPLICATION_JSON;
-    }
-
     public static HttpEnum.ContentType contentTypeHeader(@Nullable PsiMethod psiMethod) {
         if (Objects.isNull(psiMethod)) {
             return HttpEnum.ContentType.APPLICATION_X_FORM_URLENCODED;
@@ -154,6 +138,22 @@ public class PsiTool {
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class Class {
 
+        @Description("获取当前类的请求类型")
+        public static HttpEnum.ContentType contentTypeHeader(@Nullable PsiClass psiClass) {
+            if (Objects.isNull(psiClass)) {
+                return HttpEnum.ContentType.APPLICATION_X_FORM_URLENCODED;
+            }
+            PsiModifierList modifierList = psiClass.getModifierList();
+            if (Objects.isNull(modifierList)) {
+                return HttpEnum.ContentType.APPLICATION_X_FORM_URLENCODED;
+            }
+
+            PsiAnnotation controller = Stream.of(modifierList.getAnnotations())
+                    .filter(o -> SpringEnum.Controller.REST_CONTROLLER.getClazz().equals(o.getQualifiedName()))
+                    .findFirst().orElse(null);
+            return Objects.isNull(controller) ? HttpEnum.ContentType.APPLICATION_X_FORM_URLENCODED : HttpEnum.ContentType.APPLICATION_JSON;
+        }
+
         @Description("获取指定类的包名")
         public static @Nullable String getPackageName(@NotNull PsiClass psiClass) {
             String qualifiedName = psiClass.getQualifiedName();
@@ -199,39 +199,18 @@ public class PsiTool {
     @Description("方法操作工具类")
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class Method {
-        private static final String GETTER_PREFIX = "get";
-        private static final String SETTER_PREFIX = "set";
-
-        @Description("获取对象属性对应的 getter 和 setter")
-        public static List<PsiMethod> getPropertyGetterAndSetter(@NotNull PsiField psiField, @NotNull List<PsiMethod> propertiesMethods) {
-            if (propertiesMethods.isEmpty()) {
-                return Collections.emptyList();
+        @Description("决定最终请求头的 Content-Type")
+        public static HttpEnum.ContentType contentType(@NotNull HttpEnum.ContentType classContentType, PsiMethod psiMethod) {
+            if (Objects.isNull(psiMethod)) {
+                return classContentType;
             }
-            String fieldName = psiField.getName();
-            PsiType fieldType = psiField.getType();
-            String targetFieldName = fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
-            return propertiesMethods.stream().filter(m -> m.getName().endsWith(targetFieldName))
-                    .filter(m -> {
-                        String methodName = m.getName();
-                        int parametersCount = m.getParameterList().getParametersCount();
-                        if (methodName.startsWith(GETTER_PREFIX)) {
-                            // getter 应是无参且返回值类型与字段类型一致
-                            return fieldType.equals(m.getReturnType()) && parametersCount == 0;
-                        }
 
-                        if (methodName.startsWith(SETTER_PREFIX) && parametersCount == 1) {
-                            // setter 应是单个参数的且参数类型与字段类型一致
-                            PsiParameter parameter = m.getParameterList().getParameters()[0];
-                            return fieldType.equals(parameter.getType());
-                        }
-                        return false;
-                    })
-                    .toList();
-        }
+            boolean hasResponseBodyAnno = psiMethod.hasAnnotation(SpringEnum.Controller.RESPONSE_BODY.getClazz());
+            if (hasResponseBodyAnno) {
+                return HttpEnum.ContentType.APPLICATION_JSON;
+            }
 
-        @Description("方法名是否以 get 或 set 开头")
-        public static boolean methodNameStartWithGetOrSet(String name) {
-            return name.startsWith(GETTER_PREFIX) || name.startsWith(SETTER_PREFIX);
+            return classContentType;
         }
     }
 
@@ -246,11 +225,11 @@ public class PsiTool {
                     .toList();
         }
 
-        @Description("获取类中所有类属性, 有 static 修饰")
-        public static List<PsiField> getAllClassPropertiesWithStatic(@NotNull PsiClass psiClass) {
-            return Arrays.stream(psiClass.getAllFields())
-                    .filter(field -> hasStaticModifier(field.getModifierList()))
-                    .toList();
+        @Description("处理是上传文件的 Content-Type")
+        public static HttpEnum.ContentType contentType(@NotNull HttpEnum.ContentType methodFile, PsiField psiField) {
+
+
+            return null;
         }
     }
 

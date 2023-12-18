@@ -328,12 +328,13 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
                 if (!httpMethodMap.containsKey(qualifiedName)) {
                     continue;
                 }
-                MethodNodeData data1 = ProjectTool.buildMethodNodeData(annotation, contextPath, controllerPath, method);
-                if (Objects.nonNull(data1)) {
-                    data = new MethodNode(data1);
-                    data1.setDescription(PsiTool.Annotation.getSwaggerAnnotation(method, HttpEnum.AnnotationPlace.METHOD));
-                    dataList.add(data);
-                }
+                HttpEnum.HttpMethod httpMethod = httpMethodMap.get(qualifiedName);
+                String name = PsiTool.Annotation.getAnnotationValue(annotation, new String[]{"value", "path"});
+                MethodNodeData data1 = new MethodNodeData(httpMethod, name, controllerPath, contextPath);
+                data1.setPsiElement(method);
+                data = new MethodNode(data1);
+                data1.setDescription(PsiTool.Annotation.getSwaggerAnnotation(method, HttpEnum.AnnotationPlace.METHOD));
+                dataList.add(data);
             }
         }
         return dataList;
