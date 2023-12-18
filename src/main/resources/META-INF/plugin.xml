@@ -52,6 +52,27 @@
 
     <!-- 更新公告 -->
     <change-notes><![CDATA[
+      <b>1.4.10</b><br>
+      <ol>
+        <li>
+          improve: removing Unused Code And Decoupling
+          <br>
+          优化: 移除未使用的代码和解耦
+        </li>
+        <li>
+          fix bugs: Window jitter when switching to request body or response body tab
+          <br>
+          bug 修复: 切换至请求体或响应体标签页时, 窗口抖动
+        </li>
+      </ol>
+      <b>1.4.9</b><br>
+      <ol>
+        <li>
+          feature: Supported 233.*
+          <br>
+          新功能: 支持 233.*
+        </li>
+      </ol>
       <b>1.4.8</b><br>
       <ol>
         <li>
