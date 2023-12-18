@@ -8,8 +8,6 @@ import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiMethod;
 import com.zys.http.entity.tree.MethodNodeData;
 import com.zys.http.ui.icon.HttpIcons;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,15 +18,7 @@ import java.util.Objects;
  * @author zhou ys
  * @since 2023-10-10
  */
-@Getter
-@EqualsAndHashCode
-public class GotoApiItem implements NavigationItem, Comparable<GotoApiItem> {
-
-    private final MethodNodeData methodNodeData;
-
-    public GotoApiItem(MethodNodeData methodNodeData) {
-        this.methodNodeData = methodNodeData;
-    }
+public record GotoApiItem(MethodNodeData methodNodeData) implements NavigationItem, Comparable<GotoApiItem> {
 
     @Override
     public @Nullable String getName() {
@@ -36,7 +26,7 @@ public class GotoApiItem implements NavigationItem, Comparable<GotoApiItem> {
     }
 
     @Override
-    public @Nullable ItemPresentation getPresentation() {
+    public @NotNull ItemPresentation getPresentation() {
         String location = "";
         NavigatablePsiElement psiElement = methodNodeData.getPsiElement();
         PsiMethod psiMethod = ((PsiMethod) psiElement);

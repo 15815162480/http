@@ -24,15 +24,6 @@ import java.util.stream.Stream;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class PsiTool {
 
-    public static HttpEnum.ContentType contentTypeHeader(@Nullable PsiMethod psiMethod) {
-        if (Objects.isNull(psiMethod)) {
-            return HttpEnum.ContentType.APPLICATION_X_FORM_URLENCODED;
-        }
-
-        return psiMethod.hasAnnotation(SpringEnum.Controller.RESPONSE_BODY.getClazz()) ?
-                HttpEnum.ContentType.APPLICATION_JSON : null;
-    }
-
     @Description("是否有 static 修饰")
     public static boolean hasStaticModifier(@Nullable PsiModifierList target) {
         return hasModifier(target, PsiModifier.STATIC);
@@ -223,13 +214,6 @@ public class PsiTool {
                     .filter(field -> !hasStaticModifier(field.getModifierList()))
                     .filter(field -> !hasPublicModifier(field.getModifierList()))
                     .toList();
-        }
-
-        @Description("处理是上传文件的 Content-Type")
-        public static HttpEnum.ContentType contentType(@NotNull HttpEnum.ContentType methodFile, PsiField psiField) {
-
-
-            return null;
         }
     }
 

@@ -28,10 +28,6 @@ public abstract class CustomAction extends AnAction {
         super(text, description, icon);
     }
 
-    protected CustomAction(String text, String description) {
-        super(text, description, null);
-    }
-
     @Override
     public @NotNull ActionUpdateThread getActionUpdateThread() {
         return ActionUpdateThread.BGT;

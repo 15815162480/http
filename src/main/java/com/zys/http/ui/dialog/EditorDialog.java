@@ -9,7 +9,6 @@ import com.zys.http.extension.service.Bundle;
 import com.zys.http.extension.topic.EditorDialogOkTopic;
 import com.zys.http.ui.editor.CustomEditor;
 import jdk.jfr.Description;
-import lombok.experimental.Accessors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,8 +19,6 @@ import java.awt.*;
  * @author zys
  * @since 2023-09-19
  */
-
-@Accessors(chain = true)
 @Description("编辑器对话框")
 public class EditorDialog extends DialogWrapper {
     private final String title;
