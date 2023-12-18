@@ -1,7 +1,6 @@
 package com.zys.http.ui.window;
 
 import com.intellij.openapi.Disposable;
-import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.SimpleToolWindowPanel;
 import com.intellij.util.ui.JBUI;
@@ -17,21 +16,13 @@ import javax.swing.*;
  */
 @Description("环境列表标签页")
 public class EnvironmentTabWindow extends SimpleToolWindowPanel implements Disposable {
-    private final transient Project project;
-    private final EnvListTable envListTable;
 
     public EnvironmentTabWindow(Project project) {
         super(true, true);
-        this.project = project;
-        this.envListTable = new EnvListTable(project);
-        envListTable.setEditOKCb(this::reloadEnv);
+        EnvListTable envListTable = new EnvListTable(project);
         JComponent component = envListTable.getToolbar().getComponent();
         component.setBorder(JBUI.Borders.customLine(UIConstant.BORDER_COLOR, 0, 0, 1, 0));
         setContent(envListTable);
-    }
-
-    public void reloadEnv() {
-        DumbService.getInstance(project).smartInvokeLater(envListTable::reloadTableModel);
     }
 
     @Override

@@ -3,7 +3,7 @@ package com.zys.http.tool;
 import com.intellij.openapi.project.Project;
 import com.zys.http.constant.HttpEnum;
 import com.zys.http.entity.HttpConfig;
-import com.zys.http.service.HttpService;
+import com.zys.http.extension.service.HttpService;
 import jdk.jfr.Description;
 import org.jetbrains.annotations.NotNull;
 

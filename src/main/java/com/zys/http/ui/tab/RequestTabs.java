@@ -17,7 +17,7 @@ import com.zys.http.action.CommonAction;
 import com.zys.http.constant.HttpEnum;
 import com.zys.http.constant.UIConstant;
 import com.zys.http.entity.param.ParamProperty;
-import com.zys.http.service.Bundle;
+import com.zys.http.extension.service.Bundle;
 import com.zys.http.extension.topic.EditorDialogOkTopic;
 import com.zys.http.tool.HttpServiceTool;
 import com.zys.http.tool.convert.ParamConvert;
@@ -142,7 +142,7 @@ public class RequestTabs extends JBTabsImpl {
         bodyPanel.setBorder(JBUI.Borders.customLineLeft(UIConstant.EDITOR_BORDER_COLOR));
         bodyPanel.add(this.bodyEditor, BorderLayout.CENTER);
         JLabel label = new JLabel(Bundle.get("http.editor.body.label"));
-        this.bodyFileType = ComboBoxTool.fileTypeComboBox(CustomEditor.FILE_TYPE_LIST, e -> {
+        this.bodyFileType = ComboBoxTool.fileTypeComboBox(e -> {
             ItemSelectable item = e.getItemSelectable();
             if (Objects.isNull(item)) {
                 return;
@@ -201,7 +201,6 @@ public class RequestTabs extends JBTabsImpl {
     private void responseTab() {
         JPanel respPanel = new JPanel(new BorderLayout(0, 0));
         responseEditor = new CustomEditor(project);
-        // responseEditor.setBorder(JBUI.Borders.customLineLeft(UIConstant.EDITOR_BORDER_COLOR));
         respPanel.add(responseEditor, BorderLayout.CENTER);
         respPanel.setBorder(JBUI.Borders.customLineLeft(UIConstant.EDITOR_BORDER_COLOR));
         JPanel respExpandPanel = new JPanel(new BorderLayout(0, 0));
@@ -247,9 +246,9 @@ public class RequestTabs extends JBTabsImpl {
                     if (httpMethod.equals(HttpEnum.HttpMethod.POST)) {
                         // 将参数格式化成 username=a&password=a
                         String s = ParamConvert.buildParamPropertyUrlParameters(paramPropertyMap);
-                        bodyEditor.setText(s, CustomEditor.TEXT_FILE_TYPE);
+                        bodyEditor.setText(s, ComboBoxTool.TEXT_FILE_TYPE);
                         this.select(bodyTabInfo, true);
-                        bodyFileType.setSelectedItem(CustomEditor.TEXT_FILE_TYPE);
+                        bodyFileType.setSelectedItem(ComboBoxTool.TEXT_FILE_TYPE);
                     } else {
                         parameterTable.getTableModel().addRow(new String[]{k, v.getDefaultValue() + ""});
                         this.select(parameterTabInfo, true);
@@ -258,11 +257,11 @@ public class RequestTabs extends JBTabsImpl {
                 case BODY -> {
                     this.select(bodyTabInfo, true);
                     if (contentType.equals(HttpEnum.ContentType.APPLICATION_JSON)) {
-                        bodyEditor.setText(v.getDefaultValue().toString(), CustomEditor.JSON_FILE_TYPE);
-                        bodyFileType.setSelectedItem(CustomEditor.JSON_FILE_TYPE);
+                        bodyEditor.setText(v.getDefaultValue().toString(), ComboBoxTool.JSON_FILE_TYPE);
+                        bodyFileType.setSelectedItem(ComboBoxTool.JSON_FILE_TYPE);
                     } else {
-                        bodyEditor.setText(v.getDefaultValue().toString(), CustomEditor.TEXT_FILE_TYPE);
-                        bodyFileType.setSelectedItem(CustomEditor.TEXT_FILE_TYPE);
+                        bodyEditor.setText(v.getDefaultValue().toString(), ComboBoxTool.TEXT_FILE_TYPE);
+                        bodyFileType.setSelectedItem(ComboBoxTool.TEXT_FILE_TYPE);
                     }
                 }
                 case FILE -> {

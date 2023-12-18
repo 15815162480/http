@@ -7,7 +7,7 @@ import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiMethod;
 import com.zys.http.constant.SpringEnum;
-import com.zys.http.service.Bundle;
+import com.zys.http.extension.service.Bundle;
 import com.zys.http.ui.icon.HttpIcons;
 import jdk.jfr.Description;
 import org.jetbrains.annotations.NotNull;

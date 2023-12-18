@@ -52,7 +52,9 @@ public abstract class AbstractListTreePanel extends JBScrollPane implements Tree
             if (!(component instanceof BaseNode<? extends NodeData> selectedNode)) {
                 return;
             }
-            Objects.requireNonNull(getChooseListener()).accept(selectedNode);
+            if (Objects.nonNull(getChooseListener())){
+                getChooseListener().accept(selectedNode);
+            }
         });
 
         this.tree.addMouseListener(new MouseAdapter() {

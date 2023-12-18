@@ -6,7 +6,7 @@ import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
-import com.zys.http.service.Bundle;
+import com.zys.http.extension.service.Bundle;
 import com.zys.http.ui.window.EnvironmentTabWindow;
 import com.zys.http.ui.window.RequestTabWindow;
 import jdk.jfr.Description;
@@ -24,7 +24,6 @@ public class HttpMainWindowFactory implements ToolWindowFactory, DumbAware {
 
         RequestTabWindow requestTabWindow = new RequestTabWindow(project);
         EnvironmentTabWindow environmentTabWindow = new EnvironmentTabWindow(project);
-        requestTabWindow.setGenerateDefaultCb(environmentTabWindow::reloadEnv);
 
         Content apiContent = contentFactory.createContent(requestTabWindow, Bundle.get("http.window.api"), false);
         toolWindow.getContentManager().addContent(apiContent);

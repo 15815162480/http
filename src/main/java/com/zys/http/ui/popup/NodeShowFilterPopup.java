@@ -1,7 +1,7 @@
 package com.zys.http.ui.popup;
 
 import com.intellij.openapi.project.Project;
-import com.zys.http.service.Bundle;
+import com.zys.http.extension.service.Bundle;
 import jdk.jfr.Description;
 
 import java.util.List;
@@ -10,7 +10,7 @@ import java.util.List;
  * @author zhou ys
  * @since 2023-09-25
  */
-@Description("结点展示调车")
+@Description("结点展示弹窗")
 public class NodeShowFilterPopup extends AbstractFilterPopup<String> {
 
     public static final List<String> SETTING_VALUES = List.of(

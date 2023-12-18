@@ -2,7 +2,7 @@ package com.zys.http.tool.ui;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.ui.Messages;
-import com.zys.http.service.Bundle;
+import com.zys.http.extension.service.Bundle;
 import jdk.jfr.Description;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

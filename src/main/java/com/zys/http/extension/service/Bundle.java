@@ -1,4 +1,4 @@
-package com.zys.http.service;
+package com.zys.http.extension.service;
 
 import com.intellij.DynamicBundle;
 import com.intellij.ide.plugins.PluginManager;

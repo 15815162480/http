@@ -1,15 +1,11 @@
 package com.zys.http.ui.editor;
 
-import com.intellij.ide.highlighter.HtmlFileType;
-import com.intellij.ide.highlighter.XmlFileType;
-import com.intellij.json.JsonFileType;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorSettings;
 import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.fileTypes.FileType;
-import com.intellij.openapi.fileTypes.FileTypes;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Computable;
 import com.intellij.psi.PsiDocumentManager;
@@ -23,48 +19,21 @@ import com.intellij.ui.JBColor;
 import com.intellij.util.LocalTimeCounter;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.xmlb.Constants;
+import com.zys.http.tool.ui.ComboBoxTool;
+import jdk.jfr.Description;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author zys
  * @since 2023-09-16
  */
+@Description("自定义编辑器")
 public class CustomEditor extends EditorTextField {
-
-
-    /**
-     * 文本格式
-     */
-    public static final FileType TEXT_FILE_TYPE = FileTypes.PLAIN_TEXT;
-    /**
-     * json格式
-     */
-    public static final FileType JSON_FILE_TYPE = JsonFileType.INSTANCE;
-    /**
-     * html格式
-     */
-    public static final FileType HTML_FILE_TYPE = HtmlFileType.INSTANCE;
-    /**
-     * xml格式
-     */
-    public static final FileType XML_FILE_TYPE = XmlFileType.INSTANCE;
-
-    public static final List<FileType> FILE_TYPE_LIST = new ArrayList<>();
-
-    static {
-        FILE_TYPE_LIST.add(FileTypes.PLAIN_TEXT);
-        FILE_TYPE_LIST.add(JsonFileType.INSTANCE);
-        FILE_TYPE_LIST.add(HtmlFileType.INSTANCE);
-        FILE_TYPE_LIST.add(XmlFileType.INSTANCE);
-    }
-
     public CustomEditor(Project project) {
-        this(project, TEXT_FILE_TYPE);
+        this(project, ComboBoxTool.TEXT_FILE_TYPE);
     }
 
     public CustomEditor(Project project, FileType fileType) {

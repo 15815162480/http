@@ -1,6 +1,7 @@
 package com.zys.http.extension.topic;
 
 import com.intellij.util.messages.Topic;
+import com.zys.http.entity.HttpConfig;
 import jdk.jfr.Description;
 
 /**
@@ -12,9 +13,9 @@ public interface EnvListChangeTopic {
     @Topic.ProjectLevel
     Topic<EnvListChangeTopic> TOPIC = Topic.create(EnvListChangeTopic.class.getName(), EnvListChangeTopic.class);
 
-    void save();
+    void save(String name, HttpConfig config);
 
-    void edit();
+    void edit(String name, HttpConfig config);
 
-    void remove();
+    void remove(String name);
 }

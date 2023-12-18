@@ -9,20 +9,19 @@ import com.intellij.ui.SeparatorOrientation;
 import com.intellij.util.ui.JBUI;
 import com.zys.http.constant.UIConstant;
 import com.zys.http.entity.HttpConfig;
-import com.zys.http.service.Bundle;
+import com.zys.http.extension.topic.EnvListChangeTopic;
+import com.zys.http.extension.service.Bundle;
 import com.zys.http.tool.HttpServiceTool;
 import com.zys.http.tool.ui.ComboBoxTool;
 import com.zys.http.tool.ui.DialogTool;
 import com.zys.http.ui.table.EnvHeaderTable;
 import jdk.jfr.Description;
-import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.BiConsumer;
 
 import static com.zys.http.constant.HttpEnum.Protocol;
 
@@ -32,10 +31,10 @@ import static com.zys.http.constant.HttpEnum.Protocol;
  */
 @Description("添加或修改环境配置的对话框")
 public class EnvAddOrEditDialog extends DialogWrapper {
-
     @Description("是否是添加")
     private final boolean isAdd;
-
+    @Description("项目对象")
+    private final Project project;
     @Description("环境配置工具类")
     private final HttpServiceTool serviceTool;
 
@@ -45,22 +44,14 @@ public class EnvAddOrEditDialog extends DialogWrapper {
     private JTextField hostTF;
     @Description("协议选择框")
     private ComboBox<Protocol> protocolCB;
-
     @Description("数据表格")
     private final EnvHeaderTable envAddOrEditTable;
 
-    @Setter
-    @Description("添加的回调, <新增的环境配置名, 环境配置>")
-    private BiConsumer<String, HttpConfig> addCallback;
-
-    @Setter
-    @Description("添加的回调, <新增的环境配置名, 环境配置>")
-    private BiConsumer<String, HttpConfig> editCallback;
-
     public EnvAddOrEditDialog(Project project, boolean isAdd, String selectEnv) {
         super(project, true);
-        serviceTool = HttpServiceTool.getInstance(project);
-        envAddOrEditTable = new EnvHeaderTable(project, isAdd, selectEnv, true);
+        this.project = project;
+        this.serviceTool = HttpServiceTool.getInstance(project);
+        this.envAddOrEditTable = new EnvHeaderTable(project, isAdd, selectEnv, true);
 
         this.isAdd = isAdd;
         init();
@@ -71,12 +62,12 @@ public class EnvAddOrEditDialog extends DialogWrapper {
         setAutoAdjustable(true);
         if (!isAdd) {
             // 修改时配置名称禁止修改
-            configNameTF.setText(selectEnv);
-            configNameTF.setEnabled(false);
-            configNameTF.setDisabledTextColor(JBColor.BLACK);
+            this.configNameTF.setText(selectEnv);
+            this.configNameTF.setEnabled(false);
+            this.configNameTF.setDisabledTextColor(JBColor.BLACK);
             HttpConfig httpConfig = serviceTool.getHttpConfig(selectEnv);
-            hostTF.setText(httpConfig.getHostValue());
-            protocolCB.setSelectedItem(httpConfig.getProtocol());
+            this.hostTF.setText(httpConfig.getHostValue());
+            this.protocolCB.setSelectedItem(httpConfig.getProtocol());
         }
     }
 
@@ -159,11 +150,10 @@ public class EnvAddOrEditDialog extends DialogWrapper {
         httpConfig.setHostValue(host);
         httpConfig.setProtocol(protocol);
 
-        serviceTool.putHttpConfig(configName, httpConfig);
         if (isAdd) {
-            addCallback.accept(configName, httpConfig);
+            project.getMessageBus().syncPublisher(EnvListChangeTopic.TOPIC).save(configName, httpConfig);
         } else {
-            editCallback.accept(configName, httpConfig);
+            project.getMessageBus().syncPublisher(EnvListChangeTopic.TOPIC).edit(configName, httpConfig);
         }
         super.doOKAction();
     }

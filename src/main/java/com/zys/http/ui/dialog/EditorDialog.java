@@ -5,7 +5,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.util.ui.JBUI;
 import com.zys.http.constant.UIConstant;
-import com.zys.http.service.Bundle;
+import com.zys.http.extension.service.Bundle;
 import com.zys.http.extension.topic.EditorDialogOkTopic;
 import com.zys.http.ui.editor.CustomEditor;
 import jdk.jfr.Description;

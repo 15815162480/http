@@ -17,11 +17,10 @@ import com.zys.http.action.*;
 import com.zys.http.action.group.SelectActionGroup;
 import com.zys.http.action.group.SettingActionGroup;
 import com.zys.http.constant.HttpEnum;
-import com.zys.http.service.Bundle;
 import com.zys.http.extension.topic.EnvChangeTopic;
 import com.zys.http.extension.topic.RefreshTreeTopic;
+import com.zys.http.extension.service.Bundle;
 import com.zys.http.tool.HttpServiceTool;
-import com.zys.http.tool.SystemTool;
 import com.zys.http.tool.ui.ThemeTool;
 import com.zys.http.ui.dialog.EnvAddOrEditDialog;
 import com.zys.http.ui.icon.HttpIcons;
@@ -32,7 +31,6 @@ import com.zys.http.ui.tree.node.ModuleNode;
 import com.zys.http.ui.window.panel.RequestPanel;
 import jdk.jfr.Description;
 import lombok.Getter;
-import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -54,11 +52,6 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
     private MethodFilterPopup methodFilterPopup;
     @Description("结点展示过滤")
     private NodeShowFilterPopup nodeShowFilterPopup;
-
-    @Setter
-    @Description("是否生成默认")
-    private transient Runnable generateDefaultCb;
-
 
     public RequestTabWindow(@NotNull Project project) {
         super(true, true);
@@ -99,7 +92,6 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
             requestPanel.getHttpApiTreePanel().clear();
             requestPanel.reload(null);
             refreshTree(b);
-            SystemTool.schedule(() -> generateDefaultCb.run(), 600);
         });
 
         project.getMessageBus().connect().subscribe(EnvChangeTopic.TOPIC,
@@ -132,12 +124,7 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
         envActionGroup.getTemplatePresentation().setIcon(ThemeTool.isDark() ? HttpIcons.General.ENVIRONMENT : HttpIcons.General.ENVIRONMENT_LIGHT);
 
         AddAction addAction = new AddAction(Bundle.get("http.action.add.env"));
-        addAction.setAction(event -> {
-            EnvAddOrEditDialog dialog = new EnvAddOrEditDialog(project, true, "");
-            dialog.setAddCallback((configName, httpConfig) -> SystemTool.schedule(() -> generateDefaultCb.run(), 600));
-            dialog.show();
-
-        });
+        addAction.setAction(event -> new EnvAddOrEditDialog(project, true, "").show());
         envActionGroup.add(addAction);
         envActionGroup.add(new SelectActionGroup());
 

@@ -4,7 +4,7 @@ import com.intellij.codeInsight.daemon.LineMarkerInfo;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.psi.PsiIdentifier;
 import com.zys.http.action.CommonAction;
-import com.zys.http.service.Bundle;
+import com.zys.http.extension.service.Bundle;
 import com.zys.http.ui.icon.HttpIcons;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

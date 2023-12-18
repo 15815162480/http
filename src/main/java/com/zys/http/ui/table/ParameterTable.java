@@ -5,7 +5,7 @@ import com.intellij.lang.properties.PropertiesFileType;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.zys.http.constant.HttpConstant;
-import com.zys.http.service.Bundle;
+import com.zys.http.extension.service.Bundle;
 import com.zys.http.extension.topic.EditorDialogOkTopic;
 import com.zys.http.ui.dialog.EditorDialog;
 import jdk.jfr.Description;
@@ -61,7 +61,6 @@ public class ParameterTable extends EnvHeaderTable {
                     reloadTableModel();
                     headerMap.forEach((k, v) -> getTableModel().addRow(new String[]{k, v}));
                 });
-
             }
         });
 

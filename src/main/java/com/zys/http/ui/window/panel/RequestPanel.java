@@ -14,13 +14,14 @@ import com.zys.http.constant.HttpEnum.HttpMethod;
 import com.zys.http.constant.UIConstant;
 import com.zys.http.entity.HttpConfig;
 import com.zys.http.entity.param.ParamProperty;
-import com.zys.http.service.Bundle;
+import com.zys.http.extension.topic.TreeNodeSelectedTopic;
+import com.zys.http.extension.service.Bundle;
 import com.zys.http.tool.HttpClient;
 import com.zys.http.tool.HttpServiceTool;
 import com.zys.http.tool.PsiTool;
 import com.zys.http.tool.convert.ParamConvert;
+import com.zys.http.tool.ui.ComboBoxTool;
 import com.zys.http.tool.ui.DialogTool;
-import com.zys.http.ui.editor.CustomEditor;
 import com.zys.http.ui.tab.RequestTabs;
 import com.zys.http.ui.table.FileUploadTable;
 import com.zys.http.ui.tree.HttpApiTreePanel;
@@ -73,12 +74,12 @@ public class RequestPanel extends JBSplitter {
         initFirstPanel();
         initSecondPanel();
         initSendRequestEvent();
+        initTopic();
     }
 
     @Description("初始化上半部分组件")
     private void initFirstPanel() {
         this.httpApiTreePanel = new HttpApiTreePanel(project);
-        this.httpApiTreePanel.setChooseCallback(this::chooseEvent);
         this.setFirstComponent(httpApiTreePanel);
     }
 
@@ -169,7 +170,7 @@ public class RequestPanel extends JBSplitter {
                         final String response = String.format("%s", e);
                         ApplicationManager.getApplication().invokeLater(
                                 () -> {
-                                    this.requestTabs.getResponseEditor().setText(response, CustomEditor.TEXT_FILE_TYPE);
+                                    this.requestTabs.getResponseEditor().setText(response, ComboBoxTool.TEXT_FILE_TYPE);
                                     this.requestTabs.resultText(404);
                                 }
                         );
@@ -178,6 +179,10 @@ public class RequestPanel extends JBSplitter {
                             this.requestTabs.getRequestResult().setText(this.requestTabs.getRequestResult().getText() + ", " + ms + "ms"))
             );
         });
+    }
+
+    private void initTopic() {
+        project.getMessageBus().connect().subscribe(TreeNodeSelectedTopic.TOPIC, (TreeNodeSelectedTopic) this::chooseEvent);
     }
 
     private void makeSureParamPropertyMapNotNull() {

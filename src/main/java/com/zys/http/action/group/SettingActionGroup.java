@@ -6,7 +6,7 @@ import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.zys.http.action.CommonAction;
-import com.zys.http.service.Bundle;
+import com.zys.http.extension.service.Bundle;
 import com.zys.http.extension.topic.RefreshTreeTopic;
 import com.zys.http.tool.HttpServiceTool;
 import com.zys.http.tool.ui.ThemeTool;

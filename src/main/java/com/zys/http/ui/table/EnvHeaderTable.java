@@ -13,7 +13,7 @@ import com.zys.http.action.CustomAction;
 import com.zys.http.action.EditAction;
 import com.zys.http.action.RemoveAction;
 import com.zys.http.entity.HttpConfig;
-import com.zys.http.service.Bundle;
+import com.zys.http.extension.service.Bundle;
 import com.zys.http.extension.topic.EditorDialogOkTopic;
 import com.zys.http.ui.dialog.EditorDialog;
 import jdk.jfr.Description;

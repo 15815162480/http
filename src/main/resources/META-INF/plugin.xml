@@ -398,8 +398,8 @@
     <toolWindow id="ApiTool" secondary="true" anchor="right" icon="com.zys.http.ui.icon.HttpIcons.PLUGIN_ICON"
                 doNotActivateOnStart="true" factoryClass="com.zys.http.HttpMainWindowFactory"
     />
-    <projectService serviceImplementation="com.zys.http.service.HttpService"/>
-    <projectService serviceImplementation="com.zys.http.service.NotifyService"/>
+    <projectService serviceImplementation="com.zys.http.extension.service.HttpService"/>
+    <projectService serviceImplementation="com.zys.http.extension.service.NotifyService"/>
     <notificationGroup id="http.notify" displayType="BALLOON" toolWindowId="http"/>
     <searchEverywhereContributor
         implementation="com.zys.http.extension.search.everywhere.GotoApiSearchEverywhereContributor$Factory"/>

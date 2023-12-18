@@ -18,8 +18,10 @@ import com.zys.http.constant.HttpEnum;
 import com.zys.http.constant.SpringEnum;
 import com.zys.http.entity.HttpConfig;
 import com.zys.http.entity.tree.*;
-import com.zys.http.service.Bundle;
-import com.zys.http.service.NotifyService;
+import com.zys.http.extension.topic.EnvListChangeTopic;
+import com.zys.http.extension.topic.TreeNodeSelectedTopic;
+import com.zys.http.extension.service.Bundle;
+import com.zys.http.extension.service.NotifyService;
 import com.zys.http.tool.HttpServiceTool;
 import com.zys.http.tool.ProjectTool;
 import com.zys.http.tool.PsiTool;
@@ -30,7 +32,6 @@ import com.zys.http.ui.icon.HttpIcons;
 import com.zys.http.ui.tree.node.*;
 import jdk.jfr.Description;
 import lombok.Getter;
-import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -64,12 +65,6 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
     private final transient HttpServiceTool serviceTool;
     private final transient Project project;
 
-    @Getter
-    @Setter
-    @Description("选中方法节点后的回调")
-    private transient Consumer<MethodNode> chooseCallback;
-
-
     public HttpApiTreePanel(Project project) {
         super(new SimpleTree());
         this.project = project;
@@ -92,7 +87,7 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
             moduleNodeMap.put(m.getName(), new ModuleNode(new ModuleNodeData(m.getName(), contextPath)));
         }
         ModuleNode root = moduleNodeMap.get(project.getName());
-        if (Objects.isNull(root)){
+        if (Objects.isNull(root)) {
             root = new ModuleNode(new ModuleNodeData(project.getName(), ""));
             moduleNodeMap.put(project.getName(), root);
         }
@@ -139,9 +134,10 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
         String moduleName = m.getName();
         if (serviceTool.getGenerateDefault()) {
             String host = "127.0.0.1:" + ProjectTool.getModulePort(project, m);
-            serviceTool.putHttpConfig(moduleName, new HttpConfig(HttpEnum.Protocol.HTTP, host, Collections.emptyMap()));
+            project.getMessageBus().syncPublisher(EnvListChangeTopic.TOPIC)
+                    .save(moduleName, new HttpConfig(HttpEnum.Protocol.HTTP, host, Collections.emptyMap()));
         } else {
-            serviceTool.removeHttpConfig(moduleName);
+            project.getMessageBus().syncPublisher(EnvListChangeTopic.TOPIC).remove(moduleName);
         }
     }
 
@@ -260,12 +256,11 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
         }
     }
 
-
     @Override
     protected @Nullable Consumer<BaseNode<?>> getChooseListener() {
         return node -> {
-            if (node instanceof MethodNode methodNode && Objects.nonNull(chooseCallback)) {
-                chooseCallback.accept(methodNode);
+            if (node instanceof MethodNode mn) {
+                project.getMessageBus().syncPublisher(TreeNodeSelectedTopic.TOPIC).select(mn);
             }
         };
     }
