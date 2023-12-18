@@ -5,20 +5,23 @@ import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl;
 import com.intellij.openapi.fileTypes.FileType;
-import com.intellij.openapi.fileTypes.impl.FileTypeRenderer;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.tabs.TabInfo;
 import com.intellij.ui.tabs.impl.JBTabsImpl;
+import com.intellij.util.messages.MessageBus;
+import com.intellij.util.messages.MessageBusConnection;
 import com.intellij.util.ui.JBUI;
 import com.zys.http.action.CommonAction;
 import com.zys.http.constant.HttpEnum;
 import com.zys.http.constant.UIConstant;
 import com.zys.http.entity.param.ParamProperty;
 import com.zys.http.service.Bundle;
+import com.zys.http.extension.topic.EditorDialogOkTopic;
 import com.zys.http.tool.HttpServiceTool;
 import com.zys.http.tool.convert.ParamConvert;
+import com.zys.http.tool.ui.ComboBoxTool;
 import com.zys.http.tool.ui.ThemeTool;
 import com.zys.http.ui.dialog.EditorDialog;
 import com.zys.http.ui.editor.CustomEditor;
@@ -92,6 +95,25 @@ public class RequestTabs extends JBTabsImpl {
         requestFileTab();
         responseTab();
         this.getComponent().setBorder(JBUI.Borders.customLineLeft(UIConstant.EDITOR_BORDER_COLOR));
+        initTopic();
+    }
+
+    private void initTopic() {
+        MessageBus messageBus = project.getMessageBus();
+        MessageBusConnection connect = messageBus.connect();
+        connect.subscribe(EditorDialogOkTopic.TOPIC, new EditorDialogOkTopic() {
+            @Override
+            public void modify(String modifiedText, boolean isReplace) {
+                if (isReplace) {
+                    bodyEditor.setText(modifiedText);
+                }
+            }
+
+            @Override
+            public void properties(String modifiedText, boolean isHeader) {
+                // 没用到
+            }
+        });
     }
 
     @Description("请求头标签页")
@@ -117,17 +139,10 @@ public class RequestTabs extends JBTabsImpl {
         JPanel bodyPanel = new JPanel(new BorderLayout(0, 0));
         this.bodyEditor = new CustomEditor(project);
         this.bodyEditor.setName("BODY");
-        this.bodyEditor.setBorder(JBUI.Borders.customLineLeft(UIConstant.EDITOR_BORDER_COLOR));
+        bodyPanel.setBorder(JBUI.Borders.customLineLeft(UIConstant.EDITOR_BORDER_COLOR));
         bodyPanel.add(this.bodyEditor, BorderLayout.CENTER);
         JLabel label = new JLabel(Bundle.get("http.editor.body.label"));
-        this.bodyFileType = new ComboBox<>(new FileType[]{
-                CustomEditor.TEXT_FILE_TYPE,
-                CustomEditor.JSON_FILE_TYPE,
-                CustomEditor.XML_FILE_TYPE
-        });
-        this.bodyFileType.setFocusable(false);
-        this.bodyFileType.setRenderer(new FileTypeRenderer());
-        this.bodyFileType.addItemListener(e -> {
+        this.bodyFileType = ComboBoxTool.fileTypeComboBox(CustomEditor.FILE_TYPE_LIST, e -> {
             ItemSelectable item = e.getItemSelectable();
             if (Objects.isNull(item)) {
                 return;
@@ -148,12 +163,7 @@ public class RequestTabs extends JBTabsImpl {
         DefaultActionGroup group = new DefaultActionGroup();
         CommonAction action = new CommonAction(Bundle.get("http.editor.body.action"), "",
                 ThemeTool.isDark() ? HttpIcons.General.FULL_SCREEN : HttpIcons.General.FULL_SCREEN_LIGHT);
-        action.setAction(e -> {
-            CustomEditor editor = new CustomEditor(project, bodyEditor.getFileType());
-            editor.setText(bodyEditor.getText());
-            EditorDialog dialog = new EditorDialog(project, Bundle.get("http.editor.body.action.dialog"), editor);
-            dialog.setOkCallBack(s -> bodyEditor.setText(s)).show();
-        });
+        action.setAction(e -> new EditorDialog(project, Bundle.get("http.editor.body.action.dialog"), bodyEditor.getFileType(), bodyEditor.getText()).show());
         group.add(action);
         ActionToolbarImpl component = (ActionToolbarImpl) ActionManager.getInstance()
                 .createActionToolbar("http.body.editor", group, true).getComponent();
@@ -191,16 +201,14 @@ public class RequestTabs extends JBTabsImpl {
     private void responseTab() {
         JPanel respPanel = new JPanel(new BorderLayout(0, 0));
         responseEditor = new CustomEditor(project);
-        responseEditor.setBorder(JBUI.Borders.customLineLeft(UIConstant.EDITOR_BORDER_COLOR));
+        // responseEditor.setBorder(JBUI.Borders.customLineLeft(UIConstant.EDITOR_BORDER_COLOR));
         respPanel.add(responseEditor, BorderLayout.CENTER);
+        respPanel.setBorder(JBUI.Borders.customLineLeft(UIConstant.EDITOR_BORDER_COLOR));
         JPanel respExpandPanel = new JPanel(new BorderLayout(0, 0));
         CommonAction action = new CommonAction(Bundle.get("http.editor.response.action"), "",
                 ThemeTool.isDark() ? HttpIcons.General.FULL_SCREEN : HttpIcons.General.FULL_SCREEN_LIGHT);
-        action.setAction(e -> {
-            CustomEditor editor = new CustomEditor(project, responseEditor.getFileType());
-            editor.setText(responseEditor.getText());
-            new EditorDialog(project, Bundle.get("http.editor.response.action.dialog"), editor).show();
-        });
+        action.setAction(e -> new EditorDialog(project, Bundle.get("http.editor.response.action.dialog"),
+                responseEditor.getFileType(), responseEditor.getText()).show());
         DefaultActionGroup group = new DefaultActionGroup();
         group.add(action);
         ActionToolbarImpl component = (ActionToolbarImpl) ActionManager.getInstance()

@@ -13,7 +13,7 @@ import com.intellij.ui.content.ContentManager;
 import com.zys.http.action.CommonAction;
 import com.zys.http.constant.HttpConstant;
 import com.zys.http.constant.SpringEnum;
-import com.zys.http.service.topic.RefreshTreeTopic;
+import com.zys.http.extension.topic.RefreshTreeTopic;
 import com.zys.http.ui.icon.HttpIcons;
 import com.zys.http.ui.tree.HttpApiTreePanel;
 import com.zys.http.ui.tree.node.MethodNode;

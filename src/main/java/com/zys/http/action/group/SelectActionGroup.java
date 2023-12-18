@@ -6,7 +6,7 @@ import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.project.Project;
 import com.zys.http.action.SelectAction;
 import com.zys.http.service.Bundle;
-import com.zys.http.service.topic.EnvChangeTopic;
+import com.zys.http.extension.topic.EnvChangeTopic;
 import com.zys.http.tool.HttpServiceTool;
 import com.zys.http.tool.ui.ThemeTool;
 import com.zys.http.ui.icon.HttpIcons;

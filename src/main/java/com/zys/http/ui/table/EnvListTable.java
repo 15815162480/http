@@ -9,7 +9,7 @@ import com.zys.http.action.*;
 import com.zys.http.constant.HttpEnum;
 import com.zys.http.entity.HttpConfig;
 import com.zys.http.service.Bundle;
-import com.zys.http.service.topic.EnvChangeTopic;
+import com.zys.http.extension.topic.EnvChangeTopic;
 import com.zys.http.tool.ui.DialogTool;
 import com.zys.http.ui.dialog.EnvAddOrEditDialog;
 import jdk.jfr.Description;

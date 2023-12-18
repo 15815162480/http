@@ -27,6 +27,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author zys
@@ -51,6 +53,15 @@ public class CustomEditor extends EditorTextField {
      * xml格式
      */
     public static final FileType XML_FILE_TYPE = XmlFileType.INSTANCE;
+
+    public static final List<FileType> FILE_TYPE_LIST = new ArrayList<>();
+
+    static {
+        FILE_TYPE_LIST.add(FileTypes.PLAIN_TEXT);
+        FILE_TYPE_LIST.add(JsonFileType.INSTANCE);
+        FILE_TYPE_LIST.add(HtmlFileType.INSTANCE);
+        FILE_TYPE_LIST.add(XmlFileType.INSTANCE);
+    }
 
     public CustomEditor(Project project) {
         this(project, TEXT_FILE_TYPE);

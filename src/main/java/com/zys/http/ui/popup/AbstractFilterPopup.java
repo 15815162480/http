@@ -5,7 +5,7 @@ import com.intellij.ui.components.JBCheckBox;
 import com.intellij.util.ui.JBUI;
 import com.zys.http.constant.UIConstant;
 import com.zys.http.service.Bundle;
-import com.zys.http.service.topic.RefreshTreeTopic;
+import com.zys.http.extension.topic.RefreshTreeTopic;
 
 import javax.swing.*;
 import java.awt.*;

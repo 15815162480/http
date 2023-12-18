@@ -11,6 +11,7 @@ import com.zys.http.constant.UIConstant;
 import com.zys.http.entity.HttpConfig;
 import com.zys.http.service.Bundle;
 import com.zys.http.tool.HttpServiceTool;
+import com.zys.http.tool.ui.ComboBoxTool;
 import com.zys.http.tool.ui.DialogTool;
 import com.zys.http.ui.table.EnvHeaderTable;
 import jdk.jfr.Description;
@@ -104,7 +105,7 @@ public class EnvAddOrEditDialog extends DialogWrapper {
 
         // 环境配置
         gbc.gridy = 1;
-        protocolCB = new ComboBox<>(Protocol.values());
+        protocolCB = ComboBoxTool.protocolComboBox();
         protocolCB.setSelectedItem(Protocol.HTTP);
         first.add(protocolCB, gbc);
 
