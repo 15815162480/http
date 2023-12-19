@@ -60,9 +60,10 @@
           优化: 移除未使用的代码和解耦
         </li>
         <li>
-          fix bugs: Window jitter when switching to request body or response body tab
+          help: In IDEA's new UI compact mode, when switching to the request body or response body tab, the window
+          shakes (does not appear in the old UI and non-compact mode), the left border of the entire window is 1px more
           <br>
-          bug 修复: 切换至请求体或响应体标签页时, 窗口抖动
+          求助: IDEA 新UI紧凑模式下, 切换至请求体或响应体标签页时, 窗口抖动(老UI和非紧凑模式下不会出现), 整个窗口左边框多出1px
         </li>
       </ol>
       <b>1.4.9</b><br>
@@ -76,7 +77,8 @@
       <b>1.4.8</b><br>
       <ol>
         <li>
-          feature: New setting-Can set whether to refresh when switching branches (because different interfaces may
+          feature: New setting-Can set whether to refresh when switching branches (because different interfaces
+          may
           exist for different branches)
           <br>
           新功能: 新设置-可以设置是否在切换分支时刷新(由于不同分支可能存在不同的接口)
@@ -406,7 +408,7 @@
           双击方法结点可以跳转到指定方法处
         </li>
       </ol>
-        ]]></change-notes>
+      ]]></change-notes>
 
   <depends>com.intellij.modules.platform</depends>
   <depends>com.intellij.modules.java</depends>
