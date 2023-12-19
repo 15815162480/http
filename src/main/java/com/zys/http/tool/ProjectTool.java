@@ -98,9 +98,9 @@ public class ProjectTool {
         Optional<GlobalSearchScope> globalSearchScope = Optional.of(module)
                 .map(Module::getModuleScope);
         return Stream.concat(
-                        globalSearchScope.map(moduleScope -> JavaAnnotationIndex.getInstance().get(SpringEnum.Controller.CONTROLLER.getShortClassName(), project, moduleScope))
+                        globalSearchScope.map(moduleScope -> JavaAnnotationIndex.getInstance().getAnnotations(SpringEnum.Controller.CONTROLLER.getShortClassName(), project, moduleScope))
                                 .orElse(new ArrayList<>()).stream(),
-                        globalSearchScope.map(moduleScope -> JavaAnnotationIndex.getInstance().get(SpringEnum.Controller.REST_CONTROLLER.getShortClassName(), project, moduleScope))
+                        globalSearchScope.map(moduleScope -> JavaAnnotationIndex.getInstance().getAnnotations(SpringEnum.Controller.REST_CONTROLLER.getShortClassName(), project, moduleScope))
                                 .orElse(new ArrayList<>()).stream())
                 .map(PsiElement::getParent)
                 .map(PsiModifierList.class::cast)
