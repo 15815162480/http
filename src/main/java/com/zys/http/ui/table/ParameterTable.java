@@ -37,8 +37,8 @@ public class ParameterTable extends EnvHeaderTable {
             }
 
             @Override
-            public void properties(String modifiedText, boolean isHeader) {
-                if (isHeader) {
+            public void properties(String modifiedText, boolean isEnv, boolean isHeader) {
+                if (isHeader || isEnv) {
                     return;
                 }
                 if (CharSequenceUtil.isEmpty(modifiedText)) {
@@ -86,6 +86,6 @@ public class ParameterTable extends EnvHeaderTable {
             all.append(CharSequenceUtil.format(HttpConstant.EDIT_AS_PROPERTIES_TEMPLATE, key, value));
         }
         new EditorDialog(project, Bundle.get("http.editor.param.properties.dialog"),
-                PropertiesFileType.INSTANCE, all.toString()).show();
+                PropertiesFileType.INSTANCE, all.toString(), false).show();
     }
 }

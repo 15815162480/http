@@ -110,7 +110,7 @@ public class RequestTabs extends JBTabsImpl {
             }
 
             @Override
-            public void properties(String modifiedText, boolean isHeader) {
+            public void properties(String modifiedText, boolean isEnv, boolean isHeader) {
                 // 没用到
             }
         });
@@ -163,7 +163,7 @@ public class RequestTabs extends JBTabsImpl {
         DefaultActionGroup group = new DefaultActionGroup();
         CommonAction action = new CommonAction(Bundle.get("http.editor.body.action"), "",
                 ThemeTool.isDark() ? HttpIcons.General.FULL_SCREEN : HttpIcons.General.FULL_SCREEN_LIGHT);
-        action.setAction(e -> new EditorDialog(project, Bundle.get("http.editor.body.action.dialog"), bodyEditor.getFileType(), bodyEditor.getText()).show());
+        action.setAction(e -> new EditorDialog(project, Bundle.get("http.editor.body.action.dialog"), bodyEditor.getFileType(), bodyEditor.getText(), false).show());
         group.add(action);
         ActionToolbarImpl component = (ActionToolbarImpl) ActionManager.getInstance()
                 .createActionToolbar("http.body.editor", group, true).getComponent();
@@ -207,7 +207,7 @@ public class RequestTabs extends JBTabsImpl {
         CommonAction action = new CommonAction(Bundle.get("http.editor.response.action"), "",
                 ThemeTool.isDark() ? HttpIcons.General.FULL_SCREEN : HttpIcons.General.FULL_SCREEN_LIGHT);
         action.setAction(e -> new EditorDialog(project, Bundle.get("http.editor.response.action.dialog"),
-                responseEditor.getFileType(), responseEditor.getText()).show());
+                responseEditor.getFileType(), responseEditor.getText(), false).show());
         DefaultActionGroup group = new DefaultActionGroup();
         group.add(action);
         ActionToolbarImpl component = (ActionToolbarImpl) ActionManager.getInstance()

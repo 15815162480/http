@@ -22,12 +22,14 @@ import java.awt.*;
 @Description("编辑器对话框")
 public class EditorDialog extends DialogWrapper {
     private final String title;
+    private final boolean isEnv;
     private final Project project;
     private final CustomEditor customEditor;
 
-    public EditorDialog(Project project, String title, FileType fileType, String editorText) {
+    public EditorDialog(Project project, String title, FileType fileType, String editorText, boolean isEnv) {
         super(project);
         this.title = title;
+        this.isEnv = isEnv;
         this.project = project;
         this.customEditor = new CustomEditor(project, fileType);
         this.customEditor.setText(editorText);
@@ -59,12 +61,13 @@ public class EditorDialog extends DialogWrapper {
 
         // 如果是请求头编辑
         if (title.equals(Bundle.get("http.editor.header.properties.dialog"))) {
-            project.getMessageBus().syncPublisher(EditorDialogOkTopic.TOPIC).properties(customEditor.getText(), true);
+            System.out.println(isEnv);
+            project.getMessageBus().syncPublisher(EditorDialogOkTopic.TOPIC).properties(customEditor.getText(), isEnv,true);
         }
 
         // 如果是请求参数编辑
         if (title.equals(Bundle.get("http.editor.param.properties.dialog"))) {
-            project.getMessageBus().syncPublisher(EditorDialogOkTopic.TOPIC).properties(customEditor.getText(), false);
+            project.getMessageBus().syncPublisher(EditorDialogOkTopic.TOPIC).properties(customEditor.getText(), false,false);
         }
         super.doOKAction();
     }

@@ -66,7 +66,7 @@ public class EnvHeaderTable extends AbstractTable implements EditAsProperties {
             }
 
             @Override
-            public void properties(String modifiedText, boolean isHeader) {
+            public void properties(String modifiedText, boolean isEnv, boolean isHeader) {
                 if (!isHeader) {
                     return;
                 }
@@ -247,6 +247,6 @@ public class EnvHeaderTable extends AbstractTable implements EditAsProperties {
         }
 
         new EditorDialog(project, Bundle.get("http.editor.header.properties.dialog"),
-                PropertiesFileType.INSTANCE, all.toString()).show();
+                PropertiesFileType.INSTANCE, all.toString(), isEnv).show();
     }
 }

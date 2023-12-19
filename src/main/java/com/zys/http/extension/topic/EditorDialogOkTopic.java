@@ -14,5 +14,5 @@ public interface EditorDialogOkTopic {
     Topic<EditorDialogOkTopic> TOPIC = Topic.create(EditorDialogOkTopic.class.getName(), EditorDialogOkTopic.class);
 
     void modify(String modifiedText, boolean isReplace);
-    void properties(String modifiedText, boolean isHeader);
+    void properties(String modifiedText, boolean isEnv, boolean isHeader);
 }
