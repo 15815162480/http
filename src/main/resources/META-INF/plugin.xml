@@ -55,9 +55,14 @@
       <b>1.4.10</b><br>
       <ol>
         <li>
-          improve: removing Unused Code And Decoupling
+          improve: removing Unused Code
           <br>
-          优化: 移除未使用的代码和解耦
+          优化: 移除未使用的代码
+        </li>
+        <li>
+          fix bugs: Quickly switch the selected method item to an error.
+          <br>
+          bug 修复: 快速切换选中方法项时报错
         </li>
         <li>
           help: In IDEA's new UI compact mode, when switching to the request body or response body tab, the window

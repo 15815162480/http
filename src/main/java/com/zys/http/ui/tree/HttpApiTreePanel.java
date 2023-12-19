@@ -18,10 +18,9 @@ import com.zys.http.constant.HttpEnum;
 import com.zys.http.constant.SpringEnum;
 import com.zys.http.entity.HttpConfig;
 import com.zys.http.entity.tree.*;
-import com.zys.http.extension.topic.EnvListChangeTopic;
-import com.zys.http.extension.topic.TreeNodeSelectedTopic;
 import com.zys.http.extension.service.Bundle;
 import com.zys.http.extension.service.NotifyService;
+import com.zys.http.extension.topic.EnvListChangeTopic;
 import com.zys.http.tool.HttpServiceTool;
 import com.zys.http.tool.ProjectTool;
 import com.zys.http.tool.PsiTool;
@@ -32,6 +31,7 @@ import com.zys.http.ui.icon.HttpIcons;
 import com.zys.http.ui.tree.node.*;
 import jdk.jfr.Description;
 import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -64,6 +64,10 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
     private final transient Map<PsiClass, List<MethodNode>> methodNodeMap = new HashMap<>();
     private final transient HttpServiceTool serviceTool;
     private final transient Project project;
+
+    @Setter
+    @Description("节点选中回调")
+    private  Consumer<MethodNode> chooseCallback;
 
     public HttpApiTreePanel(Project project) {
         super(new SimpleTree());
@@ -259,8 +263,8 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
     @Override
     protected @Nullable Consumer<BaseNode<?>> getChooseListener() {
         return node -> {
-            if (node instanceof MethodNode mn) {
-                project.getMessageBus().syncPublisher(TreeNodeSelectedTopic.TOPIC).select(mn);
+            if (node instanceof MethodNode methodNode && Objects.nonNull(chooseCallback)) {
+                chooseCallback.accept(methodNode);
             }
         };
     }

@@ -2,6 +2,8 @@ package com.zys.http.ui.window.panel;
 
 import cn.hutool.core.text.CharSequenceUtil;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.ModalityState;
+import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
@@ -14,11 +16,11 @@ import com.zys.http.constant.HttpEnum.HttpMethod;
 import com.zys.http.constant.UIConstant;
 import com.zys.http.entity.HttpConfig;
 import com.zys.http.entity.param.ParamProperty;
-import com.zys.http.extension.topic.TreeNodeSelectedTopic;
 import com.zys.http.extension.service.Bundle;
 import com.zys.http.tool.HttpClient;
 import com.zys.http.tool.HttpServiceTool;
 import com.zys.http.tool.PsiTool;
+import com.zys.http.tool.ThreadTool;
 import com.zys.http.tool.convert.ParamConvert;
 import com.zys.http.tool.ui.ComboBoxTool;
 import com.zys.http.tool.ui.DialogTool;
@@ -74,12 +76,12 @@ public class RequestPanel extends JBSplitter {
         initFirstPanel();
         initSecondPanel();
         initSendRequestEvent();
-        initTopic();
     }
 
     @Description("初始化上半部分组件")
     private void initFirstPanel() {
         this.httpApiTreePanel = new HttpApiTreePanel(project);
+        this.httpApiTreePanel.setChooseCallback(this::chooseEvent);
         this.setFirstComponent(httpApiTreePanel);
     }
 
@@ -174,15 +176,12 @@ public class RequestPanel extends JBSplitter {
                                 }
                         );
                     },
-                    ms -> ApplicationManager.getApplication().invokeLater(()->
+                    ms -> ApplicationManager.getApplication().invokeLater(() ->
                             this.requestTabs.getRequestResult().setText(this.requestTabs.getRequestResult().getText() + ", " + ms + "ms"))
             );
         });
     }
 
-    private void initTopic() {
-        project.getMessageBus().connect().subscribe(TreeNodeSelectedTopic.TOPIC, (TreeNodeSelectedTopic) this::chooseEvent);
-    }
 
     private void makeSureParamPropertyMapNotNull() {
         paramPropertyMap = Objects.isNull(paramPropertyMap) ? new HashMap<>() : paramPropertyMap;
@@ -210,14 +209,21 @@ public class RequestPanel extends JBSplitter {
         httpMethodComboBox.setSelectedItem(httpMethod);
         // 获取选中节点的参数类型
         PsiMethod psiMethod = (PsiMethod) methodNode.getValue().getPsiElement();
-        HttpEnum.ContentType contentType = PsiTool.Class.contentTypeHeader((PsiClass) psiMethod.getParent());
-        HttpEnum.ContentType type = PsiTool.Method.contentType(contentType, psiMethod);
-        this.requestTabs.getHeaderTable().addContentType(type.getValue());
-
-        // 填充参数
-        // 先清空 model
-        paramPropertyMap = ParamConvert.parsePsiMethodParams(psiMethod, true);
-        this.requestTabs.reset();
-        this.requestTabs.chooseEvent(httpMethod, type, paramPropertyMap);
+        HttpMethod finalHttpMethod = httpMethod;
+        ReadAction.nonBlocking(() -> {
+            HttpEnum.ContentType contentType = PsiTool.Class.contentTypeHeader((PsiClass) psiMethod.getParent());
+            return PsiTool.Method.contentType(contentType, psiMethod);
+        }).finishOnUiThread(ModalityState.defaultModalityState(), type -> {
+            this.requestTabs.getHeaderTable().addContentType(type.getValue());
+            // 填充参数
+            // 先清空 model
+            ReadAction.nonBlocking(() -> ParamConvert.parsePsiMethodParams(psiMethod, true))
+                    .finishOnUiThread(ModalityState.defaultModalityState(), map -> {
+                        paramPropertyMap = map;
+                        this.requestTabs.reset();
+                        this.requestTabs.chooseEvent(finalHttpMethod, type, paramPropertyMap);
+                    })
+                    .submit(ThreadTool.getExecutor());
+        }).submit(ThreadTool.getExecutor());
     }
 }
