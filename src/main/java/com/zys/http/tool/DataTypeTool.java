@@ -1,6 +1,7 @@
 package com.zys.http.tool;
 
 import cn.hutool.core.text.CharSequenceUtil;
+import com.intellij.lang.jvm.types.JvmPrimitiveTypeKind;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.*;
 import com.intellij.psi.impl.source.PsiClassReferenceType;
@@ -21,8 +22,10 @@ import java.util.*;
  * @since 2023-09-07
  */
 @Description("数据类型工具类")
+@SuppressWarnings("UnstableApiUsage")
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class DataTypeTool {
+
     @Description("Java 基础数据类型")
     private static final String[] JAVA_BASIC_DATA_TYPE = {
             Boolean.class.getName(), "boolean", Byte.class.getName(), "byte", Character.class.getName(), "char",
@@ -41,13 +44,14 @@ public class DataTypeTool {
     private static final Map<String, Object> BASIC_DATA_TYPE_OBJECT_MAP = new HashMap<>();
 
     static {
-        PSI_PRIMITIVE_TYPE_OBJECT_MAP.put(PsiType.BOOLEAN, false);
-        PSI_PRIMITIVE_TYPE_OBJECT_MAP.put(PsiType.BYTE, 0);
-        PSI_PRIMITIVE_TYPE_OBJECT_MAP.put(PsiType.SHORT, 0);
-        PSI_PRIMITIVE_TYPE_OBJECT_MAP.put(PsiType.INT, 0);
-        PSI_PRIMITIVE_TYPE_OBJECT_MAP.put(PsiType.LONG, 0);
-        PSI_PRIMITIVE_TYPE_OBJECT_MAP.put(PsiType.FLOAT, 0.0);
-        PSI_PRIMITIVE_TYPE_OBJECT_MAP.put(PsiType.DOUBLE, 0.0);
+        // 手动处理要移除的 API
+        PSI_PRIMITIVE_TYPE_OBJECT_MAP.put(new PsiPrimitiveType(JvmPrimitiveTypeKind.BOOLEAN, PsiAnnotation.EMPTY_ARRAY), false);
+        PSI_PRIMITIVE_TYPE_OBJECT_MAP.put(new PsiPrimitiveType(JvmPrimitiveTypeKind.BYTE, PsiAnnotation.EMPTY_ARRAY), 0);
+        PSI_PRIMITIVE_TYPE_OBJECT_MAP.put(new PsiPrimitiveType(JvmPrimitiveTypeKind.SHORT, PsiAnnotation.EMPTY_ARRAY), 0);
+        PSI_PRIMITIVE_TYPE_OBJECT_MAP.put(new PsiPrimitiveType(JvmPrimitiveTypeKind.INT, PsiAnnotation.EMPTY_ARRAY), 0);
+        PSI_PRIMITIVE_TYPE_OBJECT_MAP.put(new PsiPrimitiveType(JvmPrimitiveTypeKind.LONG, PsiAnnotation.EMPTY_ARRAY), 0);
+        PSI_PRIMITIVE_TYPE_OBJECT_MAP.put(new PsiPrimitiveType(JvmPrimitiveTypeKind.FLOAT, PsiAnnotation.EMPTY_ARRAY), 0.0);
+        PSI_PRIMITIVE_TYPE_OBJECT_MAP.put(new PsiPrimitiveType(JvmPrimitiveTypeKind.DOUBLE, PsiAnnotation.EMPTY_ARRAY), 0.0);
         BASIC_DATA_TYPE_OBJECT_MAP.put("java.lang.Boolean", false);
         BASIC_DATA_TYPE_OBJECT_MAP.put("java.lang.String", "");
         BASIC_DATA_TYPE_OBJECT_MAP.put("java.lang.Byte", 0);
