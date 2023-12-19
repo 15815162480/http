@@ -10,15 +10,12 @@ import com.intellij.openapi.ui.ComboBox;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.tabs.TabInfo;
 import com.intellij.ui.tabs.impl.JBTabsImpl;
-import com.intellij.util.messages.MessageBus;
-import com.intellij.util.messages.MessageBusConnection;
 import com.intellij.util.ui.JBUI;
 import com.zys.http.action.CommonAction;
 import com.zys.http.constant.HttpEnum;
 import com.zys.http.constant.UIConstant;
 import com.zys.http.entity.param.ParamProperty;
 import com.zys.http.extension.service.Bundle;
-import com.zys.http.extension.topic.EditorDialogOkTopic;
 import com.zys.http.tool.HttpServiceTool;
 import com.zys.http.tool.convert.ParamConvert;
 import com.zys.http.tool.ui.ComboBoxTool;
@@ -95,30 +92,11 @@ public class RequestTabs extends JBTabsImpl {
         requestFileTab();
         responseTab();
         this.getComponent().setBorder(JBUI.Borders.customLineLeft(UIConstant.EDITOR_BORDER_COLOR));
-        initTopic();
-    }
-
-    private void initTopic() {
-        MessageBus messageBus = project.getMessageBus();
-        MessageBusConnection connect = messageBus.connect();
-        connect.subscribe(EditorDialogOkTopic.TOPIC, new EditorDialogOkTopic() {
-            @Override
-            public void modify(String modifiedText, boolean isReplace) {
-                if (isReplace) {
-                    bodyEditor.setText(modifiedText);
-                }
-            }
-
-            @Override
-            public void properties(String modifiedText, boolean isEnv, boolean isHeader) {
-                // 没用到
-            }
-        });
     }
 
     @Description("请求头标签页")
     private void requestHeaderTab() {
-        this.headerTable = new EnvHeaderTable(this.project, false, this.serviceTool.getSelectedEnv(), false);
+        this.headerTable = new EnvHeaderTable(this.project, false, this.serviceTool.getSelectedEnv());
         this.headerTable.getToolbar().getComponent().setBorder(JBUI.Borders.customLineBottom(UIConstant.BORDER_COLOR));
         this.headerTabInfo = new TabInfo(this.headerTable);
         this.headerTabInfo.setText(Bundle.get("http.tab.request.header"));
@@ -163,7 +141,11 @@ public class RequestTabs extends JBTabsImpl {
         DefaultActionGroup group = new DefaultActionGroup();
         CommonAction action = new CommonAction(Bundle.get("http.editor.body.action"), "",
                 ThemeTool.isDark() ? HttpIcons.General.FULL_SCREEN : HttpIcons.General.FULL_SCREEN_LIGHT);
-        action.setAction(e -> new EditorDialog(project, Bundle.get("http.editor.body.action.dialog"), bodyEditor.getFileType(), bodyEditor.getText(), false).show());
+        action.setAction(e -> {
+            EditorDialog dialog = new EditorDialog(project, Bundle.get("http.editor.body.action.dialog"), bodyEditor.getFileType(), bodyEditor.getText());
+            dialog.setOkCallBack(s -> bodyEditor.setText(s));
+            dialog.show();
+        });
         group.add(action);
         ActionToolbarImpl component = (ActionToolbarImpl) ActionManager.getInstance()
                 .createActionToolbar("http.body.editor", group, true).getComponent();
@@ -207,7 +189,7 @@ public class RequestTabs extends JBTabsImpl {
         CommonAction action = new CommonAction(Bundle.get("http.editor.response.action"), "",
                 ThemeTool.isDark() ? HttpIcons.General.FULL_SCREEN : HttpIcons.General.FULL_SCREEN_LIGHT);
         action.setAction(e -> new EditorDialog(project, Bundle.get("http.editor.response.action.dialog"),
-                responseEditor.getFileType(), responseEditor.getText(), false).show());
+                responseEditor.getFileType(), responseEditor.getText()).show());
         DefaultActionGroup group = new DefaultActionGroup();
         group.add(action);
         ActionToolbarImpl component = (ActionToolbarImpl) ActionManager.getInstance()

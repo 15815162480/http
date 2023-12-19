@@ -6,14 +6,16 @@ import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.util.ui.JBUI;
 import com.zys.http.constant.UIConstant;
 import com.zys.http.extension.service.Bundle;
-import com.zys.http.extension.topic.EditorDialogOkTopic;
 import com.zys.http.ui.editor.CustomEditor;
 import jdk.jfr.Description;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Objects;
+import java.util.function.Consumer;
 
 /**
  * @author zys
@@ -21,16 +23,14 @@ import java.awt.*;
  */
 @Description("编辑器对话框")
 public class EditorDialog extends DialogWrapper {
-    private final String title;
-    private final boolean isEnv;
-    private final Project project;
     private final CustomEditor customEditor;
 
-    public EditorDialog(Project project, String title, FileType fileType, String editorText, boolean isEnv) {
+    @Setter
+    @Nullable
+    private Consumer<String> okCallBack;
+
+    public EditorDialog(Project project, String title, FileType fileType, String editorText) {
         super(project);
-        this.title = title;
-        this.isEnv = isEnv;
-        this.project = project;
         this.customEditor = new CustomEditor(project, fileType);
         this.customEditor.setText(editorText);
         this.customEditor.setBorder(JBUI.Borders.customLine(UIConstant.EDITOR_BORDER_COLOR, 1));
@@ -54,20 +54,8 @@ public class EditorDialog extends DialogWrapper {
 
     @Override
     protected void doOKAction() {
-        // 如果是请求体标签页, 修改后需要回显
-        if (title.equals(Bundle.get("http.editor.body.action.dialog"))) {
-            project.getMessageBus().syncPublisher(EditorDialogOkTopic.TOPIC).modify(customEditor.getText(), true);
-        }
-
-        // 如果是请求头编辑
-        if (title.equals(Bundle.get("http.editor.header.properties.dialog"))) {
-            System.out.println(isEnv);
-            project.getMessageBus().syncPublisher(EditorDialogOkTopic.TOPIC).properties(customEditor.getText(), isEnv,true);
-        }
-
-        // 如果是请求参数编辑
-        if (title.equals(Bundle.get("http.editor.param.properties.dialog"))) {
-            project.getMessageBus().syncPublisher(EditorDialogOkTopic.TOPIC).properties(customEditor.getText(), false,false);
+        if (Objects.nonNull(okCallBack)) {
+            okCallBack.accept(customEditor.getText());
         }
         super.doOKAction();
     }

@@ -14,7 +14,6 @@ import com.zys.http.action.EditAction;
 import com.zys.http.action.RemoveAction;
 import com.zys.http.entity.HttpConfig;
 import com.zys.http.extension.service.Bundle;
-import com.zys.http.extension.topic.EditorDialogOkTopic;
 import com.zys.http.ui.dialog.EditorDialog;
 import jdk.jfr.Description;
 import lombok.Getter;
@@ -26,7 +25,10 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Objects;
 
 import static com.zys.http.constant.HttpConstant.EDIT_AS_PROPERTIES_TEMPLATE;
 
@@ -41,74 +43,16 @@ public class EnvHeaderTable extends AbstractTable implements EditAsProperties {
     @Description("添加(true)/修改(false)")
     private final boolean isAdd;
 
-    @Description("环境/请求头")
-    private final boolean isEnv;
-
     @Description("选中的环境名, isAdd 为 true 时忽略")
     private String selectEnv;
 
-    public EnvHeaderTable(Project project, boolean isAdd, String selectEnv, boolean isEnv) {
+    public EnvHeaderTable(Project project, boolean isAdd, String selectEnv) {
         super(project, true);
         this.isAdd = isAdd;
-        this.isEnv = isEnv;
         if (!isAdd) {
             this.selectEnv = selectEnv;
         }
         init();
-        initTopic();
-    }
-
-    protected void initTopic() {
-        project.getMessageBus().connect().subscribe(EditorDialogOkTopic.TOPIC, new EditorDialogOkTopic() {
-            @Override
-            public void modify(String modifiedText, boolean isReplace) {
-                // 没用到
-            }
-
-            @Override
-            public void properties(String modifiedText, boolean isEnv, boolean isHeader) {
-                if (!isHeader) {
-                    return;
-                }
-                if (CharSequenceUtil.isEmpty(modifiedText)) {
-                    valueTable.setModel(initTableModel());
-                }
-                String[] split = modifiedText.split("\n");
-                Map<String, String> headerMap = new LinkedHashMap<>();
-
-                Arrays.stream(split).filter(s -> s.contains("="))
-                        .map(s -> {
-                            int i = s.indexOf("=");
-                            String key = s.substring(0, i).trim();
-                            String value = s.substring(i + 1).trim();
-                            return new String[]{key, value};
-                        }).filter(s -> CharSequenceUtil.isNotBlank(s[0]))
-                        .forEach(s -> headerMap.put(s[0], s[1]));
-
-                // 如果是环境并且是编辑模式
-                if (isEnv && !isAdd) {
-                    HttpConfig httpConfig = serviceTool.getHttpConfig(selectEnv);
-                    if (Objects.nonNull(httpConfig)) {
-                        httpConfig.setHeaders(headerMap);
-                        serviceTool.putHttpConfig(selectEnv, httpConfig);
-                        ApplicationManager.getApplication().invokeLater(() -> reloadTableModel());
-                    }
-                }
-                // 如果不是环境或添加模式
-                if (!isEnv || isAdd) {
-                    // 重新渲染请求头数据
-                    String[] columnNames = {
-                            Bundle.get("http.table.header"),
-                            Bundle.get("http.table.value")
-                    };
-
-                    ApplicationManager.getApplication().invokeLater(() -> {
-                        valueTable.setModel(new DefaultTableModel(null, columnNames));
-                        headerMap.forEach((k, v) -> getTableModel().addRow(new String[]{k, v}));
-                    });
-                }
-            }
-        });
     }
 
     @Override
@@ -246,7 +190,34 @@ public class EnvHeaderTable extends AbstractTable implements EditAsProperties {
             all.append(CharSequenceUtil.format(EDIT_AS_PROPERTIES_TEMPLATE, key, value));
         }
 
-        new EditorDialog(project, Bundle.get("http.editor.header.properties.dialog"),
-                PropertiesFileType.INSTANCE, all.toString(), isEnv).show();
+        EditorDialog dialog = new EditorDialog(project, Bundle.get("http.editor.header.properties.dialog"),
+                PropertiesFileType.INSTANCE, all.toString());
+        dialog.setOkCallBack(text -> {
+            String[] columnNames = {
+                    Bundle.get("http.table.header"),
+                    Bundle.get("http.table.value")
+            };
+            if (CharSequenceUtil.isEmpty(text)) {
+                ApplicationManager.getApplication().invokeLater(() -> valueTable.setModel(new DefaultTableModel(null, columnNames)));
+                return;
+            }
+            String[] split = text.split("\n");
+            Map<String, String> headerMap = new LinkedHashMap<>();
+            for (String header : split) {
+                if (header.contains("=")) {
+                    int i = header.indexOf("=");
+                    String key = header.substring(0, i).trim();
+                    String value = header.substring(i + 1).trim();
+                    if (CharSequenceUtil.isNotBlank(key)) {
+                        headerMap.put(key, value);
+                    }
+                }
+            }
+            ApplicationManager.getApplication().invokeLater(()-> {
+                valueTable.setModel(new DefaultTableModel(null, columnNames));
+                headerMap.forEach((k, v) -> getTableModel().addRow(new String[]{k, v}));
+            });
+        });
+        dialog.show();
     }
 }

@@ -51,7 +51,7 @@ public class EnvAddOrEditDialog extends DialogWrapper {
         super(project, true);
         this.project = project;
         this.serviceTool = HttpServiceTool.getInstance(project);
-        this.envAddOrEditTable = new EnvHeaderTable(project, isAdd, selectEnv, true);
+        this.envAddOrEditTable = new EnvHeaderTable(project, isAdd, selectEnv);
 
         this.isAdd = isAdd;
         init();
