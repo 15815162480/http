@@ -150,7 +150,7 @@ public class VelocityTool {
                 // 请求方式
                 HttpEnum.HttpMethod httpMethod = HTTP_METHOD_MAP.get(qualifiedName);
                 if (httpMethod.equals(HttpEnum.HttpMethod.REQUEST)) {
-                    httpMethod = HttpEnum.HttpMethod.GET;
+                    httpMethod = HttpEnum.HttpMethod.requestMappingConvert(annotation);
                 }
                 item.setMethod(httpMethod.name());
 

@@ -67,7 +67,7 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
 
     @Setter
     @Description("节点选中回调")
-    private  Consumer<MethodNode> chooseCallback;
+    private transient Consumer<MethodNode> chooseCallback;
 
     public HttpApiTreePanel(Project project) {
         super(new SimpleTree());
@@ -333,6 +333,9 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
                     continue;
                 }
                 HttpEnum.HttpMethod httpMethod = httpMethodMap.get(qualifiedName);
+                if (HttpEnum.HttpMethod.REQUEST.equals(httpMethod)) {
+                    httpMethod = HttpEnum.HttpMethod.requestMappingConvert(annotation);
+                }
                 String name = PsiTool.Annotation.getAnnotationValue(annotation, new String[]{"value", "path"});
                 MethodNodeData data1 = new MethodNodeData(httpMethod, name, controllerPath, contextPath);
                 data1.setPsiElement(method);

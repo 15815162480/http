@@ -55,7 +55,9 @@ public class GotoApiSearchEverywhereContributor extends AbstractGotoSEContributo
                         String qualifiedName = annotation.getQualifiedName();
                         if (httpMethodMap.containsKey(qualifiedName)) {
                             HttpEnum.HttpMethod httpMethod = httpMethodMap.get(qualifiedName);
-
+                            if (HttpEnum.HttpMethod.REQUEST.equals(httpMethod)) {
+                                httpMethod = HttpEnum.HttpMethod.requestMappingConvert(annotation);
+                            }
                             String name = PsiTool.Annotation.getAnnotationValue(annotation, new String[]{"value", "path"});
                             MethodNodeData data = new MethodNodeData(httpMethod, name, controllerPath, contextPath);
                             data.setPsiElement(method);

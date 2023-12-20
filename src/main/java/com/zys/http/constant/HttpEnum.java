@@ -1,5 +1,7 @@
 package com.zys.http.constant;
 
+import com.intellij.psi.PsiAnnotation;
+import com.zys.http.tool.PsiTool;
 import jdk.jfr.Description;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -33,7 +35,18 @@ public interface HttpEnum {
 
     @Description("请求方式")
     enum HttpMethod {
-        REQUEST, GET, POST, PUT, DELETE, PATCH
+        REQUEST, GET, POST, PUT, DELETE, PATCH;
+
+        public static HttpMethod requestMappingConvert(PsiAnnotation annotation) {
+            String value = PsiTool.Annotation.getAnnotationValue(annotation, new String[]{"method"});
+            return switch (value) {
+                case "RequestMethod.POST" -> POST;
+                case "RequestMethod.PUT" -> PUT;
+                case "RequestMethod.DELETE" -> DELETE;
+                case "RequestMethod.PATCH" -> PATCH;
+                default -> GET;
+            };
+        }
     }
 
     @Description("请求协议")

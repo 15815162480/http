@@ -89,7 +89,14 @@ public class PsiTool {
                     }
                 }
             }
-            return initializerList.isEmpty() ? "" : initializerList.get(0).getText().replace("\"", "");
+            if (initializerList.isEmpty()) {
+                return "";
+            }
+            String text = initializerList.get(0).getText();
+            if (text.startsWith("\"") && text.endsWith("\"")) {
+                text = text.substring(1, text.length() - 1);
+            }
+            return text;
         }
 
         @Description("获取 Controller 上 @Api 或 @Tag/方法上的 @ApiOperation 或 @Operation")

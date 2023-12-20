@@ -18,7 +18,7 @@ public interface SpringEnum {
         POST("org.springframework.web.bind.annotation.PostMapping", HttpMethod.POST),
         PUT("org.springframework.web.bind.annotation.PutMapping", HttpMethod.PUT),
         DELETE("org.springframework.web.bind.annotation.DeleteMapping", HttpMethod.DELETE),
-        REQUEST("org.springframework.web.bind.annotation.RequestMapping", HttpMethod.GET),
+        REQUEST("org.springframework.web.bind.annotation.RequestMapping", HttpMethod.REQUEST),
         PATCH("org.springframework.web.bind.annotation.PatchMapping", HttpMethod.PATCH);
 
         private final String clazz;
