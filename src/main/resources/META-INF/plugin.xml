@@ -52,368 +52,439 @@
 
     <!-- 更新公告 -->
     <change-notes><![CDATA[
-      <b>1.4.10</b><br>
-      <ol>
-        <li>
-          improve: removing Unused Code
-          <br>
-          优化: 移除未使用的代码
-        </li>
-        <li>
-          fix bugs: Quickly switch the selected method item to an error.
-          <br>
-          bug 修复: 快速切换选中方法项时报错
-        </li>
-        <li>
-          help: In IDEA's new UI compact mode, when switching to the request body or response body tab, the window
-          shakes (does not appear in the old UI and non-compact mode), the left border of the entire window is 1px more
-          <br>
-          求助: IDEA 新UI紧凑模式下, 切换至请求体或响应体标签页时, 窗口抖动(老UI和非紧凑模式下不会出现), 整个窗口左边框多出1px
-        </li>
-      </ol>
-      <b>1.4.9</b><br>
-      <ol>
-        <li>
-          feature: Supported 233.*
-          <br>
-          新功能: 支持 233.*
-        </li>
-      </ol>
-      <b>1.4.8</b><br>
-      <ol>
-        <li>
-          feature: New setting-Can set whether to refresh when switching branches (because different interfaces
-          may
-          exist for different branches)
-          <br>
-          新功能: 新设置-可以设置是否在切换分支时刷新(由于不同分支可能存在不同的接口)
-        </li>
-      </ol>
-      <b>1.4.7</b><br>
-      <ol>
-        <li>
-          improve: The selected environment is not allowed to be deleted
-          <br>
-          优化: 选中环境不允许删除
-        </li>
-        <li>
-          fix bugs: remove feign related interface binding area icon
-          <br>
-          bug 修复: 移除 Feign 相关接口的装订区域
-        </li>
-      </ol>
-      <b>1.4.6</b><br>
-      <ol>
-        <li>
-          improve: Add request success time statistics
-          <br>
-          优化: 添加请求成功耗时统计
-        </li>
-      </ol>
-      <b>1.4.5</b><br>
-      <ol>
-        <li>
-          fix bugs: Path generates error when no path is requested on Controller
-          <br>
-          bug 修复: Controller 上没有请求路径时, 路径生成错误
-        </li>
-        <li>
-          improve: Release the conditions for initiating a request: the node must be selected (can now initiate a
-          request to a third party)
-          <br>
-          优化: 放开发起请求的条件: 必须选择节点(现可向第三方发起请求)
-        </li>
-      </ol>
-      <b>1.4.4</b><br>
-      <ol>
-        <li>
-          improve:If the root module is not linked (that is, the project is not introduced, for example, maven
-          does not reference the root module or the artifactId in pom is inconsistent with the project name), the
-          project name will be used as the root directory(The interfaces are all in the module and need to be
-          introduced).
-          <br>
-          优化: 如果不链接根模块(即项目没有引入, 如 maven 不引用根模块或 pom 中的 artifactId 跟项目名不一致),
-          会以项目名称作为根目录, 但不会扫描接口(接口都是在模块中, 需要引入)
-        </li>
-      </ol>
-      <b>1.4.3</b><br>
-      <ol>
-        <li>
-          fix bugs: Request path generation error in specific cases
-          <br>
-          bug 修复: 特定情况下请求路径生成错误
-        </li>
-        <li>
-          feature: Support file upload, Only a single parameter <code>void a(MultipartFile[] file)</code> or
-          <code>void a(MultipartFile file)</code> is supported, and the file upload method with two parameters
-          such as <code>void a(MultipartFile[] file, MultipartFile[] file2)</code> is not supported (no suitable
-          UI is found for display)
-          <br>
-          新功能: 支持上传文件, 只支持单个参数<code>void a(MultipartFile[] file)</code>或<code>void
-          a(MultipartFile file)</code>, 不支持<code>void a(MultipartFile[] file, MultipartFile[] file2)</code>等两个参数的文件上传方法(没找到合适的UI进行展示)
-        </li>
-      </ol>
-      <b>1.4.2</b><br>
-      <ol>
-        <li>
-          fix bugs: Collection or array generate error data
-          <br>
-          bug 修复: Collection/数组数据生成错误
-        </li>
-        <li>
-          fix bugs: Spring mvc param type: ModelMap and ModelAndView generate error data
-          <br>
-          bug 修复: Spring mvc 参数类型: ModelMap 和 ModelAndView 生成错误数据
-        </li>
-        <li>
-          fix bugs: The newly written request method clicks the icon on the left and no data is generated
-          <br>
-          bug 修复: 新编写的请求方法点击左边的图标没有生成对应的数据
-        </li>
-      </ol>
-      <b>1.4.1</b><br>
-      <ol>
-        <li>
-          improve: Special treatment of enumeration parameters, only enumeration values are displayed
-          <br>
-          优化: 对枚举参数进行特殊处理，只显示枚举值
-        </li>
-        <li>
-          fix bugs: Exception in editing request header feature
-          <br>
-          bug 修复: 编辑请求头数据功能异常
-        </li>
-        <li>
-          fix bugs: Whether the binding icon area is set to display, the icon is missing
-          <br>
-          bug 修复: 装订图标区域设置是否显示, 图标丢失
-        </li>
-        <li>
-          fix bugs: When the selected environment configuration is edited, the host value and request header will
-          not change.
-          <br>
-          bug 修复: 选中环境配置在编辑完成时, 地址栏、请求头不会随之切换
-        </li>
-      </ol>
-      <b>1.4.0</b><br>
-      <ol>
-        <li>
-          feature: Add a "ApiTool" tab into Search Everywhere, api can be matched based on / split
-          <br>
-          新功能: 往 Search Everywhere(随处搜索, 双击 Shift)添加 ApiTool, 可根据 / 分割对接口进行匹配
-        </li>
-        <li>
-          feature: Add an icon to the left of the request method (officially called the binding area), click to
-          generate the corresponding request and expand the tree to the corresponding node
-          <br>
-          新功能: 添加一个图标在请求方法的左边(IDEA官方称为装订区域), 点击生成对应的请求和将树展开到对应的结点
-        </li>
-        <li>
-          feature: Header and Param can edit as a properties
-          <br>
-          新功能: 请求头和请求参数能以一个 properties 文件的形式进行编辑
-        </li>
-        <li>
-          fix bugs: Toolwindow theme do not refresh synchronously when switching themes
-          <br>
-          bug 修复: 切换主题时窗口主题没有同步刷新
-        </li>
-        <li>
-          improve: Adapt to light color mode(Mainly new UI)
-          <br>
-          优化: 适配浅色模式(以新UI为准)
-        </li>
-        <li>
-          fix bugs: When the node is selected, the environment is switched, and the request header does not change
-          accordingly.
-          <br>
-          bug 修复: 选中节点时，切换环境, 请求头没有发生变化
-        </li>
-        <li>
-          fix bugs: API tab add environment function exception
-          <br>
-          bug 修复: Api 标签页面添加环境功能异常
-        </li>
-      </ol>
-      <b>1.3.0</b><br>
-      <ol>
-        <li>
-          fix bugs: Refresh does not clear the request header, parameters, request body, and return body.
-          <br>
-          bug 修复: 刷新没有清空请求头、参数、请求体、返回体
-        </li>
-        <li>
-          improve: Request body support Generics Type(Do not nest parameters with each other, Will cause Stack
-          Overflow)
-          <br>
-          优化: 请求体支持泛型参数(不要互相嵌套参数, 会造成 Stack Overflow)
-        </li>
-        <li>
-          fix bugs: "java.lang.Boolean" generates error value
-          <br>
-          bug 修复: java.lang.Boolean 生成类型错误
-        </li>
-      </ol>
-      <b>1.2.3</b><br>
-      <ol>
-        <li>
-          improve: Move "Env List" to new tab
-          <br>
-          优化: 移动"环境列表"到一个新的标签页面
-        </li>
-      </ol>
-      <b>1.2.2</b><br>
-      <ol>
-        <li>
-          feature: Can set whether to generate a default environment and remove the default environment
-          <br>
-          新功能: 能够设置是否生成默认环境并删除生成的默认环境
-        </li>
-        <li>
-          improve: Modify the default port when there is no "server.port" to 8080
-          <br>
-          优化: 修改没有 server.port 配置时的默认端口为 8080
-        </li>
-        <li>
-          improve: Integration of node filtering functions
-          <br>
-          优化: 节点过滤功能整合
-        </li>
-        <li>
-          fix bugs: export postman data encoding error
-          <br>
-          bug修复: 导出 postman 数据编码问题
-        </li>
-        <li>
-          fix bugs: export postman data protocol, host, path lost
-          <br>
-          bug修复: 导出 postman 数据请求协议、请求地址、请求路径丢失
-        </li>
-        <li>
-          improve: Change the window name to ApiTool
-          <br>
-          优化: 将窗口名修改为 ApiTool
-        </li>
-      </ol>
-      <b>1.2.1</b><br>
-      <ol>
-        <li>
-          feature: Ability to choose whether to show package nodes or class nodes
-          <br>
-          新功能: 能够选择是否展示包结点或类结点
-        </li>
-        <li>
-          feature: Response now can be viewed in a dialog, but edit it will not echo
-          <br>
-          新功能: 响应体能在一个新的对话框中查看, 但修改不会回显到原位置
-        </li>
-        <li>
-          fix bugs: Remove request header and prohibit duplication
-          <br>
-          bug 修复: 移除请求头禁止重复
-        </li>
-        <li>
-          fix bugs: No method node selected can still initiate a request
-          <br>
-          bug 修复: 没有选中节点仍然能够发起请求
-        </li>
-      </ol>
-      <b>1.2.0</b><br>
-      <ol>
-        <li>
-          feature: Support for exporting postman environment configuration, api list
-          <br>
-          新功能: 支持导出 Postman 环境配置、分模块 API 列表导出
-        </li>
-        <li>
-          feature: Expand and collapse function optimization, if there is selected node, only the selected nodes
-          will be expanded or collapse.
-          <br>
-          新功能: 展开、收起功能优化, 如果有选中节点, 则只会展开/收起选中的节点
-        </li>
-        <li>
-          feature: Module Node, Package Node, Class Node add the right-click menu: expand all child node
-          <br>
-          新功能: 模块结点、包结点、类结点添加右键菜单功能: 展开所有子节点
-        </li>
-        <li>
-          fix bugs: Send a new request, the older request do not clear the response editor
-          <br>
-          bug 修复: 发送一个新请求时, 旧请求的结果没有被清空
-        </li>
-      </ol>
-      <b>1.1.0</b><br>
-      <ol>
-        <li>
-          feature: Request Method Filter
-          <br>
-          新功能: 请求方式过滤
-        </li>
-        <li>
-          feature: Method node add right-click menu: Jump to Method, Copy Full Path, Copy Api
-          <br>
-          新功能: 方法结点添加右键菜单: 跳转到方法、复制完整路径、复制 API
-        </li>
-        <li>
-          feature: Request body editor can open in new dialog to edit
-          <br>
-          新功能: 请求体内容能打开在一个新的对话框中编辑
-        </li>
-        <li>
-          fix bug: change env does not change the host value, header and so on
-          <br>
-          bug 修复: 切换环境时地址栏、请求头不会随之切换
-        </li>
-        <li>
-          fix bug: When the selected environment configuration is edited, the host value and request header will
-          not change.
-          <br>
-          bug 修复: 选中环境配置在编辑完成时, 地址栏、请求头不会随之切换
-        </li>
-      </ol>
-      <b>1.0.2</b><br>
-      <ol>
-        <li>
-          fix bugs: Package and class are at the same level, class node is missing
-          <br>
-          bug 修复: 包和类处于同一级别，类节点丢失
-        </li>
-        <li>
-          fix bugs: choose a new request, the older request do not clear the response editor
-          <br>
-          bug 修复: 选择一个新节点, 旧节点的请求结果没有清除
-        </li>
-      </ol>
-      <b>1.0.1</b><br>
-      <ol>
-        <li>Change plugin name —— ApiTool<br>更改插件名为 ApiTool</li>
-      </ol>
-      <b>1.0.0</b><br>
-      <ol>
-        <li>
-          Read all annotation request interface methods in Spring MVC
-          <br>
-          读取 Spring MVC 中所有注解请求接口方法
-        </li>
-        <li>
-          Multi Environment configuration, by default, reads the context-path and port of each module and
-          generates a local environment for each module (refresh will still take effect after deletion)
-          <br/>
-          多环境配置, 默认读取每个模块的 context-path 和 port 并为每个模块生成本地环境(删除后刷新仍会生效)
-        </li>
-        <li>
-          If the project refers to Swagger2 and Swagger3 annotations, hover the mouse over the corresponding
-          node will display the corresponding description
-          <br/>
-          如果项目引用了 Swagger2 和 Swagger3 注解, 将鼠标悬浮在对应的结点上会显示对应的说明
-        </li>
-        <li>
-          Double-click the method node to jump to the specified method
-          <br/>
-          双击方法结点可以跳转到指定方法处
-        </li>
-      </ol>
-      ]]></change-notes>
+        <b>1.5.0</b><br>
+        <ol>
+            <li>
+                improve: You can convert only one String constant reference to a path to the corresponding value<br>
+                This is an example:
+                <code>
+                    private static final String A = "/test";
+                    @GetMapping(A)
+                    public String testGet() { return "test"; }
+                </code><br>
+                Error Usage 1:
+                <code>
+                    private static final String A = "/test";
+                    @GetMapping(A + "")
+                    public String testGet() { return "test"; }
+                </code><br>
+                Error Usage 2:
+                <code>
+                    private static final String A = "/test";
+                    private static final String B = A;
+                    @GetMapping(B)
+                    public String testGet() { return "test"; }
+                </code><br>
+                Error Usage 3:
+                <code>
+                    private static final String A = "/test";
+                    private static final String B = A;
+                    @GetMapping(B + "")
+                    public String testGet() { return "test"; }
+                </code><br>
+                <br>
+                优化: 可以将路径只有一个字符串常量引用转成对应的值
+                案例:
+                <code>
+                    private static final String A = "/test";
+                    @GetMapping(A)
+                    public String testGet() { return "test"; }
+                </code><br>
+                错误用法 1:
+                <code>
+                    private static final String A = "/test";
+                    @GetMapping(A + "")
+                    public String testGet() { return "test"; }
+                </code><br>
+                错误用法 2:
+                <code>
+                    private static final String A = "/test";
+                    private static final String B = A;
+                    @GetMapping(B)
+                    public String testGet() { return "test"; }
+                </code><br>
+                错误用法 3:
+                <code>
+                    private static final String A = "/test";
+                    private static final String B = A;
+                    @GetMapping(B + "")
+                    public String testGet() { return "test"; }
+                </code><br>
+            </li>
+            <li>
+                improve: supported @RequestMapping method property, eg: <br>
+                <code>@RequestMapping(value = A, method = {RequestMethod.PUT, RequestMethod.DELETE})</code>, will be a
+                put request
+                <br>
+                优化: 支持 @RequestMapping method 属性, 例如: <br>
+                <code>@RequestMapping(value = A, method = {RequestMethod.PUT, RequestMethod.DELETE})</code>, 将是一个
+                Put 的请求
+            </li>
+        </ol>
+        <b>1.4.10</b><br>
+        <ol>
+            <li>
+                improve: removing Unused Code
+                <br>
+                优化: 移除未使用的代码
+            </li>
+            <li>
+                fix bugs: Quickly switch the selected method item to an error.
+                <br>
+                bug 修复: 快速切换选中方法项时报错
+            </li>
+            <li>
+                help: In IDEA's new UI compact mode, when switching to the request body or response body tab, the window
+                shakes (does not appear in the old UI and non-compact mode), the left border of the entire window is 1px
+                more
+                <br>
+                求助: IDEA 新UI紧凑模式下, 切换至请求体或响应体标签页时, 窗口抖动(老UI和非紧凑模式下不会出现),
+                整个窗口左边框多出1px
+            </li>
+        </ol>
+        <b>1.4.9</b><br>
+        <ol>
+            <li>
+                feature: Supported 233.*
+                <br>
+                新功能: 支持 233.*
+            </li>
+        </ol>
+        <b>1.4.8</b><br>
+        <ol>
+            <li>
+                feature: New setting-Can set whether to refresh when switching branches (because different interfaces
+                may
+                exist for different branches)
+                <br>
+                新功能: 新设置-可以设置是否在切换分支时刷新(由于不同分支可能存在不同的接口)
+            </li>
+        </ol>
+        <b>1.4.7</b><br>
+        <ol>
+            <li>
+                improve: The selected environment is not allowed to be deleted
+                <br>
+                优化: 选中环境不允许删除
+            </li>
+            <li>
+                fix bugs: remove feign related interface binding area icon
+                <br>
+                bug 修复: 移除 Feign 相关接口的装订区域
+            </li>
+        </ol>
+        <b>1.4.6</b><br>
+        <ol>
+            <li>
+                improve: Add request success time statistics
+                <br>
+                优化: 添加请求成功耗时统计
+            </li>
+        </ol>
+        <b>1.4.5</b><br>
+        <ol>
+            <li>
+                fix bugs: Path generates error when no path is requested on Controller
+                <br>
+                bug 修复: Controller 上没有请求路径时, 路径生成错误
+            </li>
+            <li>
+                improve: Release the conditions for initiating a request: the node must be selected (can now initiate a
+                request to a third party)
+                <br>
+                优化: 放开发起请求的条件: 必须选择节点(现可向第三方发起请求)
+            </li>
+        </ol>
+        <b>1.4.4</b><br>
+        <ol>
+            <li>
+                improve:If the root module is not linked (that is, the project is not introduced, for example, maven
+                does not reference the root module or the artifactId in pom is inconsistent with the project name), the
+                project name will be used as the root directory(The interfaces are all in the module and need to be
+                introduced).
+                <br>
+                优化: 如果不链接根模块(即项目没有引入, 如 maven 不引用根模块或 pom 中的 artifactId 跟项目名不一致),
+                会以项目名称作为根目录, 但不会扫描接口(接口都是在模块中, 需要引入)
+            </li>
+        </ol>
+        <b>1.4.3</b><br>
+        <ol>
+            <li>
+                fix bugs: Request path generation error in specific cases
+                <br>
+                bug 修复: 特定情况下请求路径生成错误
+            </li>
+            <li>
+                feature: Support file upload, Only a single parameter <code>void a(MultipartFile[] file)</code> or
+                <code>void a(MultipartFile file)</code> is supported, and the file upload method with two parameters
+                such as <code>void a(MultipartFile[] file, MultipartFile[] file2)</code> is not supported (no suitable
+                UI is found for display)
+                <br>
+                新功能: 支持上传文件, 只支持单个参数<code>void a(MultipartFile[] file)</code>或<code>void
+                a(MultipartFile file)</code>, 不支持<code>void a(MultipartFile[] file, MultipartFile[] file2)</code>等两个参数的文件上传方法(没找到合适的UI进行展示)
+            </li>
+        </ol>
+        <b>1.4.2</b><br>
+        <ol>
+            <li>
+                fix bugs: Collection or array generate error data
+                <br>
+                bug 修复: Collection/数组数据生成错误
+            </li>
+            <li>
+                fix bugs: Spring mvc param type: ModelMap and ModelAndView generate error data
+                <br>
+                bug 修复: Spring mvc 参数类型: ModelMap 和 ModelAndView 生成错误数据
+            </li>
+            <li>
+                fix bugs: The newly written request method clicks the icon on the left and no data is generated
+                <br>
+                bug 修复: 新编写的请求方法点击左边的图标没有生成对应的数据
+            </li>
+        </ol>
+        <b>1.4.1</b><br>
+        <ol>
+            <li>
+                improve: Special treatment of enumeration parameters, only enumeration values are displayed
+                <br>
+                优化: 对枚举参数进行特殊处理，只显示枚举值
+            </li>
+            <li>
+                fix bugs: Exception in editing request header feature
+                <br>
+                bug 修复: 编辑请求头数据功能异常
+            </li>
+            <li>
+                fix bugs: Whether the binding icon area is set to display, the icon is missing
+                <br>
+                bug 修复: 装订图标区域设置是否显示, 图标丢失
+            </li>
+            <li>
+                fix bugs: When the selected environment configuration is edited, the host value and request header will
+                not change.
+                <br>
+                bug 修复: 选中环境配置在编辑完成时, 地址栏、请求头不会随之切换
+            </li>
+        </ol>
+        <b>1.4.0</b><br>
+        <ol>
+            <li>
+                feature: Add a "ApiTool" tab into Search Everywhere, api can be matched based on / split
+                <br>
+                新功能: 往 Search Everywhere(随处搜索, 双击 Shift)添加 ApiTool, 可根据 / 分割对接口进行匹配
+            </li>
+            <li>
+                feature: Add an icon to the left of the request method (officially called the binding area), click to
+                generate the corresponding request and expand the tree to the corresponding node
+                <br>
+                新功能: 添加一个图标在请求方法的左边(IDEA官方称为装订区域), 点击生成对应的请求和将树展开到对应的结点
+            </li>
+            <li>
+                feature: Header and Param can edit as a properties
+                <br>
+                新功能: 请求头和请求参数能以一个 properties 文件的形式进行编辑
+            </li>
+            <li>
+                fix bugs: Toolwindow theme do not refresh synchronously when switching themes
+                <br>
+                bug 修复: 切换主题时窗口主题没有同步刷新
+            </li>
+            <li>
+                improve: Adapt to light color mode(Mainly new UI)
+                <br>
+                优化: 适配浅色模式(以新UI为准)
+            </li>
+            <li>
+                fix bugs: When the node is selected, the environment is switched, and the request header does not change
+                accordingly.
+                <br>
+                bug 修复: 选中节点时，切换环境, 请求头没有发生变化
+            </li>
+            <li>
+                fix bugs: API tab add environment function exception
+                <br>
+                bug 修复: Api 标签页面添加环境功能异常
+            </li>
+        </ol>
+        <b>1.3.0</b><br>
+        <ol>
+            <li>
+                fix bugs: Refresh does not clear the request header, parameters, request body, and return body.
+                <br>
+                bug 修复: 刷新没有清空请求头、参数、请求体、返回体
+            </li>
+            <li>
+                improve: Request body support Generics Type(Do not nest parameters with each other, Will cause Stack
+                Overflow)
+                <br>
+                优化: 请求体支持泛型参数(不要互相嵌套参数, 会造成 Stack Overflow)
+            </li>
+            <li>
+                fix bugs: "java.lang.Boolean" generates error value
+                <br>
+                bug 修复: java.lang.Boolean 生成类型错误
+            </li>
+        </ol>
+        <b>1.2.3</b><br>
+        <ol>
+            <li>
+                improve: Move "Env List" to new tab
+                <br>
+                优化: 移动"环境列表"到一个新的标签页面
+            </li>
+        </ol>
+        <b>1.2.2</b><br>
+        <ol>
+            <li>
+                feature: Can set whether to generate a default environment and remove the default environment
+                <br>
+                新功能: 能够设置是否生成默认环境并删除生成的默认环境
+            </li>
+            <li>
+                improve: Modify the default port when there is no "server.port" to 8080
+                <br>
+                优化: 修改没有 server.port 配置时的默认端口为 8080
+            </li>
+            <li>
+                improve: Integration of node filtering functions
+                <br>
+                优化: 节点过滤功能整合
+            </li>
+            <li>
+                fix bugs: export postman data encoding error
+                <br>
+                bug修复: 导出 postman 数据编码问题
+            </li>
+            <li>
+                fix bugs: export postman data protocol, host, path lost
+                <br>
+                bug修复: 导出 postman 数据请求协议、请求地址、请求路径丢失
+            </li>
+            <li>
+                improve: Change the window name to ApiTool
+                <br>
+                优化: 将窗口名修改为 ApiTool
+            </li>
+        </ol>
+        <b>1.2.1</b><br>
+        <ol>
+            <li>
+                feature: Ability to choose whether to show package nodes or class nodes
+                <br>
+                新功能: 能够选择是否展示包结点或类结点
+            </li>
+            <li>
+                feature: Response now can be viewed in a dialog, but edit it will not echo
+                <br>
+                新功能: 响应体能在一个新的对话框中查看, 但修改不会回显到原位置
+            </li>
+            <li>
+                fix bugs: Remove request header and prohibit duplication
+                <br>
+                bug 修复: 移除请求头禁止重复
+            </li>
+            <li>
+                fix bugs: No method node selected can still initiate a request
+                <br>
+                bug 修复: 没有选中节点仍然能够发起请求
+            </li>
+        </ol>
+        <b>1.2.0</b><br>
+        <ol>
+            <li>
+                feature: Support for exporting postman environment configuration, api list
+                <br>
+                新功能: 支持导出 Postman 环境配置、分模块 API 列表导出
+            </li>
+            <li>
+                feature: Expand and collapse function optimization, if there is selected node, only the selected nodes
+                will be expanded or collapse.
+                <br>
+                新功能: 展开、收起功能优化, 如果有选中节点, 则只会展开/收起选中的节点
+            </li>
+            <li>
+                feature: Module Node, Package Node, Class Node add the right-click menu: expand all child node
+                <br>
+                新功能: 模块结点、包结点、类结点添加右键菜单功能: 展开所有子节点
+            </li>
+            <li>
+                fix bugs: Send a new request, the older request do not clear the response editor
+                <br>
+                bug 修复: 发送一个新请求时, 旧请求的结果没有被清空
+            </li>
+        </ol>
+        <b>1.1.0</b><br>
+        <ol>
+            <li>
+                feature: Request Method Filter
+                <br>
+                新功能: 请求方式过滤
+            </li>
+            <li>
+                feature: Method node add right-click menu: Jump to Method, Copy Full Path, Copy Api
+                <br>
+                新功能: 方法结点添加右键菜单: 跳转到方法、复制完整路径、复制 API
+            </li>
+            <li>
+                feature: Request body editor can open in new dialog to edit
+                <br>
+                新功能: 请求体内容能打开在一个新的对话框中编辑
+            </li>
+            <li>
+                fix bug: change env does not change the host value, header and so on
+                <br>
+                bug 修复: 切换环境时地址栏、请求头不会随之切换
+            </li>
+            <li>
+                fix bug: When the selected environment configuration is edited, the host value and request header will
+                not change.
+                <br>
+                bug 修复: 选中环境配置在编辑完成时, 地址栏、请求头不会随之切换
+            </li>
+        </ol>
+        <b>1.0.2</b><br>
+        <ol>
+            <li>
+                fix bugs: Package and class are at the same level, class node is missing
+                <br>
+                bug 修复: 包和类处于同一级别，类节点丢失
+            </li>
+            <li>
+                fix bugs: choose a new request, the older request do not clear the response editor
+                <br>
+                bug 修复: 选择一个新节点, 旧节点的请求结果没有清除
+            </li>
+        </ol>
+        <b>1.0.1</b><br>
+        <ol>
+            <li>Change plugin name —— ApiTool<br>更改插件名为 ApiTool</li>
+        </ol>
+        <b>1.0.0</b><br>
+        <ol>
+            <li>
+                Read all annotation request interface methods in Spring MVC
+                <br>
+                读取 Spring MVC 中所有注解请求接口方法
+            </li>
+            <li>
+                Multi Environment configuration, by default, reads the context-path and port of each module and
+                generates a local environment for each module (refresh will still take effect after deletion)
+                <br/>
+                多环境配置, 默认读取每个模块的 context-path 和 port 并为每个模块生成本地环境(删除后刷新仍会生效)
+            </li>
+            <li>
+                If the project refers to Swagger2 and Swagger3 annotations, hover the mouse over the corresponding
+                node will display the corresponding description
+                <br/>
+                如果项目引用了 Swagger2 和 Swagger3 注解, 将鼠标悬浮在对应的结点上会显示对应的说明
+            </li>
+            <li>
+                Double-click the method node to jump to the specified method
+                <br/>
+                双击方法结点可以跳转到指定方法处
+            </li>
+        </ol>
+        ]]></change-notes>
 
   <depends>com.intellij.modules.platform</depends>
   <depends>com.intellij.modules.java</depends>

@@ -2,6 +2,7 @@ package com.zys.http.tool;
 
 import com.intellij.psi.*;
 import com.intellij.psi.PsiModifier.ModifierConstant;
+import com.intellij.psi.impl.source.PsiFieldImpl;
 import com.zys.http.constant.HttpEnum;
 import com.zys.http.constant.SpringEnum;
 import jdk.jfr.Description;
@@ -92,11 +93,18 @@ public class PsiTool {
             if (initializerList.isEmpty()) {
                 return "";
             }
-            String text = initializerList.get(0).getText();
-            if (text.startsWith("\"") && text.endsWith("\"")) {
-                text = text.substring(1, text.length() - 1);
+            PsiAnnotationMemberValue memberValue = initializerList.get(0);
+            // 是否是常量值引用, 不作多次引用判断
+            if (memberValue instanceof PsiReferenceExpression expression && expression.resolve() instanceof PsiFieldImpl field) {
+                PsiExpression initializer = field.getInitializer();
+                if (Objects.nonNull(initializer)) {
+                    String text = initializer.getText();
+                    return text.startsWith("\"") && text.endsWith("\"") ? text.substring(1, text.length() - 1) : text;
+                }
             }
-            return text;
+
+            String text = memberValue.getText();
+            return text.startsWith("\"") && text.endsWith("\"") ? text.substring(1, text.length() - 1) : text;
         }
 
         @Description("获取 Controller 上 @Api 或 @Tag/方法上的 @ApiOperation 或 @Operation")
