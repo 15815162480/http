@@ -55,6 +55,11 @@
         <b>1.5.0</b><br>
         <ol>
             <li>
+                fix bugs: Fix a series of errors: Read access is allowed from inside read-action
+                <br>
+                bug 修复: 修复一系列报错 Read access is allowed from inside read-action
+            </li>
+            <li>
                 improve: You can convert only one String constant reference to a path to the corresponding value<br>
                 This is an example:
                 <code>

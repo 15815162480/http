@@ -3,16 +3,20 @@ package com.zys.http.extension.search.everywhere;
 import com.intellij.ide.projectView.PresentationData;
 import com.intellij.navigation.ItemPresentation;
 import com.intellij.navigation.NavigationItem;
+import com.intellij.openapi.application.ModalityState;
+import com.intellij.openapi.application.ReadAction;
 import com.intellij.psi.NavigatablePsiElement;
-import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiMethod;
 import com.zys.http.entity.tree.MethodNodeData;
+import com.zys.http.tool.ThreadTool;
 import com.zys.http.ui.icon.HttpIcons;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @author zhou ys
@@ -27,16 +31,14 @@ public record GotoApiItem(MethodNodeData methodNodeData) implements NavigationIt
 
     @Override
     public @NotNull ItemPresentation getPresentation() {
-        String location = "";
+        AtomicReference<String> location = new AtomicReference<>("");
         NavigatablePsiElement psiElement = methodNodeData.getPsiElement();
         PsiMethod psiMethod = ((PsiMethod) psiElement);
-        PsiClass psiClass = psiMethod.getContainingClass();
-        if (psiClass != null) {
-            location = psiClass.getName();
-        }
-        location += "#" + psiMethod.getName();
+        ReadAction.nonBlocking(psiMethod::getContainingClass).finishOnUiThread(ModalityState.defaultModalityState(),
+                psiClass -> location.set(Optional.ofNullable(psiClass).map(NavigationItem::getName).orElse("") + "#" + psiMethod.getName())
+        ).submit(ThreadTool.getExecutor());
         Icon icon = HttpIcons.HttpMethod.getHttpMethodIcon(methodNodeData.getHttpMethod());
-        return new PresentationData(getName(), location, icon, null);
+        return new PresentationData(getName(), location.get(), icon, null);
     }
 
     @Override

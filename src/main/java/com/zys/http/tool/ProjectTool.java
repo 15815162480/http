@@ -2,6 +2,8 @@ package com.zys.http.tool;
 
 import cn.hutool.core.text.CharSequenceUtil;
 import com.intellij.lang.properties.psi.PropertiesFile;
+import com.intellij.openapi.application.ModalityState;
+import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.module.ResourceFileUtil;
@@ -20,6 +22,7 @@ import org.jetbrains.yaml.YAMLUtil;
 import org.jetbrains.yaml.psi.YAMLFile;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -49,10 +52,14 @@ public class ProjectTool {
     @Description("获取模块中的 SpringBoot 优先级最高的配置文件")
     public static PsiFile getSpringApplicationFile(Project project, @NotNull Module module) {
         PsiManager psiManager = PsiManager.getInstance(project);
+
+        AtomicReference<VirtualFile> file = new AtomicReference<>();
         for (String applicationFileName : APPLICATION_FILE_NAMES) {
-            VirtualFile file = ResourceFileUtil.findResourceFileInScope(applicationFileName, project, module.getModuleScope());
-            if (Objects.nonNull(file)) {
-                return psiManager.findFile(file);
+            ReadAction.nonBlocking(()-> ResourceFileUtil.findResourceFileInScope(applicationFileName, project, module.getModuleScope()))
+                    .finishOnUiThread(ModalityState.defaultModalityState(), file::set)
+                    .submit(ThreadTool.getExecutor());
+            if (Objects.nonNull(file.get())) {
+                return psiManager.findFile(file.get());
             }
         }
         return null;
