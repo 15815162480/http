@@ -4,16 +4,17 @@ import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionPlaces;
 import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.zys.http.action.*;
 import com.zys.http.constant.HttpEnum;
 import com.zys.http.entity.HttpConfig;
-import com.zys.http.extension.service.Bundle;
 import com.zys.http.extension.topic.EnvChangeTopic;
+import com.zys.http.extension.topic.EnvListChangeTopic;
+import com.zys.http.extension.service.Bundle;
 import com.zys.http.tool.ui.DialogTool;
 import com.zys.http.ui.dialog.EnvAddOrEditDialog;
 import jdk.jfr.Description;
-import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,14 +32,42 @@ import java.util.Set;
  */
 @Description("环境列表表格")
 public class EnvListTable extends AbstractTable {
-
-    @Setter
-    @Description("修改选中环境回调")
-    private transient Runnable editOKCb;
-
     public EnvListTable(Project project) {
         super(project, false);
         init();
+        initTopic();
+    }
+
+    private void initTopic() {
+        project.getMessageBus().connect().subscribe(EnvListChangeTopic.TOPIC, new EnvListChangeTopic() {
+            @Override
+            public void save(String name, HttpConfig config) {
+                ApplicationManager.getApplication().invokeLater(() -> {
+                    getTableModel().addRow(new String[]{name, config.getProtocol().toString(), config.getHostValue()});
+                    serviceTool.putHttpConfig(name, config);
+                    reloadTableModel();
+                });
+            }
+
+            @Override
+            public void edit(String name, HttpConfig config) {
+                ApplicationManager.getApplication().invokeLater(() -> {
+                    DefaultTableModel model = (DefaultTableModel) valueTable.getModel();
+                    int selectedRow = valueTable.getSelectedRow();
+                    model.setValueAt(config.getProtocol().toString(), selectedRow, 1);
+                    model.setValueAt(config.getHostValue(), selectedRow, 2);
+                    serviceTool.putHttpConfig(name, config);
+                    reloadTableModel();
+                    project.getMessageBus().syncPublisher(EnvChangeTopic.TOPIC).change();
+                });
+            }
+
+            @Override
+            public void remove(String name) {
+                serviceTool.removeHttpConfig(name);
+                ApplicationManager.getApplication().invokeLater(() -> reloadTableModel());
+            }
+        });
     }
 
     @Override
@@ -68,11 +97,7 @@ public class EnvListTable extends AbstractTable {
         DefaultActionGroup group = new DefaultActionGroup();
 
         AddAction addAction = new AddAction(Bundle.get("http.action.add"));
-        addAction.setAction(event -> {
-            EnvAddOrEditDialog dialog = new EnvAddOrEditDialog(project, true, "");
-            dialog.setAddCallback((name, config) -> getTableModel().addRow(new String[]{name, config.getProtocol().toString(), config.getHostValue()}));
-            dialog.show();
-        });
+        addAction.setAction(event -> new EnvAddOrEditDialog(project, true, "").show());
         group.add(addAction);
 
         RemoveAction removeAction = new RemoveAction(Bundle.get("http.action.remove"));
@@ -90,7 +115,14 @@ public class EnvListTable extends AbstractTable {
         removeAction.setEnabled(false);
         group.add(removeAction);
 
-        EditAction editAction = createEditAction();
+        EditAction editAction = new EditAction(Bundle.get("http.action.edit"));
+        editAction.setAction(event -> {
+            DefaultTableModel model = (DefaultTableModel) valueTable.getModel();
+            String envName = (String) model.getValueAt(valueTable.getSelectedRow(), 0);
+            new EnvAddOrEditDialog(project, false, envName).show();
+        });
+
+        editAction.setEnabled(false);
         group.add(editAction);
 
         HttpConfigExportAction exportAction = new HttpConfigExportAction(Bundle.get("http.action.export.select.env"), HttpEnum.ExportEnum.SPECIFY_ENV);
@@ -103,27 +135,6 @@ public class EnvListTable extends AbstractTable {
         group.add(exportAction);
 
         return ActionManager.getInstance().createActionToolbar(ActionPlaces.TOOLBAR, group, true);
-    }
-
-    @NotNull
-    private EditAction createEditAction() {
-        EditAction editAction = new EditAction(Bundle.get("http.action.edit"));
-        editAction.setAction(event -> {
-            DefaultTableModel model = (DefaultTableModel) valueTable.getModel();
-            String envName = (String) model.getValueAt(valueTable.getSelectedRow(), 0);
-            EnvAddOrEditDialog dialog = new EnvAddOrEditDialog(project, false, envName);
-            dialog.setEditCallback((name, config) -> {
-                int selectedRow = valueTable.getSelectedRow();
-                model.setValueAt(config.getProtocol().toString(), selectedRow, 1);
-                model.setValueAt(config.getHostValue(), selectedRow, 2);
-                editOKCb.run();
-            });
-            dialog.show();
-            project.getMessageBus().syncPublisher(EnvChangeTopic.TOPIC).change();
-        });
-
-        editAction.setEnabled(false);
-        return editAction;
     }
 
     @Override

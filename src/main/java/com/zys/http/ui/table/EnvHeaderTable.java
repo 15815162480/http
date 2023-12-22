@@ -6,6 +6,7 @@ import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionPlaces;
 import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.zys.http.action.AddAction;
 import com.zys.http.action.CustomAction;
@@ -14,7 +15,6 @@ import com.zys.http.action.RemoveAction;
 import com.zys.http.entity.HttpConfig;
 import com.zys.http.extension.service.Bundle;
 import com.zys.http.ui.dialog.EditorDialog;
-import com.zys.http.ui.editor.CustomEditor;
 import jdk.jfr.Description;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
@@ -43,21 +43,16 @@ public class EnvHeaderTable extends AbstractTable implements EditAsProperties {
     @Description("添加(true)/修改(false)")
     private final boolean isAdd;
 
-    @Description("环境/请求头")
-    private final boolean isEnv;
-
     @Description("选中的环境名, isAdd 为 true 时忽略")
     private String selectEnv;
 
-    public EnvHeaderTable(Project project, boolean isAdd, String selectEnv, boolean isEnv) {
+    public EnvHeaderTable(Project project, boolean isAdd, String selectEnv) {
         super(project, true);
         this.isAdd = isAdd;
-        this.isEnv = isEnv;
         if (!isAdd) {
             this.selectEnv = selectEnv;
         }
         init();
-
     }
 
     @Override
@@ -186,7 +181,6 @@ public class EnvHeaderTable extends AbstractTable implements EditAsProperties {
 
     @Override
     public void edit() {
-        CustomEditor editor = new CustomEditor(project, PropertiesFileType.INSTANCE);
         DefaultTableModel model = getTableModel();
         StringBuilder all = new StringBuilder();
         int count = model.getRowCount();
@@ -195,14 +189,19 @@ public class EnvHeaderTable extends AbstractTable implements EditAsProperties {
             String key = (String) model.getValueAt(i, 0);
             all.append(CharSequenceUtil.format(EDIT_AS_PROPERTIES_TEMPLATE, key, value));
         }
-        editor.setText(all.toString());
 
-        EditorDialog dialog = new EditorDialog(project, Bundle.get("http.editor.body.action.dialog"), editor);
-        dialog.setOkCallBack(s -> {
-            if (Objects.isNull(s) || s.isEmpty()) {
+        EditorDialog dialog = new EditorDialog(project, Bundle.get("http.editor.header.properties.dialog"),
+                PropertiesFileType.INSTANCE, all.toString());
+        dialog.setOkCallBack(text -> {
+            String[] columnNames = {
+                    Bundle.get("http.table.header"),
+                    Bundle.get("http.table.value")
+            };
+            if (CharSequenceUtil.isEmpty(text)) {
+                ApplicationManager.getApplication().invokeLater(() -> valueTable.setModel(new DefaultTableModel(null, columnNames)));
                 return;
             }
-            String[] split = s.split("\n");
+            String[] split = text.split("\n");
             Map<String, String> headerMap = new LinkedHashMap<>();
             for (String header : split) {
                 if (header.contains("=")) {
@@ -214,23 +213,10 @@ public class EnvHeaderTable extends AbstractTable implements EditAsProperties {
                     }
                 }
             }
-            if (isEnv && !isAdd) {
-                HttpConfig httpConfig = serviceTool.getHttpConfig(selectEnv);
-                if (Objects.nonNull(httpConfig)) {
-                    httpConfig.setHeaders(headerMap);
-                    serviceTool.putHttpConfig(selectEnv, httpConfig);
-                    reloadTableModel();
-                }
-            }
-            if (!isEnv || isAdd) {
-                // 重新渲染请求头数据
-                String[] columnNames = {
-                        Bundle.get("http.table.header"),
-                        Bundle.get("http.table.value")
-                };
+            ApplicationManager.getApplication().invokeLater(()-> {
                 valueTable.setModel(new DefaultTableModel(null, columnNames));
                 headerMap.forEach((k, v) -> getTableModel().addRow(new String[]{k, v}));
-            }
+            });
         });
         dialog.show();
     }

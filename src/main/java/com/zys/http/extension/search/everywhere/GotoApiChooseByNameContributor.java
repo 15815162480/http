@@ -13,7 +13,6 @@ import java.util.List;
  * @since 2023-10-11
  */
 public record GotoApiChooseByNameContributor(List<MethodNodeData> dataList) implements ChooseByNameContributor {
-
     @Override
     public String @NotNull [] getNames(Project project, boolean includeNonProjectItems) {
         return dataList.stream().map(MethodNodeData::getNodeName).sorted().toList().toArray(new String[0]);

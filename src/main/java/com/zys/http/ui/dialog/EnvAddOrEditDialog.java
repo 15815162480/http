@@ -9,19 +9,19 @@ import com.intellij.ui.SeparatorOrientation;
 import com.intellij.util.ui.JBUI;
 import com.zys.http.constant.UIConstant;
 import com.zys.http.entity.HttpConfig;
+import com.zys.http.extension.topic.EnvListChangeTopic;
 import com.zys.http.extension.service.Bundle;
 import com.zys.http.tool.HttpServiceTool;
+import com.zys.http.tool.ui.ComboBoxTool;
 import com.zys.http.tool.ui.DialogTool;
 import com.zys.http.ui.table.EnvHeaderTable;
 import jdk.jfr.Description;
-import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.BiConsumer;
 
 import static com.zys.http.constant.HttpEnum.Protocol;
 
@@ -31,35 +31,27 @@ import static com.zys.http.constant.HttpEnum.Protocol;
  */
 @Description("添加或修改环境配置的对话框")
 public class EnvAddOrEditDialog extends DialogWrapper {
-
     @Description("是否是添加")
     private final boolean isAdd;
-
+    @Description("项目对象")
+    private final Project project;
     @Description("环境配置工具类")
     private final HttpServiceTool serviceTool;
 
     @Description("配置名称")
-    private final JTextField configNameTF = new JTextField();
+    private JTextField configNameTF;
     @Description("IP:PORT/域名")
-    private final JTextField hostTF  = new JTextField();
+    private JTextField hostTF;
     @Description("协议选择框")
     private ComboBox<Protocol> protocolCB;
-
     @Description("数据表格")
     private final EnvHeaderTable envAddOrEditTable;
 
-    @Setter
-    @Description("添加的回调, <新增的环境配置名, 环境配置>")
-    private BiConsumer<String, HttpConfig> addCallback;
-
-    @Setter
-    @Description("添加的回调, <新增的环境配置名, 环境配置>")
-    private BiConsumer<String, HttpConfig> editCallback;
-
     public EnvAddOrEditDialog(Project project, boolean isAdd, String selectEnv) {
         super(project, true);
-        serviceTool = HttpServiceTool.getInstance(project);
-        envAddOrEditTable = new EnvHeaderTable(project, isAdd, selectEnv, true);
+        this.project = project;
+        this.serviceTool = HttpServiceTool.getInstance(project);
+        this.envAddOrEditTable = new EnvHeaderTable(project, isAdd, selectEnv);
 
         this.isAdd = isAdd;
         init();
@@ -70,12 +62,12 @@ public class EnvAddOrEditDialog extends DialogWrapper {
         setAutoAdjustable(true);
         if (!isAdd) {
             // 修改时配置名称禁止修改
-            configNameTF.setText(selectEnv);
-            configNameTF.setEnabled(false);
-            configNameTF.setDisabledTextColor(JBColor.BLACK);
+            this.configNameTF.setText(selectEnv);
+            this.configNameTF.setEnabled(false);
+            this.configNameTF.setDisabledTextColor(JBColor.BLACK);
             HttpConfig httpConfig = serviceTool.getHttpConfig(selectEnv);
-            hostTF.setText(httpConfig.getHostValue());
-            protocolCB.setSelectedItem(httpConfig.getProtocol());
+            this.hostTF.setText(httpConfig.getHostValue());
+            this.protocolCB.setSelectedItem(httpConfig.getProtocol());
         }
     }
 
@@ -98,18 +90,19 @@ public class EnvAddOrEditDialog extends DialogWrapper {
         gbc.gridy = 0;
         gbc.weightx = 1.0;
         gbc.gridwidth = GridBagConstraints.REMAINDER;
-
+        configNameTF = new JTextField();
         configNameTF.setToolTipText(Bundle.get("http.dialog.env.config.name.tooltip"));
         first.add(configNameTF, gbc);
 
         // 环境配置
         gbc.gridy = 1;
-        protocolCB = new ComboBox<>(Protocol.values());
+        protocolCB = ComboBoxTool.protocolComboBox();
         protocolCB.setSelectedItem(Protocol.HTTP);
         first.add(protocolCB, gbc);
 
         // IP/HOST
         gbc.gridy = 2;
+        hostTF = new JTextField();
         hostTF.setToolTipText(Bundle.get("http.dialog.env.config.ip.tooltip"));
         first.add(hostTF, gbc);
 
@@ -157,11 +150,10 @@ public class EnvAddOrEditDialog extends DialogWrapper {
         httpConfig.setHostValue(host);
         httpConfig.setProtocol(protocol);
 
-        serviceTool.putHttpConfig(configName, httpConfig);
         if (isAdd) {
-            addCallback.accept(configName, httpConfig);
+            project.getMessageBus().syncPublisher(EnvListChangeTopic.TOPIC).save(configName, httpConfig);
         } else {
-            editCallback.accept(configName, httpConfig);
+            project.getMessageBus().syncPublisher(EnvListChangeTopic.TOPIC).edit(configName, httpConfig);
         }
         super.doOKAction();
     }

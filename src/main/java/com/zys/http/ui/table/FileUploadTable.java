@@ -59,8 +59,8 @@ public class FileUploadTable extends AbstractTable {
         RemoveAction removeAction = new RemoveAction(Bundle.get("http.action.remove"));
         removeAction.setAction(event -> {
             int selectedRow = valueTable.getSelectedRow();
-            getTableModel().removeRow(selectedRow);
             int rowCount = valueTable.getRowCount();
+            getTableModel().removeRow(selectedRow);
             int newSelectRow = selectedRow == rowCount ? rowCount - 1 : selectedRow;
             valueTable.clearSelection();
             valueTable.getSelectionModel().setSelectionInterval(newSelectRow, newSelectRow);

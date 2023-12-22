@@ -1,17 +1,14 @@
 package com.zys.http.extension.search.everywhere;
 
-import com.intellij.ide.projectView.PresentationData;
 import com.intellij.navigation.ItemPresentation;
+import com.intellij.navigation.ItemPresentationProviders;
 import com.intellij.navigation.NavigationItem;
 import com.intellij.psi.NavigatablePsiElement;
-import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiMethod;
 import com.zys.http.entity.tree.MethodNodeData;
-import com.zys.http.ui.icon.HttpIcons;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.*;
 import java.util.Objects;
 
 /**
@@ -26,17 +23,8 @@ public record GotoApiItem(MethodNodeData methodNodeData) implements NavigationIt
     }
 
     @Override
-    public @NotNull ItemPresentation getPresentation() {
-        String location = "";
-        NavigatablePsiElement psiElement = methodNodeData.getPsiElement();
-        PsiMethod psiMethod = ((PsiMethod) psiElement);
-        PsiClass psiClass = psiMethod.getContainingClass();
-        if (psiClass != null) {
-            location = psiClass.getName();
-        }
-        location += "#" + psiMethod.getName();
-        Icon icon = HttpIcons.HttpMethod.getHttpMethodIcon(methodNodeData.getHttpMethod());
-        return new PresentationData(getName(), location, icon, null);
+    public @Nullable ItemPresentation getPresentation() {
+        return ItemPresentationProviders.getItemPresentation(this);
     }
 
     @Override

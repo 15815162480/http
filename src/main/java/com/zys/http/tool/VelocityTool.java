@@ -117,7 +117,7 @@ public class VelocityTool {
 
     @Description("创建 Postman API 渲染数据列表")
     private static List<MethodItem> createMethodItems(PsiClass c, String contextPath) {
-        HttpEnum.ContentType classContentType = PsiTool.contentTypeHeader(c);
+        HttpEnum.ContentType classContentType = PsiTool.Class.contentTypeHeader(c);
 
         String controllerPath = PsiTool.Annotation.getControllerPath(c);
         PsiMethod[] methods = c.getAllMethods();
@@ -150,7 +150,7 @@ public class VelocityTool {
                 // 请求方式
                 HttpEnum.HttpMethod httpMethod = HTTP_METHOD_MAP.get(qualifiedName);
                 if (httpMethod.equals(HttpEnum.HttpMethod.REQUEST)) {
-                    httpMethod = HttpEnum.HttpMethod.GET;
+                    httpMethod = HttpEnum.HttpMethod.requestMappingConvert(annotation);
                 }
                 item.setMethod(httpMethod.name());
 
@@ -159,10 +159,8 @@ public class VelocityTool {
                 item.setUri(UrlTool.buildMethodUri(contextPath, controllerPath, path));
 
                 // 请求头类型
-                HttpEnum.ContentType type = PsiTool.contentTypeHeader(method);
-                type = httpMethod.equals(HttpEnum.HttpMethod.GET) ? HttpEnum.ContentType.APPLICATION_X_FORM_URLENCODED : type;
-                String finalType = Objects.isNull(type) ? classContentType.getValue() : type.getValue();
-                item.setContentType(finalType);
+                HttpEnum.ContentType type = PsiTool.Method.contentType(classContentType, method);
+                item.setContentType(type.getValue());
                 // 请求参数类型
                 buildParamProperty(method, item, type, classContentType);
                 return item;

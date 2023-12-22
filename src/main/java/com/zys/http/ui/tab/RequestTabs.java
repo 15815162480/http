@@ -5,7 +5,6 @@ import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl;
 import com.intellij.openapi.fileTypes.FileType;
-import com.intellij.openapi.fileTypes.impl.FileTypeRenderer;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.ui.JBColor;
@@ -19,6 +18,7 @@ import com.zys.http.entity.param.ParamProperty;
 import com.zys.http.extension.service.Bundle;
 import com.zys.http.tool.HttpServiceTool;
 import com.zys.http.tool.convert.ParamConvert;
+import com.zys.http.tool.ui.ComboBoxTool;
 import com.zys.http.tool.ui.ThemeTool;
 import com.zys.http.ui.dialog.EditorDialog;
 import com.zys.http.ui.editor.CustomEditor;
@@ -96,7 +96,7 @@ public class RequestTabs extends JBTabsImpl {
 
     @Description("请求头标签页")
     private void requestHeaderTab() {
-        this.headerTable = new EnvHeaderTable(this.project, false, this.serviceTool.getSelectedEnv(), false);
+        this.headerTable = new EnvHeaderTable(this.project, false, this.serviceTool.getSelectedEnv());
         this.headerTable.getToolbar().getComponent().setBorder(JBUI.Borders.customLineBottom(UIConstant.BORDER_COLOR));
         this.headerTabInfo = new TabInfo(this.headerTable);
         this.headerTabInfo.setText(Bundle.get("http.tab.request.header"));
@@ -117,17 +117,10 @@ public class RequestTabs extends JBTabsImpl {
         JPanel bodyPanel = new JPanel(new BorderLayout(0, 0));
         this.bodyEditor = new CustomEditor(project);
         this.bodyEditor.setName("BODY");
-        this.bodyEditor.setBorder(JBUI.Borders.customLineLeft(UIConstant.EDITOR_BORDER_COLOR));
+        bodyPanel.setBorder(JBUI.Borders.customLineLeft(UIConstant.EDITOR_BORDER_COLOR));
         bodyPanel.add(this.bodyEditor, BorderLayout.CENTER);
         JLabel label = new JLabel(Bundle.get("http.editor.body.label"));
-        this.bodyFileType = new ComboBox<>(new FileType[]{
-                CustomEditor.TEXT_FILE_TYPE,
-                CustomEditor.JSON_FILE_TYPE,
-                CustomEditor.XML_FILE_TYPE
-        });
-        this.bodyFileType.setFocusable(false);
-        this.bodyFileType.setRenderer(new FileTypeRenderer());
-        this.bodyFileType.addItemListener(e -> {
+        this.bodyFileType = ComboBoxTool.fileTypeComboBox(e -> {
             ItemSelectable item = e.getItemSelectable();
             if (Objects.isNull(item)) {
                 return;
@@ -149,10 +142,9 @@ public class RequestTabs extends JBTabsImpl {
         CommonAction action = new CommonAction(Bundle.get("http.editor.body.action"), "",
                 ThemeTool.isDark() ? HttpIcons.General.FULL_SCREEN : HttpIcons.General.FULL_SCREEN_LIGHT);
         action.setAction(e -> {
-            CustomEditor editor = new CustomEditor(project, bodyEditor.getFileType());
-            editor.setText(bodyEditor.getText());
-            EditorDialog dialog = new EditorDialog(project, Bundle.get("http.editor.body.action.dialog"), editor);
-            dialog.setOkCallBack(s -> bodyEditor.setText(s)).show();
+            EditorDialog dialog = new EditorDialog(project, Bundle.get("http.editor.body.action.dialog"), bodyEditor.getFileType(), bodyEditor.getText());
+            dialog.setOkCallBack(s -> bodyEditor.setText(s));
+            dialog.show();
         });
         group.add(action);
         ActionToolbarImpl component = (ActionToolbarImpl) ActionManager.getInstance()
@@ -191,16 +183,13 @@ public class RequestTabs extends JBTabsImpl {
     private void responseTab() {
         JPanel respPanel = new JPanel(new BorderLayout(0, 0));
         responseEditor = new CustomEditor(project);
-        responseEditor.setBorder(JBUI.Borders.customLineLeft(UIConstant.EDITOR_BORDER_COLOR));
         respPanel.add(responseEditor, BorderLayout.CENTER);
+        respPanel.setBorder(JBUI.Borders.customLineLeft(UIConstant.EDITOR_BORDER_COLOR));
         JPanel respExpandPanel = new JPanel(new BorderLayout(0, 0));
         CommonAction action = new CommonAction(Bundle.get("http.editor.response.action"), "",
                 ThemeTool.isDark() ? HttpIcons.General.FULL_SCREEN : HttpIcons.General.FULL_SCREEN_LIGHT);
-        action.setAction(e -> {
-            CustomEditor editor = new CustomEditor(project, responseEditor.getFileType());
-            editor.setText(responseEditor.getText());
-            new EditorDialog(project, Bundle.get("http.editor.response.action.dialog"), editor).show();
-        });
+        action.setAction(e -> new EditorDialog(project, Bundle.get("http.editor.response.action.dialog"),
+                responseEditor.getFileType(), responseEditor.getText()).show());
         DefaultActionGroup group = new DefaultActionGroup();
         group.add(action);
         ActionToolbarImpl component = (ActionToolbarImpl) ActionManager.getInstance()
@@ -239,9 +228,9 @@ public class RequestTabs extends JBTabsImpl {
                     if (httpMethod.equals(HttpEnum.HttpMethod.POST)) {
                         // 将参数格式化成 username=a&password=a
                         String s = ParamConvert.buildParamPropertyUrlParameters(paramPropertyMap);
-                        bodyEditor.setText(s, CustomEditor.TEXT_FILE_TYPE);
+                        bodyEditor.setText(s, ComboBoxTool.TEXT_FILE_TYPE);
                         this.select(bodyTabInfo, true);
-                        bodyFileType.setSelectedItem(CustomEditor.TEXT_FILE_TYPE);
+                        bodyFileType.setSelectedItem(ComboBoxTool.TEXT_FILE_TYPE);
                     } else {
                         parameterTable.getTableModel().addRow(new String[]{k, v.getDefaultValue() + ""});
                         this.select(parameterTabInfo, true);
@@ -250,11 +239,11 @@ public class RequestTabs extends JBTabsImpl {
                 case BODY -> {
                     this.select(bodyTabInfo, true);
                     if (contentType.equals(HttpEnum.ContentType.APPLICATION_JSON)) {
-                        bodyEditor.setText(v.getDefaultValue().toString(), CustomEditor.JSON_FILE_TYPE);
-                        bodyFileType.setSelectedItem(CustomEditor.JSON_FILE_TYPE);
+                        bodyEditor.setText(v.getDefaultValue().toString(), ComboBoxTool.JSON_FILE_TYPE);
+                        bodyFileType.setSelectedItem(ComboBoxTool.JSON_FILE_TYPE);
                     } else {
-                        bodyEditor.setText(v.getDefaultValue().toString(), CustomEditor.TEXT_FILE_TYPE);
-                        bodyFileType.setSelectedItem(CustomEditor.TEXT_FILE_TYPE);
+                        bodyEditor.setText(v.getDefaultValue().toString(), ComboBoxTool.TEXT_FILE_TYPE);
+                        bodyFileType.setSelectedItem(ComboBoxTool.TEXT_FILE_TYPE);
                     }
                 }
                 case FILE -> {

@@ -6,7 +6,7 @@ import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.http.*;
 import com.intellij.openapi.fileTypes.FileType;
 import com.zys.http.tool.convert.ParamConvert;
-import com.zys.http.ui.editor.CustomEditor;
+import com.zys.http.tool.ui.ComboBoxTool;
 import jdk.jfr.Description;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -108,17 +108,17 @@ public class HttpClient {
 
     @NotNull
     public static FileType parseFileType(@NotNull HttpResponse response) {
-        FileType fileType = CustomEditor.TEXT_FILE_TYPE;
+        FileType fileType = ComboBoxTool.TEXT_FILE_TYPE;
         // Content-Type
         final String contentType = response.header(Header.CONTENT_TYPE);
 
         if (contentType != null) {
             if (JSON_PATTERN.matcher(contentType).find()) {
-                fileType = CustomEditor.JSON_FILE_TYPE;
+                fileType = ComboBoxTool.JSON_FILE_TYPE;
             } else if (HTML_PATTERN.matcher(contentType).find()) {
-                fileType = CustomEditor.HTML_FILE_TYPE;
+                fileType = ComboBoxTool.HTML_FILE_TYPE;
             } else if (XML_PATTERN.matcher(contentType).find()) {
-                fileType = CustomEditor.XML_FILE_TYPE;
+                fileType = ComboBoxTool.XML_FILE_TYPE;
             }
         }
         return fileType;

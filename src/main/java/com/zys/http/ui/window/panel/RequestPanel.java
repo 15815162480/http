@@ -2,6 +2,8 @@ package com.zys.http.ui.window.panel;
 
 import cn.hutool.core.text.CharSequenceUtil;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.ModalityState;
+import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
@@ -18,9 +20,10 @@ import com.zys.http.extension.service.Bundle;
 import com.zys.http.tool.HttpClient;
 import com.zys.http.tool.HttpServiceTool;
 import com.zys.http.tool.PsiTool;
+import com.zys.http.tool.ThreadTool;
 import com.zys.http.tool.convert.ParamConvert;
+import com.zys.http.tool.ui.ComboBoxTool;
 import com.zys.http.tool.ui.DialogTool;
-import com.zys.http.ui.editor.CustomEditor;
 import com.zys.http.ui.tab.RequestTabs;
 import com.zys.http.ui.table.FileUploadTable;
 import com.zys.http.ui.tree.HttpApiTreePanel;
@@ -104,8 +107,7 @@ public class RequestPanel extends JBSplitter {
         // 标签页面
         JPanel tabsPanel = new JPanel(new BorderLayout(0, 0));
         requestTabs = new RequestTabs(project);
-        tabsPanel.add(requestTabs);
-        tabsPanel.add(requestTabs.getComponent(), BorderLayout.CENTER);
+        tabsPanel.add(requestTabs, BorderLayout.CENTER);
         secondPanel.add(tabsPanel, BorderLayout.CENTER);
         this.setSecondComponent(secondPanel);
     }
@@ -169,16 +171,17 @@ public class RequestPanel extends JBSplitter {
                         final String response = String.format("%s", e);
                         ApplicationManager.getApplication().invokeLater(
                                 () -> {
-                                    this.requestTabs.getResponseEditor().setText(response, CustomEditor.TEXT_FILE_TYPE);
+                                    this.requestTabs.getResponseEditor().setText(response, ComboBoxTool.TEXT_FILE_TYPE);
                                     this.requestTabs.resultText(404);
                                 }
                         );
                     },
-                    ms -> ApplicationManager.getApplication().invokeLater(()->
+                    ms -> ApplicationManager.getApplication().invokeLater(() ->
                             this.requestTabs.getRequestResult().setText(this.requestTabs.getRequestResult().getText() + ", " + ms + "ms"))
             );
         });
     }
+
 
     private void makeSureParamPropertyMapNotNull() {
         paramPropertyMap = Objects.isNull(paramPropertyMap) ? new HashMap<>() : paramPropertyMap;
@@ -206,16 +209,21 @@ public class RequestPanel extends JBSplitter {
         httpMethodComboBox.setSelectedItem(httpMethod);
         // 获取选中节点的参数类型
         PsiMethod psiMethod = (PsiMethod) methodNode.getValue().getPsiElement();
-        HttpEnum.ContentType contentType = PsiTool.contentTypeHeader((PsiClass) psiMethod.getParent());
-        HttpEnum.ContentType type = PsiTool.contentTypeHeader(psiMethod);
-        type = httpMethod.equals(HttpMethod.GET) ? HttpEnum.ContentType.APPLICATION_X_FORM_URLENCODED : type;
-        type = Objects.isNull(type) ? contentType : type;
-        this.requestTabs.getHeaderTable().addContentType(type.getValue());
-
-        // 填充参数
-        // 先清空 model
-        paramPropertyMap = ParamConvert.parsePsiMethodParams(psiMethod, true);
-        this.requestTabs.reset();
-        this.requestTabs.chooseEvent(httpMethod, type, paramPropertyMap);
+        HttpMethod finalHttpMethod = httpMethod;
+        ReadAction.nonBlocking(() -> {
+            HttpEnum.ContentType contentType = PsiTool.Class.contentTypeHeader((PsiClass) psiMethod.getParent());
+            return PsiTool.Method.contentType(contentType, psiMethod);
+        }).finishOnUiThread(ModalityState.defaultModalityState(), type -> {
+            this.requestTabs.getHeaderTable().addContentType(type.getValue());
+            // 填充参数
+            // 先清空 model
+            ReadAction.nonBlocking(() -> ParamConvert.parsePsiMethodParams(psiMethod, true))
+                    .finishOnUiThread(ModalityState.defaultModalityState(), map -> {
+                        paramPropertyMap = map;
+                        this.requestTabs.reset();
+                        this.requestTabs.chooseEvent(finalHttpMethod, type, paramPropertyMap);
+                    })
+                    .submit(ThreadTool.getExecutor());
+        }).submit(ThreadTool.getExecutor());
     }
 }

@@ -20,6 +20,7 @@ import com.zys.http.entity.HttpConfig;
 import com.zys.http.entity.tree.*;
 import com.zys.http.extension.service.Bundle;
 import com.zys.http.extension.service.NotifyService;
+import com.zys.http.extension.topic.EnvListChangeTopic;
 import com.zys.http.tool.HttpServiceTool;
 import com.zys.http.tool.ProjectTool;
 import com.zys.http.tool.PsiTool;
@@ -64,11 +65,9 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
     private final transient HttpServiceTool serviceTool;
     private final transient Project project;
 
-    @Getter
     @Setter
-    @Description("选中方法节点后的回调")
+    @Description("节点选中回调")
     private transient Consumer<MethodNode> chooseCallback;
-
 
     public HttpApiTreePanel(Project project) {
         super(new SimpleTree());
@@ -92,7 +91,7 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
             moduleNodeMap.put(m.getName(), new ModuleNode(new ModuleNodeData(m.getName(), contextPath)));
         }
         ModuleNode root = moduleNodeMap.get(project.getName());
-        if (Objects.isNull(root)){
+        if (Objects.isNull(root)) {
             root = new ModuleNode(new ModuleNodeData(project.getName(), ""));
             moduleNodeMap.put(project.getName(), root);
         }
@@ -139,9 +138,10 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
         String moduleName = m.getName();
         if (serviceTool.getGenerateDefault()) {
             String host = "127.0.0.1:" + ProjectTool.getModulePort(project, m);
-            serviceTool.putHttpConfig(moduleName, new HttpConfig(HttpEnum.Protocol.HTTP, host, Collections.emptyMap()));
+            project.getMessageBus().syncPublisher(EnvListChangeTopic.TOPIC)
+                    .save(moduleName, new HttpConfig(HttpEnum.Protocol.HTTP, host, Collections.emptyMap()));
         } else {
-            serviceTool.removeHttpConfig(moduleName);
+            project.getMessageBus().syncPublisher(EnvListChangeTopic.TOPIC).remove(moduleName);
         }
     }
 
@@ -260,7 +260,6 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
         }
     }
 
-
     @Override
     protected @Nullable Consumer<BaseNode<?>> getChooseListener() {
         return node -> {
@@ -333,12 +332,16 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
                 if (!httpMethodMap.containsKey(qualifiedName)) {
                     continue;
                 }
-                MethodNodeData data1 = ProjectTool.buildMethodNodeData(annotation, contextPath, controllerPath, method);
-                if (Objects.nonNull(data1)) {
-                    data = new MethodNode(data1);
-                    data1.setDescription(PsiTool.Annotation.getSwaggerAnnotation(method, HttpEnum.AnnotationPlace.METHOD));
-                    dataList.add(data);
+                HttpEnum.HttpMethod httpMethod = httpMethodMap.get(qualifiedName);
+                if (HttpEnum.HttpMethod.REQUEST.equals(httpMethod)) {
+                    httpMethod = HttpEnum.HttpMethod.requestMappingConvert(annotation);
                 }
+                String name = PsiTool.Annotation.getAnnotationValue(annotation, new String[]{"value", "path"});
+                MethodNodeData data1 = new MethodNodeData(httpMethod, name, controllerPath, contextPath);
+                data1.setPsiElement(method);
+                data = new MethodNode(data1);
+                data1.setDescription(PsiTool.Annotation.getSwaggerAnnotation(method, HttpEnum.AnnotationPlace.METHOD));
+                dataList.add(data);
             }
         }
         return dataList;

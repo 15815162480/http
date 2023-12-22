@@ -2,16 +2,17 @@ package com.zys.http.ui.table;
 
 import cn.hutool.core.text.CharSequenceUtil;
 import com.intellij.lang.properties.PropertiesFileType;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.zys.http.constant.HttpConstant;
 import com.zys.http.extension.service.Bundle;
 import com.zys.http.ui.dialog.EditorDialog;
-import com.zys.http.ui.editor.CustomEditor;
 import jdk.jfr.Description;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.table.DefaultTableModel;
-import java.util.Objects;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * @author zys
@@ -21,7 +22,7 @@ import java.util.Objects;
 public class ParameterTable extends EnvHeaderTable {
 
     public ParameterTable(Project project) {
-        super(project, true, "", false);
+        super(project, true, "");
     }
 
     @Override
@@ -35,7 +36,6 @@ public class ParameterTable extends EnvHeaderTable {
 
     @Override
     public void edit() {
-        CustomEditor editor = new CustomEditor(project, PropertiesFileType.INSTANCE);
         DefaultTableModel model = getTableModel();
         int count = model.getRowCount();
         StringBuilder all = new StringBuilder();
@@ -44,25 +44,30 @@ public class ParameterTable extends EnvHeaderTable {
             String value = model.getValueAt(i, 1) + "\n";
             all.append(CharSequenceUtil.format(HttpConstant.EDIT_AS_PROPERTIES_TEMPLATE, key, value));
         }
-        editor.setText(all.toString());
-
-        EditorDialog dialog = new EditorDialog(project, Bundle.get("http.editor.body.action.dialog"), editor);
-        dialog.setOkCallBack(s -> {
-            if (Objects.isNull(s) || s.isEmpty()) {
+        EditorDialog dialog = new EditorDialog(project, Bundle.get("http.editor.param.properties.dialog"),
+                PropertiesFileType.INSTANCE, all.toString());
+        dialog.setOkCallBack(text -> {
+            if (CharSequenceUtil.isEmpty(text)) {
+                ApplicationManager.getApplication().invokeLater(this::reloadTableModel);
                 return;
             }
-            reloadTableModel();
-            String[] split = s.split("\n");
-            for (String param : split) {
-                if (param.contains("=")) {
-                    int idx = param.indexOf("=");
-                    String key = param.substring(0, idx).trim();
-                    String value = param.substring(idx + 1).trim();
-                    if (CharSequenceUtil.isNotBlank(key)) {
-                        getTableModel().addRow(new String[]{key, value});
-                    }
+            String[] split = text.split("\n");
+            Map<String, String> headerMap = new LinkedHashMap<>();
+            for (String s : split) {
+                if (!s.contains("=")) {
+                    continue;
+                }
+                int i = s.indexOf("=");
+                String key = s.substring(0, i).trim();
+                String value = s.substring(i + 1).trim();
+                if (CharSequenceUtil.isNotEmpty(key)) {
+                    headerMap.put(key, value);
                 }
             }
+            ApplicationManager.getApplication().invokeLater(() -> {
+                reloadTableModel();
+                headerMap.forEach((k, v) -> getTableModel().addRow(new String[]{k, v}));
+            });
         });
         dialog.show();
     }
