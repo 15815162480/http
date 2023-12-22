@@ -2,12 +2,12 @@ package com.zys.http.tool;
 
 import cn.hutool.core.text.CharSequenceUtil;
 import com.intellij.lang.properties.psi.PropertiesFile;
-import com.intellij.openapi.application.ModalityState;
-import com.intellij.openapi.application.ReadAction;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.module.ResourceFileUtil;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
@@ -22,7 +22,6 @@ import org.jetbrains.yaml.YAMLUtil;
 import org.jetbrains.yaml.psi.YAMLFile;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -53,13 +52,11 @@ public class ProjectTool {
     public static PsiFile getSpringApplicationFile(Project project, @NotNull Module module) {
         PsiManager psiManager = PsiManager.getInstance(project);
 
-        AtomicReference<VirtualFile> file = new AtomicReference<>();
+        VirtualFile file;
         for (String applicationFileName : APPLICATION_FILE_NAMES) {
-            ReadAction.nonBlocking(()-> ResourceFileUtil.findResourceFileInScope(applicationFileName, project, module.getModuleScope()))
-                    .finishOnUiThread(ModalityState.defaultModalityState(), file::set)
-                    .submit(ThreadTool.getExecutor());
+            file = ApplicationManager.getApplication().runReadAction((Computable<VirtualFile>) () -> ResourceFileUtil.findResourceFileInScope(applicationFileName, project, module.getModuleScope()));
             if (Objects.nonNull(file.get())) {
-                return psiManager.findFile(file.get());
+                return psiManager.findFile(file);
             }
         }
         return null;
