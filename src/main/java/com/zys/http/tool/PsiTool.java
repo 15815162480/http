@@ -1,5 +1,7 @@
 package com.zys.http.tool;
 
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.util.Computable;
 import com.intellij.psi.*;
 import com.intellij.psi.PsiModifier.ModifierConstant;
 import com.intellij.psi.impl.source.PsiFieldImpl;
@@ -96,15 +98,23 @@ public class PsiTool {
             PsiAnnotationMemberValue memberValue = initializerList.get(0);
             // 是否是常量值引用, 不作多次引用判断
             if (memberValue instanceof PsiReferenceExpression expression && expression.resolve() instanceof PsiFieldImpl field) {
-                PsiExpression initializer = field.getInitializer();
-                if (Objects.nonNull(initializer)) {
-                    String text = initializer.getText();
-                    return text.startsWith("\"") && text.endsWith("\"") ? text.substring(1, text.length() - 1) : text;
+                String text = stringConstantValue(field);
+                if (Objects.nonNull(text)) {
+                    return text;
                 }
             }
 
             String text = memberValue.getText();
             return text.startsWith("\"") && text.endsWith("\"") ? text.substring(1, text.length() - 1) : text;
+        }
+
+        private static String stringConstantValue(PsiFieldImpl field) {
+            PsiExpression initializer = field.getInitializer();
+            if (Objects.nonNull(initializer)) {
+                String text = initializer.getText();
+                return text.startsWith("\"") && text.endsWith("\"") ? text.substring(1, text.length() - 1) : text;
+            }
+            return null;
         }
 
         @Description("获取 Controller 上 @Api 或 @Tag/方法上的 @ApiOperation 或 @Operation")
@@ -123,9 +133,11 @@ public class PsiTool {
             List<HttpEnum.Swagger> swagger = new ArrayList<>(List.of(HttpEnum.Swagger.values())).stream()
                     .filter(o -> o.getAnnotationPlace().equals(place))
                     .toList();
-            List<PsiAnnotation> list = Stream.of(modifierList.getAnnotations())
-                    .filter(o -> swagger.stream().map(HttpEnum.Swagger::getClazz).toList().contains(o.getQualifiedName()))
-                    .toList();
+            List<PsiAnnotation> list = ApplicationManager.getApplication().runReadAction(
+                    (Computable<List<PsiAnnotation>>) () -> Stream.of(modifierList.getAnnotations())
+                            .filter(o -> swagger.stream().map(HttpEnum.Swagger::getClazz).toList().contains(o.getQualifiedName()))
+                            .toList()
+            );
 
             if (list.isEmpty()) {
                 return "";

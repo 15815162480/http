@@ -55,7 +55,7 @@ public class ProjectTool {
         VirtualFile file;
         for (String applicationFileName : APPLICATION_FILE_NAMES) {
             file = ApplicationManager.getApplication().runReadAction((Computable<VirtualFile>) () -> ResourceFileUtil.findResourceFileInScope(applicationFileName, project, module.getModuleScope()));
-            if (Objects.nonNull(file.get())) {
+            if (Objects.nonNull(file)) {
                 return psiManager.findFile(file);
             }
         }

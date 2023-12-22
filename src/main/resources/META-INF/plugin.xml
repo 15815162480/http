@@ -66,53 +66,13 @@
           private static final String A = "/test";
           @GetMapping(A)
           public String testGet() { return "test"; }
-        </code><br>
-        Error Usage 1:<br>
-        <code>
-          private static final String A = "/test";
-          @GetMapping(A + "")
-          public String testGet() { return "test"; }
-        </code><br>
-        Error Usage 2:<br>
-        <code>
-          private static final String A = "/test";
-          private static final String B = A;
-          @GetMapping(B)
-          public String testGet() { return "test"; }
-        </code><br>
-        Error Usage 3:<br>
-        <code>
-          private static final String A = "/test";
-          private static final String B = A;
-          @GetMapping(B + "")
-          public String testGet() { return "test"; }
-        </code><br>
+        </code>
         <br>
         优化: 可以将路径只有一个字符串常量引用转成对应的值
         案例:<br>
         <code>
           private static final String A = "/test";
           @GetMapping(A)
-          public String testGet() { return "test"; }
-        </code><br>
-        错误用法 1:<br>
-        <code>
-          private static final String A = "/test";
-          @GetMapping(A + "")
-          public String testGet() { return "test"; }
-        </code><br>
-        错误用法 2:<br>
-        <code>
-          private static final String A = "/test";
-          private static final String B = A;
-          @GetMapping(B)
-          public String testGet() { return "test"; }
-        </code><br>
-        错误用法 3:<br>
-        <code>
-          private static final String A = "/test";
-          private static final String B = A;
-          @GetMapping(B + "")
           public String testGet() { return "test"; }
         </code>
       </li>
