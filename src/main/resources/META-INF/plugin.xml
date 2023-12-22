@@ -55,6 +55,12 @@
     <b>1.5.0</b><br>
     <ol>
       <li>
+        improve: If a field is decorated with @JsonProperty, the corresponding field is automatically converted to the
+        value corresponding to the @JsonProperty value attribute (the request content-type is not classified).
+        <br>
+        优化: 如果字段上有 @JsonProperty 修饰, 会将对应的字段自动转成 @JsonProperty value 属性对应的值(不对请求类型进行分类处理)
+      </li>
+      <li>
         fix bugs: Fix a series of errors: Read access is allowed from inside read-action
         <br>
         bug 修复: 修复一系列报错 Read access is allowed from inside read-action
@@ -78,11 +84,11 @@
       </li>
       <li>
         improve: supported @RequestMapping method property, eg: <br>
-        <code>@RequestMapping(value = A, method = {RequestMethod.PUT, RequestMethod.DELETE})</code>, will be a
+        <code>@RequestMapping(value = "/test", method = {RequestMethod.PUT, RequestMethod.DELETE})</code>, will be a
         put request
         <br>
         优化: 支持 @RequestMapping method 属性, 例如: <br>
-        <code>@RequestMapping(value = A, method = {RequestMethod.PUT, RequestMethod.DELETE})</code>, 将是一个
+        <code>@RequestMapping(value = "/test", method = {RequestMethod.PUT, RequestMethod.DELETE})</code>, 将是一个
         Put 的请求
       </li>
     </ol>

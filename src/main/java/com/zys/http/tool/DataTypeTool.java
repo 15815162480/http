@@ -38,6 +38,9 @@ public class DataTypeTool {
             "Boolean", "Byte", "Int", "Short", "Long", "Float", "Double", "Char", "Number", "Array", "String"
     };
 
+    @Description("@JsonProperty 全限名")
+    private static final String JSON_PROPERTY_ANNO_FQN = "com.fasterxml.jackson.annotation.JsonProperty";
+
     @Description("基元类型")
     private static final Map<PsiType, Object> PSI_PRIMITIVE_TYPE_OBJECT_MAP = new HashMap<>();
     @Description("包装类")
@@ -145,7 +148,12 @@ public class DataTypeTool {
             Map<String, Object> result = new LinkedHashMap<>();
             List<PsiField> objectProperties = PsiTool.Field.getAllObjectPropertiesWithoutStaticAndPublic(psiClass);
             for (PsiField property : objectProperties) {
-                result.put(property.getName(), getDefaultValueOfPsiType(property.getType(), project));
+                String propertyName = property.getName();
+                // 是否有 @JsonProperty 属性
+                if (property.hasAnnotation(JSON_PROPERTY_ANNO_FQN)) {
+                    propertyName = PsiTool.Annotation.getAnnotationValue(property.getAnnotation(JSON_PROPERTY_ANNO_FQN), new String[]{"value"});
+                }
+                result.put(propertyName, getDefaultValueOfPsiType(property.getType(), project));
             }
             return result;
         }
