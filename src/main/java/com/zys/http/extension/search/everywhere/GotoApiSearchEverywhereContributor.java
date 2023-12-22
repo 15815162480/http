@@ -1,8 +1,6 @@
 package com.zys.http.extension.search.everywhere;
 
-import com.intellij.ide.actions.searcheverywhere.AbstractGotoSEContributor;
-import com.intellij.ide.actions.searcheverywhere.SearchEverywhereContributor;
-import com.intellij.ide.actions.searcheverywhere.SearchEverywhereContributorFactory;
+import com.intellij.ide.actions.searcheverywhere.*;
 import com.intellij.ide.util.gotoByName.FilteringGotoByModel;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.module.Module;
@@ -78,7 +76,7 @@ public class GotoApiSearchEverywhereContributor extends AbstractGotoSEContributo
 
     @Override
     public @NotNull String getSearchProviderId() {
-        return GotoApiSearchEverywhereContributor.class.getName();
+        return GotoApiSearchEverywhereContributor.class.getSimpleName();
     }
 
     @Override
@@ -99,7 +97,7 @@ public class GotoApiSearchEverywhereContributor extends AbstractGotoSEContributo
     public static class Factory implements SearchEverywhereContributorFactory<Object> {
         @Override
         public @NotNull SearchEverywhereContributor<Object> createContributor(@NotNull AnActionEvent initEvent) {
-            return new GotoApiSearchEverywhereContributor(initEvent);
+            return PSIPresentationBgRendererWrapper.wrapIfNecessary(new GotoApiSearchEverywhereContributor(initEvent));
         }
     }
 }

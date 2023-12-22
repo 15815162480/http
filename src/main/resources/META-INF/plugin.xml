@@ -50,12 +50,22 @@
         </ol>
         ]]></description>
 
-    <!-- 更新公告 -->
+  <!-- 更新公告 -->
   <change-notes><![CDATA[
+    <b>1.5.1</b><br>
+    <ol>
+      <li>
+        improve: Add SearchEverywhere ApiTool panel shortcut key (ctrl shift q). If the content in the clipboard
+        starts with "/", the content will be automatically filled into the input box
+        <br>
+        优化: 添加 SearchEverywhere ApiTool 面板快捷键(ctrl shift q)。如果剪切板中的内容以 "/" 开头, 会自动将内容填充到输入框中
+      </li>
+    </ol>
     <b>1.5.0</b><br>
     <ol>
       <li>
-        improve: If a field is decorated with @JsonProperty, the corresponding field is automatically converted to the
+        improve: If a field is decorated with @JsonProperty, the corresponding field is automatically converted to
+        the
         value corresponding to the @JsonProperty value attribute (the request content-type is not classified).
         <br>
         优化: 如果字段上有 @JsonProperty 修饰, 会将对应的字段自动转成 @JsonProperty value 属性对应的值(不对请求类型进行分类处理)
@@ -84,7 +94,8 @@
       </li>
       <li>
         improve: supported @RequestMapping method property, eg: <br>
-        <code>@RequestMapping(value = "/test", method = {RequestMethod.PUT, RequestMethod.DELETE})</code>, will be a
+        <code>@RequestMapping(value = "/test", method = {RequestMethod.PUT, RequestMethod.DELETE})</code>, will be
+        a
         put request
         <br>
         优化: 支持 @RequestMapping method 属性, 例如: <br>
@@ -479,4 +490,11 @@
     <itemPresentationProvider forClass="com.zys.http.extension.search.everywhere.GotoApiItem"
                               implementationClass="com.zys.http.extension.search.everywhere.GotoApiPresentationProvider"/>
   </extensions>
+
+  <actions>
+    <action id="http.GotoApiAction" class="com.zys.http.extension.search.everywhere.GotoApiAction"
+            text="ApiTool" description="Go to apiTool tab">
+      <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift q"/>
+    </action>
+  </actions>
 </idea-plugin>

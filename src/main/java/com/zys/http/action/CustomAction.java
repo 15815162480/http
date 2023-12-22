@@ -15,13 +15,12 @@ import java.util.function.Consumer;
  * @author zys
  * @since 2023-09-03
  */
+@Setter
 @Description("自定义菜单操作")
 public abstract class CustomAction extends AnAction {
 
-    @Setter
     protected Consumer<AnActionEvent> action;
 
-    @Setter
     private boolean isEnabled = true;
 
     protected CustomAction(String text, String description, Icon icon) {

@@ -5,9 +5,9 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.awt.*;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
-import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.*;
+import java.io.IOException;
+import java.util.Objects;
 
 /**
  * @author zys
@@ -24,5 +24,21 @@ public class SystemTool {
         Transferable trans = new StringSelection(text);
         // 把文本内容设置到系统剪贴板
         clipboard.setContents(trans, null);
+    }
+
+    @Description("获取剪切版文本")
+    public static String getClipboardContent() {
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        Transferable transferable = clipboard.getContents(null);
+
+        if (Objects.nonNull(transferable) && transferable.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+            try {
+                return (String) transferable.getTransferData(DataFlavor.stringFlavor);
+            } catch (UnsupportedFlavorException | IOException e) {
+                return null;
+            }
+        }
+
+        return null;
     }
 }
