@@ -6,12 +6,14 @@ import com.intellij.ide.actions.searcheverywhere.SearchEverywhereManager;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import com.zys.http.tool.SystemTool;
+import jdk.jfr.Description;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * @author zhou ys
  * @since 2023-12-22
  */
+@Description("快捷打开 SE 的 ApiTool 面板")
 public class GotoApiAction extends SearchEverywhereBaseAction {
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
