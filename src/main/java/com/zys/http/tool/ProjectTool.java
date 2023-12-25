@@ -101,11 +101,13 @@ public class ProjectTool {
     public static List<PsiClass> getModuleControllers(Project project, Module module) {
         Optional<GlobalSearchScope> globalSearchScope = Optional.of(module)
                 .map(Module::getModuleScope);
-        return Stream.concat(
-                        globalSearchScope.map(moduleScope -> JavaAnnotationIndex.getInstance().get(SpringEnum.Controller.CONTROLLER.getShortClassName(), project, moduleScope))
-                                .orElse(new ArrayList<>()).stream(),
-                        globalSearchScope.map(moduleScope -> JavaAnnotationIndex.getInstance().get(SpringEnum.Controller.REST_CONTROLLER.getShortClassName(), project, moduleScope))
-                                .orElse(new ArrayList<>()).stream())
+        Stream<PsiAnnotation> s1 = globalSearchScope.map(moduleScope -> ApplicationManager.getApplication().runReadAction((Computable<Collection<PsiAnnotation>>)
+                        () -> JavaAnnotationIndex.getInstance().get(SpringEnum.Controller.CONTROLLER.getShortClassName(), project, moduleScope)))
+                .orElse(new ArrayList<>()).stream();
+        Stream<PsiAnnotation> s2 = globalSearchScope.map(moduleScope -> ApplicationManager.getApplication().runReadAction((Computable<Collection<PsiAnnotation>>) () ->
+                        JavaAnnotationIndex.getInstance().get(SpringEnum.Controller.REST_CONTROLLER.getShortClassName(), project, moduleScope)))
+                .orElse(new ArrayList<>()).stream();
+        return Stream.concat(s1, s2)
                 .map(PsiElement::getParent)
                 .map(PsiModifierList.class::cast)
                 .map(PsiModifierList::getParent)
