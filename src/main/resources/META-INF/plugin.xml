@@ -71,8 +71,7 @@
         <ol>
             <li>
                 improve: If a field is decorated with @JsonProperty, the corresponding field is automatically converted
-                to
-                the value corresponding to the @JsonProperty value attribute (the request content-type is not
+                to the value corresponding to the @JsonProperty value attribute (the request content-type is not
                 classified).
                 <br>
                 优化: 如果字段上有 @JsonProperty 修饰, 会将对应的字段自动转成 @JsonProperty value 属性对应的值(不对请求类型进行分类处理)
