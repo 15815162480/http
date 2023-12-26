@@ -53,7 +53,7 @@ public class SettingActionGroup extends DefaultActionGroup {
         commonAction2.setAction(event -> {
             serviceTool.refreshWhenVcsChange();
             ApplicationManager.getApplication().invokeLater(() ->
-                    commonAction2.getTemplatePresentation().setIcon(serviceTool.getGenerateDefault() ? icon : null)
+                    commonAction2.getTemplatePresentation().setIcon(serviceTool.getRefreshWhenVcsChange() ? icon : null)
             );
         });
 

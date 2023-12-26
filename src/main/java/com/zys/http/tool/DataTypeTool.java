@@ -46,6 +46,8 @@ public class DataTypeTool {
     @Description("包装类")
     private static final Map<String, Object> BASIC_DATA_TYPE_OBJECT_MAP = new HashMap<>();
 
+    private static final Object[] EMPTY_ARRAY = new Object[0];
+
     static {
         // 手动处理要移除的 API
         PSI_PRIMITIVE_TYPE_OBJECT_MAP.put(new PsiPrimitiveType(JvmPrimitiveTypeKind.BOOLEAN, PsiAnnotation.EMPTY_ARRAY), false);
@@ -166,7 +168,7 @@ public class DataTypeTool {
         if (canonicalText.contains("[]")) {
             String arrayCanonicalText = canonicalText.substring(0, canonicalText.indexOf("["));
             if (Object.class.getName().equals(arrayCanonicalText)) {
-                return new Object[0];
+                return EMPTY_ARRAY;
             }
             // 是否是基元类型或对应包装类型的数组
             Object o = BASIC_DATA_TYPE_OBJECT_MAP.get(arrayCanonicalText);
@@ -176,7 +178,7 @@ public class DataTypeTool {
             PsiClassType type = PsiType.getTypeByName(arrayCanonicalText, project, GlobalSearchScope.allScope(project));
             Object defaultValue = getDefaultValueOfPsiType(type, project);
             if (Objects.isNull(defaultValue)) {
-                return new Object[0];
+                return EMPTY_ARRAY;
             } else {
                 return List.of(defaultValue);
             }
@@ -199,11 +201,11 @@ public class DataTypeTool {
             String genericsType = PsiTool.Generics.getGenericsType(psiType);
             // 如果泛型是 java.lang.Object
             if (Object.class.getName().equals(genericsType)) {
-                return new Object[0];
+                return EMPTY_ARRAY;
             }
             // ? extends ?, ? super ?
             if (CharSequenceUtil.isNotEmpty(genericsType) && (genericsType.contains(" extends ") || genericsType.contains(" super "))) {
-                return new Object[0];
+                return EMPTY_ARRAY;
             }
             Object o = BASIC_DATA_TYPE_OBJECT_MAP.get(genericsType);
             if (Objects.nonNull(o)) {
@@ -213,7 +215,7 @@ public class DataTypeTool {
             PsiClassType type = PsiType.getTypeByName(Objects.requireNonNull(genericsType), project, GlobalSearchScope.allScope(project));
             Object defaultValue = getDefaultValueOfPsiType(type, project);
             if (Objects.isNull(defaultValue)) {
-                return new Object[0];
+                return EMPTY_ARRAY;
             } else {
                 return List.of(defaultValue);
             }

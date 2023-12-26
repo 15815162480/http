@@ -5,9 +5,13 @@ import com.intellij.ide.actions.SearchEverywhereBaseAction;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereManager;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
+import com.zys.http.extension.service.Bundle;
+import com.zys.http.extension.service.NotifyService;
 import com.zys.http.tool.SystemTool;
 import jdk.jfr.Description;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Objects;
 
 /**
  * @author zhou ys
@@ -20,19 +24,23 @@ public class GotoApiAction extends SearchEverywhereBaseAction {
         String tabId = GotoApiSearchEverywhereContributor.class.getSimpleName();
         Project project = e.getProject();
         SearchEverywhereManager seManager = SearchEverywhereManager.getInstance(project);
-        if (seManager.isShown()) {
-            if (tabId.equals(seManager.getSelectedTabID())) {
-                seManager.toggleEverywhereFilter();
+        try {
+            if (seManager.isShown()) {
+                if (tabId.equals(seManager.getSelectedTabID())) {
+                    seManager.toggleEverywhereFilter();
+                } else {
+                    seManager.setSelectedTabID(tabId);
+                }
             } else {
-                seManager.setSelectedTabID(tabId);
+                // 获取系统剪贴板
+                String content = SystemTool.getClipboardContent();
+                if (CharSequenceUtil.isEmpty(content) || !content.startsWith("/")) {
+                    content = "/";
+                }
+                seManager.show(tabId, content, e);
             }
-        } else {
-            // 获取系统剪贴板
-            String content = SystemTool.getClipboardContent();
-            if (CharSequenceUtil.isEmpty(content) || !content.startsWith("/")) {
-                content = "/";
-            }
-            seManager.show(tabId, content, e);
+        } catch (Exception ex) {
+            NotifyService.instance(Objects.requireNonNull(project)).info(Bundle.get("http.search.everywhere.no.api"));
         }
     }
 }
