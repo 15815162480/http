@@ -97,7 +97,7 @@ public class GotoApiSearchEverywhereContributor extends AbstractGotoSEContributo
     public static class Factory implements SearchEverywhereContributorFactory<Object> {
         @Override
         public @NotNull SearchEverywhereContributor<Object> createContributor(@NotNull AnActionEvent initEvent) {
-            return PSIPresentationBgRendererWrapper.wrapIfNecessary(new GotoApiSearchEverywhereContributor(initEvent));
+            return new GotoApiSearchEverywhereContributor(initEvent);
         }
     }
 }

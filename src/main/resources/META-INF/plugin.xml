@@ -55,10 +55,10 @@
         <b>1.5.1</b><br>
         <ol>
             <li>
-                improve: Add SearchEverywhere ApiTool tab shortcut key (ctrl shift q). If the content in the clipboard
+                improve: Add SearchEverywhere ApiTool tab shortcut key (ctrl \). If the content in the clipboard
                 starts with "/", the content will be automatically filled into the input box
                 <br>
-                优化: 添加 SearchEverywhere ApiTool 面板快捷键(ctrl shift q)。如果剪切板中的内容以 "/" 开头,
+                优化: 添加 SearchEverywhere ApiTool 面板快捷键(ctrl \)。如果剪切板中的内容以 "/" 开头,
                 会自动将内容填充到输入框中
             </li>
             <li>
