@@ -1,6 +1,8 @@
 package com.zys.http.ui.window.panel;
 
+import cn.hutool.core.date.DatePattern;
 import cn.hutool.core.text.CharSequenceUtil;
+import cn.hutool.http.Header;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.application.ReadAction;
@@ -15,12 +17,11 @@ import com.zys.http.constant.HttpEnum;
 import com.zys.http.constant.HttpEnum.HttpMethod;
 import com.zys.http.constant.UIConstant;
 import com.zys.http.entity.HttpConfig;
+import com.zys.http.entity.ReqHistory;
 import com.zys.http.entity.param.ParamProperty;
 import com.zys.http.extension.service.Bundle;
-import com.zys.http.tool.HttpClient;
-import com.zys.http.tool.HttpServiceTool;
-import com.zys.http.tool.PsiTool;
-import com.zys.http.tool.ThreadTool;
+import com.zys.http.extension.topic.HisListChangeTopic;
+import com.zys.http.tool.*;
 import com.zys.http.tool.convert.ParamConvert;
 import com.zys.http.tool.ui.ComboBoxTool;
 import com.zys.http.tool.ui.DialogTool;
@@ -33,10 +34,12 @@ import jdk.jfr.Description;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import org.apache.http.HttpHeaders;
 import org.jdesktop.swingx.JXButton;
 
 import javax.swing.*;
 import java.awt.*;
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -49,8 +52,10 @@ public class RequestPanel extends JBSplitter {
 
     @Getter
     private final transient Project project;
+    private final transient HistoryTool historyTool;
     @Getter
     private final transient HttpServiceTool serviceTool;
+
 
     // ================== 上半部分的组件 ==================
     @Description("树形结构列表")
@@ -73,6 +78,7 @@ public class RequestPanel extends JBSplitter {
         super(true, Window.class.getName(), 0.5F);
         this.project = project;
         this.serviceTool = HttpServiceTool.getInstance(project);
+        this.historyTool = HistoryTool.getInstance(project);
         initFirstPanel();
         initSecondPanel();
         initSendRequestEvent();
@@ -118,7 +124,7 @@ public class RequestPanel extends JBSplitter {
             HttpMethod httpMethod = Optional.ofNullable(httpMethodComboBox.getSelectedItem())
                     .map(HttpMethod.class::cast).orElse(HttpMethod.GET);
             String url = hostTextField.getText();
-
+            String finalUrl = url;
             Map<String, String> header = requestTabs.getHeaderTable().buildHttpHeader();
             Map<String, String> parameter = requestTabs.getParameterTable().buildHttpHeader();
             String bodyText = requestTabs.getBodyEditor().getText();
@@ -155,17 +161,17 @@ public class RequestPanel extends JBSplitter {
             requestTabs.getResponseEditor().setText("");
             requestTabs.getRequestResult().setText("");
 
+
             HttpClient.run(
                     HttpClient.newRequest(httpMethod, url, header, parameter, bodyText, partName, fileNames),
                     response -> {
                         final FileType fileType = HttpClient.parseFileType(response);
                         final String responseBody = response.body();
-                        ApplicationManager.getApplication().invokeLater(
-                                () -> {
-                                    this.requestTabs.getResponseEditor().setText(responseBody, fileType);
-                                    this.requestTabs.resultText(response.getStatus());
-                                }
-                        );
+                        ApplicationManager.getApplication().invokeLater(() -> {
+                            this.requestTabs.getResponseEditor().setText(responseBody, fileType);
+                            this.requestTabs.resultText(response.getStatus());
+                            saveHistory(finalUrl, header, bodyText, fileNames, httpMethod, response.header(Header.CONTENT_TYPE), responseBody);
+                        });
                     },
                     e -> {
                         final String response = String.format("%s", e);
@@ -225,5 +231,29 @@ public class RequestPanel extends JBSplitter {
                     })
                     .submit(ThreadTool.getExecutor());
         }).submit(ThreadTool.getExecutor());
+    }
+
+    private void saveHistory(String finalUrl, Map<String, String> header, String bodyText, String[] fileNames, HttpEnum.HttpMethod httpMethod, String resHeader, String resBody) {
+        // 获取到当前环境的配置
+        HttpConfig httpConfig = serviceTool.getHttpConfig(serviceTool.getSelectedEnv());
+        if (Objects.isNull(httpConfig)) {
+            httpConfig = HttpServiceTool.DEFAULT_HTTP_CONFIG;
+        }
+        String host = httpConfig.getProtocol().name().toLowerCase() + "://" + httpConfig.getHostValue();
+        String uri = finalUrl.substring(host.length());
+
+        ReqHistory history = new ReqHistory();
+        history.setUri(uri);
+        history.setHost(host);
+        history.setHeaders(requestTabs.getHeaderTable().buildHttpHeader());
+        String contentType = header.getOrDefault(HttpHeaders.CONTENT_TYPE, HttpEnum.ContentType.APPLICATION_X_FORM_URLENCODED.getValue());
+        history.setContentType(contentType);
+        history.setBody(bodyText);
+        history.setFileNames(fileNames);
+        history.setParams(requestTabs.getParameterTable().buildHttpHeader());
+        history.setMethod(httpMethod);
+        history.setRes(resBody);
+        history.setTime(DatePattern.NORM_DATETIME_FORMATTER.format(LocalDateTime.now()));
+        project.getMessageBus().syncPublisher(HisListChangeTopic.TOPIC).save(history);
     }
 }

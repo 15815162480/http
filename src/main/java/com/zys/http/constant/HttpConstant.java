@@ -14,6 +14,7 @@ public class HttpConstant {
     public static final String PLUGIN_NAME = "ApiTool";
 
     public static final String PLUGIN_CONFIG_FILE_NAME = "httpService.xml";
+    public static final String PLUGIN_HIS_FILE_NAME = "httpService-history.xml";
 
     public static final String EDIT_AS_PROPERTIES_TEMPLATE = "{}={}";
 }

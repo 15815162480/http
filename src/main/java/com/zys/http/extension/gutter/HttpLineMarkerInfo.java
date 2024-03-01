@@ -13,6 +13,7 @@ import com.intellij.ui.content.ContentManager;
 import com.zys.http.action.CommonAction;
 import com.zys.http.constant.HttpConstant;
 import com.zys.http.constant.SpringEnum;
+import com.zys.http.extension.service.Bundle;
 import com.zys.http.extension.topic.RefreshTreeTopic;
 import com.zys.http.ui.icon.HttpIcons;
 import com.zys.http.ui.tree.HttpApiTreePanel;
@@ -46,7 +47,8 @@ public class HttpLineMarkerInfo extends LineMarkerInfo<PsiIdentifier> {
             return null;
         }
 
-        CommonAction commonAction = new CommonAction("Test", "Test", myIcon);
+        // Alt Enter 的提示语
+        CommonAction commonAction = new CommonAction(Bundle.get("http.gutter.config"), "Test", myIcon);
         commonAction.setAction(event -> {
             ToolWindowManager manager = ToolWindowManager.getInstance(Objects.requireNonNull(event.getProject()));
             ToolWindow toolWindow = manager.getToolWindow(HttpConstant.PLUGIN_NAME);
@@ -54,6 +56,7 @@ public class HttpLineMarkerInfo extends LineMarkerInfo<PsiIdentifier> {
                 toolWindow.show();
                 ContentManager contentManager = toolWindow.getContentManager();
                 Content content = contentManager.getContent(0);
+
                 if (Objects.nonNull(content) && content.getComponent() instanceof RequestTabWindow requestTabWindow) {
                     event.getProject().getMessageBus().syncPublisher(RefreshTreeTopic.TOPIC).refresh(false);
                     RequestPanel requestPanel = requestTabWindow.getRequestPanel();
@@ -64,6 +67,7 @@ public class HttpLineMarkerInfo extends LineMarkerInfo<PsiIdentifier> {
                             .filter(v -> v.getValue().getPsiElement().equals(psiMethod)).findFirst().orElse(null);
                     httpApiTreePanel.setSelectedNode(methodNode);
                     requestPanel.reload(methodNode);
+                    contentManager.setSelectedContent(content);
                 }
             }
         });

@@ -108,10 +108,11 @@ public class HttpClient {
 
     @NotNull
     public static FileType parseFileType(@NotNull HttpResponse response) {
-        FileType fileType = ComboBoxTool.TEXT_FILE_TYPE;
-        // Content-Type
-        final String contentType = response.header(Header.CONTENT_TYPE);
+        return parseFileType(response.header(Header.CONTENT_TYPE));
+    }
 
+    public static FileType parseFileType(String contentType) {
+        FileType fileType = ComboBoxTool.TEXT_FILE_TYPE;
         if (contentType != null) {
             if (JSON_PATTERN.matcher(contentType).find()) {
                 fileType = ComboBoxTool.JSON_FILE_TYPE;

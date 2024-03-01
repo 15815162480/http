@@ -35,6 +35,25 @@ public class ParameterTable extends EnvHeaderTable {
     }
 
     @Override
+    public void setModel(Map<String, String> headers) {
+        String[] columnNames = {
+                Bundle.get("http.table.param.key"),
+                Bundle.get("http.table.param.value")
+        };
+        if (headers == null) {
+            return;
+        }
+        String[][] rowData = new String[headers.size()][];
+        int i = 0;
+        for (Map.Entry<String, String> e : headers.entrySet()) {
+            rowData[i] = new String[2];
+            rowData[i][0] = e.getKey();
+            rowData[i++][1] = e.getValue();
+        }
+        valueTable.setModel(new DefaultTableModel(rowData, columnNames));
+    }
+
+    @Override
     public void edit() {
         DefaultTableModel model = getTableModel();
         int count = model.getRowCount();

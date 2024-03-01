@@ -104,6 +104,18 @@ public class FileUploadTable extends AbstractTable {
         return fileNames;
     }
 
+    public void setModel(String[] fileNames) {
+        String[] columnNames = {Bundle.get("http.table.file.header")};
+        String[][] rowData = new String[columnNames.length][];
+        if (fileNames == null) {
+            return;
+        }
+        for (int i = 0; i < fileNames.length; i++) {
+            rowData[i][0] = fileNames[i];
+        }
+        valueTable.setModel(new DefaultTableModel(rowData, columnNames));
+    }
+
     @Description("创建文件选择对话框")
     private VirtualFile[] createFileChooser(Project project) {
         FileChooserDescriptor descriptor = new FileChooserDescriptor(true, false, false, false, false, true);

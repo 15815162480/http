@@ -52,6 +52,25 @@
 
     <!-- 更新公告 -->
     <change-notes><![CDATA[
+        <b>1.5.2</b><br>
+        <ol>
+            <li>
+                fix bugs: At the binding area, there is wrong text when pressing alt and Enter
+                <br>
+                bug 修复: 装订区方法处 alt + Enter 文案错误
+            </li>
+            <li>
+                fix bugs: Click on the binding area method. If the API label is not selected in the window panel label,
+                it will not automatically switch to the API label page during generation
+                <br>
+                bug 修复: 装订区方法处点击，如果窗口面板标签没有选中 api 标签, 生成时不会自动切换到 api 标签页面
+            </li>
+            <li>
+                feature: Request History(max 50 records), can regenerate selected requests
+                <br>
+                新功能: 请求历史(最多 50 条), 可以重新生成选中的请求
+            </li>
+        </ol>
         <b>1.5.1</b><br>
         <ol>
             <li>
@@ -487,6 +506,7 @@
         />
         <projectService serviceImplementation="com.zys.http.extension.service.HttpService"/>
         <projectService serviceImplementation="com.zys.http.extension.service.NotifyService"/>
+        <projectService serviceImplementation="com.zys.http.extension.service.HistoryService"/>
         <notificationGroup id="http.notify" displayType="BALLOON" toolWindowId="http"/>
         <searchEverywhereContributor
                 implementation="com.zys.http.extension.search.everywhere.GotoApiSearchEverywhereContributor$Factory"/>
