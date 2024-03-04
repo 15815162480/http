@@ -21,7 +21,7 @@ public record GotoApiChooseByNameContributor(List<MethodNodeData> dataList) impl
     @Override
     public NavigationItem @NotNull [] getItemsByName(String name, String pattern, Project project, boolean includeNonProjectItems) {
         return dataList.stream()
-                .filter(item -> item.getNodeName() != null && item.getNodeName().equals(name))
+                .filter(item -> item.getNodeName() != null && (item.getNodeName().equals(name) || item.getNodeName().contains(pattern)))
                 .map(GotoApiItem::new).sorted()
                 .toList().toArray(new NavigationItem[0]);
     }

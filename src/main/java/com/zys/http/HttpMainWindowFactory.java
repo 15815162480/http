@@ -38,7 +38,7 @@ public class HttpMainWindowFactory implements ToolWindowFactory, DumbAware {
         toolWindow.getContentManager().addContent(envContent);
 
         HistoryTabWindow historyTabWindow = new HistoryTabWindow(project);
-        Content hisContent = contentFactory.createContent(historyTabWindow, "历史", false);
+        Content hisContent = contentFactory.createContent(historyTabWindow, Bundle.get("http.history"), false);
         toolWindow.getContentManager().addContent(hisContent);
     }
 

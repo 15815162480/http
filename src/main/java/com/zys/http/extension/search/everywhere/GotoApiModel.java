@@ -5,6 +5,7 @@ import com.intellij.navigation.ChooseByNameContributor;
 import com.intellij.navigation.NavigationItem;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
+import com.intellij.ui.IdeUICustomization;
 import com.zys.http.constant.HttpEnum;
 import com.zys.http.entity.tree.MethodNodeData;
 import jdk.jfr.Description;
@@ -32,7 +33,7 @@ public class GotoApiModel extends FilteringGotoByModel<HttpEnum.HttpMethod> impl
 
     @Override
     public @Nls(capitalization = Nls.Capitalization.Sentence) String getPromptText() {
-        return "Enter API";
+        return IdeUICustomization.getInstance().projectMessage("checkbox.include.non.project.items", new Object[0]);
     }
 
     @Override
@@ -85,6 +86,6 @@ public class GotoApiModel extends FilteringGotoByModel<HttpEnum.HttpMethod> impl
 
     @Override
     protected @Nullable HttpEnum.HttpMethod filterValueFor(NavigationItem item) {
-        return null;
+        return HttpEnum.HttpMethod.GET;
     }
 }
