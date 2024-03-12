@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
@@ -63,8 +64,11 @@ public class HttpClient {
         }
 
         if (Objects.nonNull(fileNames) && fileNames.length > 0) {
-            MultiFileResource resources = new MultiFileResource(Arrays.stream(fileNames).map(FileUtil::file).toList());
-            req.form(partName, resources);
+            List<String> list = Arrays.stream(fileNames).filter(Objects::nonNull).toList();
+            if (!list.isEmpty()) {
+                MultiFileResource resources = new MultiFileResource(list.stream().map(FileUtil::file).toList());
+                req.form(partName, resources);
+            }
         }
 
         return req;

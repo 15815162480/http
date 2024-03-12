@@ -29,9 +29,9 @@ dependencies {
 // Configure Gradle IntelliJ Plugin
 // Read more: https://plugins.jetbrains.com/docs/intellij/tools-gradle-intellij-plugin.html
 intellij {
-    version = properties("platform.version").get()
-    type = properties("platform.type").get()
-    plugins = properties("platform.plugins").map { it.split(',').map(String::trim).filter(String::isNotEmpty) }
+    version.set(properties("platform.version").get())
+    type.set(properties("platform.type").get())
+    plugins.set(properties("platform.plugins").map { it.split(',').map(String::trim).filter(String::isNotEmpty) })
 }
 
 tasks {
