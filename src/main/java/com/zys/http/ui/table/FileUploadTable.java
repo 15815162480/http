@@ -23,6 +23,8 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * @author zhou ys
@@ -106,12 +108,19 @@ public class FileUploadTable extends AbstractTable {
 
     public void setModel(String[] fileNames) {
         String[] columnNames = {Bundle.get("http.table.file.header")};
-        String[][] rowData = new String[columnNames.length][];
-        if (fileNames == null) {
+        if (fileNames == null || fileNames.length == 0) {
+            valueTable.setModel(new DefaultTableModel(null, columnNames));
             return;
         }
-        for (int i = 0; i < fileNames.length; i++) {
-            rowData[i][0] = fileNames[i];
+        List<String> list = Arrays.stream(fileNames).filter(Objects::nonNull).toList();
+        if (list.isEmpty()) {
+            valueTable.setModel(new DefaultTableModel(null, columnNames));
+            return;
+        }
+
+        String[][] rowData = new String[columnNames.length][];
+        for (int i = 0; i < list.size(); i++) {
+            rowData[i][0] = list.get(i);
         }
         valueTable.setModel(new DefaultTableModel(rowData, columnNames));
     }
