@@ -75,7 +75,7 @@ public class HttpLineMarkerProvider extends LineMarkerProviderDescriptor {
 
     @Override
     public @Nullable("null means disabled") @GutterName String getName() {
-        return Bundle.get("http.gutter.config");
+        return Bundle.get("http.extension.gutter");
     }
 
     @Override

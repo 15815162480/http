@@ -120,10 +120,10 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
         DefaultActionGroup group = new DefaultActionGroup();
 
         // 环境操作菜单组
-        DefaultActionGroup envActionGroup = new DefaultActionGroup(Bundle.get("http.action.group.env"), true);
+        DefaultActionGroup envActionGroup = new DefaultActionGroup(Bundle.get("http.api.icon.env"), true);
         envActionGroup.getTemplatePresentation().setIcon(ThemeTool.isDark() ? HttpIcons.General.ENVIRONMENT : HttpIcons.General.ENVIRONMENT_LIGHT);
 
-        AddAction addAction = new AddAction(Bundle.get("http.action.add.env"));
+        AddAction addAction = new AddAction(Bundle.get("http.api.icon.env.action.add.env"));
         addAction.setAction(event -> new EnvAddOrEditDialog(project, true, "").show());
         envActionGroup.add(addAction);
         envActionGroup.add(new SelectActionGroup());
@@ -151,12 +151,12 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
         group.addSeparator();
 
         // 节点过滤操作菜单组
-        DefaultActionGroup filterActionGroup = new DefaultActionGroup(Bundle.get("http.filter.action.node.filter"), true);
+        DefaultActionGroup filterActionGroup = new DefaultActionGroup(Bundle.get("http.api.icon.node.filter"), true);
         filterActionGroup.getTemplatePresentation().setIcon(ThemeTool.isDark() ? HttpIcons.General.FILTER_GROUP : HttpIcons.General.FILTER_GROUP_LIGHT);
-        FilterAction settingAction = new FilterAction(Bundle.get("http.filter.action.node.show"));
+        FilterAction settingAction = new FilterAction(Bundle.get("http.api.icon.node.filter.action.node.show"));
         settingAction.setAction(e -> nodeShowFilterPopup.show(requestPanel, nodeShowFilterPopup.getX(), nodeShowFilterPopup.getY()));
         filterActionGroup.add(settingAction);
-        FilterAction filterAction = new FilterAction(Bundle.get("http.filter.action"));
+        FilterAction filterAction = new FilterAction(Bundle.get("http.api.icon.node.filter.action.method"));
         filterAction.setAction(e -> methodFilterPopup.show(requestPanel, methodFilterPopup.getX(), methodFilterPopup.getY()));
         filterActionGroup.add(filterAction);
 
@@ -194,18 +194,18 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
 
     @Description("创建导出操作菜单组")
     private DefaultActionGroup createExportActionGroup() {
-        DefaultActionGroup exportGroup = new DefaultActionGroup(Bundle.get("http.action.group.export.env"), true);
+        DefaultActionGroup exportGroup = new DefaultActionGroup(Bundle.get("http.api.icon.postman"), true);
         exportGroup.getTemplatePresentation().setIcon(ThemeTool.isDark() ? HttpIcons.General.OUT : HttpIcons.General.OUT_LIGHT);
 
-        HttpConfigExportAction exportOne = new HttpConfigExportAction(Bundle.get("http.action.export.current.env"), HttpEnum.ExportEnum.SPECIFY_ENV);
+        HttpConfigExportAction exportOne = new HttpConfigExportAction(Bundle.get("http.api.icon.postman.action.export.current.env"), HttpEnum.ExportEnum.SPECIFY_ENV);
         exportOne.initAction(null);
         exportGroup.add(exportOne);
 
-        HttpConfigExportAction exportAll = new HttpConfigExportAction(Bundle.get("http.action.export.all.env"), HttpEnum.ExportEnum.ALL_ENV);
+        HttpConfigExportAction exportAll = new HttpConfigExportAction(Bundle.get("http.api.icon.postman.action.export.all.env"), HttpEnum.ExportEnum.ALL_ENV);
         exportAll.initAction(null);
         exportGroup.add(exportAll);
 
-        HttpConfigExportAction exportAllApi = new HttpConfigExportAction(Bundle.get("http.action.export.all.api"), HttpEnum.ExportEnum.API);
+        HttpConfigExportAction exportAllApi = new HttpConfigExportAction(Bundle.get("http.api.icon.postman.action.export.all.api"), HttpEnum.ExportEnum.API);
         exportAllApi.initAction(null);
         exportGroup.add(exportAllApi);
 

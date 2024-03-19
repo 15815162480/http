@@ -32,6 +32,8 @@ public abstract class AbstractTable extends JPanel {
 
     @Description("单元格是否能编辑")
     private final boolean cellEditable;
+    @Description("表格头是否能调整")
+    private final boolean headerCanResized;
 
     @Getter
     @Description("数据展示表格")
@@ -41,10 +43,11 @@ public abstract class AbstractTable extends JPanel {
     @Description("表格上方的工具栏")
     private transient ActionToolbar toolbar;
 
-    protected AbstractTable(Project project, boolean cellEditable) {
+    protected AbstractTable(Project project, boolean cellEditable, boolean headerCanResized) {
         super(new BorderLayout(0, 0));
         this.project = project;
         this.cellEditable = cellEditable;
+        this.headerCanResized = headerCanResized;
         this.serviceTool = HttpServiceTool.getInstance(project);
     }
 
@@ -86,7 +89,7 @@ public abstract class AbstractTable extends JPanel {
         valueTable.getTableHeader().setDefaultRenderer(tableCellRenderer);
         // 禁止表头拖动、选中
         valueTable.getTableHeader().setReorderingAllowed(false);
-        valueTable.getTableHeader().setResizingAllowed(false);
+        valueTable.getTableHeader().setResizingAllowed(headerCanResized);
 
         JBScrollPane scrollPane = new JBScrollPane(valueTable);
         scrollPane.setBorder(JBUI.Borders.customLine(UIConstant.BORDER_COLOR, 1, 1, 1, 1));
@@ -119,6 +122,7 @@ public abstract class AbstractTable extends JPanel {
     @Description("重新加载表格数据")
     public void reloadTableModel() {
         valueTable.setModel(initTableModel());
+        valueTable.getModel().addTableModelListener(initTableModelListener());
     }
 
     @Description("初始化表格的数据")

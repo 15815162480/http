@@ -56,9 +56,9 @@ public class EnvAddOrEditDialog extends DialogWrapper {
         this.isAdd = isAdd;
         init();
         getRootPane().setMinimumSize(new Dimension(500, 400));
-        setTitle(isAdd ? Bundle.get("http.dialog.add.env.config") : Bundle.get("http.dialog.edit.env.config"));
-        setCancelButtonText(Bundle.get("http.text.cancel"));
-        setOKButtonText(Bundle.get("http.text.ok"));
+        setTitle(isAdd ? Bundle.get("http.env.icon.add.dialog") : Bundle.get("http.env.icon.edit.dialog"));
+        setCancelButtonText(Bundle.get("http.common.dialog.action.cancel"));
+        setOKButtonText(Bundle.get("http.common.dialog.action.ok"));
         setAutoAdjustable(true);
         if (!isAdd) {
             // 修改时配置名称禁止修改
@@ -80,18 +80,18 @@ public class EnvAddOrEditDialog extends DialogWrapper {
         gbc.insets = JBUI.insetsBottom(4);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.gridx = 0;
-        first.add(new JLabel(Bundle.get("http.dialog.env.config.name")), gbc);
+        first.add(new JLabel(Bundle.get("http.env.action.add.dialog.env.name")), gbc);
         gbc.gridy = 1;
-        first.add(new JLabel(Bundle.get("http.dialog.env.config.protocol")), gbc);
+        first.add(new JLabel(Bundle.get("http.env.action.add.dialog.protocol")), gbc);
         gbc.gridy = 2;
-        first.add(new JLabel(Bundle.get("http.dialog.env.config.ip")), gbc);
+        first.add(new JLabel(Bundle.get("http.env.action.add.dialog.ip")), gbc);
 
         gbc.gridx = 1;
         gbc.gridy = 0;
         gbc.weightx = 1.0;
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         configNameTF = new JTextField();
-        configNameTF.setToolTipText(Bundle.get("http.dialog.env.config.name.tooltip"));
+        configNameTF.setToolTipText(Bundle.get("http.env.action.add.dialog.name.check"));
         first.add(configNameTF, gbc);
 
         // 环境配置
@@ -103,7 +103,7 @@ public class EnvAddOrEditDialog extends DialogWrapper {
         // IP/HOST
         gbc.gridy = 2;
         hostTF = new JTextField();
-        hostTF.setToolTipText(Bundle.get("http.dialog.env.config.ip.tooltip"));
+        hostTF.setToolTipText(Bundle.get("http.env.action.add.dialog.ip.check"));
         first.add(hostTF, gbc);
 
         // 请求头分割线
@@ -122,7 +122,7 @@ public class EnvAddOrEditDialog extends DialogWrapper {
     private JPanel headerPanel() {
         JPanel header = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
-        header.add(new JLabel(Bundle.get("http.dialog.env.separator.header") + " "), gbc);
+        header.add(new JLabel(Bundle.get("http.env.action.add.dialog.header.separator") + " "), gbc);
         gbc.gridx = 1;
         gbc.weightx = 1.0;
         gbc.gridwidth = GridBagConstraints.REMAINDER;
@@ -137,7 +137,7 @@ public class EnvAddOrEditDialog extends DialogWrapper {
         String configName = configNameTF.getText();
         // 添加时需要检测是否存在
         if (serviceTool.getHttpConfig(configName) != null && envAddOrEditTable.isAdd()) {
-            DialogTool.error(Bundle.get("http.dialog.env.config.existed"));
+            DialogTool.error(Bundle.get("http.env.action.add.dialog.name.existed"));
             return;
         }
         String host = hostTF.getText();

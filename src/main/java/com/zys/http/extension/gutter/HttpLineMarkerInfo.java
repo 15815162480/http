@@ -48,7 +48,7 @@ public class HttpLineMarkerInfo extends LineMarkerInfo<PsiIdentifier> {
         }
 
         // Alt Enter 的提示语
-        CommonAction commonAction = new CommonAction(Bundle.get("http.gutter.config"), "Test", myIcon);
+        CommonAction commonAction = new CommonAction(Bundle.get("http.extension.gutter"), "Test", myIcon);
         commonAction.setAction(event -> {
             ToolWindowManager manager = ToolWindowManager.getInstance(Objects.requireNonNull(event.getProject()));
             ToolWindow toolWindow = manager.getToolWindow(HttpConstant.PLUGIN_NAME);

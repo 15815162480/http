@@ -32,20 +32,20 @@ import java.util.Objects;
  */
 public class FileUploadTable extends AbstractTable {
     public FileUploadTable(Project project) {
-        super(project, false);
+        super(project, false, false);
         init();
     }
 
     @Override
     protected @NotNull DefaultTableModel initTableModel() {
-        String[] columnNames = {Bundle.get("http.table.file.header")};
+        String[] columnNames = {Bundle.get("http.api.tab.file.paths.label")};
         return new DefaultTableModel(null, columnNames);
     }
 
     @Override
     protected @Nullable ActionToolbar initActionToolbar() {
         DefaultActionGroup group = new DefaultActionGroup();
-        AddAction addAction = new AddAction(Bundle.get("http.table.file.add"));
+        AddAction addAction = new AddAction(Bundle.get("http.api.tab.file.action.add"));
         addAction.setAction(event -> {
             DefaultTableModel model = (DefaultTableModel) valueTable.getModel();
             VirtualFile[] virtualFiles = createFileChooser(project);
@@ -58,7 +58,7 @@ public class FileUploadTable extends AbstractTable {
         });
         group.add(addAction);
 
-        RemoveAction removeAction = new RemoveAction(Bundle.get("http.action.remove"));
+        RemoveAction removeAction = new RemoveAction(Bundle.get("http.common.action.remove"));
         removeAction.setAction(event -> {
             int selectedRow = valueTable.getSelectedRow();
             int rowCount = valueTable.getRowCount();
@@ -107,7 +107,7 @@ public class FileUploadTable extends AbstractTable {
     }
 
     public void setModel(String[] fileNames) {
-        String[] columnNames = {Bundle.get("http.table.file.header")};
+        String[] columnNames = {Bundle.get("http.api.tab.file.paths.label")};
         if (fileNames == null || fileNames.length == 0) {
             valueTable.setModel(new DefaultTableModel(null, columnNames));
             return;
@@ -128,11 +128,11 @@ public class FileUploadTable extends AbstractTable {
     @Description("创建文件选择对话框")
     private VirtualFile[] createFileChooser(Project project) {
         FileChooserDescriptor descriptor = new FileChooserDescriptor(true, false, false, false, false, true);
-        descriptor.setTitle(Bundle.get("http.table.file.editor.title"));
+        descriptor.setTitle(Bundle.get("http.api.tab.file.action.add.dialog.title"));
         FileChooserFactory.getInstance().createFileChooser(descriptor, project, null);
         VirtualFile[] selectedFiles = FileChooser.chooseFiles(descriptor, project, null);
         if (selectedFiles.length < 1) {
-            NotifyService.instance(project).error(Bundle.get("http.table.file.dialog.error"));
+            NotifyService.instance(project).error(Bundle.get("http.api.tab.file.action.add.dialog.error"));
             return new VirtualFile[0];
         }
         return selectedFiles;

@@ -47,7 +47,7 @@ public class EnvHeaderTable extends AbstractTable implements EditAsProperties {
     private String selectEnv;
 
     public EnvHeaderTable(Project project, boolean isAdd, String selectEnv) {
-        super(project, true);
+        super(project, true, false);
         this.isAdd = isAdd;
         if (!isAdd) {
             this.selectEnv = selectEnv;
@@ -58,8 +58,8 @@ public class EnvHeaderTable extends AbstractTable implements EditAsProperties {
     @Override
     protected @NotNull DefaultTableModel initTableModel() {
         String[] columnNames = {
-                Bundle.get("http.table.header"),
-                Bundle.get("http.table.value")
+                Bundle.get("http.api.tab.header.table.key"),
+                Bundle.get("http.api.tab.header.table.value")
         };
 
         if (this.isAdd) {
@@ -89,7 +89,7 @@ public class EnvHeaderTable extends AbstractTable implements EditAsProperties {
     @Override
     protected @Nullable ActionToolbar initActionToolbar() {
         DefaultActionGroup group = new DefaultActionGroup();
-        AddAction addAction = new AddAction(Bundle.get("http.action.add"));
+        AddAction addAction = new AddAction(Bundle.get("http.common.action.add"));
         addAction.setAction(event -> {
             DefaultTableModel model = (DefaultTableModel) valueTable.getModel();
             int rowCount = model.getRowCount();
@@ -100,18 +100,20 @@ public class EnvHeaderTable extends AbstractTable implements EditAsProperties {
         });
         group.add(addAction);
 
-        RemoveAction removeAction = new RemoveAction(Bundle.get("http.action.remove"));
+        RemoveAction removeAction = new RemoveAction(Bundle.get("http.common.action.remove"));
         removeAction.setAction(event -> {
             int selectedRow = valueTable.getSelectedRow();
             getTableModel().removeRow(selectedRow);
             int rowCount = valueTable.getRowCount();
             int newSelectRow = selectedRow == rowCount ? rowCount - 1 : selectedRow;
             valueTable.clearSelection();
-            valueTable.getSelectionModel().setSelectionInterval(newSelectRow, newSelectRow);
+            if (newSelectRow != 0) {
+                valueTable.getSelectionModel().setSelectionInterval(newSelectRow, newSelectRow);
+            }
         });
         removeAction.setEnabled(false);
         group.add(removeAction);
-        EditAction action = new EditAction(Bundle.get("http.table.edit.properties"));
+        EditAction action = new EditAction(Bundle.get("http.api.tab.action.edit.as.properties"));
         action.setAction(e -> edit());
         group.add(action);
         return ActionManager.getInstance().createActionToolbar(ActionPlaces.TOOLBAR, group, true);
@@ -166,13 +168,13 @@ public class EnvHeaderTable extends AbstractTable implements EditAsProperties {
     @Override
     public void reloadTableModel() {
         this.selectEnv = serviceTool.getSelectedEnv();
-        valueTable.setModel(initTableModel());
+        super.reloadTableModel();
     }
 
     public void setModel(Map<String, String> headers) {
         String[] columnNames = {
-                Bundle.get("http.table.header"),
-                Bundle.get("http.table.value")
+                Bundle.get("http.api.tab.header.table.key"),
+                Bundle.get("http.api.tab.header.table.value")
         };
         if (headers == null) {
             return;
@@ -208,12 +210,12 @@ public class EnvHeaderTable extends AbstractTable implements EditAsProperties {
             all.append(CharSequenceUtil.format(EDIT_AS_PROPERTIES_TEMPLATE, key, value));
         }
 
-        EditorDialog dialog = new EditorDialog(project, Bundle.get("http.editor.header.properties.dialog"),
+        EditorDialog dialog = new EditorDialog(project, Bundle.get("http.env.action.add.dialog.header.properties"),
                 PropertiesFileType.INSTANCE, all.toString());
         dialog.setOkCallBack(text -> {
             String[] columnNames = {
-                    Bundle.get("http.table.header"),
-                    Bundle.get("http.table.value")
+                    Bundle.get("http.api.tab.header.table.key"),
+                    Bundle.get("http.api.tab.header.table.value")
             };
             if (CharSequenceUtil.isEmpty(text)) {
                 ApplicationManager.getApplication().invokeLater(() -> valueTable.setModel(new DefaultTableModel(null, columnNames)));

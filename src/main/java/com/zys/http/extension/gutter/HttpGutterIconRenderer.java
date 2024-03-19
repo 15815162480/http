@@ -45,6 +45,6 @@ public class HttpGutterIconRenderer extends LineMarkerInfo.LineMarkerGutterIconR
 
     @Override
     public String getTooltipText() {
-        return Bundle.get("http.gutter.config");
+        return Bundle.get("http.extension.gutter");
     }
 }

@@ -43,7 +43,7 @@ public abstract class AbstractFilterPopup<T> extends JPopupMenu {
             checkBoxList.add(checkBox);
             checkboxPane.add(checkBox);
         }
-        JButton selectAll = new JButton(Bundle.get("http.filter.action.method.select.all"));
+        JButton selectAll = new JButton(Bundle.get("http.api.icon.node.filter.select.all"));
         selectAll.addActionListener(e -> {
             checkBoxList.forEach(v -> v.setSelected(true));
             project.getMessageBus().syncPublisher(RefreshTreeTopic.TOPIC).refresh(true);
@@ -51,14 +51,14 @@ public abstract class AbstractFilterPopup<T> extends JPopupMenu {
         });
         buttonPane.add(selectAll);
 
-        JButton unSelectAll = new JButton(Bundle.get("http.filter.action.method.unselect.all"));
+        JButton unSelectAll = new JButton(Bundle.get("http.api.icon.node.filter.unselect.all"));
         unSelectAll.addActionListener(e -> {
             checkBoxList.forEach(v -> v.setSelected(false));
             project.getMessageBus().syncPublisher(RefreshTreeTopic.TOPIC).refresh(true);
         });
         buttonPane.add(unSelectAll);
 
-        JButton close = new JButton(Bundle.get("http.filter.action.method.close"));
+        JButton close = new JButton(Bundle.get("http.api.icon.node.filter.close"));
         close.addActionListener(e -> this.setVisible(false));
         buttonPane.add(close);
         buttonPane.setBorder(JBUI.Borders.customLineTop(UIConstant.BORDER_COLOR));

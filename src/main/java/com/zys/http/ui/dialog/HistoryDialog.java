@@ -13,7 +13,6 @@ import com.zys.http.tool.HttpClient;
 import com.zys.http.ui.tab.RequestTabs;
 import com.zys.http.ui.table.EnvHeaderTable;
 import com.zys.http.ui.table.ParameterTable;
-import org.jdesktop.swingx.JXButton;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,25 +27,22 @@ import java.util.Arrays;
 public class HistoryDialog extends DialogWrapper {
     private final ReqHistory history;
     private final Project project;
-    private final HistoryTool historyTool;
 
     public HistoryDialog(@NotNull Project project, Integer id) {
         super(project);
+        setTitle(Bundle.get("http.history.dialog"));
         this.project = project;
-        this.historyTool = HistoryTool.getInstance(project);
-        this.history = historyTool.getHistory(id);
+        this.history = HistoryTool.getInstance(project).getHistory(id);
         init();
         getRootPane().setMinimumSize(new Dimension(800, 600));
         getRootPane().setMaximumSize(new Dimension(800, 600));
-        setOKButtonText(Bundle.get("http.text.ok"));
+        setOKButtonText(Bundle.get("http.common.dialog.action.ok"));
         setAutoAdjustable(true);
     }
 
     @Override
     protected @Nullable JComponent createCenterPanel() {
         JPanel secondPanel = new JPanel(new BorderLayout(0, 0));
-        secondPanel.setBorder(JBUI.Borders.customLineTop(UIConstant.BORDER_COLOR));
-
         JPanel requestPanel = new JPanel(new BorderLayout(0, 0));
         // 请求方式下拉框
         HttpEnum.HttpMethod[] methods = Arrays.stream(HttpEnum.HttpMethod.values()).filter(o -> !o.equals(HttpEnum.HttpMethod.REQUEST))
@@ -58,14 +54,13 @@ public class HistoryDialog extends DialogWrapper {
         JTextField hostTextField = new JTextField();
         requestPanel.add(hostTextField, BorderLayout.CENTER);
         hostTextField.setText(history.getHost() + history.getUri());
-        // 发送按钮
-        JXButton sendRequestBtn = new JXButton(Bundle.get("http.text.send"));
-        requestPanel.add(sendRequestBtn, BorderLayout.EAST);
+
         secondPanel.add(requestPanel, BorderLayout.NORTH);
 
         // 标签页面
         JPanel tabsPanel = new JPanel(new BorderLayout(0, 0));
-        RequestTabs requestTabs = new RequestTabs(project);
+        tabsPanel.setBorder(JBUI.Borders.customLine(UIConstant.BORDER_COLOR));
+        RequestTabs requestTabs = new RequestTabs(project, true);
         tabsPanel.add(requestTabs, BorderLayout.CENTER);
         secondPanel.add(tabsPanel, BorderLayout.CENTER);
 
@@ -82,5 +77,10 @@ public class HistoryDialog extends DialogWrapper {
         requestTabs.getFileUploadTable().setModel(history.getFileNames());
 
         return secondPanel;
+    }
+
+    @Override
+    protected Action @NotNull [] createActions() {
+        return new Action[]{};
     }
 }

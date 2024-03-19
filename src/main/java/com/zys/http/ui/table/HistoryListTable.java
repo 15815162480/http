@@ -32,6 +32,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -47,9 +48,15 @@ public class HistoryListTable extends AbstractTable {
     private final transient HistoryTool historyTool;
 
     public HistoryListTable(Project project) {
-        super(project, false);
+        super(project, false, true);
         historyTool = HistoryTool.getInstance(project);
         init();
+        TableColumn noCol = valueTable.getColumn(valueTable.getColumnName(0));
+        noCol.setMaxWidth(70);
+        noCol.setMinWidth(70);
+        TableColumn methodCol = valueTable.getColumn(valueTable.getColumnName(1));
+        methodCol.setMaxWidth(100);
+        methodCol.setMinWidth(100);
         initTopic();
     }
 
@@ -102,7 +109,7 @@ public class HistoryListTable extends AbstractTable {
     protected @Nullable ActionToolbar initActionToolbar() {
         DefaultActionGroup group = new DefaultActionGroup();
 
-        RemoveAction removeAction = new RemoveAction(Bundle.get("http.action.remove"));
+        RemoveAction removeAction = new RemoveAction(Bundle.get("http.common.action.remove"));
         removeAction.setAction(e -> {
             DefaultTableModel model = (DefaultTableModel) valueTable.getModel();
             int selectedRow = valueTable.getSelectedRow();
@@ -113,13 +120,13 @@ public class HistoryListTable extends AbstractTable {
         removeAction.setEnabled(false);
         group.add(removeAction);
 
-        CommonAction readAction = new CommonAction(Bundle.get("http.history.action.look"), "", AllIcons.Actions.Show);
+        CommonAction readAction = new CommonAction(Bundle.get("http.history.icon.show"), "", AllIcons.Actions.Show);
         readAction.setAction(e -> new HistoryDialog(project, Integer.parseInt((String) valueTable.getModel().getValueAt(valueTable.getSelectedRow(), 0))).show());
         readAction.setEnabled(false);
         group.add(readAction);
 
         // 将请求生成到请求面板
-        CommonAction renderAction = new CommonAction(Bundle.get("http.history.action.generate"), "", AllIcons.Actions.MoveToButton);
+        CommonAction renderAction = new CommonAction(Bundle.get("http.history.icon.generate"), "", AllIcons.Actions.MoveToButton);
         renderAction.setAction(e -> {
             ToolWindowManager manager = ToolWindowManager.getInstance(Objects.requireNonNull(e.getProject()));
             ToolWindow toolWindow = manager.getToolWindow(HttpConstant.PLUGIN_NAME);

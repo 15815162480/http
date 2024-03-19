@@ -24,7 +24,7 @@ import java.util.Set;
 public class SelectActionGroup extends DefaultActionGroup {
 
     public SelectActionGroup() {
-        super(Bundle.get("http.action.group.select.env"), "Select env", HttpIcons.General.TREE);
+        super(Bundle.get("http.api.icon.env.action.select.env"), "Select env", HttpIcons.General.TREE);
         setPopup(true);
     }
 

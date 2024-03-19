@@ -30,15 +30,15 @@ public class HttpMainWindowFactory implements ToolWindowFactory, DumbAware {
         ContentFactory contentFactory = ContentFactory.getInstance();
 
         RequestTabWindow requestTabWindow = new RequestTabWindow(project);
-        Content apiContent = contentFactory.createContent(requestTabWindow, Bundle.get("http.window.api"), false);
+        Content apiContent = contentFactory.createContent(requestTabWindow, Bundle.get("http.window.tab.api"), false);
         toolWindow.getContentManager().addContent(apiContent);
 
         EnvironmentTabWindow environmentTabWindow = new EnvironmentTabWindow(project);
-        Content envContent = contentFactory.createContent(environmentTabWindow, Bundle.get("http.window.env"), false);
+        Content envContent = contentFactory.createContent(environmentTabWindow, Bundle.get("http.window.tab.env"), false);
         toolWindow.getContentManager().addContent(envContent);
 
         HistoryTabWindow historyTabWindow = new HistoryTabWindow(project);
-        Content hisContent = contentFactory.createContent(historyTabWindow, Bundle.get("http.history"), false);
+        Content hisContent = contentFactory.createContent(historyTabWindow, Bundle.get("http.window.tab.history"), false);
         toolWindow.getContentManager().addContent(hisContent);
     }
 

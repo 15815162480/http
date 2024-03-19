@@ -33,7 +33,7 @@ import java.util.Set;
 @Description("环境列表表格")
 public class EnvListTable extends AbstractTable {
     public EnvListTable(Project project) {
-        super(project, false);
+        super(project, false, false);
         init();
         initTopic();
     }
@@ -73,9 +73,9 @@ public class EnvListTable extends AbstractTable {
     @Override
     public @NotNull DefaultTableModel initTableModel() {
         String[] columnNames = {
-                Bundle.get("http.table.env.config.name"),
-                Bundle.get("http.table.env.config.protocol"),
-                Bundle.get("http.table.env.config.ip")
+                Bundle.get("http.env.table.env.name"),
+                Bundle.get("http.env.table.protocol"),
+                Bundle.get("http.env.table.ip")
         };
         // 获取存储的所有配置, 再构建
         Map<String, HttpConfig> httpConfigs = serviceTool.getHttpConfigs();
@@ -96,17 +96,17 @@ public class EnvListTable extends AbstractTable {
     protected @Nullable ActionToolbar initActionToolbar() {
         DefaultActionGroup group = new DefaultActionGroup();
 
-        AddAction addAction = new AddAction(Bundle.get("http.action.add"));
+        AddAction addAction = new AddAction(Bundle.get("http.common.action.add"));
         addAction.setAction(event -> new EnvAddOrEditDialog(project, true, "").show());
         group.add(addAction);
 
-        RemoveAction removeAction = new RemoveAction(Bundle.get("http.action.remove"));
+        RemoveAction removeAction = new RemoveAction(Bundle.get("http.common.action.remove"));
         removeAction.setAction(event -> {
             DefaultTableModel model = (DefaultTableModel) valueTable.getModel();
             int selectedRow = valueTable.getSelectedRow();
             String envName = (String) model.getValueAt(selectedRow, 0);
             if (envName.equals(serviceTool.getSelectedEnv())) {
-                DialogTool.error(Bundle.get("http.table.env.remove.msg"));
+                DialogTool.error(Bundle.get("http.env.action.remove.msg"));
                 return;
             }
             serviceTool.removeHttpConfig(envName);
@@ -115,7 +115,7 @@ public class EnvListTable extends AbstractTable {
         removeAction.setEnabled(false);
         group.add(removeAction);
 
-        EditAction editAction = new EditAction(Bundle.get("http.action.edit"));
+        EditAction editAction = new EditAction(Bundle.get("http.common.action.edit"));
         editAction.setAction(event -> {
             DefaultTableModel model = (DefaultTableModel) valueTable.getModel();
             String envName = (String) model.getValueAt(valueTable.getSelectedRow(), 0);
@@ -125,7 +125,7 @@ public class EnvListTable extends AbstractTable {
         editAction.setEnabled(false);
         group.add(editAction);
 
-        HttpConfigExportAction exportAction = new HttpConfigExportAction(Bundle.get("http.action.export.select.env"), HttpEnum.ExportEnum.SPECIFY_ENV);
+        HttpConfigExportAction exportAction = new HttpConfigExportAction(Bundle.get("http.env.icon.postman.action.export.selected.env"), HttpEnum.ExportEnum.SPECIFY_ENV);
         exportAction.setAction(e -> {
             DefaultTableModel model = (DefaultTableModel) valueTable.getModel();
             String envName = (String) model.getValueAt(valueTable.getSelectedRow(), 0);

@@ -76,12 +76,20 @@ public class RequestTabs extends JBTabsImpl {
     @Description("请求结果文本")
     private final JLabel requestResult = new JLabel();
 
+    @Description("是否需要选择响应体的类型")
+    private final boolean resTabNeedFileType;
+
     private static final String REQUEST_RESULT_TEXT = "STATUS: {}";
 
     public RequestTabs(@NotNull Project project) {
+        this(project, false);
+    }
+
+    public RequestTabs(@NotNull Project project, boolean resTabNeedFileType) {
         super(project);
         this.project = project;
         this.serviceTool = HttpServiceTool.getInstance(project);
+        this.resTabNeedFileType = resTabNeedFileType;
         init();
     }
 
@@ -91,7 +99,6 @@ public class RequestTabs extends JBTabsImpl {
         requestBodyTab();
         requestFileTab();
         responseTab();
-        this.getComponent().setBorder(JBUI.Borders.customLineLeft(UIConstant.EDITOR_BORDER_COLOR));
     }
 
     @Description("请求头标签页")
@@ -99,7 +106,7 @@ public class RequestTabs extends JBTabsImpl {
         this.headerTable = new EnvHeaderTable(this.project, false, this.serviceTool.getSelectedEnv());
         this.headerTable.getToolbar().getComponent().setBorder(JBUI.Borders.customLineBottom(UIConstant.BORDER_COLOR));
         this.headerTabInfo = new TabInfo(this.headerTable);
-        this.headerTabInfo.setText(Bundle.get("http.tab.request.header"));
+        this.headerTabInfo.setText(Bundle.get("http.api.tab.header"));
         this.addTab(this.headerTabInfo);
     }
 
@@ -108,7 +115,7 @@ public class RequestTabs extends JBTabsImpl {
         this.parameterTable = new ParameterTable(this.project);
         this.parameterTable.getToolbar().getComponent().setBorder(JBUI.Borders.customLineBottom(UIConstant.BORDER_COLOR));
         this.parameterTabInfo = new TabInfo(this.parameterTable);
-        this.parameterTabInfo.setText(Bundle.get("http.tab.request.param"));
+        this.parameterTabInfo.setText(Bundle.get("http.api.tab.param"));
         this.addTab(this.parameterTabInfo);
     }
 
@@ -117,9 +124,10 @@ public class RequestTabs extends JBTabsImpl {
         JPanel bodyPanel = new JPanel(new BorderLayout(0, 0));
         this.bodyEditor = new CustomEditor(project);
         this.bodyEditor.setName("BODY");
-        bodyPanel.setBorder(JBUI.Borders.customLineLeft(UIConstant.EDITOR_BORDER_COLOR));
+        bodyPanel.setBorder(JBUI.Borders.customLine(UIConstant.EDITOR_BORDER_COLOR, 0,3,0,0));
         bodyPanel.add(this.bodyEditor, BorderLayout.CENTER);
-        JLabel label = new JLabel(Bundle.get("http.editor.body.label"));
+
+        JLabel label = new JLabel(Bundle.get("http.api.tab.body.type.label"));
         this.bodyFileType = ComboBoxTool.fileTypeComboBox(e -> {
             ItemSelectable item = e.getItemSelectable();
             if (Objects.isNull(item)) {
@@ -139,10 +147,10 @@ public class RequestTabs extends JBTabsImpl {
         bodySelectPanel.add(label, BorderLayout.WEST);
         bodySelectPanel.add(bodyFileType, BorderLayout.CENTER);
         DefaultActionGroup group = new DefaultActionGroup();
-        CommonAction action = new CommonAction(Bundle.get("http.editor.body.action"), "",
+        CommonAction action = new CommonAction(Bundle.get("http.api.tab.body.action.edit"), "",
                 ThemeTool.isDark() ? HttpIcons.General.FULL_SCREEN : HttpIcons.General.FULL_SCREEN_LIGHT);
         action.setAction(e -> {
-            EditorDialog dialog = new EditorDialog(project, Bundle.get("http.editor.body.action.dialog"), bodyEditor.getFileType(), bodyEditor.getText());
+            EditorDialog dialog = new EditorDialog(project, Bundle.get("http.api.tab.body.action.edit.dialog"), bodyEditor.getFileType(), bodyEditor.getText());
             dialog.setOkCallBack(s -> bodyEditor.setText(s));
             dialog.show();
         });
@@ -155,7 +163,7 @@ public class RequestTabs extends JBTabsImpl {
         bodyPanel.add(bodySelectPanel, BorderLayout.SOUTH);
 
         this.bodyTabInfo = new TabInfo(bodyPanel);
-        this.bodyTabInfo.setText(Bundle.get("http.tab.request.body"));
+        this.bodyTabInfo.setText(Bundle.get("http.api.tab.body"));
         this.addTab(bodyTabInfo);
     }
 
@@ -164,7 +172,7 @@ public class RequestTabs extends JBTabsImpl {
         JPanel filePanel = new JPanel(new BorderLayout(0, 0));
 
         JPanel partNamePanel = new JPanel(new BorderLayout(0, 0));
-        JLabel label = new JLabel(Bundle.get("http.table.file.label") + " ");
+        JLabel label = new JLabel(Bundle.get("http.api.tab.file.label") + " ");
         partNamePanel.add(label, BorderLayout.WEST);
         this.partTextField = new JTextField();
         partNamePanel.add(this.partTextField, BorderLayout.CENTER);
@@ -175,20 +183,20 @@ public class RequestTabs extends JBTabsImpl {
         filePanel.add(this.fileUploadTable, BorderLayout.CENTER);
 
         this.fileTabInfo = new TabInfo(filePanel);
-        this.fileTabInfo.setText(Bundle.get("http.tab.request.file"));
+        this.fileTabInfo.setText(Bundle.get("http.api.tab.file"));
         this.addTab(this.fileTabInfo);
     }
 
     @Description("响应体标签页")
     private void responseTab() {
         JPanel respPanel = new JPanel(new BorderLayout(0, 0));
+        respPanel.setBorder(JBUI.Borders.customLine(UIConstant.EDITOR_BORDER_COLOR, 0,3,0,0));
         responseEditor = new CustomEditor(project);
         respPanel.add(responseEditor, BorderLayout.CENTER);
-        respPanel.setBorder(JBUI.Borders.customLineLeft(UIConstant.EDITOR_BORDER_COLOR));
         JPanel respExpandPanel = new JPanel(new BorderLayout(0, 0));
-        CommonAction action = new CommonAction(Bundle.get("http.editor.response.action"), "",
+        CommonAction action = new CommonAction(Bundle.get("http.api.tab.response.action.view"), "",
                 ThemeTool.isDark() ? HttpIcons.General.FULL_SCREEN : HttpIcons.General.FULL_SCREEN_LIGHT);
-        action.setAction(e -> new EditorDialog(project, Bundle.get("http.editor.response.action.dialog"),
+        action.setAction(e -> new EditorDialog(project, Bundle.get("http.api.tab.response.action.view.dialog"),
                 responseEditor.getFileType(), responseEditor.getText()).show());
         DefaultActionGroup group = new DefaultActionGroup();
         group.add(action);
@@ -196,11 +204,31 @@ public class RequestTabs extends JBTabsImpl {
                 .createActionToolbar("http.body.editor", group, true).getComponent();
         component.setReservePlaceAutoPopupIcon(false);
         component.setTargetComponent(responseEditor);
-        respExpandPanel.add(requestResult, BorderLayout.WEST);
+        if (resTabNeedFileType) {
+            JLabel label = new JLabel(Bundle.get("http.api.tab.response.type.label"));
+            ComboBox<FileType> comboBox = ComboBoxTool.fileTypeComboBox(e -> {
+                ItemSelectable item = e.getItemSelectable();
+                if (Objects.isNull(item)) {
+                    return;
+                }
+                Object[] selects = item.getSelectedObjects();
+                if (Objects.isNull(selects) || selects.length < 1) {
+                    return;
+                }
+                Object select = selects[0];
+                if (select instanceof FileType fileType) {
+                    responseEditor.setFileType(fileType);
+                }
+            });
+            respExpandPanel.add(label, BorderLayout.WEST);
+            respExpandPanel.add(comboBox, BorderLayout.CENTER);
+        } else {
+            respExpandPanel.add(requestResult, BorderLayout.WEST);
+        }
         respExpandPanel.add(component, BorderLayout.EAST);
         respPanel.add(respExpandPanel, BorderLayout.SOUTH);
         responseTabInfo = new TabInfo(respPanel);
-        responseTabInfo.setText(Bundle.get("http.tab.request.return"));
+        responseTabInfo.setText(Bundle.get("http.api.tab.response"));
         this.addTab(responseTabInfo);
     }
 

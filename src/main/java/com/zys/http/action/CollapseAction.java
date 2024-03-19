@@ -12,7 +12,7 @@ import jdk.jfr.Description;
 @Description("收起操作")
 public class CollapseAction extends CustomAction {
     public CollapseAction() {
-        super(Bundle.get("http.action.collapse"), "Collapse",
+        super(Bundle.get("http.common.action.collapse"), "Collapse",
                 ThemeTool.isDark() ? HttpIcons.General.COLLAPSE : HttpIcons.General.COLLAPSE_LIGHT);
     }
 }

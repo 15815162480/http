@@ -37,7 +37,7 @@ public class EditorDialog extends DialogWrapper {
         init();
         getRootPane().setMinimumSize(new Dimension(800, 600));
         getRootPane().setMaximumSize(new Dimension(800, 600));
-        setOKButtonText(Bundle.get("http.text.ok"));
+        setOKButtonText(Bundle.get("http.common.dialog.action.ok"));
         setAutoAdjustable(true);
         setTitle(title);
     }

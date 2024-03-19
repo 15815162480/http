@@ -40,7 +40,7 @@ public class GotoApiAction extends SearchEverywhereBaseAction {
                 seManager.show(tabId, content, e);
             }
         } catch (Exception ex) {
-            NotifyService.instance(Objects.requireNonNull(project)).info(Bundle.get("http.search.everywhere.no.api"));
+            NotifyService.instance(Objects.requireNonNull(project)).info(Bundle.get("http.extension.search.everywhere.no.api.msg"));
         }
     }
 }

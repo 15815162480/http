@@ -291,23 +291,23 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
             expandAction.setAction(event -> treeExpand());
             group.add(expandAction);
         } else {
-            CommonAction navigation = new CommonAction(Bundle.get("http.tree.right.item.navigation"), "",
+            CommonAction navigation = new CommonAction(Bundle.get("http.api.tree.method.right.menu.action.navigation"), "",
                     ThemeTool.isDark() ? HttpIcons.General.LOCATE : HttpIcons.General.LOCATE_LIGHT);
             navigation.setAction(event -> mn.getValue().getPsiElement().navigate(true));
             group.add(navigation);
 
-            CopyAction copyFullPath = new CopyAction(Bundle.get("http.tree.right.item.copy.full.path"));
+            CopyAction copyFullPath = new CopyAction(Bundle.get("http.api.tree.method.right.menu.action.copy.full.path"));
             copyFullPath.setAction(event -> {
                 HttpConfig config = serviceTool.getDefaultHttpConfig();
                 SystemTool.copy2Clipboard(config.getProtocol().name().toLowerCase() + "://" + config.getHostValue() + mn.getFragment());
-                NotifyService.instance(project).info(Bundle.get("http.tree.right.item.copy.full.msg"));
+                NotifyService.instance(project).info(Bundle.get("http.api.tree.method.right.menu.action.copy.full.path.msg"));
             });
             group.add(copyFullPath);
 
-            CopyAction copyApiPath = new CopyAction(Bundle.get("http.tree.right.item.copy.api.path"));
+            CopyAction copyApiPath = new CopyAction(Bundle.get("http.api.tree.method.right.menu.action.copy.api"));
             copyApiPath.setAction(event -> {
                 SystemTool.copy2Clipboard(mn.getFragment());
-                NotifyService.instance(project).info(Bundle.get("http.tree.right.item.copy.api.msg"));
+                NotifyService.instance(project).info(Bundle.get("http.api.tree.method.right.menu.action.copy.api.msg"));
             });
             group.add(copyApiPath);
         }

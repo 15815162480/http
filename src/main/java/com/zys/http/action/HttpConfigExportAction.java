@@ -53,10 +53,10 @@ public class HttpConfigExportAction extends ExportAction {
                         // 不处理
                     }
                 }
-                NotifyService.instance(project).info(Bundle.get("http.message.export.success"));
+                NotifyService.instance(project).info(Bundle.get("http.env.icon.postman.action.success"));
             } catch (IOException ex) {
                 if (Objects.nonNull(selectedFile)) {
-                    NotifyService.instance(project).error(Bundle.get("http.message.export.fail"));
+                    NotifyService.instance(project).error(Bundle.get("http.env.icon.postman.action.fail"));
                 }
             }
         });
@@ -66,11 +66,11 @@ public class HttpConfigExportAction extends ExportAction {
     @Description("创建文件选择对话框")
     private VirtualFile createFileChooser(Project project) throws IOException {
         FileChooserDescriptor descriptor = new FileChooserDescriptor(false, true, false, false, false, false);
-        descriptor.setTitle(Bundle.get("http.dialog.env.export"));
+        descriptor.setTitle(Bundle.get("http.env.icon.postman.action.path.select"));
         FileChooserFactory.getInstance().createFileChooser(descriptor, project, null);
         VirtualFile selectedFile = FileChooser.chooseFile(descriptor, project, null);
         if (Objects.isNull(selectedFile)) {
-            NotifyService.instance(project).error(Bundle.get("http.message.export.unselect.folder"));
+            NotifyService.instance(project).error(Bundle.get("http.env.icon.postman.action.unselect.folder"));
             throw new IOException("A");
         }
         return selectedFile;

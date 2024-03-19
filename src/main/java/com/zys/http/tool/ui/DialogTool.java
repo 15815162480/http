@@ -17,7 +17,7 @@ public class DialogTool {
     @Description("错误信息对话框")
     public static void error(String message) {
         ApplicationManager.getApplication().invokeLater(
-                () -> Messages.showMessageDialog(message, Bundle.get("http.dialog.error.title"), Messages.getErrorIcon())
+                () -> Messages.showMessageDialog(message, Bundle.get("http.common.dialog.error"), Messages.getErrorIcon())
         );
     }
 }

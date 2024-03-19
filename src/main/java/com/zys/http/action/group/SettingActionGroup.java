@@ -23,7 +23,7 @@ import java.util.Objects;
  */
 public class SettingActionGroup extends DefaultActionGroup {
     public SettingActionGroup() {
-        super(Bundle.get("http.action.group.setting"), "Settings",
+        super(Bundle.get("http.api.icon.setting"), "Settings",
                 ThemeTool.isDark() ? HttpIcons.General.SETTING : HttpIcons.General.SETTING_LIGHT);
         setPopup(true);
     }
@@ -39,7 +39,7 @@ public class SettingActionGroup extends DefaultActionGroup {
         }
         HttpServiceTool serviceTool = HttpServiceTool.getInstance(project);
         Icon icon = ThemeTool.isDark() ? HttpIcons.General.DEFAULT : HttpIcons.General.DEFAULT_LIGHT;
-        CommonAction commonAction = new CommonAction(Bundle.get("http.action.default.env"), "Generate Default",
+        CommonAction commonAction = new CommonAction(Bundle.get("http.api.icon.setting.action.default.env"), "Generate Default",
                 serviceTool.getGenerateDefault() ? icon : null);
         commonAction.setAction(event -> {
             serviceTool.refreshGenerateDefault();
@@ -48,7 +48,7 @@ public class SettingActionGroup extends DefaultActionGroup {
                 project.getMessageBus().syncPublisher(RefreshTreeTopic.TOPIC).refresh(false);
             });
         });
-        CommonAction commonAction2 = new CommonAction(Bundle.get("http.action.vcs.change"), "Vcs Change",
+        CommonAction commonAction2 = new CommonAction(Bundle.get("http.api.icon.setting.action.vcs.change"), "Vcs Change",
                 serviceTool.getRefreshWhenVcsChange() ? icon : null);
         commonAction2.setAction(event -> {
             serviceTool.refreshWhenVcsChange();

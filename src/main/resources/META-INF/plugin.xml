@@ -52,6 +52,37 @@
 
     <!-- 更新公告 -->
     <change-notes><![CDATA[
+        <b>1.5.4</b><br>
+        <ol>
+            <li>
+                fix bugs: After generating data in the request header table, clicking "+" will not automatically delete blank rows when no data is filled in
+                <br>
+                bug 修复: 请求头表格在生成数据后，点击"+"未填写数据失焦后空白行不会自动删除
+            </li>
+            <li>
+                improve: The width of the fixed number and request method columns in the request history panel, and adjust the width of the remaining two columns
+                <br>
+                优化: 请求历史面板固定编号和请求方式两列的宽度, 并可以调整剩余两列的宽度
+            </li>
+            <li>
+                improve: View request history —— response tabs add selecting response body type
+                <br>
+                优化: 查看请求历史-响应体添加响应体类型选择
+            </li>
+            <li>
+                improve: View request history —— remove all buttons
+                <br>
+                优化: 查看请求历史-移除所有按钮
+            </li>
+            <li>
+                fix bugs: In IDEA's new UI compact mode, when switching to the request body or response body tab, the window
+                shakes (does not appear in the old UI and non-compact mode), the left border of the entire window is 1px
+                more
+                <br>
+                bug 修复: IDEA 新UI紧凑模式下, 切换至请求体或响应体标签页时, 窗口抖动(老UI和非紧凑模式下不会出现),
+                整个窗口左边框多出1px
+            </li>
+        </ol>
         <b>1.5.3</b><br>
         <ol>
             <li>

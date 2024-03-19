@@ -106,7 +106,7 @@ public class RequestPanel extends JBSplitter {
         hostTextField = new JTextField();
         requestPanel.add(hostTextField, BorderLayout.CENTER);
         // 发送按钮
-        sendRequestBtn = new JXButton(Bundle.get("http.text.send"));
+        sendRequestBtn = new JXButton(Bundle.get("http.api.button.send"));
         requestPanel.add(sendRequestBtn, BorderLayout.EAST);
         secondPanel.add(requestPanel, BorderLayout.NORTH);
 
@@ -133,7 +133,7 @@ public class RequestPanel extends JBSplitter {
             String partName = requestTabs.getPartTextField().getText();
 
             if (CharSequenceUtil.isBlank(url)) {
-                DialogTool.error(Bundle.get("http.dialog.error.no.selected"));
+                DialogTool.error(Bundle.get("http.api.button.action.url.empty"));
                 return;
             }
             makeSureParamPropertyMapNotNull();
@@ -144,11 +144,11 @@ public class RequestPanel extends JBSplitter {
                     case PATH -> url = url.replace("{" + k + "}", parameter.remove(k));
                     case FILE -> {
                         if (fileUploadTable.getValueTable().getRowCount() < 0) {
-                            DialogTool.error(Bundle.get("http.table.file.dialog.error"));
+                            DialogTool.error(Bundle.get("http.api.tab.file.action.add.dialog.error"));
                             return;
                         }
                         if (CharSequenceUtil.isEmpty(partName)) {
-                            DialogTool.error(Bundle.get("http.table.file.text"));
+                            DialogTool.error(Bundle.get("http.api.tab.file.text"));
                             return;
                         }
                     }

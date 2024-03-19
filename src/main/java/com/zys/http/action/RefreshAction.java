@@ -11,6 +11,6 @@ import jdk.jfr.Description;
 @Description("刷新操作")
 public class RefreshAction extends CustomAction {
     public RefreshAction() {
-        super(Bundle.get("http.action.refresh"), "Refresh", HttpIcons.General.REFRESH);
+        super(Bundle.get("http.common.action.refresh"), "Refresh", HttpIcons.General.REFRESH);
     }
 }

@@ -28,8 +28,8 @@ public class ParameterTable extends EnvHeaderTable {
     @Override
     protected @NotNull DefaultTableModel initTableModel() {
         String[] columnNames = {
-                Bundle.get("http.table.param.key"),
-                Bundle.get("http.table.param.value")
+                Bundle.get("http.api.tab.param.key"),
+                Bundle.get("http.api.tab.param.value")
         };
         return new DefaultTableModel(null, columnNames);
     }
@@ -37,8 +37,8 @@ public class ParameterTable extends EnvHeaderTable {
     @Override
     public void setModel(Map<String, String> headers) {
         String[] columnNames = {
-                Bundle.get("http.table.param.key"),
-                Bundle.get("http.table.param.value")
+                Bundle.get("http.api.tab.param.key"),
+                Bundle.get("http.api.tab.param.value")
         };
         if (headers == null) {
             return;
@@ -63,7 +63,7 @@ public class ParameterTable extends EnvHeaderTable {
             String value = model.getValueAt(i, 1) + "\n";
             all.append(CharSequenceUtil.format(HttpConstant.EDIT_AS_PROPERTIES_TEMPLATE, key, value));
         }
-        EditorDialog dialog = new EditorDialog(project, Bundle.get("http.editor.param.properties.dialog"),
+        EditorDialog dialog = new EditorDialog(project, Bundle.get("http.env.action.add.dialog.param.properties"),
                 PropertiesFileType.INSTANCE, all.toString());
         dialog.setOkCallBack(text -> {
             if (CharSequenceUtil.isEmpty(text)) {
