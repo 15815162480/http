@@ -124,9 +124,8 @@ public class EnvHeaderTable extends AbstractTable implements EditAsProperties {
         return e -> {
             DefaultTableModel model = (DefaultTableModel) e.getSource();
             int updateRow = e.getLastRow();
-            int updateCol = e.getColumn();
             if (e.getType() == TableModelEvent.UPDATE) {// 最新一行且最新一行的请求头为空, 清除最新一行
-                String header = (String) model.getValueAt(updateRow, updateCol);
+                String header = (String) model.getValueAt(updateRow, 0);
                 if (CharSequenceUtil.isEmpty(header)) {
                     model.removeRow(updateRow);
                 }

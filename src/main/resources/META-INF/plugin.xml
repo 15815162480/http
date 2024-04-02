@@ -52,37 +52,22 @@
 
     <!-- 更新公告 -->
     <change-notes><![CDATA[
-        <h3>1.5.4</h3>
+        <h3>1.5.5</h3>
         <h4>En</h4>
         <ul>
             <li>
-                fix bugs: After generating data in the request header table, clicking "+" will not automatically delete
-                blank rows when no data is filled in
-            </li>
-            <li>
-                improve: The width of the fixed number and request method columns in the request history panel, and
-                adjust the width of the remaining two columns
-            </li>
-            <li>improve: View request history —— response tabs add selecting response body type</li>
-            <li>improve: View request history —— remove all buttons</li>
-            <li>
-                fix bugs: In IDEA's new UI compact mode, when switching to the request body or response body tab, the
-                window shakes (does not appear in the old UI and non-compact mode), the left border of the entire
-                window is 1px more
+                fix bugs: When requesting the addition of a header table, if the value is empty after editing, the row
+                will be deleted
             </li>
         </ul>
         <h4>中文</h4>
         <ul>
-            <li>bug 修复: 请求头表格在生成数据后，点击"+"未填写数据失焦后空白行不会自动删除</li>
-            <li>优化: 请求历史面板固定编号和请求方式两列的宽度, 并可以调整剩余两列的宽度</li>
-            <li>优化: 查看请求历史-响应体添加响应体类型选择</li>
-            <li>优化: 查看请求历史-移除所有按钮</li>
-            <li>
-                bug 修复: IDEA 新UI紧凑模式下, 切换至请求体或响应体标签页时, 窗口抖动(老UI和非紧凑模式下不会出现),
-                整个窗口左边框多出1px
-            </li>
+            <li>bug 修复: 请求头表格添加时如果值在编辑后为空会删除该行</li>
         </ul>
-        ]]></change-notes>
+        <a href="https://github.com/15815162480/http/blob/master/UpdateInfo.md">Update information for each version</a>
+        <a href="https://gitee.com/zhou-sheng1/http/blob/master/UpdateInfo.md">各版本更新信息</a>
+        ]]>
+    </change-notes>
 
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.java</depends>

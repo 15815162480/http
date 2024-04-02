@@ -1,3 +1,13 @@
+### 1.5.5
+
+#### En
+
+* fix bugs: When requesting the addition of a header table, if the value is empty after editing, the row will be deleted
+
+#### 中文
+
+* bug 修复: 请求头表格添加时如果值在编辑后为空会删除该行
+
 ### 1.5.4
 
 #### En
