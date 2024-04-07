@@ -7,6 +7,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import com.zys.http.extension.service.Bundle;
 import com.zys.http.extension.service.NotifyService;
+import com.zys.http.tool.HttpServiceTool;
 import com.zys.http.tool.SystemTool;
 import jdk.jfr.Description;
 import org.jetbrains.annotations.NotNull;
@@ -23,6 +24,14 @@ public class GotoApiAction extends SearchEverywhereBaseAction {
     public void actionPerformed(@NotNull AnActionEvent e) {
         String tabId = GotoApiSearchEverywhereContributor.class.getSimpleName();
         Project project = e.getProject();
+        if (Objects.isNull(project)) {
+            return;
+        }
+        HttpServiceTool serviceTool = HttpServiceTool.getInstance(project);
+        if (!serviceTool.getEnableSearchEverywhere()) {
+            return;
+        }
+
         SearchEverywhereManager seManager = SearchEverywhereManager.getInstance(project);
         try {
             if (seManager.isShown()) {

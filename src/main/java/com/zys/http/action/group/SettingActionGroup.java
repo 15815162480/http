@@ -57,6 +57,15 @@ public class SettingActionGroup extends DefaultActionGroup {
             );
         });
 
-        return new AnAction[]{commonAction,commonAction2};
+        CommonAction commonAction3 = new CommonAction("test", "Vcs Change",
+                serviceTool.getEnableSearchEverywhere() ? icon : null);
+        commonAction3.setAction(event -> {
+            serviceTool.refreshEnableSearchEverywhere();
+            ApplicationManager.getApplication().invokeLater(() ->
+                    commonAction3.getTemplatePresentation().setIcon(serviceTool.getEnableSearchEverywhere() ? icon : null)
+            );
+        });
+
+        return new AnAction[]{commonAction,commonAction2, commonAction3};
     }
 }

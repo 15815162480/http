@@ -74,4 +74,12 @@ public class HttpServiceTool {
     public boolean getRefreshWhenVcsChange() {
         return httpService.getRefreshWhenVcsChange();
     }
+
+    public void refreshEnableSearchEverywhere() {
+        httpService.setEnableSearchEverywhere(!httpService.getEnableSearchEverywhere());
+    }
+
+    public boolean getEnableSearchEverywhere() {
+        return httpService.getEnableSearchEverywhere();
+    }
 }

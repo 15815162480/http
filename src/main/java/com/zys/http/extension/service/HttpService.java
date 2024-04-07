@@ -82,11 +82,20 @@ public class HttpService implements PersistentStateComponent<HttpService.State> 
         state.refreshWhenVcsChange = status;
     }
 
+    public boolean getEnableSearchEverywhere() {
+        return state.enableSearchEverywhere;
+    }
+
+    public void setEnableSearchEverywhere(boolean status) {
+        state.enableSearchEverywhere = status;
+    }
+
     @Data
     public static class State {
         private String selectedEnv;
         private boolean generateDefault;
         private boolean refreshWhenVcsChange = false;
+        private boolean enableSearchEverywhere = true;
         private Map<String, HttpConfig> httpConfigs = new LinkedHashMap<>();
     }
 }

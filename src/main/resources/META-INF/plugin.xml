@@ -52,20 +52,23 @@
 
     <!-- 更新公告 -->
     <change-notes><![CDATA[
-        <h3>1.5.5</h3>
+        <h3>1.5.6</h3>
         <h4>En</h4>
         <ul>
             <li>
-                fix bugs: When requesting the addition of a header table, if the value is empty after editing, the row
-                will be deleted
+               feature: Supported 241.*
+            </li>
+            <li>
+                feature: New setting-Can set search everywhere (Because the IDEA IU 2024.1 support for endpoint search)
             </li>
         </ul>
+        <a href="https://github.com/15815162480/http/blob/master/UpdateInfo.md">Update information for each version</a><br>
         <h4>中文</h4>
         <ul>
-            <li>bug 修复: 请求头表格添加时如果值在编辑后为空会删除该行</li>
+            <li>新功能: 支持 241.*</li>
+            <li>新功能: 新设置-选择是否开启 SearchEverywhere 功能(因为 IDEA IU 2024.1 支持端点搜索了)</li>
         </ul>
-        <a href="https://github.com/15815162480/http/blob/master/UpdateInfo.md">Update information for each version</a>
-        <a href="https://gitee.com/zhou-sheng1/http/blob/master/UpdateInfo.md">各版本更新信息</a>
+        <a href="https://gitee.com/zhou-sheng1/http/blob/master/UpdateInfo_zh.md">各版本更新信息</a>
         ]]>
     </change-notes>
 
