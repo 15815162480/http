@@ -57,7 +57,7 @@ public class SettingActionGroup extends DefaultActionGroup {
             );
         });
 
-        CommonAction commonAction3 = new CommonAction("test", "Vcs Change",
+        CommonAction commonAction3 = new CommonAction(Bundle.get("http.api.icon.setting.action.search.everywhere"), "SearchEverywhere",
                 serviceTool.getEnableSearchEverywhere() ? icon : null);
         commonAction3.setAction(event -> {
             serviceTool.refreshEnableSearchEverywhere();
