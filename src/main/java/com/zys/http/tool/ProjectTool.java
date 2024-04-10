@@ -99,6 +99,8 @@ public class ProjectTool {
 
     @Description("获取模块所有的 Controller")
     public static List<PsiClass> getModuleControllers(Project project, Module module) {
+        HttpServiceTool serviceTool = HttpServiceTool.getInstance(project);
+        String customAnno = serviceTool.getCustomAnno();
         Optional<GlobalSearchScope> globalSearchScope = Optional.of(module)
                 .map(Module::getModuleScope);
         Stream<PsiAnnotation> s1 = globalSearchScope.map(moduleScope -> ApplicationManager.getApplication().runReadAction((Computable<Collection<PsiAnnotation>>)
@@ -107,6 +109,12 @@ public class ProjectTool {
         Stream<PsiAnnotation> s2 = globalSearchScope.map(moduleScope -> ApplicationManager.getApplication().runReadAction((Computable<Collection<PsiAnnotation>>) () ->
                         JavaAnnotationIndex.getInstance().get(SpringEnum.Controller.REST_CONTROLLER.getShortClassName(), project, moduleScope)))
                 .orElse(new ArrayList<>()).stream();
+        if (CharSequenceUtil.isNotEmpty(customAnno)) {
+            s2 = Stream.concat(s2, globalSearchScope.map(moduleScope -> ApplicationManager.getApplication().runReadAction((Computable<Collection<PsiAnnotation>>) () ->
+                            JavaAnnotationIndex.getInstance().get(customAnno.substring(customAnno.lastIndexOf('.') + 1), project, moduleScope)))
+                    .orElse(new ArrayList<>()).stream());
+        }
+
         return Stream.concat(s1, s2)
                 .map(PsiElement::getParent)
                 .map(PsiModifierList.class::cast)

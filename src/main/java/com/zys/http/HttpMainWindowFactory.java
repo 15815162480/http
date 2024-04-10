@@ -14,6 +14,7 @@ import com.zys.http.extension.service.Bundle;
 import com.zys.http.ui.window.EnvironmentTabWindow;
 import com.zys.http.ui.window.HistoryTabWindow;
 import com.zys.http.ui.window.RequestTabWindow;
+import com.zys.http.ui.window.SettingTabWindow;
 import jdk.jfr.Description;
 import org.jetbrains.annotations.NotNull;
 
@@ -40,6 +41,10 @@ public class HttpMainWindowFactory implements ToolWindowFactory, DumbAware {
         HistoryTabWindow historyTabWindow = new HistoryTabWindow(project);
         Content hisContent = contentFactory.createContent(historyTabWindow, Bundle.get("http.window.tab.history"), false);
         toolWindow.getContentManager().addContent(hisContent);
+
+        SettingTabWindow settingTabWindow = new SettingTabWindow(project);
+        Content settingContent = contentFactory.createContent(settingTabWindow, Bundle.get("http.window.tab.setting"), false);
+        toolWindow.getContentManager().addContent(settingContent);
     }
 
     public static class WindowWakeUpAction extends AnAction {

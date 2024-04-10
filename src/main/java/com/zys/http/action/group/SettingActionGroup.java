@@ -20,7 +20,9 @@ import java.util.Objects;
 /**
  * @author zhou ys
  * @since 2023-11-13
+ * @deprecated
  */
+@Deprecated(since = "1.6.0")
 public class SettingActionGroup extends DefaultActionGroup {
     public SettingActionGroup() {
         super(Bundle.get("http.api.icon.setting"), "Settings",
@@ -30,11 +32,11 @@ public class SettingActionGroup extends DefaultActionGroup {
 
     @Override
     public AnAction @NotNull [] getChildren(@Nullable AnActionEvent e) {
-        if (Objects.isNull(e)){
+        if (Objects.isNull(e)) {
             return new AnAction[]{};
         }
         Project project = e.getProject();
-        if (Objects.isNull(project)){
+        if (Objects.isNull(project)) {
             return new AnAction[]{};
         }
         HttpServiceTool serviceTool = HttpServiceTool.getInstance(project);
@@ -66,6 +68,6 @@ public class SettingActionGroup extends DefaultActionGroup {
             );
         });
 
-        return new AnAction[]{commonAction,commonAction2, commonAction3};
+        return new AnAction[]{commonAction, commonAction2, commonAction3};
     }
 }

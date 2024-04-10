@@ -1,3 +1,7 @@
+### 1.6.0
+* improve: Move settings to a new tab
+* feature: New setting-Can add a custom controller annotation(Set whether to move this annotation or not)
+
 ### 1.5.6
 
 * feature: Supported 241.*

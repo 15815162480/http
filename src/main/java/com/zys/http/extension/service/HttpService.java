@@ -90,8 +90,17 @@ public class HttpService implements PersistentStateComponent<HttpService.State> 
         state.enableSearchEverywhere = status;
     }
 
+    public String getCustomAnno() {
+        return state.customAnno;
+    }
+
+    public void setCustomAnno(String customAnno) {
+        state.customAnno = customAnno;
+    }
+
     @Data
     public static class State {
+        private String customAnno;
         private String selectedEnv;
         private boolean generateDefault;
         private boolean refreshWhenVcsChange = false;

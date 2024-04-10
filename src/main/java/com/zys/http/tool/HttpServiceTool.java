@@ -82,4 +82,12 @@ public class HttpServiceTool {
     public boolean getEnableSearchEverywhere() {
         return httpService.getEnableSearchEverywhere();
     }
+
+    public String getCustomAnno() {
+        return httpService.getCustomAnno();
+    }
+
+    public void setCustomAnno(String customAnno) {
+        httpService.setCustomAnno(customAnno);
+    }
 }

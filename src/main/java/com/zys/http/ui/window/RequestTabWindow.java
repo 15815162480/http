@@ -15,7 +15,6 @@ import com.intellij.util.messages.MessageBus;
 import com.intellij.util.messages.MessageBusConnection;
 import com.zys.http.action.*;
 import com.zys.http.action.group.SelectActionGroup;
-import com.zys.http.action.group.SettingActionGroup;
 import com.zys.http.constant.HttpEnum;
 import com.zys.http.extension.service.Bundle;
 import com.zys.http.extension.topic.EnvChangeTopic;
@@ -164,7 +163,7 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
 
 
         // 设置菜单组
-        group.add(new SettingActionGroup());
+        // group.add(new SettingActionGroup());
 
         ActionToolbar topToolBar = ActionManager.getInstance().createActionToolbar(ActionPlaces.TOOLBAR, group, true);
         topToolBar.setTargetComponent(this);

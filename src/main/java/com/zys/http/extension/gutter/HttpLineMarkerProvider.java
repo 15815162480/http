@@ -1,13 +1,16 @@
 package com.zys.http.extension.gutter;
 
+import cn.hutool.core.text.CharSequenceUtil;
 import com.intellij.codeInsight.daemon.GutterName;
 import com.intellij.codeInsight.daemon.LineMarkerInfo;
 import com.intellij.codeInsight.daemon.LineMarkerProviderDescriptor;
+import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiMethod;
 import com.zys.http.constant.SpringEnum;
 import com.zys.http.extension.service.Bundle;
+import com.zys.http.tool.HttpServiceTool;
 import com.zys.http.ui.icon.HttpIcons;
 import jdk.jfr.Description;
 import org.jetbrains.annotations.NotNull;
@@ -44,9 +47,15 @@ public class HttpLineMarkerProvider extends LineMarkerProviderDescriptor {
             return null;
         }
 
+        Project project = psiClass.getProject();
+
+        HttpServiceTool serviceTool = HttpServiceTool.getInstance(project);
+        String customAnno = serviceTool.getCustomAnno();
+
         boolean hasController = Arrays.stream(psiClass.getAnnotations()).anyMatch(a ->
                 SpringEnum.Controller.CONTROLLER.getClazz().equals(a.getQualifiedName()) ||
-                SpringEnum.Controller.REST_CONTROLLER.getClazz().equals(a.getQualifiedName())
+                SpringEnum.Controller.REST_CONTROLLER.getClazz().equals(a.getQualifiedName()) ||
+                (CharSequenceUtil.isNotBlank(customAnno) && customAnno.equals(a.getQualifiedName()))
         );
         if (!hasController) {
             return null;
