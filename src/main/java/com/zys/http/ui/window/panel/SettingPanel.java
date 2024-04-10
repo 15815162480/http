@@ -14,8 +14,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
+import java.awt.event.*;
 
 /**
  * @author zhou ys
@@ -33,6 +32,12 @@ public class SettingPanel extends JBPanel<SettingPanel> {
         this.serviceTool = HttpServiceTool.getInstance(project);
         this.annoTextField = new JTextField(50);
         init();
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                transferFocus();
+            }
+        });
     }
 
     private void init() {
@@ -114,6 +119,14 @@ public class SettingPanel extends JBPanel<SettingPanel> {
         }
         panel.add(annoTextField, BorderLayout.CENTER);
 
+        annoTextField.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    transferFocus();
+                }
+            }
+        });
         annoTextField.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {
