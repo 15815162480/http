@@ -57,7 +57,8 @@
         <ul>
             <li>improve: Move settings to a new tab</li>
             <li>
-                feature: New setting-Can add a custom controller annotation(Set up to avoid moving the annotation as much as possible)
+                feature: New setting-Can add a custom controller annotation(Set up to avoid moving the annotation as
+                much as possible)
             </li>
         </ul>
         <p><a href="https://github.com/15815162480/http/blob/master/UpdateInfo.md">Update information for each
@@ -79,6 +80,15 @@
     <depends>com.intellij.modules.vcs</depends>
 
     <extensions defaultExtensionNs="com.intellij">
+        <applicationConfigurable parentId="tools"
+                                 instance="com.zys.http.extension.setting.HttpSettingConfigurable"
+                                 id="com.zys.http.extension.setting.HttpSettingConfigurable"
+                                 dynamic="true"
+                                 bundle="messages.http"
+                                 key="http.extension.setting.display.name"
+        />
+        <applicationService serviceImplementation="com.zys.http.extension.setting.HttpSetting"/>
+
         <toolWindow id="ApiTool" secondary="true" anchor="right" icon="com.zys.http.ui.icon.HttpIcons.PLUGIN_ICON"
                     doNotActivateOnStart="true" factoryClass="com.zys.http.HttpMainWindowFactory"
         />

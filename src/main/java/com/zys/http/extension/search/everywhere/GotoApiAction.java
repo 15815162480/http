@@ -7,7 +7,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import com.zys.http.extension.service.Bundle;
 import com.zys.http.extension.service.NotifyService;
-import com.zys.http.tool.HttpServiceTool;
+import com.zys.http.extension.setting.HttpSetting;
 import com.zys.http.tool.SystemTool;
 import jdk.jfr.Description;
 import org.jetbrains.annotations.NotNull;
@@ -27,8 +27,7 @@ public class GotoApiAction extends SearchEverywhereBaseAction {
         if (Objects.isNull(project)) {
             return;
         }
-        HttpServiceTool serviceTool = HttpServiceTool.getInstance(project);
-        if (!serviceTool.getEnableSearchEverywhere()) {
+        if (!HttpSetting.getInstance().getEnableSearchEverywhere()) {
             return;
         }
 

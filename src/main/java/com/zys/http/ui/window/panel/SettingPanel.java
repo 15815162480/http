@@ -20,6 +20,7 @@ import java.awt.event.*;
  * @author zhou ys
  * @since 2024-04-09
  */
+@Deprecated(since = "1.6.1")
 public class SettingPanel extends JBPanel<SettingPanel> {
     private final transient Project project;
     private final JTextField annoTextField;

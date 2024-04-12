@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
  * @since 2024-04-09
  */
 @Description("请求标签页面")
+@Deprecated(since = "1.6.1")
 public class SettingTabWindow extends SimpleToolWindowPanel implements Disposable {
 
     public SettingTabWindow(@NotNull Project project) {

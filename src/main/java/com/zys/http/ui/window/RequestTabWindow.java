@@ -17,9 +17,9 @@ import com.zys.http.action.*;
 import com.zys.http.action.group.SelectActionGroup;
 import com.zys.http.constant.HttpEnum;
 import com.zys.http.extension.service.Bundle;
+import com.zys.http.extension.setting.HttpSetting;
 import com.zys.http.extension.topic.EnvChangeTopic;
 import com.zys.http.extension.topic.RefreshTreeTopic;
-import com.zys.http.tool.HttpServiceTool;
 import com.zys.http.tool.ui.ThemeTool;
 import com.zys.http.ui.dialog.EnvAddOrEditDialog;
 import com.zys.http.ui.icon.HttpIcons;
@@ -88,6 +88,7 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
         MessageBus messageBus = project.getMessageBus();
         MessageBusConnection connect = messageBus.connect();
         connect.subscribe(RefreshTreeTopic.TOPIC, (RefreshTreeTopic) b -> {
+            System.out.println(111);
             requestPanel.getHttpApiTreePanel().clear();
             requestPanel.reload(null);
             refreshTree(b);
@@ -99,14 +100,14 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
         project.getMessageBus().connect().subscribe(BranchChangeListener.VCS_BRANCH_CHANGED, new BranchChangeListener() {
             @Override
             public void branchWillChange(@NotNull String branchName) {
-                if (HttpServiceTool.getInstance(project).getRefreshWhenVcsChange()) {
+                if (HttpSetting.getInstance().getRefreshWhenVcsChange()) {
                     requestPanel.getHttpApiTreePanel().clear();
                 }
             }
 
             @Override
             public void branchHasChanged(@NotNull String branchName) {
-                if (HttpServiceTool.getInstance(project).getRefreshWhenVcsChange()) {
+                if (HttpSetting.getInstance().getRefreshWhenVcsChange()) {
                     requestPanel.reload(null);
                     refreshTree(false);
                 }

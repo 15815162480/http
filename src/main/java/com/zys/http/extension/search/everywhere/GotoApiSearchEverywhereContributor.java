@@ -12,6 +12,7 @@ import com.zys.http.constant.HttpConstant;
 import com.zys.http.constant.HttpEnum;
 import com.zys.http.constant.SpringEnum;
 import com.zys.http.entity.tree.MethodNodeData;
+import com.zys.http.extension.setting.HttpSetting;
 import com.zys.http.tool.HttpServiceTool;
 import com.zys.http.tool.ProjectTool;
 import com.zys.http.tool.PsiTool;
@@ -74,7 +75,7 @@ public class GotoApiSearchEverywhereContributor extends AbstractGotoSEContributo
 
     @Override
     public boolean isShownInSeparateTab() {
-        return serviceTool.getEnableSearchEverywhere() && !apiModel.getNodeDataList().isEmpty();
+        return HttpSetting.getInstance().getEnableSearchEverywhere() && !apiModel.getNodeDataList().isEmpty();
     }
 
     @Override

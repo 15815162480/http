@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 public class HttpConstant {
     public static final String PLUGIN_NAME = "ApiTool";
 
+    public static final String PLUGIN_SETTING_FILE_NAME = "httpSetting.xml";
     public static final String PLUGIN_CONFIG_FILE_NAME = "httpService.xml";
     public static final String PLUGIN_HIS_FILE_NAME = "httpService-history.xml";
 

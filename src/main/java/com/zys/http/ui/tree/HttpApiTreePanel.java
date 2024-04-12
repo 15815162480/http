@@ -20,6 +20,7 @@ import com.zys.http.entity.HttpConfig;
 import com.zys.http.entity.tree.*;
 import com.zys.http.extension.service.Bundle;
 import com.zys.http.extension.service.NotifyService;
+import com.zys.http.extension.setting.HttpSetting;
 import com.zys.http.extension.topic.EnvListChangeTopic;
 import com.zys.http.tool.HttpServiceTool;
 import com.zys.http.tool.ProjectTool;
@@ -136,7 +137,7 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
     @Description("是否生成默认环境")
     private void isGenerateDefaultEnv(Module m) {
         String moduleName = m.getName();
-        if (serviceTool.getGenerateDefault()) {
+        if (HttpSetting.getInstance().getGenerateDefault()) {
             String host = "127.0.0.1:" + ProjectTool.getModulePort(project, m);
             project.getMessageBus().syncPublisher(EnvListChangeTopic.TOPIC)
                     .save(moduleName, new HttpConfig(HttpEnum.Protocol.HTTP, host, Collections.emptyMap()));
