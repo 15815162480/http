@@ -66,45 +66,9 @@ public class HttpService implements PersistentStateComponent<HttpService.State> 
         }
     }
 
-    public boolean getGenerateDefault() {
-        return state.generateDefault;
-    }
-
-    public void setGenerateDefault(boolean status) {
-        state.generateDefault = status;
-    }
-
-    public boolean getRefreshWhenVcsChange() {
-        return state.refreshWhenVcsChange;
-    }
-
-    public void setRefreshWhenVcsChange(boolean status) {
-        state.refreshWhenVcsChange = status;
-    }
-
-    public boolean getEnableSearchEverywhere() {
-        return state.enableSearchEverywhere;
-    }
-
-    public void setEnableSearchEverywhere(boolean status) {
-        state.enableSearchEverywhere = status;
-    }
-
-    public String getCustomAnno() {
-        return state.customAnno;
-    }
-
-    public void setCustomAnno(String customAnno) {
-        state.customAnno = customAnno;
-    }
-
     @Data
     public static class State {
-        private String customAnno;
         private String selectedEnv;
-        private boolean generateDefault;
-        private boolean refreshWhenVcsChange = false;
-        private boolean enableSearchEverywhere = true;
         private Map<String, HttpConfig> httpConfigs = new LinkedHashMap<>();
     }
 }

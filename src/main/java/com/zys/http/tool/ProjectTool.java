@@ -14,6 +14,7 @@ import com.intellij.psi.*;
 import com.intellij.psi.impl.java.stubs.index.JavaAnnotationIndex;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.zys.http.constant.SpringEnum;
+import com.zys.http.extension.setting.HttpSetting;
 import jdk.jfr.Description;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -99,8 +100,7 @@ public class ProjectTool {
 
     @Description("获取模块所有的 Controller")
     public static List<PsiClass> getModuleControllers(Project project, Module module) {
-        HttpServiceTool serviceTool = HttpServiceTool.getInstance(project);
-        String customAnno = serviceTool.getCustomAnno();
+        String customAnno = HttpSetting.getInstance().getCustomAnno();
         Optional<GlobalSearchScope> globalSearchScope = Optional.of(module)
                 .map(Module::getModuleScope);
         Stream<PsiAnnotation> s1 = globalSearchScope.map(moduleScope -> ApplicationManager.getApplication().runReadAction((Computable<Collection<PsiAnnotation>>)

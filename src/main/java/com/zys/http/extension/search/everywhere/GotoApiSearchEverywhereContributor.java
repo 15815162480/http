@@ -1,6 +1,8 @@
 package com.zys.http.extension.search.everywhere;
 
-import com.intellij.ide.actions.searcheverywhere.*;
+import com.intellij.ide.actions.searcheverywhere.AbstractGotoSEContributor;
+import com.intellij.ide.actions.searcheverywhere.SearchEverywhereContributor;
+import com.intellij.ide.actions.searcheverywhere.SearchEverywhereContributorFactory;
 import com.intellij.ide.util.gotoByName.FilteringGotoByModel;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.module.Module;
@@ -13,7 +15,6 @@ import com.zys.http.constant.HttpEnum;
 import com.zys.http.constant.SpringEnum;
 import com.zys.http.entity.tree.MethodNodeData;
 import com.zys.http.extension.setting.HttpSetting;
-import com.zys.http.tool.HttpServiceTool;
 import com.zys.http.tool.ProjectTool;
 import com.zys.http.tool.PsiTool;
 import org.jetbrains.annotations.Nls;
@@ -28,12 +29,10 @@ import java.util.stream.Collectors;
  */
 public class GotoApiSearchEverywhereContributor extends AbstractGotoSEContributor {
     private final GotoApiModel apiModel;
-    private final HttpServiceTool serviceTool;
 
     public GotoApiSearchEverywhereContributor(@NotNull AnActionEvent event) {
         super(event);
         Project project = event.getProject();
-        serviceTool = HttpServiceTool.getInstance(project);
         this.apiModel = new GotoApiModel(project, new GotoApiChooseByNameContributor(methodNodeDataList(project)));
     }
 

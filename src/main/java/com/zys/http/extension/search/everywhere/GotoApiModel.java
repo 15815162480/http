@@ -33,7 +33,7 @@ public class GotoApiModel extends FilteringGotoByModel<HttpEnum.HttpMethod> impl
 
     @Override
     public @Nls(capitalization = Nls.Capitalization.Sentence) String getPromptText() {
-        return IdeUICustomization.getInstance().projectMessage("checkbox.include.non.project.items", new Object[0]);
+        return IdeUICustomization.getInstance().projectMessage("checkbox.include.non.project.items");
     }
 
     @Override

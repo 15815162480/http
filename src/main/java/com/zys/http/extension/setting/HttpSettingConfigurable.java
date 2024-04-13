@@ -4,7 +4,6 @@ import cn.hutool.core.text.CharSequenceUtil;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.options.Configurable;
-import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.util.NlsContexts;
@@ -57,7 +56,7 @@ public class HttpSettingConfigurable implements Configurable {
     }
 
     @Override
-    public void apply() throws ConfigurationException {
+    public void apply() {
         boolean generateDefault = httpSettingPanel.getGenerateDefault();
         String customControllerAnnotation = httpSettingPanel.getCustomControllerAnnotation();
         HttpSetting.getInstance().setGenerateDefault(generateDefault);

@@ -16,11 +16,11 @@ repositories {
 }
 
 dependencies {
-    compileOnly("org.projectlombok:lombok:1.18.26")
-    annotationProcessor("org.projectlombok:lombok:1.18.26")
-    implementation("cn.hutool:hutool-http:5.8.25")
-    implementation("cn.hutool:hutool-json:5.8.25")
-    implementation("cn.hutool:hutool-core:5.8.25")
+    compileOnly("org.projectlombok:lombok:1.18.32")
+    annotationProcessor("org.projectlombok:lombok:1.18.32")
+    implementation("cn.hutool:hutool-http:5.8.27")
+    implementation("cn.hutool:hutool-json:5.8.27")
+    implementation("cn.hutool:hutool-core:5.8.27")
     implementation("org.apache.velocity:velocity-engine-core:2.3") {
         exclude("org.slf4j")
     }

@@ -58,36 +58,4 @@ public class HttpServiceTool {
     public void setSelectedEnv(String key) {
         httpService.setSelectedEnv(key);
     }
-
-    public void refreshGenerateDefault() {
-        httpService.setGenerateDefault(!httpService.getGenerateDefault());
-    }
-
-    public boolean getGenerateDefault() {
-        return httpService.getGenerateDefault();
-    }
-
-    public void refreshWhenVcsChange() {
-        httpService.setRefreshWhenVcsChange(!httpService.getRefreshWhenVcsChange());
-    }
-
-    public boolean getRefreshWhenVcsChange() {
-        return httpService.getRefreshWhenVcsChange();
-    }
-
-    public void refreshEnableSearchEverywhere() {
-        httpService.setEnableSearchEverywhere(!httpService.getEnableSearchEverywhere());
-    }
-
-    public boolean getEnableSearchEverywhere() {
-        return httpService.getEnableSearchEverywhere();
-    }
-
-    public String getCustomAnno() {
-        return httpService.getCustomAnno();
-    }
-
-    public void setCustomAnno(String customAnno) {
-        httpService.setCustomAnno(customAnno);
-    }
 }

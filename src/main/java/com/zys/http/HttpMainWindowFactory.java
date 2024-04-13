@@ -40,10 +40,6 @@ public class HttpMainWindowFactory implements ToolWindowFactory, DumbAware {
         HistoryTabWindow historyTabWindow = new HistoryTabWindow(project);
         Content hisContent = contentFactory.createContent(historyTabWindow, Bundle.get("http.window.tab.history"), false);
         toolWindow.getContentManager().addContent(hisContent);
-
-        // SettingTabWindow settingTabWindow = new SettingTabWindow(project);
-        // Content settingContent = contentFactory.createContent(settingTabWindow, Bundle.get("http.window.tab.setting"), false);
-        // toolWindow.getContentManager().addContent(settingContent);
     }
 
     public static class WindowWakeUpAction extends AnAction {
