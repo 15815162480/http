@@ -61,6 +61,9 @@
         <p><a href="https://github.com/15815162480/http/blob/master/UpdateInfo.md">Update information for each
             version</a></p>
         <h4>中文</h4>
+        <ul>
+            <li>优化: 将设置移动到 设置>工具>ApiTool, 现在是全局配置而不是项目单独配置</li>
+        </ul>
         <br>
         <p><a href="https://gitee.com/zhou-sheng1/http/blob/master/UpdateInfo_zh.md">各版本更新信息</a></p>
         ]]>

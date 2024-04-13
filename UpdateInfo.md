@@ -1,3 +1,7 @@
+### 1.6.1
+* Move settings to a Setting>Tools>ApiTool, Now it's global configuration instead of single project configuration
+
+
 ### 1.6.0
 * improve: Move settings to a new tab
 * feature: New setting-Can add a custom controller annotation(Set whether to move this annotation or not)
