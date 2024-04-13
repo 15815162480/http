@@ -33,7 +33,6 @@ public class HttpSetting implements PersistentStateComponent<HttpSetting.State> 
         this.state = state;
     }
 
-
     public boolean getGenerateDefault() {
         return state.generateDefault;
     }
@@ -69,8 +68,8 @@ public class HttpSetting implements PersistentStateComponent<HttpSetting.State> 
     @Data
     public static class State {
         private String customAnno;
-        private boolean generateDefault;
-        private boolean refreshWhenVcsChange = false;
+        private boolean generateDefault = true;
+        private boolean refreshWhenVcsChange = true;
         private boolean enableSearchEverywhere = true;
     }
 }

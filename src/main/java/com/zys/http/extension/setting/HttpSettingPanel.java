@@ -29,8 +29,13 @@ public class HttpSettingPanel extends JBPanel<HttpSettingPanel> {
 
     public void init() {
         defaultBox.setSelected(httpSetting.getGenerateDefault());
+        defaultBox.addChangeListener(l -> httpSetting.setGenerateDefault(defaultBox.isSelected()));
         vcsBox.setSelected(httpSetting.getRefreshWhenVcsChange());
+        vcsBox.addChangeListener(l -> httpSetting.setRefreshWhenVcsChange(vcsBox.isSelected()));
+
         seBox.setSelected(httpSetting.getEnableSearchEverywhere());
+        seBox.addChangeListener(l -> httpSetting.setEnableSearchEverywhere(seBox.isSelected()));
+
         JPanel main = new JPanel(new BorderLayout(0, 0));
         JPanel northPanel = new JPanel(new BorderLayout(0, 0));
 
@@ -59,6 +64,11 @@ public class HttpSettingPanel extends JBPanel<HttpSettingPanel> {
         add(main, BorderLayout.NORTH);
     }
 
+    public void reset(boolean generateDefault, boolean refreshWhenVcsChange, boolean enableSearchEverywhere) {
+        defaultBox.setSelected(generateDefault);
+        vcsBox.setSelected(refreshWhenVcsChange);
+        seBox.setSelected(enableSearchEverywhere);
+    }
 
     public boolean getGenerateDefault() {
         return defaultBox.isSelected();

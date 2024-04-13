@@ -10,8 +10,6 @@ import com.intellij.openapi.util.NlsContexts;
 import com.zys.http.constant.HttpConstant;
 import com.zys.http.constant.HttpEnum;
 import com.zys.http.entity.HttpConfig;
-import com.zys.http.extension.service.Bundle;
-import com.zys.http.extension.service.NotifyService;
 import com.zys.http.extension.topic.EnvListChangeTopic;
 import com.zys.http.extension.topic.RefreshTreeTopic;
 import com.zys.http.tool.ProjectTool;
@@ -20,14 +18,17 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.util.Collection;
-import java.util.Objects;
 
 /**
  * @author zhou ys
  * @since 2024-04-12
  */
 public class HttpSettingConfigurable implements Configurable {
-    private final HttpSettingPanel httpSettingPanel = new HttpSettingPanel();
+    private final boolean oldGenerateDefault = HttpSetting.getInstance().getGenerateDefault();
+    private final boolean oldRefreshWhenVcsChange = HttpSetting.getInstance().getRefreshWhenVcsChange();
+    private final boolean oldEnableSearchEverywhere = HttpSetting.getInstance().getEnableSearchEverywhere();
+    private final String oldCustomAnno = HttpSetting.getInstance().getCustomAnno();
+    private HttpSettingPanel httpSettingPanel = new HttpSettingPanel();
 
     @Override
     public @NlsContexts.ConfigurableName String getDisplayName() {
@@ -41,18 +42,19 @@ public class HttpSettingConfigurable implements Configurable {
 
     @Override
     public boolean isModified() {
+        // 更新后的值
         HttpSetting setting = HttpSetting.getInstance();
         boolean generateDefault = setting.getGenerateDefault();
         boolean refreshWhenVcsChange = setting.getRefreshWhenVcsChange();
         boolean enableSearchEverywhere = setting.getEnableSearchEverywhere();
-        String customAnno = setting.getCustomAnno();
-        boolean panelGenerateDefault = httpSettingPanel.getGenerateDefault();
-        boolean panelRefreshWhenVcsChange = httpSettingPanel.getRefreshWhenVcsChange();
-        boolean panelEnableSearchEverywhere = httpSettingPanel.getEnableSearchEverywhere();
-        String customControllerAnnotation = httpSettingPanel.getCustomControllerAnnotation();
+        return generateDefault != oldGenerateDefault ||
+               refreshWhenVcsChange != oldRefreshWhenVcsChange ||
+               enableSearchEverywhere != oldEnableSearchEverywhere;
+    }
 
-        return generateDefault != panelGenerateDefault || refreshWhenVcsChange != panelRefreshWhenVcsChange
-               || enableSearchEverywhere != panelEnableSearchEverywhere || !Objects.equals(customAnno, customControllerAnnotation);
+    @Override
+    public void reset() {
+        httpSettingPanel.reset(oldGenerateDefault, oldRefreshWhenVcsChange, oldEnableSearchEverywhere);
     }
 
     @Override
@@ -62,9 +64,14 @@ public class HttpSettingConfigurable implements Configurable {
         HttpSetting.getInstance().setGenerateDefault(generateDefault);
         HttpSetting.getInstance().setEnableSearchEverywhere(httpSettingPanel.getEnableSearchEverywhere());
         HttpSetting.getInstance().setRefreshWhenVcsChange(httpSettingPanel.getRefreshWhenVcsChange());
-
         invokeGenerateDefaultEnv(generateDefault);
-        invokeCustomControllerAnnotation(customControllerAnnotation);
+        customControllerAnnotation = customControllerAnnotation.trim();
+        if (CharSequenceUtil.isBlank(customControllerAnnotation)) {
+            return;
+        }
+
+        invokeCustomControllerAnnotation();
+        HttpSetting.getInstance().setCustomAnno(customControllerAnnotation);
     }
 
     private void invokeGenerateDefaultEnv(boolean generateDefault) {
@@ -92,22 +99,8 @@ public class HttpSettingConfigurable implements Configurable {
         });
     }
 
-    private void invokeCustomControllerAnnotation(String customAnnotation) {
-        customAnnotation = customAnnotation.trim();
+    private void invokeCustomControllerAnnotation() {
         @NotNull Project[] openProjects = ProjectManager.getInstance().getOpenProjects();
-
-        if (CharSequenceUtil.isBlank(customAnnotation)) {
-            return;
-        }
-        if (customAnnotation.startsWith(".") || customAnnotation.endsWith(".")) {
-            HttpSetting.getInstance().setCustomAnno("");
-            for (Project p : openProjects) {
-                NotifyService.instance(p).info(Bundle.get("http.extension.setting.custom.annotation.msg"));
-            }
-            return;
-        }
-        HttpSetting.getInstance().setCustomAnno(customAnnotation);
-
         for (Project p : openProjects) {
             p.getMessageBus().syncPublisher(RefreshTreeTopic.TOPIC).refresh(false);
         }
