@@ -22,7 +22,7 @@ public class HistoryTabWindow extends SimpleToolWindowPanel implements Disposabl
         super(true);
         HistoryListTable historyListTable = new HistoryListTable(project);
         JComponent component = historyListTable.getToolbar().getComponent();
-        component.setBorder(JBUI.Borders.customLine(UIConstant.BORDER_COLOR, 0, 0, 0, 0));
+        component.setBorder(JBUI.Borders.customLine(UIConstant.BORDER_COLOR, 0, 0, 1, 0));
         setContent(historyListTable);
     }
 

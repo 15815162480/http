@@ -48,7 +48,7 @@ public class HistoryListTable extends AbstractTable {
     private final transient HistoryTool historyTool;
 
     public HistoryListTable(Project project) {
-        super(project, false, true);
+        super(project, false, true, false);
         historyTool = HistoryTool.getInstance(project);
         init();
         TableColumn noCol = valueTable.getColumn(valueTable.getColumnName(0));

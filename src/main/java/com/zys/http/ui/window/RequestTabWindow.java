@@ -88,7 +88,6 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
         MessageBus messageBus = project.getMessageBus();
         MessageBusConnection connect = messageBus.connect();
         connect.subscribe(RefreshTreeTopic.TOPIC, (RefreshTreeTopic) b -> {
-            System.out.println(111);
             requestPanel.getHttpApiTreePanel().clear();
             requestPanel.reload(null);
             refreshTree(b);
@@ -161,10 +160,6 @@ public class RequestTabWindow extends SimpleToolWindowPanel implements Disposabl
         filterActionGroup.add(filterAction);
 
         group.add(filterActionGroup);
-
-
-        // 设置菜单组
-        // group.add(new SettingActionGroup());
 
         ActionToolbar topToolBar = ActionManager.getInstance().createActionToolbar(ActionPlaces.TOOLBAR, group, true);
         topToolBar.setTargetComponent(this);
