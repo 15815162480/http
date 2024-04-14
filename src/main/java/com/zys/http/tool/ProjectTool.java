@@ -55,16 +55,16 @@ public class ProjectTool {
     @Description("获取模块中的 SpringBoot 优先级最高的配置文件")
     public static PsiFile getSpringApplicationFile(Project project, @NotNull Module module) {
         PsiManager psiManager = PsiManager.getInstance(project);
-
-        VirtualFile file;
-        for (String applicationFileName : APPLICATION_FILE_NAMES) {
-            file = ReadAction.nonBlocking(() -> ResourceFileUtil.findResourceFileInScope(applicationFileName, project, module.getModuleScope()))
-                    .submit(ThreadTool.getExecutor()).get();
-            if (Objects.nonNull(file)) {
-                return psiManager.findFile(file);
+        return ReadAction.nonBlocking(() -> {
+            for (String applicationFileName : APPLICATION_FILE_NAMES) {
+                VirtualFile file = ResourceFileUtil.findResourceFileInScope(applicationFileName, project, module.getModuleScope());
+                if (Objects.nonNull(file)) {
+                    return psiManager.findFile(file);
+                }
             }
-        }
-        return null;
+            return null;
+        }).submit(ThreadTool.getExecutor()).get();
+
     }
 
     @Description("获取模块中配置文件中指定键的值")
