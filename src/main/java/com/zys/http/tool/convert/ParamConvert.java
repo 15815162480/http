@@ -2,7 +2,10 @@ package com.zys.http.tool.convert;
 
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.json.JSONUtil;
-import com.intellij.psi.*;
+import com.intellij.psi.PsiAnnotation;
+import com.intellij.psi.PsiMethod;
+import com.intellij.psi.PsiParameter;
+import com.intellij.psi.PsiType;
 import com.zys.http.constant.HttpEnum;
 import com.zys.http.constant.SpringEnum;
 import com.zys.http.entity.param.ParamProperty;
@@ -51,6 +54,10 @@ public class ParamConvert {
 
         if (parameter.getAnnotation(SpringEnum.Param.REQUEST_HEADER.getClazz()) != null) {
             // 如果参数注解带 @RequestHeader, 默认 String, 不作特殊处理
+            ParamProperty property = map.get(REQUEST_TYPE_KEY);
+            if (property == null) {
+                map.put(REQUEST_TYPE_KEY, new ParamProperty(HttpEnum.ContentType.APPLICATION_X_FORM_URLENCODED, HttpEnum.ParamUsage.HEADER));
+            }
             map.put(parameterName, new ParamProperty("", HttpEnum.ParamUsage.HEADER));
             return;
         }

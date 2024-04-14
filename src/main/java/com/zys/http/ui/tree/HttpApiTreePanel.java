@@ -2,6 +2,7 @@ package com.zys.http.ui.tree;
 
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
+import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ModuleRootManager;
@@ -22,10 +23,7 @@ import com.zys.http.extension.service.Bundle;
 import com.zys.http.extension.service.NotifyService;
 import com.zys.http.extension.setting.HttpSetting;
 import com.zys.http.extension.topic.EnvListChangeTopic;
-import com.zys.http.tool.HttpServiceTool;
-import com.zys.http.tool.ProjectTool;
-import com.zys.http.tool.PsiTool;
-import com.zys.http.tool.SystemTool;
+import com.zys.http.tool.*;
 import com.zys.http.tool.ui.ThemeTool;
 import com.zys.http.tool.ui.TreeTool;
 import com.zys.http.ui.icon.HttpIcons;
@@ -33,6 +31,7 @@ import com.zys.http.ui.tree.node.*;
 import jdk.jfr.Description;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.SneakyThrows;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -42,6 +41,7 @@ import java.awt.event.MouseEvent;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.zys.http.ui.popup.NodeShowFilterPopup.SETTING_VALUES;
 
@@ -322,29 +322,28 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
         if (methods.length < 1) {
             return Collections.emptyList();
         }
+        return Arrays.stream(methods).map(method -> dataList(method, controllerPath, contextPath)).flatMap(List::stream).toList();
+    }
+
+    @SneakyThrows
+    private List<MethodNode> dataList(PsiMethod method, String controllerPath, String contextPath) {
         Map<String, HttpEnum.HttpMethod> httpMethodMap = Arrays.stream(SpringEnum.Method.values())
                 .collect(Collectors.toMap(SpringEnum.Method::getClazz, SpringEnum.Method::getHttpMethod));
-        List<MethodNode> dataList = new ArrayList<>();
-        MethodNode data;
-        for (PsiMethod method : methods) {
+        return ReadAction.nonBlocking(() -> {
             PsiAnnotation[] annotations = method.getAnnotations();
-            for (PsiAnnotation annotation : annotations) {
-                String qualifiedName = annotation.getQualifiedName();
-                if (!httpMethodMap.containsKey(qualifiedName)) {
-                    continue;
-                }
-                HttpEnum.HttpMethod httpMethod = httpMethodMap.get(qualifiedName);
-                if (HttpEnum.HttpMethod.REQUEST.equals(httpMethod)) {
-                    httpMethod = HttpEnum.HttpMethod.requestMappingConvert(annotation);
-                }
-                String name = PsiTool.Annotation.getAnnotationValue(annotation, new String[]{"value", "path"});
-                MethodNodeData data1 = new MethodNodeData(httpMethod, name, controllerPath, contextPath);
-                data1.setPsiElement(method);
-                data = new MethodNode(data1);
-                data1.setDescription(PsiTool.Annotation.getSwaggerAnnotation(method, HttpEnum.AnnotationPlace.METHOD));
-                dataList.add(data);
-            }
-        }
-        return dataList;
+            return Stream.of(annotations).filter(annotation -> httpMethodMap.containsKey(annotation.getQualifiedName()))
+                    .map(annotation -> {
+                        String qualifiedName = annotation.getQualifiedName();
+                        HttpEnum.HttpMethod httpMethod = httpMethodMap.get(qualifiedName);
+                        if (HttpEnum.HttpMethod.REQUEST.equals(httpMethod)) {
+                            httpMethod = HttpEnum.HttpMethod.requestMappingConvert(annotation);
+                        }
+                        String name = PsiTool.Annotation.getAnnotationValue(annotation, new String[]{"value", "path"});
+                        MethodNodeData data = new MethodNodeData(httpMethod, name, controllerPath, contextPath);
+                        data.setDescription(PsiTool.Annotation.getSwaggerAnnotation(method, HttpEnum.AnnotationPlace.METHOD));
+                        data.setPsiElement(method);
+                        return new MethodNode(data);
+                    }).toList();
+        }).submit(ThreadTool.getExecutor()).get();
     }
 }
