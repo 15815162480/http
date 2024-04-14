@@ -151,16 +151,17 @@ public class DataTypeTool {
             // 类所有对象属性
             Map<String, Object> result = new LinkedHashMap<>();
             List<PsiField> objectProperties = PsiTool.Field.getAllObjectPropertiesWithoutStaticAndPublic(psiClass);
-            for (PsiField property : objectProperties) {
-                String propertyName = property.getName();
-                // 是否有 @JsonProperty 属性
-                if (property.hasAnnotation(JSON_PROPERTY_ANNO_FQN)) {
-                    propertyName = PsiTool.Annotation.getAnnotationValue(property.getAnnotation(JSON_PROPERTY_ANNO_FQN), new String[]{"value"});
-                }
-                Integer orDefault = recursionMap.getOrDefault(property.getType().getCanonicalText(), 0);
-                if (orDefault < 2) {
-                    orDefault = orDefault + 1;
-                    recursionMap.put(property.getType().getCanonicalText(), orDefault);
+            Integer orDefault = recursionMap.getOrDefault(psiType.getCanonicalText(), 0);
+            if (orDefault < 2) {
+                orDefault = orDefault + 1;
+                recursionMap.put(psiType.getCanonicalText(), orDefault);
+                for (PsiField property : objectProperties) {
+                    String propertyName = property.getName();
+                    // 是否有 @JsonProperty 属性
+                    if (property.hasAnnotation(JSON_PROPERTY_ANNO_FQN)) {
+                        propertyName = PsiTool.Annotation.getAnnotationValue(property.getAnnotation(JSON_PROPERTY_ANNO_FQN), new String[]{"value"});
+                    }
+
                     result.put(propertyName, getDefaultValueOfPsiType(recursionMap, property.getType(), project));
                 }
             }
@@ -188,16 +189,8 @@ public class DataTypeTool {
                 return new Object[]{o};
             }
             PsiClassType type = PsiType.getTypeByName(arrayCanonicalText, project, GlobalSearchScope.allScope(project));
-            Integer i = recursionMap.getOrDefault(type.getCanonicalText(), 0);
-            if (i < 2) {
-                i = i + 1;
-                System.out.println(i);
-                recursionMap.put(type.getCanonicalText(), i);
-                Object defaultValue = getDefaultValueOfPsiType(recursionMap, type, project);
-                return Objects.isNull(defaultValue) ? EMPTY_ARRAY : List.of(defaultValue);
-            } else {
-                return EMPTY_ARRAY;
-            }
+            Object defaultValue = getDefaultValueOfPsiType(recursionMap, type, project);
+            return Objects.isNull(defaultValue) ? EMPTY_ARRAY : List.of(defaultValue);
         }
         return null;
     }
@@ -230,15 +223,8 @@ public class DataTypeTool {
             }
             PsiClassType type = PsiType.getTypeByName(Objects.requireNonNull(genericsType), project, GlobalSearchScope.allScope(project));
 
-            Integer i = recursionMap.getOrDefault(type.getCanonicalText(), 0);
-            if (i < 2) {
-                i = i + 1;
-                recursionMap.put(type.getCanonicalText(), i);
-                Object defaultValue = getDefaultValueOfPsiType(recursionMap, type, project);
-                return Objects.isNull(defaultValue) ? EMPTY_ARRAY : List.of(defaultValue);
-            } else {
-                return EMPTY_ARRAY;
-            }
+            Object defaultValue = getDefaultValueOfPsiType(recursionMap, type, project);
+            return Objects.isNull(defaultValue) ? EMPTY_ARRAY : List.of(defaultValue);
         }
         return null;
     }
