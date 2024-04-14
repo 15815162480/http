@@ -5,6 +5,24 @@
 * improve: If there are @ RequestBody/@ RequestPart parameters in the method parameters, corresponding requests will be
   generated
 * improve: performance optimization
+* fix bugs: fix bugs: Nesting of parameters causes stack overflow, eg:
+  ```java
+  public class A { 
+    private String s; 
+    private A a;
+  }
+  // or
+  public class A { 
+    private String s; 
+    private List<A> as;
+  }
+  // or
+  public class A { 
+    private String s; 
+    private A[] as;
+  }
+  ```  
+  
 
 ### 1.6.0
 

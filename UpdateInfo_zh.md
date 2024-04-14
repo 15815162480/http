@@ -3,6 +3,23 @@
 * 优化: 将设置移动到 设置>工具>ApiTool, 现在是全局配置而不是项目单独配置
 * 优化: 方法参数中如果有 @RequestBody / @RequestPart 的参数, 会生成对应的请求头
 * 优化: 性能优化
+* bug 修复: 参数互相嵌套导致栈溢出, 如
+  ```java
+  public class A { 
+    private String s; 
+    private A a;
+  }
+  // or
+  public class A { 
+    private String s; 
+    private List<A> as;
+  }
+  // or
+  public class A { 
+    private String s; 
+    private A[] as;
+  }
+  ``` 
 
 ### 1.6.0
 

@@ -48,6 +48,7 @@ public class DataTypeTool {
 
     private static final Object[] EMPTY_ARRAY = new Object[0];
 
+
     static {
         // 手动处理要移除的 API
         PSI_PRIMITIVE_TYPE_OBJECT_MAP.put(new PsiPrimitiveType(JvmPrimitiveTypeKind.BOOLEAN, PsiAnnotation.EMPTY_ARRAY), false);
@@ -101,8 +102,7 @@ public class DataTypeTool {
         return false;
     }
 
-    @Description("根据参数类型获取默认值")
-    public static Object getDefaultValueOfPsiType(PsiType psiType, Project project) {
+    private static Object getDefaultValueOfPsiType(Map<String, Integer> recursionMap, PsiType psiType, Project project) {
         // 基元类型
         Object value = PSI_PRIMITIVE_TYPE_OBJECT_MAP.get(psiType);
         if (Objects.nonNull(value)) {
@@ -121,12 +121,12 @@ public class DataTypeTool {
         }
 
         // 应该是基元类型和包装类才返回空数组类型,如果是类应该处理
-        Object arrayResult = processArrayType(psiType, project);
+        Object arrayResult = processArrayType(recursionMap, psiType, project);
         if (Objects.nonNull(arrayResult)) {
             return arrayResult;
         }
 
-        Object collectionsResult = processCollectionsType(psiType, project);
+        Object collectionsResult = processCollectionsType(recursionMap, psiType, project);
         if (Objects.nonNull(collectionsResult)) {
             return collectionsResult;
         }
@@ -157,15 +157,25 @@ public class DataTypeTool {
                 if (property.hasAnnotation(JSON_PROPERTY_ANNO_FQN)) {
                     propertyName = PsiTool.Annotation.getAnnotationValue(property.getAnnotation(JSON_PROPERTY_ANNO_FQN), new String[]{"value"});
                 }
-                result.put(propertyName, getDefaultValueOfPsiType(property.getType(), project));
+                Integer orDefault = recursionMap.getOrDefault(property.getType().getCanonicalText(), 0);
+                if (orDefault < 2) {
+                    orDefault = orDefault + 1;
+                    recursionMap.put(property.getType().getCanonicalText(), orDefault);
+                    result.put(propertyName, getDefaultValueOfPsiType(recursionMap, property.getType(), project));
+                }
             }
             return result;
         }
         return null;
     }
 
+    @Description("根据参数类型获取默认值")
+    public static Object getDefaultValueOfPsiType(PsiType psiType, Project project) {
+        return getDefaultValueOfPsiType(new HashMap<>(), psiType, project);
+    }
+
     @Description("处理数组类型")
-    private static Object processArrayType(PsiType psiType, Project project) {
+    private static Object processArrayType(Map<String, Integer> recursionMap, PsiType psiType, Project project) {
         String canonicalText = psiType.getCanonicalText();
         if (canonicalText.contains("[]")) {
             String arrayCanonicalText = canonicalText.substring(0, canonicalText.indexOf("["));
@@ -178,18 +188,22 @@ public class DataTypeTool {
                 return new Object[]{o};
             }
             PsiClassType type = PsiType.getTypeByName(arrayCanonicalText, project, GlobalSearchScope.allScope(project));
-            Object defaultValue = getDefaultValueOfPsiType(type, project);
-            if (Objects.isNull(defaultValue)) {
-                return EMPTY_ARRAY;
+            Integer i = recursionMap.getOrDefault(type.getCanonicalText(), 0);
+            if (i < 2) {
+                i = i + 1;
+                System.out.println(i);
+                recursionMap.put(type.getCanonicalText(), i);
+                Object defaultValue = getDefaultValueOfPsiType(recursionMap, type, project);
+                return Objects.isNull(defaultValue) ? EMPTY_ARRAY : List.of(defaultValue);
             } else {
-                return List.of(defaultValue);
+                return EMPTY_ARRAY;
             }
         }
         return null;
     }
 
     @Description("处理集合类型")
-    private static Object processCollectionsType(PsiType psiType, Project project) {
+    private static Object processCollectionsType(Map<String, Integer> recursionMap, PsiType psiType, Project project) {
         final String canonicalText = psiType.getCanonicalText();
         if (!canonicalText.startsWith("java.util.")) {
             return null;
@@ -215,11 +229,15 @@ public class DataTypeTool {
                 return new Object[]{o};
             }
             PsiClassType type = PsiType.getTypeByName(Objects.requireNonNull(genericsType), project, GlobalSearchScope.allScope(project));
-            Object defaultValue = getDefaultValueOfPsiType(type, project);
-            if (Objects.isNull(defaultValue)) {
-                return EMPTY_ARRAY;
+
+            Integer i = recursionMap.getOrDefault(type.getCanonicalText(), 0);
+            if (i < 2) {
+                i = i + 1;
+                recursionMap.put(type.getCanonicalText(), i);
+                Object defaultValue = getDefaultValueOfPsiType(recursionMap, type, project);
+                return Objects.isNull(defaultValue) ? EMPTY_ARRAY : List.of(defaultValue);
             } else {
-                return List.of(defaultValue);
+                return EMPTY_ARRAY;
             }
         }
         return null;

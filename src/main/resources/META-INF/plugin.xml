@@ -66,6 +66,12 @@
           <li>
             improve: performance optimization
           </li>
+          <li>
+            fix bugs: Nesting of parameters causes stack overflow, eg:
+            <code>public class A { private String s; private A a;}</code> or <br>
+            <code>public class A { private String s, private List<A> as;}</code> or <br>
+            <code>public class A { private String s, private A[] as;}</code
+          </li>
         </ul>
         <br>
         <p><a href="https://github.com/15815162480/http/blob/master/UpdateInfo.md">Update information for each
@@ -73,8 +79,14 @@
         <h4>中文</h4>
         <ul>
           <li>优化: 将设置移动到 设置>工具>ApiTool, 现在是全局配置而不是项目单独配置</li>
-          <li>优化: 方法参数中如果有 @RequestBody / @RequestPart 的参数, 会生成对应的请求头</li>
+          <li>优化: 方法参数中如果有 @RequestBody / @RequestPart 的参数, 会生成对应的请求头到请求头表格中</li>
           <li>优化: 性能优化</li>
+          <li>
+            bug 修复: 参数互相嵌套导致栈溢出, 如
+            <code>public class A { private String s; private A a;}</code> 或 <br>
+            <code>public class A { private String s, private List<A> as;}</code> 或 <br>
+            <code>public class A { private String s, private A[] as;}</code>
+          </li>
         </ul>
         <br>
         <p><a href="https://gitee.com/zhou-sheng1/http/blob/master/UpdateInfo_zh.md">各版本更新信息</a></p>
