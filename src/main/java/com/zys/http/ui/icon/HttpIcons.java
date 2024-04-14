@@ -35,8 +35,6 @@ public final class HttpIcons {
         public static final Icon COLLAPSE_LIGHT = IconLoader.getIcon("/icon/general/light/collapse.svg", HttpIcons.class);
         public static final Icon FILTER = IconLoader.getIcon("/icon/general/filter.svg", HttpIcons.class);
         public static final Icon FILTER_LIGHT = IconLoader.getIcon("/icon/general/light/filter.svg", HttpIcons.class);
-        public static final Icon LIST = IconLoader.getIcon("/icon/general/list.svg", HttpIcons.class);
-        public static final Icon LIST_LIGHT = IconLoader.getIcon("/icon/general/light/list.svg", HttpIcons.class);
         public static final Icon TREE = IconLoader.getIcon("/icon/general/tree.svg", HttpIcons.class);
         public static final Icon DEFAULT = IconLoader.getIcon("/icon/general/default.svg", HttpIcons.class);
         public static final Icon DEFAULT_LIGHT = IconLoader.getIcon("/icon/general/light/default.svg", HttpIcons.class);
@@ -46,15 +44,10 @@ public final class HttpIcons {
         public static final Icon FULL_SCREEN_LIGHT = IconLoader.getIcon("/icon/general/light/fullScreen.svg", HttpIcons.class);
         public static final Icon EXPORT = IconLoader.getIcon("/icon/general/export.svg", HttpIcons.class);
         public static final Icon EXPORT_LIGHT = IconLoader.getIcon("/icon/general/light/export.svg", HttpIcons.class);
-        public static final Icon SETTING = IconLoader.getIcon("/icon/general/setting.svg", HttpIcons.class);
-        public static final Icon SETTING_LIGHT = IconLoader.getIcon("/icon/general/light/setting.svg", HttpIcons.class);
         public static final Icon OUT = IconLoader.getIcon("/icon/general/out.svg", HttpIcons.class);
         public static final Icon OUT_LIGHT = IconLoader.getIcon("/icon/general/light/out.svg", HttpIcons.class);
         public static final Icon FILTER_GROUP = IconLoader.getIcon("/icon/general/filterGroup.svg", HttpIcons.class);
         public static final Icon FILTER_GROUP_LIGHT = IconLoader.getIcon("/icon/general/light/filterGroup.svg", HttpIcons.class);
-
-        public static final Icon SEARCH = IconLoader.getIcon("/icon/general/search.svg", HttpIcons.class);
-        public static final Icon SEARCH_LIGHT = IconLoader.getIcon("/icon/general/light/search.svg", HttpIcons.class);
     }
 
     @Description("请求方法")
@@ -66,16 +59,12 @@ public final class HttpIcons {
         public static final Icon PUT = IconLoader.getIcon("/icon/http/dark/put.svg", HttpIcons.class);
         public static final Icon DELETE = IconLoader.getIcon("/icon/http/dark/del.svg", HttpIcons.class);
         public static final Icon PATCH = IconLoader.getIcon("/icon/http/dark/patch.svg", HttpIcons.class);
-        public static final Icon HEADER = IconLoader.getIcon("/icon/http/dark/header.svg", HttpIcons.class);
-        public static final Icon OPTIONS = IconLoader.getIcon("/icon/http/dark/options.svg", HttpIcons.class);
         public static final Icon REQUEST_LIGHT = IconLoader.getIcon("/icon/http/light/request.svg", HttpIcons.class);
         public static final Icon GET_LIGHT = IconLoader.getIcon("/icon/http/light/get.svg", HttpIcons.class);
         public static final Icon POST_LIGHT = IconLoader.getIcon("/icon/http/light/post.svg", HttpIcons.class);
         public static final Icon PUT_LIGHT = IconLoader.getIcon("/icon/http/light/put.svg", HttpIcons.class);
         public static final Icon DELETE_LIGHT = IconLoader.getIcon("/icon/http/light/del.svg", HttpIcons.class);
         public static final Icon PATCH_LIGHT = IconLoader.getIcon("/icon/http/light/patch.svg", HttpIcons.class);
-        public static final Icon HEADER_LIGHT = IconLoader.getIcon("/icon/http/light/header.svg", HttpIcons.class);
-        public static final Icon OPTIONS_LIGHT = IconLoader.getIcon("/icon/http/light/options.svg", HttpIcons.class);
         // 请求方法
         private static final EnumMap<HttpEnum.HttpMethod, Icon> HTTP_METHOD_ICON_DARK_MAP = new EnumMap<>(HttpEnum.HttpMethod.class);
         private static final EnumMap<HttpEnum.HttpMethod, Icon> HTTP_METHOD_ICON_LIGHT_MAP = new EnumMap<>(HttpEnum.HttpMethod.class);

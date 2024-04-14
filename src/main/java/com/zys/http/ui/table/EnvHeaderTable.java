@@ -75,8 +75,8 @@ public class EnvHeaderTable extends AbstractTable implements EditAsProperties {
             return new DefaultTableModel(null, columnNames);
         }
 
-        String[][] rowData = new String[headers.size()][];
         int i = 0;
+        String[][] rowData = new String[headers.size()][];
         for (Map.Entry<String, String> e : headers.entrySet()) {
             rowData[i] = new String[2];
             rowData[i][0] = e.getKey();
@@ -175,15 +175,15 @@ public class EnvHeaderTable extends AbstractTable implements EditAsProperties {
                 Bundle.get("http.api.tab.header.table.key"),
                 Bundle.get("http.api.tab.header.table.value")
         };
-        if (headers == null) {
+        if (Objects.isNull(headers)) {
             return;
         }
         String[][] rowData = new String[headers.size()][];
         int i = 0;
         for (Map.Entry<String, String> e : headers.entrySet()) {
             rowData[i] = new String[2];
-            rowData[i][0] = e.getKey();
-            rowData[i++][1] = e.getValue();
+            rowData[i][1] = e.getValue();
+            rowData[i++][0] = e.getKey();
         }
         valueTable.setModel(new DefaultTableModel(rowData, columnNames));
     }

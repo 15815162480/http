@@ -55,14 +55,26 @@
         <h3>1.6.1</h3>
         <h4>En</h4>
         <ul>
-            <li>improve: Move settings to a Setting>Tools>ApiTool, Now it's global configuration instead of single project configuration</li>
+          <li>
+            improve: Move settings to a Setting>Tools>ApiTool, Now it's global configuration instead of single project
+            configuration
+          </li>
+          <li>
+            improve: If there are @ RequestBody/@ RequestPart parameters in the method parameters, corresponding
+            requests will be generated
+          </li>
+          <li>
+            improve: performance optimization
+          </li>
         </ul>
         <br>
         <p><a href="https://github.com/15815162480/http/blob/master/UpdateInfo.md">Update information for each
-            version</a></p>
+          version</a></p>
         <h4>中文</h4>
         <ul>
-            <li>优化: 将设置移动到 设置>工具>ApiTool, 现在是全局配置而不是项目单独配置</li>
+          <li>优化: 将设置移动到 设置>工具>ApiTool, 现在是全局配置而不是项目单独配置</li>
+          <li>优化: 方法参数中如果有 @RequestBody / @RequestPart 的参数, 会生成对应的请求头</li>
+          <li>优化: 性能优化</li>
         </ul>
         <br>
         <p><a href="https://gitee.com/zhou-sheng1/http/blob/master/UpdateInfo_zh.md">各版本更新信息</a></p>

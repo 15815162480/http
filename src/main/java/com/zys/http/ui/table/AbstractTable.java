@@ -34,6 +34,7 @@ public abstract class AbstractTable extends JPanel {
     private final boolean cellEditable;
     @Description("表格头是否能调整")
     private final boolean headerCanResized;
+    @Description("表格是否需要边框")
     private final boolean needBorder;
 
     @Getter

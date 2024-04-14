@@ -3,6 +3,7 @@ package com.zys.http.tool;
 import cn.hutool.core.text.CharSequenceUtil;
 import com.intellij.lang.properties.psi.PropertiesFile;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.module.ResourceFileUtil;
@@ -18,6 +19,7 @@ import com.zys.http.extension.setting.HttpSetting;
 import jdk.jfr.Description;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.yaml.YAMLUtil;
 import org.jetbrains.yaml.psi.YAMLFile;
@@ -49,13 +51,15 @@ public class ProjectTool {
         return map.values();
     }
 
+    @SneakyThrows
     @Description("获取模块中的 SpringBoot 优先级最高的配置文件")
     public static PsiFile getSpringApplicationFile(Project project, @NotNull Module module) {
         PsiManager psiManager = PsiManager.getInstance(project);
 
         VirtualFile file;
         for (String applicationFileName : APPLICATION_FILE_NAMES) {
-            file = ApplicationManager.getApplication().runReadAction((Computable<VirtualFile>) () -> ResourceFileUtil.findResourceFileInScope(applicationFileName, project, module.getModuleScope()));
+            file = ReadAction.nonBlocking(() -> ResourceFileUtil.findResourceFileInScope(applicationFileName, project, module.getModuleScope()))
+                    .submit(ThreadTool.getExecutor()).get();
             if (Objects.nonNull(file)) {
                 return psiManager.findFile(file);
             }
@@ -98,29 +102,33 @@ public class ProjectTool {
         return CharSequenceUtil.isEmpty(port) ? "8080" : port;
     }
 
-    @Description("获取模块所有的 Controller")
+    @SneakyThrows
+    @SuppressWarnings("deprecation")
+    @Description("获取模块所有的 Controller, 使用弃用API的原因是兼容低版本")
     public static List<PsiClass> getModuleControllers(Project project, Module module) {
-        String customAnno = HttpSetting.getInstance().getCustomAnno();
-        Optional<GlobalSearchScope> globalSearchScope = Optional.of(module)
-                .map(Module::getModuleScope);
-        Stream<PsiAnnotation> s1 = globalSearchScope.map(moduleScope -> ApplicationManager.getApplication().runReadAction((Computable<Collection<PsiAnnotation>>)
-                        () -> JavaAnnotationIndex.getInstance().get(SpringEnum.Controller.CONTROLLER.getShortClassName(), project, moduleScope)))
-                .orElse(new ArrayList<>()).stream();
-        Stream<PsiAnnotation> s2 = globalSearchScope.map(moduleScope -> ApplicationManager.getApplication().runReadAction((Computable<Collection<PsiAnnotation>>) () ->
-                        JavaAnnotationIndex.getInstance().get(SpringEnum.Controller.REST_CONTROLLER.getShortClassName(), project, moduleScope)))
-                .orElse(new ArrayList<>()).stream();
-        if (CharSequenceUtil.isNotEmpty(customAnno)) {
-            s2 = Stream.concat(s2, globalSearchScope.map(moduleScope -> ApplicationManager.getApplication().runReadAction((Computable<Collection<PsiAnnotation>>) () ->
-                            JavaAnnotationIndex.getInstance().get(customAnno.substring(customAnno.lastIndexOf('.') + 1), project, moduleScope)))
-                    .orElse(new ArrayList<>()).stream());
-        }
+        return ReadAction.nonBlocking(() -> {
+            String customAnno = HttpSetting.getInstance().getCustomAnno();
+            Optional<GlobalSearchScope> globalSearchScope = Optional.of(module)
+                    .map(Module::getModuleScope);
+            Stream<PsiAnnotation> s1 = globalSearchScope.map(moduleScope -> ApplicationManager.getApplication().runReadAction((Computable<Collection<PsiAnnotation>>)
+                            () -> JavaAnnotationIndex.getInstance().get(SpringEnum.Controller.CONTROLLER.getShortClassName(), project, moduleScope)))
+                    .orElse(new ArrayList<>()).stream();
+            Stream<PsiAnnotation> s2 = globalSearchScope.map(moduleScope -> ApplicationManager.getApplication().runReadAction((Computable<Collection<PsiAnnotation>>) () ->
+                            JavaAnnotationIndex.getInstance().get(SpringEnum.Controller.REST_CONTROLLER.getShortClassName(), project, moduleScope)))
+                    .orElse(new ArrayList<>()).stream();
+            if (CharSequenceUtil.isNotEmpty(customAnno)) {
+                s2 = Stream.concat(s2, globalSearchScope.map(moduleScope -> ApplicationManager.getApplication().runReadAction((Computable<Collection<PsiAnnotation>>) () ->
+                                JavaAnnotationIndex.getInstance().get(customAnno.substring(customAnno.lastIndexOf('.') + 1), project, moduleScope)))
+                        .orElse(new ArrayList<>()).stream());
+            }
 
-        return Stream.concat(s1, s2)
-                .map(PsiElement::getParent)
-                .map(PsiModifierList.class::cast)
-                .map(PsiModifierList::getParent)
-                .filter(PsiClass.class::isInstance)
-                .map(PsiClass.class::cast)
-                .toList();
+            return Stream.concat(s1, s2)
+                    .map(PsiElement::getParent)
+                    .map(PsiModifierList.class::cast)
+                    .map(PsiModifierList::getParent)
+                    .filter(PsiClass.class::isInstance)
+                    .map(PsiClass.class::cast)
+                    .toList();
+        }).submit(ThreadTool.getExecutor()).get();
     }
 }

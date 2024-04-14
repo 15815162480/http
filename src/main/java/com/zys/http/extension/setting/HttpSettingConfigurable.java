@@ -28,7 +28,7 @@ public class HttpSettingConfigurable implements Configurable {
     private final boolean oldRefreshWhenVcsChange = HttpSetting.getInstance().getRefreshWhenVcsChange();
     private final boolean oldEnableSearchEverywhere = HttpSetting.getInstance().getEnableSearchEverywhere();
     private final String oldCustomAnno = HttpSetting.getInstance().getCustomAnno();
-    private HttpSettingPanel httpSettingPanel = new HttpSettingPanel();
+    private final HttpSettingPanel httpSettingPanel = new HttpSettingPanel();
 
     @Override
     public @NlsContexts.ConfigurableName String getDisplayName() {
@@ -47,24 +47,23 @@ public class HttpSettingConfigurable implements Configurable {
         boolean generateDefault = setting.getGenerateDefault();
         boolean refreshWhenVcsChange = setting.getRefreshWhenVcsChange();
         boolean enableSearchEverywhere = setting.getEnableSearchEverywhere();
+        String customAnno = setting.getCustomAnno();
         return generateDefault != oldGenerateDefault ||
                refreshWhenVcsChange != oldRefreshWhenVcsChange ||
-               enableSearchEverywhere != oldEnableSearchEverywhere;
+               enableSearchEverywhere != oldEnableSearchEverywhere ||
+               !oldCustomAnno.equals(customAnno);
     }
 
     @Override
     public void reset() {
-        httpSettingPanel.reset(oldGenerateDefault, oldRefreshWhenVcsChange, oldEnableSearchEverywhere);
+        httpSettingPanel.reset(oldGenerateDefault, oldRefreshWhenVcsChange, oldEnableSearchEverywhere, oldCustomAnno);
     }
 
     @Override
     public void apply() {
-        boolean generateDefault = httpSettingPanel.getGenerateDefault();
-        String customControllerAnnotation = httpSettingPanel.getCustomControllerAnnotation();
-        HttpSetting.getInstance().setGenerateDefault(generateDefault);
-        HttpSetting.getInstance().setEnableSearchEverywhere(httpSettingPanel.getEnableSearchEverywhere());
-        HttpSetting.getInstance().setRefreshWhenVcsChange(httpSettingPanel.getRefreshWhenVcsChange());
-        invokeGenerateDefaultEnv(generateDefault);
+        HttpSetting setting = HttpSetting.getInstance();
+        String customControllerAnnotation = setting.getCustomAnno();
+        invokeGenerateDefaultEnv(setting.getGenerateDefault());
         customControllerAnnotation = customControllerAnnotation.trim();
         if (CharSequenceUtil.isBlank(customControllerAnnotation)) {
             return;

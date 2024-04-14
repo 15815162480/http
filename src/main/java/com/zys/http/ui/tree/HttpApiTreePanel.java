@@ -177,7 +177,7 @@ public class HttpApiTreePanel extends AbstractListTreePanel {
                 // 不显示包名则直接添加到 module 节点
                 children.addAll(filterClass(classNode, isFilterClass));
             } else {
-                String packageName = PsiTool.Class.getPackageName(k);
+                String packageName = PsiTool.Class.packageName(k);
                 if (classNode.getChildCount() > 0) {
                     if (Objects.isNull(packageName)) {
                         // 没有包名则直接添加到 module 节点

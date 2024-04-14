@@ -1,8 +1,13 @@
 ### 1.6.1
-* Move settings to a Setting>Tools>ApiTool, Now it's global configuration instead of single project configuration
 
+* improve: Move settings to a Setting>Tools>ApiTool, Now it's global configuration instead of single project
+  configuration
+* improve: If there are @ RequestBody/@ RequestPart parameters in the method parameters, corresponding requests will be
+  generated
+* improve: performance optimization
 
 ### 1.6.0
+
 * improve: Move settings to a new tab
 * feature: New setting-Can add a custom controller annotation(Set whether to move this annotation or not)
 

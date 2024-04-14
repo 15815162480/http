@@ -25,18 +25,16 @@ import java.util.*;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ParamConvert {
 
+    public static final String REQUEST_TYPE_KEY = "com.zys.ApiToolRequestType";
     private static final String ANNO_VALUE = "value";
     private static final String ANNO_NAME = "name";
 
     public static Map<String, ParamProperty> parsePsiMethodParams(@NotNull PsiMethod psiMethod, boolean isJsonPretty) {
-        PsiParameterList parameterList = psiMethod.getParameterList();
-        if (parameterList.isEmpty()) {
-            return Collections.emptyMap();
-        }
-
-        PsiParameter[] parameters = parameterList.getParameters();
-        if (parameters.length < 1) {
-            return Collections.emptyMap();
+        List<PsiParameter> parameters = PsiTool.Method.parameters(psiMethod);
+        if (parameters.isEmpty()) {
+            Map<String, ParamProperty> map = new HashMap<>();
+            map.put(REQUEST_TYPE_KEY, new ParamProperty(HttpEnum.ContentType.APPLICATION_X_FORM_URLENCODED, HttpEnum.ParamUsage.HEADER));
+            return map;
         }
         Map<String, ParamProperty> map = new HashMap<>();
         for (PsiParameter parameter : parameters) {
@@ -79,6 +77,7 @@ public class ParamConvert {
                 }
             }
 
+            map.put(REQUEST_TYPE_KEY, new ParamProperty(HttpEnum.ContentType.MULTIPART_FORM_DATA, HttpEnum.ParamUsage.HEADER));
             map.put(parameterName, new ParamProperty("", HttpEnum.ParamUsage.FILE));
             return;
         }
@@ -100,19 +99,24 @@ public class ParamConvert {
                 if (Objects.nonNull(requestBodyAnno)) {
                     // 将 paramMap 转成 Json 字符串
                     String jsonStr = isJsonPretty ? JSONUtil.toJsonPrettyStr(paramMap) : JSONUtil.toJsonStr(paramMap);
+                    map.put(REQUEST_TYPE_KEY, new ParamProperty(HttpEnum.ContentType.APPLICATION_JSON, HttpEnum.ParamUsage.HEADER));
                     map.put(parameterName, new ParamProperty(jsonStr, HttpEnum.ParamUsage.BODY));
                 } else {
+                    map.put(REQUEST_TYPE_KEY, new ParamProperty(HttpEnum.ContentType.APPLICATION_X_FORM_URLENCODED, HttpEnum.ParamUsage.HEADER));
                     paramMap.forEach((k, v) -> map.put(k.toString(), new ParamProperty(v, HttpEnum.ParamUsage.URL)));
                 }
             } else if (paramDefaultTypeValue instanceof Collection<?> || paramDefaultTypeValue instanceof Object[]) {
                 PsiAnnotation requestBodyAnno = parameter.getAnnotation(SpringEnum.Param.REQUEST_BODY.getClazz());
                 if (Objects.nonNull(requestBodyAnno)) {
+                    map.put(REQUEST_TYPE_KEY, new ParamProperty(HttpEnum.ContentType.APPLICATION_JSON, HttpEnum.ParamUsage.HEADER));
                     String jsonStr = isJsonPretty ? JSONUtil.toJsonPrettyStr(paramDefaultTypeValue) : JSONUtil.toJsonStr(paramDefaultTypeValue);
                     map.put(parameterName, new ParamProperty(jsonStr, HttpEnum.ParamUsage.BODY));
                 } else {
+                    map.put(REQUEST_TYPE_KEY, new ParamProperty(HttpEnum.ContentType.APPLICATION_X_FORM_URLENCODED, HttpEnum.ParamUsage.HEADER));
                     map.put(parameterName, new ParamProperty(paramDefaultTypeValue, paramUsage));
                 }
             } else {
+                map.put(REQUEST_TYPE_KEY, new ParamProperty(HttpEnum.ContentType.APPLICATION_X_FORM_URLENCODED, HttpEnum.ParamUsage.HEADER));
                 map.put(parameterName, new ParamProperty(paramDefaultTypeValue, paramUsage));
             }
         }

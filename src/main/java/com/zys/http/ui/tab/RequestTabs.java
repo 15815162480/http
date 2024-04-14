@@ -32,6 +32,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ItemListener;
 import java.util.Map;
 import java.util.Objects;
 
@@ -124,24 +125,11 @@ public class RequestTabs extends JBTabsImpl {
         JPanel bodyPanel = new JPanel(new BorderLayout(0, 0));
         this.bodyEditor = new CustomEditor(project);
         this.bodyEditor.setName("BODY");
-        bodyPanel.setBorder(JBUI.Borders.customLine(UIConstant.EDITOR_BORDER_COLOR, 0,3,0,0));
+        bodyPanel.setBorder(JBUI.Borders.customLine(UIConstant.EDITOR_BORDER_COLOR, 0, 3, 0, 0));
         bodyPanel.add(this.bodyEditor, BorderLayout.CENTER);
 
         JLabel label = new JLabel(Bundle.get("http.api.tab.body.type.label"));
-        this.bodyFileType = ComboBoxTool.fileTypeComboBox(e -> {
-            ItemSelectable item = e.getItemSelectable();
-            if (Objects.isNull(item)) {
-                return;
-            }
-            Object[] selects = item.getSelectedObjects();
-            if (Objects.isNull(selects) || selects.length < 1) {
-                return;
-            }
-            Object select = selects[0];
-            if (select instanceof FileType fileType) {
-                bodyEditor.setFileType(fileType);
-            }
-        });
+        this.bodyFileType = ComboBoxTool.fileTypeComboBox(itemListener());
 
         JPanel bodySelectPanel = new JPanel(new BorderLayout(0, 0));
         bodySelectPanel.add(label, BorderLayout.WEST);
@@ -190,7 +178,7 @@ public class RequestTabs extends JBTabsImpl {
     @Description("响应体标签页")
     private void responseTab() {
         JPanel respPanel = new JPanel(new BorderLayout(0, 0));
-        respPanel.setBorder(JBUI.Borders.customLine(UIConstant.EDITOR_BORDER_COLOR, 0,3,0,0));
+        respPanel.setBorder(JBUI.Borders.customLine(UIConstant.EDITOR_BORDER_COLOR, 0, 3, 0, 0));
         responseEditor = new CustomEditor(project);
         respPanel.add(responseEditor, BorderLayout.CENTER);
         JPanel respExpandPanel = new JPanel(new BorderLayout(0, 0));
@@ -206,20 +194,7 @@ public class RequestTabs extends JBTabsImpl {
         component.setTargetComponent(responseEditor);
         if (resTabNeedFileType) {
             JLabel label = new JLabel(Bundle.get("http.api.tab.response.type.label"));
-            ComboBox<FileType> comboBox = ComboBoxTool.fileTypeComboBox(e -> {
-                ItemSelectable item = e.getItemSelectable();
-                if (Objects.isNull(item)) {
-                    return;
-                }
-                Object[] selects = item.getSelectedObjects();
-                if (Objects.isNull(selects) || selects.length < 1) {
-                    return;
-                }
-                Object select = selects[0];
-                if (select instanceof FileType fileType) {
-                    responseEditor.setFileType(fileType);
-                }
-            });
+            ComboBox<FileType> comboBox = ComboBoxTool.fileTypeComboBox(itemListener());
             respExpandPanel.add(label, BorderLayout.WEST);
             respExpandPanel.add(comboBox, BorderLayout.CENTER);
         } else {
@@ -267,6 +242,7 @@ public class RequestTabs extends JBTabsImpl {
                 case BODY -> {
                     this.select(bodyTabInfo, true);
                     if (contentType.equals(HttpEnum.ContentType.APPLICATION_JSON)) {
+                        headerTable.addContentType(HttpEnum.ContentType.APPLICATION_JSON.getValue());
                         bodyEditor.setText(v.getDefaultValue().toString(), ComboBoxTool.JSON_FILE_TYPE);
                         bodyFileType.setSelectedItem(ComboBoxTool.JSON_FILE_TYPE);
                     } else {
@@ -284,6 +260,23 @@ public class RequestTabs extends JBTabsImpl {
                 }
             }
         }
+    }
+
+    private ItemListener itemListener() {
+        return e -> {
+            ItemSelectable item = e.getItemSelectable();
+            if (Objects.isNull(item)) {
+                return;
+            }
+            Object[] selects = item.getSelectedObjects();
+            if (Objects.isNull(selects) || selects.length < 1) {
+                return;
+            }
+            Object select = selects[0];
+            if (select instanceof FileType fileType) {
+                bodyEditor.setFileType(fileType);
+            }
+        };
     }
 
     @Description("结果状态文本")

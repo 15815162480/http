@@ -117,8 +117,6 @@ public class VelocityTool {
 
     @Description("创建 Postman API 渲染数据列表")
     private static List<MethodItem> createMethodItems(PsiClass c, String contextPath) {
-        HttpEnum.ContentType classContentType = PsiTool.Class.contentTypeHeader(c);
-
         String controllerPath = PsiTool.Annotation.getControllerPath(c);
         PsiMethod[] methods = c.getAllMethods();
         if (methods.length < 1) {
@@ -126,7 +124,7 @@ public class VelocityTool {
         }
         List<MethodItem> methodItems = new ArrayList<>();
         for (PsiMethod method : methods) {
-            MethodItem methodItem = createMethodItem(method, contextPath, controllerPath, classContentType);
+            MethodItem methodItem = createMethodItem(method, contextPath, controllerPath);
             if (Objects.nonNull(methodItem)) {
                 methodItems.add(methodItem);
             }
@@ -135,7 +133,7 @@ public class VelocityTool {
     }
 
     @Description("创建 Postman API 渲染数据")
-    private static MethodItem createMethodItem(PsiMethod method, String contextPath, String controllerPath, HttpEnum.ContentType classContentType) {
+    private static MethodItem createMethodItem(PsiMethod method, String contextPath, String controllerPath) {
         PsiAnnotation[] annotations = method.getAnnotations();
         MethodItem item = new MethodItem();
         // 方法名
@@ -159,10 +157,9 @@ public class VelocityTool {
                 item.setUri(UrlTool.buildMethodUri(contextPath, controllerPath, path));
 
                 // 请求头类型
-                HttpEnum.ContentType type = PsiTool.Method.contentType(classContentType, method);
-                item.setContentType(type.getValue());
+
                 // 请求参数类型
-                buildParamProperty(method, item, type, classContentType);
+                buildParamProperty(method, item);
                 return item;
             }
         }
@@ -170,8 +167,11 @@ public class VelocityTool {
     }
 
     @Description("处理参数类型")
-    private static void buildParamProperty(PsiMethod method, MethodItem item, HttpEnum.ContentType type, HttpEnum.ContentType classContentType) {
+    private static void buildParamProperty(PsiMethod method, MethodItem item) {
         Map<String, ParamProperty> paramPropertyMap = ParamConvert.parsePsiMethodParams(method, false);
+        HttpEnum.ContentType type = (HttpEnum.ContentType) paramPropertyMap.get(ParamConvert.REQUEST_TYPE_KEY).getDefaultValue();
+        item.setContentType(type.getValue());
+
         List<String> queryParamKey = new ArrayList<>();
         Set<String> urlencodedKey = new HashSet<>();
         String httpMethod = item.getMethod();
@@ -191,7 +191,7 @@ public class VelocityTool {
                 }
                 case BODY -> {
                     item.setMode("urlencoded");
-                    if (Objects.isNull(type) && (classContentType.equals(HttpEnum.ContentType.APPLICATION_JSON))) {
+                    if (type.equals(HttpEnum.ContentType.APPLICATION_JSON)) {
                         item.setMode("raw");
                         item.setRaw(v.getDefaultValue().toString().replace("\"", "\\\""));
                     }

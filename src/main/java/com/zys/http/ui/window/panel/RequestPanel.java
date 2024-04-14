@@ -2,14 +2,12 @@ package com.zys.http.ui.window.panel;
 
 import cn.hutool.core.date.DatePattern;
 import cn.hutool.core.text.CharSequenceUtil;
-import cn.hutool.http.Header;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
-import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiMethod;
 import com.intellij.ui.JBSplitter;
 import com.intellij.util.ui.JBUI;
@@ -21,7 +19,10 @@ import com.zys.http.entity.ReqHistory;
 import com.zys.http.entity.param.ParamProperty;
 import com.zys.http.extension.service.Bundle;
 import com.zys.http.extension.topic.HisListChangeTopic;
-import com.zys.http.tool.*;
+import com.zys.http.tool.HistoryTool;
+import com.zys.http.tool.HttpClient;
+import com.zys.http.tool.HttpServiceTool;
+import com.zys.http.tool.ThreadTool;
 import com.zys.http.tool.convert.ParamConvert;
 import com.zys.http.tool.ui.ComboBoxTool;
 import com.zys.http.tool.ui.DialogTool;
@@ -170,7 +171,7 @@ public class RequestPanel extends JBSplitter {
                         ApplicationManager.getApplication().invokeLater(() -> {
                             this.requestTabs.getResponseEditor().setText(responseBody, fileType);
                             this.requestTabs.resultText(response.getStatus());
-                            saveHistory(finalUrl, header, bodyText, fileNames, httpMethod, response.header(Header.CONTENT_TYPE), responseBody);
+                            saveHistory(finalUrl, header, bodyText, fileNames, httpMethod, responseBody);
                         });
                     },
                     e -> {
@@ -216,24 +217,19 @@ public class RequestPanel extends JBSplitter {
         // 获取选中节点的参数类型
         PsiMethod psiMethod = (PsiMethod) methodNode.getValue().getPsiElement();
         HttpMethod finalHttpMethod = httpMethod;
-        ReadAction.nonBlocking(() -> {
-            HttpEnum.ContentType contentType = PsiTool.Class.contentTypeHeader((PsiClass) psiMethod.getParent());
-            return PsiTool.Method.contentType(contentType, psiMethod);
-        }).finishOnUiThread(ModalityState.defaultModalityState(), type -> {
-            this.requestTabs.getHeaderTable().addContentType(type.getValue());
-            // 填充参数
-            // 先清空 model
-            ReadAction.nonBlocking(() -> ParamConvert.parsePsiMethodParams(psiMethod, true))
-                    .finishOnUiThread(ModalityState.defaultModalityState(), map -> {
-                        paramPropertyMap = map;
-                        this.requestTabs.reset();
-                        this.requestTabs.chooseEvent(finalHttpMethod, type, paramPropertyMap);
-                    })
-                    .submit(ThreadTool.getExecutor());
-        }).submit(ThreadTool.getExecutor());
+
+        ReadAction.nonBlocking(() -> ParamConvert.parsePsiMethodParams(psiMethod, true))
+                .finishOnUiThread(ModalityState.defaultModalityState(), map -> {
+                    paramPropertyMap = map;
+                    this.requestTabs.reset();
+                    HttpEnum.ContentType type = (HttpEnum.ContentType) map.get(ParamConvert.REQUEST_TYPE_KEY).getDefaultValue();
+                    paramPropertyMap.remove(ParamConvert.REQUEST_TYPE_KEY);
+                    this.requestTabs.chooseEvent(finalHttpMethod, type, paramPropertyMap);
+                })
+                .submit(ThreadTool.getExecutor());
     }
 
-    private void saveHistory(String finalUrl, Map<String, String> header, String bodyText, String[] fileNames, HttpEnum.HttpMethod httpMethod, String resHeader, String resBody) {
+    private void saveHistory(String finalUrl, Map<String, String> header, String bodyText, String[] fileNames, HttpEnum.HttpMethod httpMethod, String resBody) {
         // 获取到当前环境的配置
         HttpConfig httpConfig = serviceTool.getHttpConfig(serviceTool.getSelectedEnv());
         if (Objects.isNull(httpConfig)) {

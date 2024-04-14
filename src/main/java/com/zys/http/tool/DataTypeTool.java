@@ -77,11 +77,13 @@ public class DataTypeTool {
         BASIC_DATA_TYPE_OBJECT_MAP.put("org.springframework.ui.ModelMap", Collections.emptyMap());
     }
 
+    @SuppressWarnings("unused")
     @Description("是否是 Java 的基础类型")
     public static boolean isJavaBasicDataType(String type) {
         return isBasicDataType(type, JAVA_BASIC_DATA_TYPE);
     }
 
+    @SuppressWarnings("unused")
     @Description("是否是 Kotlin 的基础类型")
     public static boolean isKotlinBasicDataType(String type) {
         return isBasicDataType(type, KOTLIN_BASIC_DATA_TYPE);

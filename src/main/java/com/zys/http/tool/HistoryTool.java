@@ -3,6 +3,7 @@ package com.zys.http.tool;
 import com.intellij.openapi.project.Project;
 import com.zys.http.entity.ReqHistory;
 import com.zys.http.extension.service.HistoryService;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
@@ -19,7 +20,8 @@ public class HistoryTool {
         historyService = HistoryService.getInstance(project);
     }
 
-    public static HistoryTool getInstance(@NotNull Project project) {
+    @Contract("_ -> new")
+    public static @NotNull HistoryTool getInstance(@NotNull Project project) {
         return new HistoryTool(project);
     }
 

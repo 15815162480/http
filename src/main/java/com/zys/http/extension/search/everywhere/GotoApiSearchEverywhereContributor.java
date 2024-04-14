@@ -44,10 +44,10 @@ public class GotoApiSearchEverywhereContributor extends AbstractGotoSEContributo
         for (Module m : moduleList) {
             List<PsiClass> controllers = ProjectTool.getModuleControllers(project, m).stream()
                     .filter(c -> c.getAllMethods().length > 0)
-                    .filter(c -> !PsiTool.Class.getAllXxxMappingMethods(c).isEmpty())
+                    .filter(c -> !PsiTool.Class.springMvcAnnoRequests(c).isEmpty())
                     .toList();
             for (PsiClass c : controllers) {
-                List<PsiMethod> xxxMappingMethods = PsiTool.Class.getAllXxxMappingMethods(c);
+                List<PsiMethod> xxxMappingMethods = PsiTool.Class.springMvcAnnoRequests(c);
                 String controllerPath = PsiTool.Annotation.getControllerPath(c);
                 String contextPath = ProjectTool.getModuleContextPath(project, m);
                 for (PsiMethod method : xxxMappingMethods) {

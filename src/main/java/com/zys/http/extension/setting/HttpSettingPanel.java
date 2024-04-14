@@ -1,14 +1,19 @@
 package com.zys.http.extension.setting;
 
 import cn.hutool.core.text.CharSequenceUtil;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.project.ProjectManager;
 import com.intellij.ui.components.JBCheckBox;
 import com.intellij.ui.components.JBPanel;
 import com.intellij.util.ui.JBUI;
 import com.zys.http.extension.service.Bundle;
+import com.zys.http.extension.topic.RefreshTreeTopic;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.*;
 
 /**
  * @author zys
@@ -25,6 +30,12 @@ public class HttpSettingPanel extends JBPanel<HttpSettingPanel> {
         super(new BorderLayout(0, 0));
         httpSetting = HttpSetting.getInstance();
         init();
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                transferFocus();
+            }
+        });
     }
 
     public void init() {
@@ -64,26 +75,11 @@ public class HttpSettingPanel extends JBPanel<HttpSettingPanel> {
         add(main, BorderLayout.NORTH);
     }
 
-    public void reset(boolean generateDefault, boolean refreshWhenVcsChange, boolean enableSearchEverywhere) {
+    public void reset(boolean generateDefault, boolean refreshWhenVcsChange, boolean enableSearchEverywhere, String oldCustomAnno) {
         defaultBox.setSelected(generateDefault);
         vcsBox.setSelected(refreshWhenVcsChange);
         seBox.setSelected(enableSearchEverywhere);
-    }
-
-    public boolean getGenerateDefault() {
-        return defaultBox.isSelected();
-    }
-
-    public boolean getRefreshWhenVcsChange() {
-        return vcsBox.isSelected();
-    }
-
-    public boolean getEnableSearchEverywhere() {
-        return seBox.isSelected();
-    }
-
-    public String getCustomControllerAnnotation() {
-        return annoTextField.getText();
+        annoTextField.setText(oldCustomAnno);
     }
 
 
@@ -96,6 +92,27 @@ public class HttpSettingPanel extends JBPanel<HttpSettingPanel> {
         if (CharSequenceUtil.isNotBlank(customAnno)) {
             annoTextField.setText(customAnno);
         }
+
+
+        annoTextField.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                String text = annoTextField.getText();
+                if (CharSequenceUtil.isBlank(text)) {
+                    ApplicationManager.getApplication().invokeLater(() -> {
+                        annoTextField.setText("");
+                        httpSetting.setCustomAnno("");
+                    });
+                    return;
+                }
+                httpSetting.setCustomAnno(text);
+                @NotNull Project[] openProjects = ProjectManager.getInstance().getOpenProjects();
+                for (Project project : openProjects) {
+                    project.getMessageBus().syncPublisher(RefreshTreeTopic.TOPIC).refresh(false);
+                }
+            }
+        });
+
         panel.add(annoTextField, BorderLayout.CENTER);
 
         return panel;
