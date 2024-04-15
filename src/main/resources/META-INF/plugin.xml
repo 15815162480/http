@@ -71,7 +71,7 @@
                 fix bugs: Nesting of parameters causes stack overflow, eg:
                 <code>public class A { private String s; private A a;}</code> or <br>
                 <code>public class A { private String s, private List<A> as;}</code> or <br>
-                <code>public class A { private String s, private A[] as;}</code
+                <code>public class A { private String s, private A[] as;}</code>
             </li>
         </ul>
         <br>
