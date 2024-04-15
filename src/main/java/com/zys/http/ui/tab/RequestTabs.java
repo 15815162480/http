@@ -129,7 +129,7 @@ public class RequestTabs extends JBTabsImpl {
         bodyPanel.add(this.bodyEditor, BorderLayout.CENTER);
 
         JLabel label = new JLabel(Bundle.get("http.api.tab.body.type.label"));
-        this.bodyFileType = ComboBoxTool.fileTypeComboBox(itemListener());
+        this.bodyFileType = ComboBoxTool.fileTypeComboBox(itemListener(bodyEditor));
 
         JPanel bodySelectPanel = new JPanel(new BorderLayout(0, 0));
         bodySelectPanel.add(label, BorderLayout.WEST);
@@ -194,7 +194,7 @@ public class RequestTabs extends JBTabsImpl {
         component.setTargetComponent(responseEditor);
         if (resTabNeedFileType) {
             JLabel label = new JLabel(Bundle.get("http.api.tab.response.type.label"));
-            ComboBox<FileType> comboBox = ComboBoxTool.fileTypeComboBox(itemListener());
+            ComboBox<FileType> comboBox = ComboBoxTool.fileTypeComboBox(itemListener(responseEditor));
             respExpandPanel.add(label, BorderLayout.WEST);
             respExpandPanel.add(comboBox, BorderLayout.CENTER);
         } else {
@@ -262,7 +262,7 @@ public class RequestTabs extends JBTabsImpl {
         }
     }
 
-    private ItemListener itemListener() {
+    private ItemListener itemListener(CustomEditor customEditor) {
         return e -> {
             ItemSelectable item = e.getItemSelectable();
             if (Objects.isNull(item)) {
@@ -274,7 +274,7 @@ public class RequestTabs extends JBTabsImpl {
             }
             Object select = selects[0];
             if (select instanceof FileType fileType) {
-                bodyEditor.setFileType(fileType);
+                customEditor.setFileType(fileType);
             }
         };
     }
