@@ -70,7 +70,7 @@
             <li>
                 fix bugs: Nesting of parameters causes stack overflow, eg:
                 <code>public class A { private String s; private A a;}</code> or <br>
-                <code>public class A { private String s, private List<A> as;}</code> or <br>
+                <code>public class A { private String s, private List&lt;A&gt; as;}</code> or <br>
                 <code>public class A { private String s, private A[] as;}</code>
             </li>
         </ul>
@@ -87,7 +87,7 @@
             <li>
                 bug 修复: 参数互相嵌套导致栈溢出, 如
                 <code>public class A { private String s; private A a;}</code> 或 <br>
-                <code>public class A { private String s, private List<A> as;}</code> 或 <br>
+                <code>public class A { private String s, private List&lt;A&gt; as;}</code> 或 <br>
                 <code>public class A { private String s, private A[] as;}</code>
             </li>
         </ul>
