@@ -57,8 +57,7 @@
         <ul>
             <li>
                 improve: Move settings to a Setting>Tools>ApiTool, Now it's global configuration instead of single
-                project
-                configuration
+                project configuration
             </li>
             <li>
                 improve: If there are @ RequestBody/@ RequestPart parameters in the method parameters, corresponding
