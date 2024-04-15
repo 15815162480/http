@@ -62,7 +62,7 @@
             </li>
             <li>
                 improve: If there are @ RequestBody/@ RequestPart parameters in the method parameters, corresponding
-                requests will be generated
+                request headers will be generated
             </li>
             <li>
                 improve: performance optimization
