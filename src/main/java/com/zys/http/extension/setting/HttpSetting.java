@@ -67,7 +67,7 @@ public class HttpSetting implements PersistentStateComponent<HttpSetting.State> 
 
     @Data
     public static class State {
-        private String customAnno;
+        private String customAnno = "";
         private boolean generateDefault = true;
         private boolean refreshWhenVcsChange = true;
         private boolean enableSearchEverywhere = true;
