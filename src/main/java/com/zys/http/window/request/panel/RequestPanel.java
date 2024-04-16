@@ -1,0 +1,71 @@
+package com.zys.http.window.request.panel;
+
+import com.intellij.openapi.project.Project;
+import com.intellij.psi.PsiClass;
+import com.intellij.ui.JBSplitter;
+import com.zys.http.constant.HttpEnum;
+import com.zys.http.extension.topic.TreeTopic;
+import com.zys.http.ui.tree.node.BaseNode;
+import com.zys.http.ui.tree.node.MethodNode;
+
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * @author zhou ys
+ * @since 2024-04-16
+ */
+public class RequestPanel extends JBSplitter {
+    private final transient Project project;
+    private final ApiTreePanel apiTreePanel;
+    private final ConfigPanel configPanel;
+
+    public RequestPanel(Project project) {
+        super(true, Window.class.getName(), 0.5F);
+        this.project = project;
+        this.apiTreePanel = new ApiTreePanel(project);
+        this.configPanel = new ConfigPanel(project);
+        this.apiTreePanel.setChooseCallback(configPanel::chooseEvent);
+        this.setFirstComponent(apiTreePanel);
+        this.setSecondComponent(configPanel);
+        initTopic();
+    }
+
+    private void initTopic() {
+        project.getMessageBus().connect().subscribe(TreeTopic.SELECTED_TOPIC, (TreeTopic.Selected) psiMethod -> {
+            PsiClass containingClass = psiMethod.getContainingClass();
+            MethodNode methodNode = apiTreePanel.getMethodNodeMap().getOrDefault(containingClass, new ArrayList<>()).stream()
+                    .filter(v -> v.getValue().getPsiElement().equals(psiMethod)).findFirst().orElse(null);
+            apiTreePanel.setSelectedNode(methodNode);
+            configPanel.reload(methodNode);
+        });
+    }
+
+    public void loadNodes(List<HttpEnum.HttpMethod> methods, List<String> nodeShowValues) {
+        this.apiTreePanel.loadNodes(methods, nodeShowValues);
+    }
+    public void treeExpand() {
+        this.apiTreePanel.treeExpand();
+    }
+
+    public void treeCollapse() {
+        this.apiTreePanel.treeCollapse();
+    }
+
+    public void clearApiTree() {
+        this.apiTreePanel.clear();
+    }
+
+    public void reload(BaseNode<?> chooseNode) {
+        this.configPanel.reload(chooseNode);
+    }
+
+    public BaseNode<?> getApiTreeChooseNode() {
+        return this.apiTreePanel.getChooseNode();
+    }
+
+    public void treeExpandAll() {
+        this.apiTreePanel.expandAll();
+    }
+}
