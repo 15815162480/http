@@ -9,8 +9,8 @@ import com.intellij.ui.SeparatorOrientation;
 import com.intellij.util.ui.JBUI;
 import com.zys.http.constant.UIConstant;
 import com.zys.http.entity.HttpConfig;
-import com.zys.http.extension.topic.EnvListChangeTopic;
 import com.zys.http.extension.service.Bundle;
+import com.zys.http.extension.topic.EnvironmentTopic;
 import com.zys.http.tool.HttpServiceTool;
 import com.zys.http.tool.ui.ComboBoxTool;
 import com.zys.http.tool.ui.DialogTool;
@@ -151,9 +151,9 @@ public class EnvAddOrEditDialog extends DialogWrapper {
         httpConfig.setProtocol(protocol);
 
         if (isAdd) {
-            project.getMessageBus().syncPublisher(EnvListChangeTopic.TOPIC).save(configName, httpConfig);
+            project.getMessageBus().syncPublisher(EnvironmentTopic.LIST_TOPIC).save(configName, httpConfig);
         } else {
-            project.getMessageBus().syncPublisher(EnvListChangeTopic.TOPIC).edit(configName, httpConfig);
+            project.getMessageBus().syncPublisher(EnvironmentTopic.LIST_TOPIC).edit(configName, httpConfig);
         }
         super.doOKAction();
     }

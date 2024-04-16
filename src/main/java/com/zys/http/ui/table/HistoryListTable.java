@@ -18,12 +18,10 @@ import com.zys.http.action.RemoveAction;
 import com.zys.http.constant.HttpConstant;
 import com.zys.http.entity.ReqHistory;
 import com.zys.http.extension.service.Bundle;
-import com.zys.http.extension.topic.HisListChangeTopic;
+import com.zys.http.extension.topic.HistoryTopic;
 import com.zys.http.tool.HistoryTool;
-import com.zys.http.tool.HttpClient;
 import com.zys.http.ui.dialog.HistoryDialog;
-import com.zys.http.ui.window.RequestTabWindow;
-import com.zys.http.ui.window.panel.RequestPanel;
+import com.zys.http.window.request.RequestWindow;
 import jdk.jfr.Description;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -61,20 +59,9 @@ public class HistoryListTable extends AbstractTable {
     }
 
     private void initTopic() {
-        project.getMessageBus().connect().subscribe(HisListChangeTopic.TOPIC, new HisListChangeTopic() {
-            @Override
-            public void save(ReqHistory config) {
-                ApplicationManager.getApplication().invokeLater(() -> {
-                    historyTool.saveHistory(config);
-                    reloadTableModel();
-                });
-            }
-
-            @Override
-            public void remove(Integer id) {
-                historyTool.deleteHistory(id);
-                ApplicationManager.getApplication().invokeLater(() -> reloadTableModel());
-            }
+        project.getMessageBus().connect().subscribe(HistoryTopic.CHANGE_TOPIC, (HistoryTopic.Change) config -> {
+            historyTool.saveHistory(config);
+            ApplicationManager.getApplication().invokeLater(this::reloadTableModel);
         });
     }
 
@@ -135,7 +122,7 @@ public class HistoryListTable extends AbstractTable {
             }
             ContentManager contentManager = toolWindow.getContentManager();
             Content content = contentManager.getContent(0);
-            if (Objects.isNull(content) || !(content.getComponent() instanceof RequestTabWindow requestTabWindow)) {
+            if (Objects.isNull(content) || !(content.getComponent() instanceof RequestWindow requestWindow)) {
                 return;
             }
             DefaultTableModel model = (DefaultTableModel) valueTable.getModel();
@@ -145,18 +132,8 @@ public class HistoryListTable extends AbstractTable {
             if (history == null) {
                 return;
             }
-
-            ApplicationManager.getApplication().invokeLater(() -> {
-                RequestPanel requestPanel = requestTabWindow.getRequestPanel();
-                requestPanel.getHostTextField().setText(history.getHost() + history.getUri());
-                requestPanel.getHttpMethodComboBox().setSelectedItem(history.getMethod());
-                requestPanel.getRequestTabs().getFileUploadTable().setModel(history.getFileNames());
-                requestPanel.getRequestTabs().getParameterTable().setModel(history.getParams());
-                requestPanel.getRequestTabs().getHeaderTable().setModel(history.getHeaders());
-                requestPanel.getRequestTabs().getBodyEditor().setText(history.getBody(), HttpClient.parseFileType(history.getContentType()));
-                requestPanel.getRequestTabs().getBodyFileType().setSelectedItem(HttpClient.parseFileType(history.getContentType()));
-                contentManager.setSelectedContent(content);
-            });
+            project.getMessageBus().syncPublisher(HistoryTopic.GENERATE_TOPIC).generate(history);
+            contentManager.setSelectedContent(content);
         });
         renderAction.setEnabled(false);
         group.add(renderAction);

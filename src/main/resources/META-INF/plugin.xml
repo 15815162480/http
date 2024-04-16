@@ -52,26 +52,10 @@
 
     <!-- 更新公告 -->
     <change-notes><![CDATA[
-        <h3>1.6.1</h3>
+        <h3>1.6.2</h3>
         <h4>En</h4>
         <ul>
-            <li>
-                improve: Move settings to a Setting>Tools>ApiTool, Now it's global configuration instead of single
-                project configuration
-            </li>
-            <li>
-                improve: If there are @ RequestBody/@ RequestPart parameters in the method parameters, corresponding
-                request headers will be generated
-            </li>
-            <li>
-                improve: performance optimization
-            </li>
-            <li>
-                fix bugs: Nesting of parameters causes stack overflow, eg:
-                <code>public class A { private String s; private A a;}</code> or <br>
-                <code>public class A { private String s, private List&lt;A&gt; as;}</code> or <br>
-                <code>public class A { private String s, private A[] as;}</code>
-            </li>
+            <li>fix bugs: When node filtering does not display package nodes, annotations will be displayed in the panel</li>
         </ul>
         <br>
         <p>If you find it useful, please go to the plugin page and give it a good review.<a
@@ -80,15 +64,7 @@
             version</a></p>
         <h4>中文</h4>
         <ul>
-            <li>优化: 将设置移动到 设置>工具>ApiTool, 现在是全局配置而不是项目单独配置</li>
-            <li>优化: 方法参数中如果有 @RequestBody / @RequestPart 的参数, 会生成对应的请求头到请求头表格中</li>
-            <li>优化: 性能优化</li>
-            <li>
-                bug 修复: 参数互相嵌套导致栈溢出, 如
-                <code>public class A { private String s; private A a;}</code> 或 <br>
-                <code>public class A { private String s, private List&lt;A&gt; as;}</code> 或 <br>
-                <code>public class A { private String s, private A[] as;}</code>
-            </li>
+            <li>bug 修复: 当节点过滤-不展示包节点时, 会将注解展示在面板中</li>
         </ul>
         <br>
         <p>如果觉得好用的话，请前往插件页面给个好评。<a href="https://plugins.jetbrains.com/plugin/22737-apitool/reviews">ApiTool</a>

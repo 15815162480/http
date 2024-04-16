@@ -11,9 +11,9 @@ import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
 import com.zys.http.constant.HttpConstant;
 import com.zys.http.extension.service.Bundle;
-import com.zys.http.ui.window.EnvironmentTabWindow;
-import com.zys.http.ui.window.HistoryTabWindow;
-import com.zys.http.ui.window.RequestTabWindow;
+import com.zys.http.window.environment.EnvironmentWindow;
+import com.zys.http.window.history.HistoryWindow;
+import com.zys.http.window.request.RequestWindow;
 import jdk.jfr.Description;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,16 +29,16 @@ public class HttpMainWindowFactory implements ToolWindowFactory, DumbAware {
     public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
         ContentFactory contentFactory = ContentFactory.getInstance();
 
-        RequestTabWindow requestTabWindow = new RequestTabWindow(project);
-        Content apiContent = contentFactory.createContent(requestTabWindow, Bundle.get("http.window.tab.api"), false);
+        RequestWindow requestWindow = new RequestWindow(project);
+        Content apiContent = contentFactory.createContent(requestWindow, Bundle.get("http.window.tab.api"), false);
         toolWindow.getContentManager().addContent(apiContent);
 
-        EnvironmentTabWindow environmentTabWindow = new EnvironmentTabWindow(project);
-        Content envContent = contentFactory.createContent(environmentTabWindow, Bundle.get("http.window.tab.env"), false);
+        EnvironmentWindow environmentWindow = new EnvironmentWindow(project);
+        Content envContent = contentFactory.createContent(environmentWindow, Bundle.get("http.window.tab.env"), false);
         toolWindow.getContentManager().addContent(envContent);
 
-        HistoryTabWindow historyTabWindow = new HistoryTabWindow(project);
-        Content hisContent = contentFactory.createContent(historyTabWindow, Bundle.get("http.window.tab.history"), false);
+        HistoryWindow historyWindow = new HistoryWindow(project);
+        Content hisContent = contentFactory.createContent(historyWindow, Bundle.get("http.window.tab.history"), false);
         toolWindow.getContentManager().addContent(hisContent);
     }
 

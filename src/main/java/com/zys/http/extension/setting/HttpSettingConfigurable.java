@@ -10,8 +10,8 @@ import com.intellij.openapi.util.NlsContexts;
 import com.zys.http.constant.HttpConstant;
 import com.zys.http.constant.HttpEnum;
 import com.zys.http.entity.HttpConfig;
-import com.zys.http.extension.topic.EnvListChangeTopic;
-import com.zys.http.extension.topic.RefreshTreeTopic;
+import com.zys.http.extension.topic.EnvironmentTopic;
+import com.zys.http.extension.topic.TreeTopic;
 import com.zys.http.tool.ProjectTool;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -88,10 +88,10 @@ public class HttpSettingConfigurable implements Configurable {
                         config.setProtocol(HttpEnum.Protocol.HTTP);
                         config.setHostValue("127.0.0.1:" + port + contextPath);
                         if (!ProjectTool.getModuleControllers(project, module).isEmpty()) {
-                            project.getMessageBus().syncPublisher(EnvListChangeTopic.TOPIC).save(name, config);
+                            project.getMessageBus().syncPublisher(EnvironmentTopic.LIST_TOPIC).save(name, config);
                         }
                     } else {
-                        project.getMessageBus().syncPublisher(EnvListChangeTopic.TOPIC).remove(name);
+                        project.getMessageBus().syncPublisher(EnvironmentTopic.LIST_TOPIC).remove(name);
                     }
                 });
             }
@@ -101,7 +101,7 @@ public class HttpSettingConfigurable implements Configurable {
     private void invokeCustomControllerAnnotation() {
         @NotNull Project[] openProjects = ProjectManager.getInstance().getOpenProjects();
         for (Project p : openProjects) {
-            p.getMessageBus().syncPublisher(RefreshTreeTopic.TOPIC).refresh(false);
+            p.getMessageBus().syncPublisher(TreeTopic.REFRESH_TOPIC).refresh(false);
         }
     }
 

@@ -6,7 +6,7 @@ import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.project.Project;
 import com.zys.http.action.SelectAction;
 import com.zys.http.extension.service.Bundle;
-import com.zys.http.extension.topic.EnvChangeTopic;
+import com.zys.http.extension.topic.EnvironmentTopic;
 import com.zys.http.tool.HttpServiceTool;
 import com.zys.http.tool.ui.ThemeTool;
 import com.zys.http.ui.icon.HttpIcons;
@@ -44,7 +44,7 @@ public class SelectActionGroup extends DefaultActionGroup {
             SelectAction action = new SelectAction(s);
             action.setAction(event -> {
                 tool.setSelectedEnv(event.getPresentation().getText());
-                project.getMessageBus().syncPublisher(EnvChangeTopic.TOPIC).change();
+                project.getMessageBus().syncPublisher(EnvironmentTopic.CHANGE_TOPIC).change();
             });
             if (s.equals(tool.getSelectedEnv())) {
                 action.setIcon(ThemeTool.isDark() ? HttpIcons.General.DEFAULT : HttpIcons.General.DEFAULT_LIGHT);

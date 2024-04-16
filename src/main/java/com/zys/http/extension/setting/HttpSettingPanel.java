@@ -8,12 +8,15 @@ import com.intellij.ui.components.JBCheckBox;
 import com.intellij.ui.components.JBPanel;
 import com.intellij.util.ui.JBUI;
 import com.zys.http.extension.service.Bundle;
-import com.zys.http.extension.topic.RefreshTreeTopic;
+import com.zys.http.extension.topic.TreeTopic;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 /**
  * @author zys
@@ -108,7 +111,7 @@ public class HttpSettingPanel extends JBPanel<HttpSettingPanel> {
                 httpSetting.setCustomAnno(text);
                 @NotNull Project[] openProjects = ProjectManager.getInstance().getOpenProjects();
                 for (Project project : openProjects) {
-                    project.getMessageBus().syncPublisher(RefreshTreeTopic.TOPIC).refresh(false);
+                    project.getMessageBus().syncPublisher(TreeTopic.REFRESH_TOPIC).refresh(false);
                 }
             }
         });

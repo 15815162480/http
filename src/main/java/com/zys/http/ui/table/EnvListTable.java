@@ -9,9 +9,8 @@ import com.intellij.openapi.project.Project;
 import com.zys.http.action.*;
 import com.zys.http.constant.HttpEnum;
 import com.zys.http.entity.HttpConfig;
-import com.zys.http.extension.topic.EnvChangeTopic;
-import com.zys.http.extension.topic.EnvListChangeTopic;
 import com.zys.http.extension.service.Bundle;
+import com.zys.http.extension.topic.EnvironmentTopic;
 import com.zys.http.tool.ui.DialogTool;
 import com.zys.http.ui.dialog.EnvAddOrEditDialog;
 import jdk.jfr.Description;
@@ -39,7 +38,7 @@ public class EnvListTable extends AbstractTable {
     }
 
     private void initTopic() {
-        project.getMessageBus().connect().subscribe(EnvListChangeTopic.TOPIC, new EnvListChangeTopic() {
+        project.getMessageBus().connect().subscribe(EnvironmentTopic.LIST_TOPIC, new EnvironmentTopic.List() {
             @Override
             public void save(String name, HttpConfig config) {
                 ApplicationManager.getApplication().invokeLater(() -> {
@@ -58,7 +57,7 @@ public class EnvListTable extends AbstractTable {
                     model.setValueAt(config.getHostValue(), selectedRow, 2);
                     serviceTool.putHttpConfig(name, config);
                     reloadTableModel();
-                    project.getMessageBus().syncPublisher(EnvChangeTopic.TOPIC).change();
+                    project.getMessageBus().syncPublisher(EnvironmentTopic.CHANGE_TOPIC).change();
                 });
             }
 

@@ -1,4 +1,4 @@
-package com.zys.http.ui.window;
+package com.zys.http.window.environment;
 
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.project.Project;
@@ -15,9 +15,9 @@ import javax.swing.*;
  * @since 2023-10-07
  */
 @Description("环境列表标签页")
-public class EnvironmentTabWindow extends SimpleToolWindowPanel implements Disposable {
+public class EnvironmentWindow extends SimpleToolWindowPanel implements Disposable {
 
-    public EnvironmentTabWindow(Project project) {
+    public EnvironmentWindow(Project project) {
         super(true, true);
         EnvListTable envListTable = new EnvListTable(project);
         JComponent component = envListTable.getToolbar().getComponent();

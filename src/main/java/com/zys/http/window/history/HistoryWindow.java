@@ -1,4 +1,4 @@
-package com.zys.http.ui.window;
+package com.zys.http.window.history;
 
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.project.Project;
@@ -16,10 +16,10 @@ import javax.swing.*;
  * @since 2024-03-01
  */
 @Description("请求历史记录")
-public class HistoryTabWindow extends SimpleToolWindowPanel implements Disposable {
+public class HistoryWindow extends SimpleToolWindowPanel implements Disposable {
 
-    public HistoryTabWindow(@NotNull Project project) {
-        super(true);
+    public HistoryWindow(@NotNull Project project) {
+        super(true, true);
         HistoryListTable historyListTable = new HistoryListTable(project);
         JComponent component = historyListTable.getToolbar().getComponent();
         component.setBorder(JBUI.Borders.customLine(UIConstant.BORDER_COLOR, 0, 0, 1, 0));

@@ -5,7 +5,7 @@ import com.intellij.ui.components.JBCheckBox;
 import com.intellij.util.ui.JBUI;
 import com.zys.http.constant.UIConstant;
 import com.zys.http.extension.service.Bundle;
-import com.zys.http.extension.topic.RefreshTreeTopic;
+import com.zys.http.extension.topic.TreeTopic;
 
 import javax.swing.*;
 import java.awt.*;
@@ -39,14 +39,14 @@ public abstract class AbstractFilterPopup<T> extends JPopupMenu {
         checkboxPane.setLayout(new GridLayout(values.size(), 1, 3, 3));
         for (T value : values) {
             JBCheckBox checkBox = new JBCheckBox(value.toString(), selected(value));
-            checkBox.addActionListener(e -> project.getMessageBus().syncPublisher(RefreshTreeTopic.TOPIC).refresh(true));
+            checkBox.addActionListener(e -> project.getMessageBus().syncPublisher(TreeTopic.REFRESH_TOPIC).refresh(true));
             checkBoxList.add(checkBox);
             checkboxPane.add(checkBox);
         }
         JButton selectAll = new JButton(Bundle.get("http.api.icon.node.filter.select.all"));
         selectAll.addActionListener(e -> {
             checkBoxList.forEach(v -> v.setSelected(true));
-            project.getMessageBus().syncPublisher(RefreshTreeTopic.TOPIC).refresh(true);
+            project.getMessageBus().syncPublisher(TreeTopic.REFRESH_TOPIC).refresh(true);
 
         });
         buttonPane.add(selectAll);
@@ -54,7 +54,7 @@ public abstract class AbstractFilterPopup<T> extends JPopupMenu {
         JButton unSelectAll = new JButton(Bundle.get("http.api.icon.node.filter.unselect.all"));
         unSelectAll.addActionListener(e -> {
             checkBoxList.forEach(v -> v.setSelected(false));
-            project.getMessageBus().syncPublisher(RefreshTreeTopic.TOPIC).refresh(true);
+            project.getMessageBus().syncPublisher(TreeTopic.REFRESH_TOPIC).refresh(true);
         });
         buttonPane.add(unSelectAll);
 
