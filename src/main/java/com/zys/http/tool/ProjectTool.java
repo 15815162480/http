@@ -67,6 +67,7 @@ public class ProjectTool {
 
     }
 
+    @SneakyThrows
     @Description("获取模块中配置文件中指定键的值")
     private static String getModuleProperties(Project project, Module module, String key) {
         if (CharSequenceUtil.isEmpty(key)) {
@@ -77,7 +78,8 @@ public class ProjectTool {
             return "";
         }
         if (psiFile instanceof YAMLFile yamlFile) {
-            Pair<PsiElement, String> value = YAMLUtil.getValue(yamlFile, key.split("\\."));
+            Pair<PsiElement, String> value = ReadAction.nonBlocking(() -> YAMLUtil.getValue(yamlFile, key.split("\\.")))
+                    .submit(ThreadTool.getExecutor()).get();
             if (Objects.nonNull(value)) {
                 PsiElement first = value.getFirst();
                 String text = first.getText();
@@ -85,7 +87,7 @@ public class ProjectTool {
             }
         }
         if (psiFile instanceof PropertiesFile propertiesFile) {
-            return propertiesFile.getNamesMap().getOrDefault(key, "");
+            return ReadAction.nonBlocking(() -> propertiesFile.getNamesMap().getOrDefault(key, "")).submit(ThreadTool.getExecutor()).get();
         }
 
         return "";
@@ -116,7 +118,7 @@ public class ProjectTool {
             Stream<PsiAnnotation> s2 = globalSearchScope.map(moduleScope -> ApplicationManager.getApplication().runReadAction((Computable<Collection<PsiAnnotation>>) () ->
                             JavaAnnotationIndex.getInstance().get(SpringEnum.Controller.REST_CONTROLLER.getShortClassName(), project, moduleScope)))
                     .orElse(new ArrayList<>()).stream();
-            if (CharSequenceUtil.isNotEmpty(customAnno)) {
+            if (CharSequenceUtil.isNotEmpty(customAnno) && !customAnno.endsWith(".")) {
                 s2 = Stream.concat(s2, globalSearchScope.map(moduleScope -> ApplicationManager.getApplication().runReadAction((Computable<Collection<PsiAnnotation>>) () ->
                                 JavaAnnotationIndex.getInstance().get(customAnno.substring(customAnno.lastIndexOf('.') + 1), project, moduleScope)))
                         .orElse(new ArrayList<>()).stream());

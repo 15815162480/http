@@ -2,7 +2,6 @@ package com.zys.http;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
@@ -24,7 +23,7 @@ import java.util.Objects;
  * @since 2023-08-13
  */
 @Description("创建 ToolWindow 工厂")
-public class HttpMainWindowFactory implements ToolWindowFactory, DumbAware {
+public class HttpMainWindowFactory implements ToolWindowFactory {
     @Override
     public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
         ContentFactory contentFactory = ContentFactory.getInstance();

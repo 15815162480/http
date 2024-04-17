@@ -2,6 +2,7 @@ package com.zys.http.window.request.panel;
 
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
+import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ModuleRootManager;
@@ -25,10 +26,7 @@ import com.zys.http.extension.service.Bundle;
 import com.zys.http.extension.service.NotifyService;
 import com.zys.http.extension.setting.HttpSetting;
 import com.zys.http.extension.topic.EnvironmentTopic;
-import com.zys.http.tool.HttpServiceTool;
-import com.zys.http.tool.ProjectTool;
-import com.zys.http.tool.PsiTool;
-import com.zys.http.tool.SystemTool;
+import com.zys.http.tool.*;
 import com.zys.http.tool.ui.ThemeTool;
 import com.zys.http.tool.ui.TreeTool;
 import com.zys.http.ui.icon.HttpIcons;
@@ -140,18 +138,19 @@ final class ApiTreePanel extends AbstractListTreePanel {
         loadPackageNodes(module, methods, nodeShowValues);
     }
 
+    @SneakyThrows
     private void loadMethodNodes(@NotNull PsiClass psiClass, String contextPath) {
-        PsiMethod[] methods = psiClass.getAllMethods();
         if (psiClass.isAnnotationType() || psiClass.isInterface() || psiClass.isEnum()) {
             return;
         }
-        if (methods.length < 1) {
-            methodNodeMap.put(psiClass, new ArrayList<>());
-            return;
-        }
-        String controllerPath = PsiTool.Annotation.getControllerPath(psiClass);
-        List<MethodNode> methodNodes = Arrays.stream(methods)
-                .map(method -> createMethodNodes(method, controllerPath, contextPath)).flatMap(List::stream).toList();
+
+        List<MethodNode> methodNodes = ReadAction.nonBlocking(() -> {
+            PsiMethod[] methods = psiClass.getAllMethods();
+            String controllerPath = PsiTool.Annotation.getControllerPath(psiClass);
+            return Arrays.stream(methods)
+                    .map(method -> createMethodNodes(method, controllerPath, contextPath)).flatMap(List::stream).toList();
+        }).submit(ThreadTool.getExecutor()).get();
+
         methodNodeMap.put(psiClass, methodNodes);
     }
 
@@ -270,7 +269,6 @@ final class ApiTreePanel extends AbstractListTreePanel {
         }
     }
 
-    @SneakyThrows
     private List<MethodNode> createMethodNodes(@NotNull PsiMethod method, String controllerPath, String contextPath) {
         Map<String, HttpEnum.HttpMethod> httpMethodMap = Arrays.stream(SpringEnum.Method.values())
                 .collect(Collectors.toMap(SpringEnum.Method::getClazz, SpringEnum.Method::getHttpMethod));

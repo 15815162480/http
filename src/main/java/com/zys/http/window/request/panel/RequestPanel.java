@@ -45,6 +45,7 @@ public class RequestPanel extends JBSplitter {
     public void loadNodes(List<HttpEnum.HttpMethod> methods, List<String> nodeShowValues) {
         this.apiTreePanel.loadNodes(methods, nodeShowValues);
     }
+
     public void treeExpand() {
         this.apiTreePanel.treeExpand();
     }

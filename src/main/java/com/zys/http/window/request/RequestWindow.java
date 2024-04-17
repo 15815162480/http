@@ -31,6 +31,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author zhou ys
@@ -43,6 +44,7 @@ public class RequestWindow extends SimpleToolWindowPanel implements Disposable {
     private MethodFilterPopup methodFilterPopup;
     @Description("结点展示过滤")
     private NodeShowFilterPopup nodeShowFilterPopup;
+    public static final AtomicBoolean GENERATE_OK = new AtomicBoolean(false);
 
     public RequestWindow(Project project) {
         super(true, true);
@@ -56,10 +58,8 @@ public class RequestWindow extends SimpleToolWindowPanel implements Disposable {
                 .toList();
         this.methodFilterPopup = new MethodFilterPopup(project, methods);
         this.nodeShowFilterPopup = new NodeShowFilterPopup(project);
-        List<HttpEnum.HttpMethod> selectedValues = methodFilterPopup.getSelectedValues();
-        List<String> nodeShowValues = nodeShowFilterPopup.getSelectedValues();
         this.requestPanel = new RequestPanel(project);
-        this.requestPanel.loadNodes(selectedValues, nodeShowValues);
+        DumbService.getInstance(project).smartInvokeLater(() -> loadNodes(false));
         this.setContent(requestPanel);
         initToolbar();
         initTopic();
@@ -158,10 +158,10 @@ public class RequestWindow extends SimpleToolWindowPanel implements Disposable {
             refreshTree(b);
         });
 
-        project.getMessageBus().connect().subscribe(EnvironmentTopic.CHANGE_TOPIC,
+        connect.subscribe(EnvironmentTopic.CHANGE_TOPIC,
                 (EnvironmentTopic.Change) () -> requestPanel.reload(requestPanel.getApiTreeChooseNode()));
 
-        project.getMessageBus().connect().subscribe(BranchChangeListener.VCS_BRANCH_CHANGED, new BranchChangeListener() {
+        connect.subscribe(BranchChangeListener.VCS_BRANCH_CHANGED, new BranchChangeListener() {
             @Override
             public void branchWillChange(@NotNull String branchName) {
                 if (HttpSetting.getInstance().getRefreshWhenVcsChange()) {
@@ -180,14 +180,17 @@ public class RequestWindow extends SimpleToolWindowPanel implements Disposable {
     }
 
     private void refreshTree(boolean isExpand) {
-        DumbService.getInstance(project).runWhenSmart(() -> {
-            List<HttpEnum.HttpMethod> selectedValues = methodFilterPopup.getSelectedValues();
-            List<String> nodeShowValues = nodeShowFilterPopup.getSelectedValues();
-            requestPanel.loadNodes(selectedValues, nodeShowValues);
-            if (isExpand) {
-                requestPanel.treeExpandAll();
-            }
-        });
+        DumbService.getInstance(project).runWhenSmart(() -> loadNodes(isExpand));
+    }
+
+    private void loadNodes(boolean isExpand) {
+        List<HttpEnum.HttpMethod> selectedValues = methodFilterPopup.getSelectedValues();
+        List<String> nodeShowValues = nodeShowFilterPopup.getSelectedValues();
+        this.requestPanel.loadNodes(selectedValues, nodeShowValues);
+        if (isExpand) {
+            requestPanel.treeExpandAll();
+        }
+        GENERATE_OK.set(true);
     }
 
     @Override

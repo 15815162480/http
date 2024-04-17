@@ -56,18 +56,19 @@
         <h4>En</h4>
         <ul>
             <li>fix bugs: When node filtering does not display package nodes, annotations will be displayed in the panel</li>
+            <li>fix bugs: When node filtering does not display package nodes, annotations will be displayed in the panel</li>
         </ul>
         <br>
-        <p>If you find it useful, please go to the plugin page and give it a good review.<a
-                href="https://plugins.jetbrains.com/plugin/22737-apitool/reviews">ApiTool</a></p>
+        <p>If you find it useful, please go to the plugin <a href="https://plugins.jetbrains.com/plugin/22737-apitool/reviews">page</a> and give it a good review.</p>
         <p><a href="https://github.com/15815162480/http/blob/master/UpdateInfo.md">Update information for each
             version</a></p>
         <h4>中文</h4>
         <ul>
             <li>bug 修复: 当节点过滤-不展示包节点时, 会将注解展示在面板中</li>
+            <li>bug 修复: 在索引扫描完毕之前打开工具窗口，窗口不会显示任何内容</li>
         </ul>
         <br>
-        <p>如果觉得好用的话，请前往插件页面给个好评。<a href="https://plugins.jetbrains.com/plugin/22737-apitool/reviews">ApiTool</a>
+        <p>如果觉得好用的话，请前往<a href="https://plugins.jetbrains.com/plugin/22737-apitool/reviews">插件页面</a>给个好评。
         </p>
         <p><a href="https://gitee.com/zhou-sheng1/http/blob/master/UpdateInfo_zh.md">各版本更新信息</a></p>
         ]]>
