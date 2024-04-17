@@ -123,7 +123,7 @@
             <keyboard-shortcut keymap="$default" first-keystroke="ctrl BACK_SLASH"/>
         </action>
 
-        <action id="ApiTool Tool Window" class="com.zys.http.HttpMainWindowFactory$WindowWakeUpAction">
+        <action id="ApiTool Tool Window" class="com.zys.http.action.WindowWakeUpAction">
             <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift q"/>
         </action>
     </actions>
