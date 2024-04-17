@@ -1,3 +1,10 @@
+### 1.6.2
+
+* fix bugs: When node filtering does not display package nodes, annotations will be displayed in the panel
+* fix bugs: Open the tool window before the index scan is completed, and the window will not display any
+  content after the index scan is completed
+* fix bugs: Settings > Keymap > Plugins > ApiTool, text error
+
 ### 1.6.1
 
 * improve: Move settings to a Setting>Tools>ApiTool, Now it's global configuration instead of single project
@@ -22,7 +29,6 @@
     private A[] as;
   }
   ```  
-  
 
 ### 1.6.0
 

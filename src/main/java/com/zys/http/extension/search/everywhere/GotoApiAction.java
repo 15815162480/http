@@ -20,6 +20,10 @@ import java.util.Objects;
  */
 @Description("快捷打开 SE 的 ApiTool 面板")
 public class GotoApiAction extends SearchEverywhereBaseAction {
+    public GotoApiAction() {
+        this.getTemplatePresentation().setText(Bundle.get("http.extension.search.everywhere.short.cut.text"));
+    }
+
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
         String tabId = GotoApiSearchEverywhereContributor.class.getSimpleName();

@@ -42,6 +42,10 @@ public class HttpMainWindowFactory implements ToolWindowFactory {
     }
 
     public static class WindowWakeUpAction extends AnAction {
+        public WindowWakeUpAction() {
+            this.getTemplatePresentation().setText(Bundle.get("http.window.short.cut.text"));
+        }
+
         @Override
         public void actionPerformed(@NotNull AnActionEvent event) {
             Project project = Objects.requireNonNull(event.getProject());
