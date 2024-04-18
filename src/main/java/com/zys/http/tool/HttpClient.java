@@ -82,7 +82,6 @@ public class HttpClient {
     ) {
         EXECUTOR.execute(() -> {
             long startTime = System.currentTimeMillis();
-            long endTime = 0;
             try {
                 HttpResponse response = request.execute();
                 // 最大重定向的次数
@@ -94,17 +93,15 @@ public class HttpClient {
                 if (Objects.nonNull(onResult)) {
                     onResult.accept(response);
                 }
-                endTime = System.currentTimeMillis();
             } catch (Exception e) {
                 if (Objects.nonNull(onError)) {
                     onError.accept(e);
                     return;
                 }
-                endTime = System.currentTimeMillis();
                 throw e;
             } finally {
                 if (Objects.nonNull(onComplete)) {
-                    onComplete.accept(endTime - startTime);
+                    onComplete.accept(System.currentTimeMillis() - startTime);
                 }
             }
         });
