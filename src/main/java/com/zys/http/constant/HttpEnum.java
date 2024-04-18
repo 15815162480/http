@@ -14,7 +14,6 @@ import lombok.Getter;
 public interface HttpEnum {
 
     @Getter
-    @Description("Content-Type")
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     enum ContentType {
         TEXT_XML("text/xml"),
@@ -33,7 +32,6 @@ public interface HttpEnum {
         }
     }
 
-    @Description("请求方式")
     enum HttpMethod {
         REQUEST, GET, POST, PUT, DELETE, PATCH;
 
@@ -49,19 +47,16 @@ public interface HttpEnum {
         }
     }
 
-    @Description("请求协议")
     enum Protocol {
         HTTP, HTTPS
     }
 
-    @Description("参数的请用方式")
     enum ParamUsage {
         // 不参与, 路径参数, URL参数, 请求体参数
         USELESS, PATH, URL, BODY, HEADER, FILE
     }
 
     @Getter
-    @Description("swagger 注解")
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     enum Swagger {
         API("io.swagger.annotations.Api", "tags", AnnotationPlace.CLASS),
@@ -76,7 +71,6 @@ public interface HttpEnum {
     }
 
 
-    @Description("导出类型")
     enum ExportEnum {
         /**
          * 指定环境、所有环境, 所有 API
@@ -84,7 +78,6 @@ public interface HttpEnum {
         SPECIFY_ENV, ALL_ENV, API
     }
 
-    @Description("注解所在的位置")
     enum AnnotationPlace {
         CLASS, METHOD, PARAMETER, FIELD
     }

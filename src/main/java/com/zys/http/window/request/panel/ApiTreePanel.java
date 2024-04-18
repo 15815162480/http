@@ -33,7 +33,6 @@ import com.zys.http.ui.icon.HttpIcons;
 import com.zys.http.ui.tree.AbstractListTreePanel;
 import com.zys.http.ui.tree.node.*;
 import jdk.jfr.Description;
-import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import org.jetbrains.annotations.Contract;
@@ -58,15 +57,12 @@ final class ApiTreePanel extends AbstractListTreePanel {
     private transient ModuleNode root;
     private final transient Project project;
 
-    @Getter
     @Description("模块名, 模块结点")
     private final transient Map<String, ModuleNode> moduleNodeMap = new HashMap<>();
 
-    @Getter
     @Description("模块名, controller")
     private final transient Map<String, List<PsiClass>> moduleControllerMap = new HashMap<>();
 
-    @Getter
     @Description("controller, 方法列表")
     private final transient Map<PsiClass, List<MethodNode>> methodNodeMap = new HashMap<>();
 
@@ -257,7 +253,6 @@ final class ApiTreePanel extends AbstractListTreePanel {
         return needToAddNode;
     }
 
-    @Description("是否生成默认环境")
     private void isGenerateDefaultEnv(@NotNull Module m) {
         String moduleName = m.getName();
         if (HttpSetting.getInstance().getGenerateDefault()) {
@@ -288,7 +283,6 @@ final class ApiTreePanel extends AbstractListTreePanel {
                 }).toList();
     }
 
-    @Description("移除空模块节点")
     private void removeEmptyModule() {
         for (Map.Entry<String, ModuleNode> entry : moduleNodeMap.entrySet()) {
             ModuleNode value = entry.getValue();
@@ -302,8 +296,14 @@ final class ApiTreePanel extends AbstractListTreePanel {
         }
     }
 
-    @Contract(pure = true)
+    public MethodNode getMethodNode(@NotNull PsiMethod psiMethod) {
+        PsiClass containingClass = psiMethod.getContainingClass();
+        return methodNodeMap.getOrDefault(containingClass, new ArrayList<>()).stream()
+                .filter(v -> v.getValue().getPsiElement().equals(psiMethod)).findFirst().orElse(null);
+    }
+
     @Override
+    @Contract(pure = true)
     protected @NotNull Consumer<BaseNode<?>> getChooseListener() {
         return node -> {
             if (node instanceof MethodNode methodNode && Objects.nonNull(chooseCallback)) {
@@ -312,8 +312,8 @@ final class ApiTreePanel extends AbstractListTreePanel {
         };
     }
 
-    @Contract(pure = true)
     @Override
+    @Contract(pure = true)
     protected @NotNull Consumer<BaseNode<?>> getDoubleClickListener() {
         return node -> {
             if (node instanceof MethodNode m) {

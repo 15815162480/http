@@ -46,7 +46,6 @@ public class RequestTabs extends JBTabsImpl {
 
     @Description("项目对象")
     private final transient Project project;
-    @Getter
     private final transient HttpServiceTool serviceTool;
 
     @Description("参数标签页面")

@@ -6,7 +6,6 @@ import com.intellij.util.ui.JBUI;
 import com.zys.http.entity.tree.NodeData;
 import com.zys.http.ui.tree.node.BaseNode;
 import com.zys.http.ui.tree.node.MethodNode;
-import com.zys.http.ui.tree.node.ModuleNode;
 import com.zys.http.ui.tree.render.HttpApiTreeCellRenderer;
 import jdk.jfr.Description;
 import org.jetbrains.annotations.NotNull;
@@ -52,7 +51,7 @@ public abstract class AbstractListTreePanel extends JBScrollPane implements Tree
             if (!(component instanceof BaseNode<? extends NodeData> selectedNode)) {
                 return;
             }
-            if (Objects.nonNull(getChooseListener())){
+            if (Objects.nonNull(getChooseListener())) {
                 getChooseListener().accept(selectedNode);
             }
         });
@@ -101,7 +100,6 @@ public abstract class AbstractListTreePanel extends JBScrollPane implements Tree
 
     @Override
     public void collapseAll() {
-
     }
 
     @Nullable
@@ -130,12 +128,10 @@ public abstract class AbstractListTreePanel extends JBScrollPane implements Tree
         return (BaseNode<?>) component;
     }
 
-    @Description("清空树形结构中的数据")
     public void clear() {
         this.getTreeModel().setRoot(null);
     }
 
-    @Description("展开")
     public void treeExpand() {
         TreePath path = tree.getSelectionPath();
         BaseNode<?> chooseNode = getChooseNode();
@@ -146,7 +142,6 @@ public abstract class AbstractListTreePanel extends JBScrollPane implements Tree
         }
     }
 
-    @Description("收起")
     public void treeCollapse() {
         TreePath path = tree.getSelectionPath();
         BaseNode<?> chooseNode = getChooseNode();
@@ -186,10 +181,6 @@ public abstract class AbstractListTreePanel extends JBScrollPane implements Tree
         } else {
             tree.collapsePath(parent);
         }
-    }
-
-    public void render(ModuleNode root) {
-        getTreeModel().setRoot(root);
     }
 
     protected void showPopupMenu(int x, int y, @Nullable JPopupMenu menu) {

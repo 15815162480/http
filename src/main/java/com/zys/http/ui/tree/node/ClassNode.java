@@ -8,7 +8,6 @@ import org.jetbrains.annotations.NotNull;
  * @author zhou ys
  * @since 2023-09-08
  */
-@Description("类结点")
 public class ClassNode extends BaseNode<ClassNodeData> {
     public ClassNode(@NotNull ClassNodeData value) {
         super(value);

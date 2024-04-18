@@ -46,7 +46,6 @@ public class HttpLineMarkerProvider extends LineMarkerProviderDescriptor {
             return null;
         }
 
-
         String customAnno = HttpSetting.getInstance().getCustomAnno();
 
         boolean hasController = Arrays.stream(psiClass.getAnnotations()).anyMatch(a ->

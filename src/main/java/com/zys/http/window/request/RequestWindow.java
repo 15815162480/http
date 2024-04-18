@@ -31,7 +31,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author zhou ys
@@ -40,11 +39,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class RequestWindow extends SimpleToolWindowPanel implements Disposable {
     private final transient Project project;
     private RequestPanel requestPanel;
-    @Description("请求方式过滤菜单")
     private MethodFilterPopup methodFilterPopup;
-    @Description("结点展示过滤")
     private NodeShowFilterPopup nodeShowFilterPopup;
-    public static final AtomicBoolean GENERATE_OK = new AtomicBoolean(false);
 
     public RequestWindow(Project project) {
         super(true, true);
@@ -190,7 +186,6 @@ public class RequestWindow extends SimpleToolWindowPanel implements Disposable {
         if (isExpand) {
             requestPanel.treeExpandAll();
         }
-        GENERATE_OK.set(true);
     }
 
     @Override

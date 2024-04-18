@@ -47,7 +47,6 @@ public abstract class AbstractFilterPopup<T> extends JPopupMenu {
         selectAll.addActionListener(e -> {
             checkBoxList.forEach(v -> v.setSelected(true));
             project.getMessageBus().syncPublisher(TreeTopic.REFRESH_TOPIC).refresh(true);
-
         });
         buttonPane.add(selectAll);
 

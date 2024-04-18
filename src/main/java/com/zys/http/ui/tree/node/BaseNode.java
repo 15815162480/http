@@ -17,7 +17,6 @@ import javax.swing.tree.MutableTreeNode;
  * @since 2023-09-05
  */
 @Getter
-@Description("树形结构数据的结点")
 @EqualsAndHashCode(callSuper = true)
 public abstract class BaseNode<T extends NodeData> extends DefaultMutableTreeNode {
 

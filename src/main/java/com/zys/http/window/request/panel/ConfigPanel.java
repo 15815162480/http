@@ -94,7 +94,6 @@ final class ConfigPanel extends JBPanel<ConfigPanel> {
         });
     }
 
-    @Description("初始化发送请求按钮")
     private void initSendRequestEvent() {
         sendRequestBtn.addActionListener(event -> {
             HttpEnum.HttpMethod httpMethod = Optional.ofNullable(methodCb.getSelectedItem())
@@ -179,7 +178,6 @@ final class ConfigPanel extends JBPanel<ConfigPanel> {
         }
     }
 
-    @Description("选中方法结点的事件处理")
     void chooseEvent(@NotNull MethodNode methodNode) {
         HttpServiceTool serviceTool = HttpServiceTool.getInstance(project);
         HttpConfig config = serviceTool.getDefaultHttpConfig();

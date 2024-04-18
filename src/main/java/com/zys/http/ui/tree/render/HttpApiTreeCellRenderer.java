@@ -14,7 +14,6 @@ import javax.swing.*;
  * @author zys
  * @since 2023-09-08
  */
-@Description("树形结点展示内容自定义渲染器")
 public class HttpApiTreeCellRenderer extends ColoredTreeCellRenderer {
     @Override
     public void customizeCellRenderer(

@@ -33,7 +33,7 @@ public abstract class AbstractTable extends JPanel {
     @Description("单元格是否能编辑")
     private final boolean cellEditable;
     @Description("表格头是否能调整")
-    private final boolean headerCanResized;
+    private final boolean headerResized;
     @Description("表格是否需要边框")
     private final boolean needBorder;
 
@@ -52,7 +52,7 @@ public abstract class AbstractTable extends JPanel {
         super(new BorderLayout(0, 0));
         this.project = project;
         this.cellEditable = cellEditable;
-        this.headerCanResized = headerCanResized;
+        this.headerResized = headerCanResized;
         this.needBorder = needBorder;
         this.serviceTool = HttpServiceTool.getInstance(project);
     }
@@ -66,7 +66,6 @@ public abstract class AbstractTable extends JPanel {
         }
         add(scrollPane, BorderLayout.CENTER);
     }
-
 
     @Description("初始化表格")
     private JBScrollPane initTable() {
@@ -95,7 +94,7 @@ public abstract class AbstractTable extends JPanel {
         valueTable.getTableHeader().setDefaultRenderer(tableCellRenderer);
         // 禁止表头拖动、选中
         valueTable.getTableHeader().setReorderingAllowed(false);
-        valueTable.getTableHeader().setResizingAllowed(headerCanResized);
+        valueTable.getTableHeader().setResizingAllowed(headerResized);
 
         JBScrollPane scrollPane = new JBScrollPane(valueTable);
         if (needBorder) {
@@ -110,8 +109,6 @@ public abstract class AbstractTable extends JPanel {
         return scrollPane;
     }
 
-
-    @Description("初始化表格上方工具栏")
     private ActionToolbar initToolbar() {
         ActionToolbar actionToolbar = initActionToolbar();
         if (Objects.isNull(actionToolbar)) {
@@ -124,12 +121,10 @@ public abstract class AbstractTable extends JPanel {
         return actionToolbar;
     }
 
-    @Description("获取表格数据对象")
     public DefaultTableModel getTableModel() {
         return (DefaultTableModel) valueTable.getModel();
     }
 
-    @Description("重新加载表格数据")
     public void reloadTableModel() {
         valueTable.setModel(initTableModel());
         valueTable.getModel().addTableModelListener(initTableModelListener());

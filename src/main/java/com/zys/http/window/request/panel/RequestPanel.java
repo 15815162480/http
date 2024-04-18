@@ -1,7 +1,6 @@
 package com.zys.http.window.request.panel;
 
 import com.intellij.openapi.project.Project;
-import com.intellij.psi.PsiClass;
 import com.intellij.ui.JBSplitter;
 import com.zys.http.constant.HttpEnum;
 import com.zys.http.extension.topic.TreeTopic;
@@ -9,7 +8,6 @@ import com.zys.http.ui.tree.node.BaseNode;
 import com.zys.http.ui.tree.node.MethodNode;
 
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -33,12 +31,10 @@ public class RequestPanel extends JBSplitter {
     }
 
     private void initTopic() {
-        project.getMessageBus().connect().subscribe(TreeTopic.SELECTED_TOPIC, (TreeTopic.Selected) psiMethod -> {
-            PsiClass containingClass = psiMethod.getContainingClass();
-            MethodNode methodNode = apiTreePanel.getMethodNodeMap().getOrDefault(containingClass, new ArrayList<>()).stream()
-                    .filter(v -> v.getValue().getPsiElement().equals(psiMethod)).findFirst().orElse(null);
-            apiTreePanel.setSelectedNode(methodNode);
-            configPanel.reload(methodNode);
+        this.project.getMessageBus().connect().subscribe(TreeTopic.SELECTED_TOPIC, (TreeTopic.Selected) psiMethod -> {
+            MethodNode methodNode = this.apiTreePanel.getMethodNode(psiMethod);
+            this.apiTreePanel.setSelectedNode(methodNode);
+            this.configPanel.reload(methodNode);
         });
     }
 
