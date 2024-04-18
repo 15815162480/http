@@ -28,9 +28,9 @@ import java.awt.event.MouseEvent;
  */
 public class HttpSettingPanel extends JBPanel<HttpSettingPanel> {
     private final transient HttpSetting httpSetting;
-    private final JBCheckBox defaultBox = new JBCheckBox(Bundle.get("http.extension.setting.default.env"));
-    private final JBCheckBox vcsBox = new JBCheckBox(Bundle.get("http.extension.setting.vcs.change"));
-    private final JBCheckBox seBox = new JBCheckBox(Bundle.get("http.extension.setting.search.everywhere"));
+    private final JBCheckBox defaultBox = new JBCheckBox(Bundle.get("http.extension.setting.option.base.default.env"));
+    private final JBCheckBox vcsBox = new JBCheckBox(Bundle.get("http.extension.setting.option.base.vcs.change"));
+    private final JBCheckBox seBox = new JBCheckBox(Bundle.get("http.extension.setting.option.base.search.everywhere"));
     private final JTextField annoTextField = new JTextField(30);
     private final JTextField timeTf = new JTextField(20);
 
