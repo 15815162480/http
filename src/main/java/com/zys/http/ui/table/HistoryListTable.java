@@ -122,7 +122,7 @@ public class HistoryListTable extends AbstractTable {
             }
             ContentManager contentManager = toolWindow.getContentManager();
             Content content = contentManager.getContent(0);
-            if (Objects.isNull(content) || !(content.getComponent() instanceof RequestWindow requestWindow)) {
+            if (Objects.isNull(content) || !(content.getComponent() instanceof RequestWindow)) {
                 return;
             }
             DefaultTableModel model = (DefaultTableModel) valueTable.getModel();

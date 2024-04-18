@@ -1,7 +1,6 @@
 package com.zys.http.ui.tree.node;
 
 import com.zys.http.entity.tree.PackageNodeData;
-import jdk.jfr.Description;
 import org.jetbrains.annotations.NotNull;
 
 /**

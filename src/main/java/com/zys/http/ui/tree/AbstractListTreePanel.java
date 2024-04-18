@@ -48,10 +48,7 @@ public abstract class AbstractListTreePanel extends JBScrollPane implements Tree
                 return;
             }
             Object component = tree.getLastSelectedPathComponent();
-            if (!(component instanceof BaseNode<? extends NodeData> selectedNode)) {
-                return;
-            }
-            if (Objects.nonNull(getChooseListener())) {
+            if (component instanceof BaseNode<? extends NodeData> selectedNode && Objects.nonNull(getChooseListener())) {
                 getChooseListener().accept(selectedNode);
             }
         });

@@ -48,13 +48,13 @@ public class ParamConvert {
 
 
     @Description("解析参数并转换")
-    private static void parsePsiParameter(PsiParameter parameter, Map<String, ParamProperty> map, boolean isJsonPretty) {
+    private static void parsePsiParameter(@NotNull PsiParameter parameter, @NotNull Map<String, ParamProperty> map, boolean isJsonPretty) {
         String parameterName = parameter.getName();
         PsiType parameterType = parameter.getType();
 
         if (parameter.getAnnotation(SpringEnum.Param.REQUEST_HEADER.getClazz()) != null) {
             // 如果参数注解带 @RequestHeader, 默认 String, 不作特殊处理
-            ParamProperty property = map.get(REQUEST_TYPE_KEY);
+            ParamProperty property = map.getOrDefault(REQUEST_TYPE_KEY, null);
             if (property == null) {
                 map.put(REQUEST_TYPE_KEY, new ParamProperty(HttpEnum.ContentType.APPLICATION_X_FORM_URLENCODED, HttpEnum.ParamUsage.HEADER));
             }
