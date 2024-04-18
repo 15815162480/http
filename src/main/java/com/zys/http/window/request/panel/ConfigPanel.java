@@ -136,7 +136,6 @@ final class ConfigPanel extends JBPanel<ConfigPanel> {
             requestTabs.getResponseEditor().setText("");
             requestTabs.getRequestResult().setText("");
 
-
             HttpClient.run(
                     HttpClient.newRequest(httpMethod, url, header, parameter, bodyText, partName, fileNames),
                     response -> {

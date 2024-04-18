@@ -5,6 +5,7 @@ import cn.hutool.core.io.resource.MultiFileResource;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.http.*;
 import com.intellij.openapi.fileTypes.FileType;
+import com.zys.http.extension.setting.HttpSetting;
 import com.zys.http.tool.convert.ParamConvert;
 import com.zys.http.tool.ui.ComboBoxTool;
 import jdk.jfr.Description;
@@ -31,7 +32,6 @@ import static com.zys.http.constant.HttpEnum.HttpMethod;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class HttpClient {
 
-    private static final int TIME_OUT = 10_000;
 
     private static final int REDIRECT_MAX_COUNT = 3;
 
@@ -50,7 +50,8 @@ public class HttpClient {
             String partName,
             String[] fileNames
     ) {
-        HttpRequest req = HttpUtil.createRequest(Method.valueOf(method.name()), url).timeout(TIME_OUT);
+        long timeout = HttpSetting.getInstance().getTimeout();
+        HttpRequest req = HttpUtil.createRequest(Method.valueOf(method.name()), url).timeout((int) timeout);
         headers.forEach((name, value) -> req.header(name, String.valueOf(value)));
 
         if (Objects.nonNull(body) && !body.isBlank()) {

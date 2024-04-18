@@ -65,6 +65,7 @@
             </li>
             <li>fix bugs: Settings > Keymap > Plugins > ApiTool, text error</li>
             <li>fix bugs: Time consumption may be negative</li>
+            <li>feature: new global setting —— set request timeout</li>
         </ul>
         <br>
         <p>If you find it useful, please go to the plugin <a
@@ -78,6 +79,7 @@
             <li>bug 修复: 在索引扫描完毕之前打开工具窗口，窗口在索引扫描完毕后仍不会显示任何内容</li>
             <li>bug 修复: 设置 > 按键映射 > 插件 > ApiTool 下文本错误</li>
             <li>bug 修复: 耗时可能为负数</li>
+            <li>新功能: 新全局设置——设置请求超时时间</li>
         </ul>
         <br>
         <p>如果觉得好用的话，请前往<a href="https://plugins.jetbrains.com/plugin/22737-apitool/reviews">插件页面</a>给个好评。

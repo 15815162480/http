@@ -28,6 +28,7 @@ public class HttpSettingConfigurable implements Configurable {
     private final boolean oldRefreshWhenVcsChange = HttpSetting.getInstance().getRefreshWhenVcsChange();
     private final boolean oldEnableSearchEverywhere = HttpSetting.getInstance().getEnableSearchEverywhere();
     private final String oldCustomAnno = HttpSetting.getInstance().getCustomAnno();
+    private final long oldTimeout = HttpSetting.getInstance().getTimeout();
     private final HttpSettingPanel httpSettingPanel = new HttpSettingPanel();
 
     @Override
@@ -51,12 +52,13 @@ public class HttpSettingConfigurable implements Configurable {
         return generateDefault != oldGenerateDefault ||
                refreshWhenVcsChange != oldRefreshWhenVcsChange ||
                enableSearchEverywhere != oldEnableSearchEverywhere ||
-               !oldCustomAnno.equals(customAnno);
+               !oldCustomAnno.equals(customAnno) ||
+               oldTimeout != setting.getTimeout();
     }
 
     @Override
     public void reset() {
-        httpSettingPanel.reset(oldGenerateDefault, oldRefreshWhenVcsChange, oldEnableSearchEverywhere, oldCustomAnno);
+        httpSettingPanel.reset(oldGenerateDefault, oldRefreshWhenVcsChange, oldEnableSearchEverywhere, oldCustomAnno, oldTimeout);
     }
 
     @Override

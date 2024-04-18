@@ -137,10 +137,9 @@ public class ParamConvert {
 
     public static String buildUrlParameters(Map<String, String> parameters) {
         StringBuilder sb = new StringBuilder();
-
         for (Map.Entry<String, String> entry : parameters.entrySet()) {
             String key = entry.getKey();
-            Object value = entry.getValue();
+            String value = entry.getValue();
             if (!sb.isEmpty()) {
                 sb.append("&");
             }

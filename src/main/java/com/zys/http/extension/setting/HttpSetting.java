@@ -18,6 +18,7 @@ import org.jetbrains.annotations.Nullable;
 @State(name = "HttpSetting", storages = @Storage(HttpConstant.PLUGIN_SETTING_FILE_NAME))
 public class HttpSetting implements PersistentStateComponent<HttpSetting.State> {
     private State state = new State();
+    public static final int DEFAULT_TIMEOUT = 5000;
 
     public static HttpSetting getInstance() {
         return ApplicationManager.getApplication().getService(HttpSetting.class);
@@ -65,11 +66,20 @@ public class HttpSetting implements PersistentStateComponent<HttpSetting.State> 
         state.customAnno = customAnno;
     }
 
+    public int getTimeout() {
+        return state.timeout;
+    }
+
+    public void setTimeout(String timeout) {
+        state.timeout = Integer.parseInt(timeout);
+    }
+
     @Data
     public static class State {
         private String customAnno = "";
         private boolean generateDefault = true;
         private boolean refreshWhenVcsChange = true;
         private boolean enableSearchEverywhere = true;
+        private int timeout = DEFAULT_TIMEOUT;
     }
 }

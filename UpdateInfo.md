@@ -4,6 +4,8 @@
 * fix bugs: Open the tool window before the index scan is completed, and the window will not display any
   content after the index scan is completed
 * fix bugs: Settings > Keymap > Plugins > ApiTool, text error
+* fix bugs: Time consumption may be negative
+* feature: new global setting —— set request timeout
 
 ### 1.6.1
 
