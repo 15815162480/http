@@ -55,6 +55,8 @@ public class HistoryListTable extends AbstractTable {
         TableColumn methodCol = valueTable.getColumn(valueTable.getColumnName(1));
         methodCol.setMaxWidth(100);
         methodCol.setMinWidth(100);
+        TableColumn timeCol = valueTable.getColumn(valueTable.getColumnName(3));
+        timeCol.setMinWidth(20);
         initTopic();
     }
 
