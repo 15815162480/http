@@ -5,6 +5,7 @@
   content after the index scan is completed
 * fix bugs: Settings > Keymap > Plugins > ApiTool, text error
 * fix bugs: Time consumption may be negative
+* fix bugs: The request history table can shrink the request time column to be completely invisible
 * feature: new global setting —— set request timeout
 
 ### 1.6.1
