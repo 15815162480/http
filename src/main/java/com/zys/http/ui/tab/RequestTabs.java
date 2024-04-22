@@ -19,7 +19,6 @@ import com.zys.http.extension.service.Bundle;
 import com.zys.http.tool.HttpServiceTool;
 import com.zys.http.tool.convert.ParamConvert;
 import com.zys.http.tool.ui.ComboBoxTool;
-import com.zys.http.tool.ui.ThemeTool;
 import com.zys.http.ui.dialog.EditorDialog;
 import com.zys.http.ui.editor.CustomEditor;
 import com.zys.http.ui.icon.HttpIcons;
@@ -123,9 +122,8 @@ public class RequestTabs extends JBTabsImpl {
         JPanel bodyPanel = new JPanel(new BorderLayout(0, 0));
         this.bodyEditor = new CustomEditor(project);
         this.bodyEditor.setName("BODY");
-        if (ThemeTool.isNewUI()) {
-            bodyPanel.setBorder(JBUI.Borders.customLine(UIConstant.EDITOR_BORDER_COLOR, 0, 3, 0, 0));
-        }
+
+        bodyPanel.setBorder(JBUI.Borders.customLine(UIConstant.EDITOR_BORDER_COLOR, 0, 3, 0, 0));
         bodyPanel.add(this.bodyEditor, BorderLayout.CENTER);
 
         JLabel label = new JLabel(Bundle.get("http.api.tab.body.type.label"));
@@ -177,9 +175,7 @@ public class RequestTabs extends JBTabsImpl {
     @Description("响应体标签页")
     private void responseTab() {
         JPanel respPanel = new JPanel(new BorderLayout(0, 0));
-        if (ThemeTool.isNewUI()) {
-            respPanel.setBorder(JBUI.Borders.customLine(UIConstant.EDITOR_BORDER_COLOR, 0, 3, 0, 0));
-        }
+        respPanel.setBorder(JBUI.Borders.customLine(UIConstant.EDITOR_BORDER_COLOR, 0, 3, 0, 0));
         responseEditor = new CustomEditor(project);
         respPanel.add(responseEditor, BorderLayout.CENTER);
         JPanel respExpandPanel = new JPanel(new BorderLayout(0, 0));
