@@ -17,7 +17,6 @@ import java.util.List;
  * @since 2023-09-21
  */
 public abstract class AbstractFilterPopup<T> extends JPopupMenu {
-
     protected final transient List<JBCheckBox> checkBoxList = new ArrayList<>();
 
     protected final transient List<T> values;

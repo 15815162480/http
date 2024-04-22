@@ -11,7 +11,6 @@ import javax.swing.*;
  */
 @Data
 public class NodeData {
-
     @Description("结点显示的内容")
     private String nodeName;
 

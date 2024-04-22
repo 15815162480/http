@@ -1,7 +1,6 @@
 package com.zys.http.entity.tree;
 
-import com.zys.http.tool.ui.ThemeTool;
-import com.zys.http.ui.icon.HttpIcons;
+import com.intellij.icons.AllIcons;
 import jdk.jfr.Description;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -14,12 +13,11 @@ import lombok.Getter;
 @Description("模块结点数据")
 @EqualsAndHashCode(callSuper = true)
 public class ModuleNodeData extends NodeData {
-
     private final String contextPath;
 
     public ModuleNodeData(String nodeName, String contextPath) {
         super(nodeName);
-        this.setNodeIcon(ThemeTool.isDark() ? HttpIcons.TreeNode.MODULE : HttpIcons.TreeNode.MODULE_LIGHT);
+        this.setNodeIcon(AllIcons.Nodes.Module);
         this.contextPath = contextPath;
     }
 }

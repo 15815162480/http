@@ -1,5 +1,6 @@
 package com.zys.http.action.group;
 
+import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
@@ -8,7 +9,6 @@ import com.zys.http.action.SelectAction;
 import com.zys.http.extension.service.Bundle;
 import com.zys.http.extension.topic.EnvironmentTopic;
 import com.zys.http.tool.HttpServiceTool;
-import com.zys.http.tool.ui.ThemeTool;
 import com.zys.http.ui.icon.HttpIcons;
 import jdk.jfr.Description;
 import org.jetbrains.annotations.NotNull;
@@ -24,7 +24,7 @@ import java.util.Set;
 public class SelectActionGroup extends DefaultActionGroup {
 
     public SelectActionGroup() {
-        super(Bundle.get("http.api.icon.env.action.select.env"), "Select env", HttpIcons.General.TREE);
+        super(Bundle.get("http.api.icon.env.action.select.env"), "Select env", AllIcons.General.TreeSelected);
         setPopup(true);
     }
 
@@ -47,7 +47,7 @@ public class SelectActionGroup extends DefaultActionGroup {
                 project.getMessageBus().syncPublisher(EnvironmentTopic.CHANGE_TOPIC).change();
             });
             if (s.equals(tool.getSelectedEnv())) {
-                action.setIcon(ThemeTool.isDark() ? HttpIcons.General.DEFAULT : HttpIcons.General.DEFAULT_LIGHT);
+                action.setIcon(HttpIcons.General.DEFAULT);
             }
             anActions[i++] = action;
         }

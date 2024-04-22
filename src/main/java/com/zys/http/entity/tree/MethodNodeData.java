@@ -20,7 +20,6 @@ import java.util.Map;
 @Description("方法结点数据")
 @EqualsAndHashCode(callSuper = true)
 public class MethodNodeData extends NodeData {
-
     private final HttpEnum.HttpMethod httpMethod;
     private String path;
     private String controllerPath;

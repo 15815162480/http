@@ -13,7 +13,6 @@ import java.util.Set;
 @Data
 @Description("Velocity 模板渲染请求方式节点数据模型")
 public class MethodItem {
-
     @Description("请求名字")
     private String name;
 

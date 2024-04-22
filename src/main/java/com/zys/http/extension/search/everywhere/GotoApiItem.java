@@ -16,7 +16,6 @@ import java.util.Objects;
  * @since 2023-10-10
  */
 public record GotoApiItem(MethodNodeData methodNodeData) implements NavigationItem, Comparable<GotoApiItem> {
-
     @Override
     public @Nullable String getName() {
         return methodNodeData.getNodeName();

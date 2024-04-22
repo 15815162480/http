@@ -17,7 +17,6 @@ import java.util.Objects;
  */
 @Description("http 配置工具类")
 public class HttpServiceTool {
-
     public static final HttpConfig DEFAULT_HTTP_CONFIG = new HttpConfig(HttpEnum.Protocol.HTTP,
             "127.0.0.1", Collections.emptyMap());
     private final HttpService httpService;

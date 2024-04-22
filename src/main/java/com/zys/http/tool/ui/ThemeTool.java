@@ -1,14 +1,10 @@
 package com.zys.http.tool.ui;
 
-import com.intellij.openapi.editor.colors.EditorColors;
-import com.intellij.openapi.editor.colors.EditorColorsManager;
-import com.intellij.openapi.editor.colors.EditorColorsScheme;
-import jdk.jfr.Description;
+import com.intellij.ide.ui.UIDensity;
+import com.intellij.ide.ui.UISettings;
+import com.intellij.openapi.util.registry.RegistryManager;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-
-import java.awt.*;
-import java.util.Objects;
 
 /**
  * @author zys
@@ -17,19 +13,26 @@ import java.util.Objects;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ThemeTool {
 
-    @Description("判断当前主题是否是深色")
-    public static boolean isDark() {
-        EditorColorsManager colorsManager = EditorColorsManager.getInstance();
-        EditorColorsScheme scheme = colorsManager.getGlobalScheme();
-        Color caretRowColor = scheme.getColor(EditorColors.CARET_ROW_COLOR);
-        if (Objects.nonNull(caretRowColor)) {
-            float brightness = calculateBrightness(caretRowColor);
-            return brightness < 0.5;
+    private static Boolean newUIEnabled;
+
+    public static synchronized boolean isNewUI() {
+        if (newUIEnabled == null) {
+            try {
+                newUIEnabled = RegistryManager.getInstance().get("ide.experimental.ui").asBoolean();
+            } catch (Exception e) {
+                newUIEnabled = true;
+            }
         }
-        return true;
+
+        return newUIEnabled;
     }
 
-    private static float calculateBrightness(Color color) {
-        return (color.getRed() * 299 + color.getGreen() * 587 + color.getBlue() * 114) / 1000f / 255f;
+
+    public static synchronized boolean isCompactMode() {
+        isNewUI();
+        if (!newUIEnabled) {
+            return false;
+        }
+        return UISettings.Companion.getInstance().getUiDensity() == UIDensity.COMPACT;
     }
 }

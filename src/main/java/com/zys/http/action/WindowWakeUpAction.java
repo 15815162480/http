@@ -7,6 +7,7 @@ import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.zys.http.constant.HttpConstant;
 import com.zys.http.extension.service.Bundle;
+import com.zys.http.ui.icon.HttpIcons;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -18,6 +19,7 @@ import java.util.Objects;
 public class WindowWakeUpAction extends AnAction {
     public WindowWakeUpAction() {
         this.getTemplatePresentation().setText(Bundle.get("http.window.short.cut.text"));
+        this.getTemplatePresentation().setIcon(HttpIcons.PLUGIN_ICON);
     }
 
     @Override

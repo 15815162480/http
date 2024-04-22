@@ -19,7 +19,6 @@ import javax.swing.tree.MutableTreeNode;
 @Getter
 @EqualsAndHashCode(callSuper = true)
 public abstract class BaseNode<T extends NodeData> extends DefaultMutableTreeNode {
-
     @NotNull
     private final transient T value;
 

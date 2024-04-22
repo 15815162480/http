@@ -12,7 +12,6 @@ import java.util.List;
  */
 @Description("结点展示弹窗")
 public class NodeShowFilterPopup extends AbstractFilterPopup<String> {
-
     public static final List<String> SETTING_VALUES = List.of(
             Bundle.get("http.api.icon.node.filter.action.node.show.package"),
             Bundle.get("http.api.icon.node.filter.action.node.show.class")

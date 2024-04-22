@@ -43,7 +43,6 @@ import java.util.Objects;
 @Getter
 @Description("API 页面的标签选项栏")
 public class RequestTabs extends JBTabsImpl {
-
     @Description("项目对象")
     private final transient Project project;
     private final transient HttpServiceTool serviceTool;
@@ -124,7 +123,9 @@ public class RequestTabs extends JBTabsImpl {
         JPanel bodyPanel = new JPanel(new BorderLayout(0, 0));
         this.bodyEditor = new CustomEditor(project);
         this.bodyEditor.setName("BODY");
-        bodyPanel.setBorder(JBUI.Borders.customLine(UIConstant.EDITOR_BORDER_COLOR, 0, 3, 0, 0));
+        if (ThemeTool.isNewUI()) {
+            bodyPanel.setBorder(JBUI.Borders.customLine(UIConstant.EDITOR_BORDER_COLOR, 0, 3, 0, 0));
+        }
         bodyPanel.add(this.bodyEditor, BorderLayout.CENTER);
 
         JLabel label = new JLabel(Bundle.get("http.api.tab.body.type.label"));
@@ -134,8 +135,7 @@ public class RequestTabs extends JBTabsImpl {
         bodySelectPanel.add(label, BorderLayout.WEST);
         bodySelectPanel.add(bodyFileType, BorderLayout.CENTER);
         DefaultActionGroup group = new DefaultActionGroup();
-        CommonAction action = new CommonAction(Bundle.get("http.api.tab.body.action.edit"), "",
-                ThemeTool.isDark() ? HttpIcons.General.FULL_SCREEN : HttpIcons.General.FULL_SCREEN_LIGHT);
+        CommonAction action = new CommonAction(Bundle.get("http.api.tab.body.action.edit"), "", HttpIcons.General.FULL_SCREEN);
         action.setAction(e -> {
             EditorDialog dialog = new EditorDialog(project, Bundle.get("http.api.tab.body.action.edit.dialog"), bodyEditor.getFileType(), bodyEditor.getText());
             dialog.setOkCallBack(s -> bodyEditor.setText(s));
@@ -177,12 +177,13 @@ public class RequestTabs extends JBTabsImpl {
     @Description("响应体标签页")
     private void responseTab() {
         JPanel respPanel = new JPanel(new BorderLayout(0, 0));
-        respPanel.setBorder(JBUI.Borders.customLine(UIConstant.EDITOR_BORDER_COLOR, 0, 3, 0, 0));
+        if (ThemeTool.isNewUI()) {
+            respPanel.setBorder(JBUI.Borders.customLine(UIConstant.EDITOR_BORDER_COLOR, 0, 3, 0, 0));
+        }
         responseEditor = new CustomEditor(project);
         respPanel.add(responseEditor, BorderLayout.CENTER);
         JPanel respExpandPanel = new JPanel(new BorderLayout(0, 0));
-        CommonAction action = new CommonAction(Bundle.get("http.api.tab.response.action.view"), "",
-                ThemeTool.isDark() ? HttpIcons.General.FULL_SCREEN : HttpIcons.General.FULL_SCREEN_LIGHT);
+        CommonAction action = new CommonAction(Bundle.get("http.api.tab.response.action.view"), "", HttpIcons.General.FULL_SCREEN);
         action.setAction(e -> new EditorDialog(project, Bundle.get("http.api.tab.response.action.view.dialog"),
                 responseEditor.getFileType(), responseEditor.getText()).show());
         DefaultActionGroup group = new DefaultActionGroup();

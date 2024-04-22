@@ -1,8 +1,7 @@
 package com.zys.http.action;
 
+import com.intellij.icons.AllIcons;
 import com.zys.http.extension.service.Bundle;
-import com.zys.http.tool.ui.ThemeTool;
-import com.zys.http.ui.icon.HttpIcons;
 import jdk.jfr.Description;
 
 /**
@@ -11,8 +10,8 @@ import jdk.jfr.Description;
  */
 @Description("收起操作")
 public class CollapseAction extends CustomAction {
+
     public CollapseAction() {
-        super(Bundle.get("http.common.action.collapse"), "Collapse",
-                ThemeTool.isDark() ? HttpIcons.General.COLLAPSE : HttpIcons.General.COLLAPSE_LIGHT);
+        super(Bundle.get("http.common.action.collapse"), "Collapse", AllIcons.Actions.Collapseall);
     }
 }

@@ -23,7 +23,6 @@ import java.util.Objects;
 @Description("缓存环境配置列表")
 @State(name = "Http", storages = @Storage(HttpConstant.PLUGIN_CONFIG_FILE_NAME))
 public class HttpService implements PersistentStateComponent<HttpService.State> {
-
     private State state = new State();
 
     public static HttpService getInstance(Project project) {

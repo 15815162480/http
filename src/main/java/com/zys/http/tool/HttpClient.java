@@ -31,8 +31,6 @@ import static com.zys.http.constant.HttpEnum.HttpMethod;
 @Description("发起请求客户端")
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class HttpClient {
-
-
     private static final int REDIRECT_MAX_COUNT = 3;
 
     private static final ExecutorService EXECUTOR = ThreadUtil.newSingleExecutor();

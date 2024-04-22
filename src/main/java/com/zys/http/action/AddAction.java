@@ -1,6 +1,6 @@
 package com.zys.http.action;
 
-import com.zys.http.ui.icon.HttpIcons;
+import com.intellij.icons.AllIcons;
 import jdk.jfr.Description;
 
 /**
@@ -10,6 +10,6 @@ import jdk.jfr.Description;
 @Description("添加菜单")
 public class AddAction extends CustomAction {
     public AddAction(String text) {
-        super(text, "Add", HttpIcons.General.ADD);
+        super(text, "Add", AllIcons.General.Add);
     }
 }

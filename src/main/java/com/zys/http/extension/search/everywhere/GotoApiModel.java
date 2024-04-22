@@ -23,7 +23,6 @@ import java.util.List;
 @Getter
 @Description("数据模型")
 public class GotoApiModel extends FilteringGotoByModel<HttpEnum.HttpMethod> implements DumbAware {
-
     private final List<MethodNodeData> nodeDataList;
 
     public GotoApiModel(Project project, GotoApiChooseByNameContributor contributor) {

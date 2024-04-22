@@ -1,12 +1,11 @@
 package com.zys.http.window.request;
 
-import com.intellij.ide.ui.LafManagerListener;
+import com.intellij.icons.AllIcons;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionPlaces;
 import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.SimpleToolWindowPanel;
@@ -20,9 +19,7 @@ import com.zys.http.extension.service.Bundle;
 import com.zys.http.extension.setting.HttpSetting;
 import com.zys.http.extension.topic.EnvironmentTopic;
 import com.zys.http.extension.topic.TreeTopic;
-import com.zys.http.tool.ui.ThemeTool;
 import com.zys.http.ui.dialog.EnvAddOrEditDialog;
-import com.zys.http.ui.icon.HttpIcons;
 import com.zys.http.ui.popup.MethodFilterPopup;
 import com.zys.http.ui.popup.NodeShowFilterPopup;
 import com.zys.http.window.request.panel.RequestPanel;
@@ -66,7 +63,7 @@ public class RequestWindow extends SimpleToolWindowPanel implements Disposable {
 
         // 环境操作菜单组
         DefaultActionGroup envActionGroup = new DefaultActionGroup(Bundle.get("http.api.icon.env"), true);
-        envActionGroup.getTemplatePresentation().setIcon(ThemeTool.isDark() ? HttpIcons.General.ENVIRONMENT : HttpIcons.General.ENVIRONMENT_LIGHT);
+        envActionGroup.getTemplatePresentation().setIcon(AllIcons.Nodes.Enum);
 
         AddAction addAction = new AddAction(Bundle.get("http.api.icon.env.action.add.env"));
         addAction.setAction(event -> new EnvAddOrEditDialog(project, true, "").show());
@@ -97,7 +94,7 @@ public class RequestWindow extends SimpleToolWindowPanel implements Disposable {
 
         // 节点过滤操作菜单组
         DefaultActionGroup filterActionGroup = new DefaultActionGroup(Bundle.get("http.api.icon.node.filter"), true);
-        filterActionGroup.getTemplatePresentation().setIcon(ThemeTool.isDark() ? HttpIcons.General.FILTER_GROUP : HttpIcons.General.FILTER_GROUP_LIGHT);
+        filterActionGroup.getTemplatePresentation().setIcon(AllIcons.Actions.ShortcutFilter);
         FilterAction settingAction = new FilterAction(Bundle.get("http.api.icon.node.filter.action.node.show"));
         settingAction.setAction(e -> nodeShowFilterPopup.show(requestPanel, nodeShowFilterPopup.getX(), nodeShowFilterPopup.getY()));
         filterActionGroup.add(settingAction);
@@ -116,7 +113,7 @@ public class RequestWindow extends SimpleToolWindowPanel implements Disposable {
     @Description("创建导出操作菜单组")
     private @NotNull DefaultActionGroup createExportActionGroup() {
         DefaultActionGroup exportGroup = new DefaultActionGroup(Bundle.get("http.api.icon.postman"), true);
-        exportGroup.getTemplatePresentation().setIcon(ThemeTool.isDark() ? HttpIcons.General.OUT : HttpIcons.General.OUT_LIGHT);
+        exportGroup.getTemplatePresentation().setIcon(AllIcons.Ide.OutgoingChangesOn);
 
         HttpConfigExportAction exportOne = new HttpConfigExportAction(Bundle.get("http.api.icon.postman.action.export.current.env"), HttpEnum.ExportEnum.SPECIFY_ENV);
         exportOne.initAction(null);
@@ -135,17 +132,6 @@ public class RequestWindow extends SimpleToolWindowPanel implements Disposable {
 
     @Description("监听事件通知")
     private void initTopic() {
-        MessageBusConnection connection = ApplicationManager.getApplication().getMessageBus().connect(this);
-        connection.subscribe(LafManagerListener.TOPIC, (LafManagerListener) lafManager -> {
-            setToolbar(null);
-            init();
-            List<HttpEnum.HttpMethod> methods = Arrays.stream(HttpEnum.HttpMethod.values())
-                    .filter(o -> !o.equals(HttpEnum.HttpMethod.REQUEST))
-                    .toList();
-            this.methodFilterPopup = new MethodFilterPopup(project, methods);
-            this.nodeShowFilterPopup = new NodeShowFilterPopup(project);
-        });
-
         MessageBus messageBus = project.getMessageBus();
         MessageBusConnection connect = messageBus.connect();
         connect.subscribe(TreeTopic.REFRESH_TOPIC, (TreeTopic.Refresh) b -> {

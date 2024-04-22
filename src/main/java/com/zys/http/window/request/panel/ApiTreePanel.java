@@ -1,5 +1,6 @@
 package com.zys.http.window.request.panel;
 
+import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.application.ReadAction;
@@ -27,9 +28,7 @@ import com.zys.http.extension.service.NotifyService;
 import com.zys.http.extension.setting.HttpSetting;
 import com.zys.http.extension.topic.EnvironmentTopic;
 import com.zys.http.tool.*;
-import com.zys.http.tool.ui.ThemeTool;
 import com.zys.http.tool.ui.TreeTool;
-import com.zys.http.ui.icon.HttpIcons;
 import com.zys.http.ui.tree.AbstractListTreePanel;
 import com.zys.http.ui.tree.node.*;
 import jdk.jfr.Description;
@@ -335,8 +334,7 @@ final class ApiTreePanel extends AbstractListTreePanel {
             expandAction.setAction(event -> treeExpand());
             group.add(expandAction);
         } else {
-            CommonAction navigation = new CommonAction(Bundle.get("http.api.tree.method.right.menu.action.navigation"), "",
-                    ThemeTool.isDark() ? HttpIcons.General.LOCATE : HttpIcons.General.LOCATE_LIGHT);
+            CommonAction navigation = new CommonAction(Bundle.get("http.api.tree.method.right.menu.action.navigation"), "", AllIcons.General.Locate);
             navigation.setAction(event -> mn.getValue().getPsiElement().navigate(true));
             group.add(navigation);
 

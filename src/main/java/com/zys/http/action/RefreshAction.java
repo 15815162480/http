@@ -1,7 +1,7 @@
 package com.zys.http.action;
 
+import com.intellij.icons.AllIcons;
 import com.zys.http.extension.service.Bundle;
-import com.zys.http.ui.icon.HttpIcons;
 import jdk.jfr.Description;
 
 /**
@@ -11,6 +11,6 @@ import jdk.jfr.Description;
 @Description("刷新操作")
 public class RefreshAction extends CustomAction {
     public RefreshAction() {
-        super(Bundle.get("http.common.action.refresh"), "Refresh", HttpIcons.General.REFRESH);
+        super(Bundle.get("http.common.action.refresh"), "Refresh", AllIcons.Actions.Refresh);
     }
 }

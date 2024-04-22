@@ -1,3 +1,8 @@
+### 1.6.3
+
+* improve: All icons will automatically change according to the project theme, including the icon for opening the
+  window (installing Extra ToolWindow Colorful Icons will only display colored icons)
+
 ### 1.6.2
 
 * fix bugs: When node filtering does not display package nodes, annotations will be displayed in the panel

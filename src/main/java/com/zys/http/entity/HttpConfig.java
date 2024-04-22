@@ -18,7 +18,6 @@ import static com.zys.http.constant.HttpEnum.Protocol;
 @AllArgsConstructor
 @Description("选择的配置数据")
 public class HttpConfig {
-
     @Description("选中的协议")
     private Protocol protocol;
 

@@ -1,8 +1,7 @@
 package com.zys.http.action;
 
+import com.intellij.icons.AllIcons;
 import com.zys.http.extension.service.Bundle;
-import com.zys.http.tool.ui.ThemeTool;
-import com.zys.http.ui.icon.HttpIcons;
 import jdk.jfr.Description;
 
 /**
@@ -12,7 +11,6 @@ import jdk.jfr.Description;
 @Description("展开操作")
 public class ExpandAction extends CustomAction {
     public ExpandAction() {
-        super(Bundle.get("http.common.action.expand"), "Expand",
-                ThemeTool.isDark() ? HttpIcons.General.EXPAND : HttpIcons.General.EXPAND_LIGHT);
+        super(Bundle.get("http.common.action.expand"), "Expand", AllIcons.Actions.Expandall);
     }
 }
