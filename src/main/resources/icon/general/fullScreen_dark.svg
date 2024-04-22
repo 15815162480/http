@@ -3,13 +3,13 @@
     <g id="Icons/expandHover">
       <g id="Icons/expandHover_2">
         <!-- 左下角 -->
-        <path id="Combined Shape" fill-rule="evenodd" clip-rule="evenodd" d="M7.37843 9.37843L6.67132 8.67133L4.17132 11.1713L2 9.00001V14H7L4.87843 11.8784L7.37843 9.37843Z" fill="#7F8B91" fill-opacity="0.9"/>
+        <path id="Combined Shape" fill-rule="evenodd" clip-rule="evenodd" d="M7.37843 9.37843L6.67132 8.67133L4.17132 11.1713L2 9.00001V14H7L4.87843 11.8784L7.37843 9.37843Z" fill="#CED0D6" fill-opacity="0.9"/>
         <!-- 右上角 -->
-        <path id="Combined Shape_2" fill-rule="evenodd" clip-rule="evenodd" d="M8.67157 6.67159L9.37868 7.37869L11.8787 4.87869L14 7.00001V2.00001H9L11.1716 4.17159L8.67157 6.67159Z" fill="#7F8B91" fill-opacity="0.9"/>
+        <path id="Combined Shape_2" fill-rule="evenodd" clip-rule="evenodd" d="M8.67157 6.67159L9.37868 7.37869L11.8787 4.87869L14 7.00001V2.00001H9L11.1716 4.17159L8.67157 6.67159Z" fill="#CED0D6" fill-opacity="0.9"/>
         <!-- 左上角 -->
-        <path id="Combined Shape_3" fill-rule="evenodd" clip-rule="evenodd" d="M2 2V7.00001L4.17159 4.87869L6.67157 7.37869L7.37868 6.67159L4.8787 4.17159L7 2Z" fill="#7F8B91" fill-opacity="0.9"/>
+        <path id="Combined Shape_3" fill-rule="evenodd" clip-rule="evenodd" d="M2 2V7.00001L4.17159 4.87869L6.67157 7.37869L7.37868 6.67159L4.8787 4.17159L7 2Z" fill="#CED0D6" fill-opacity="0.9"/>
         <!-- 右下角 -->
-        <path id="Combined Shape_4" fill-rule="evenodd" clip-rule="evenodd" d="M14 9.00001V14H9.0001L11.1716 11.8784L8.67157 9.37843L9.37868 8.67133L11.8787 11.1713Z" fill="#7F8B91" fill-opacity="0.9"/>
+        <path id="Combined Shape_4" fill-rule="evenodd" clip-rule="evenodd" d="M14 9.00001V14H9.0001L11.1716 11.8784L8.67157 9.37843L9.37868 8.67133L11.8787 11.1713Z" fill="#CED0D6" fill-opacity="0.9"/>
       </g>
     </g>
   </g>
