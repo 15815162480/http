@@ -8,6 +8,7 @@ import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.ui.JBColor;
+import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.tabs.TabInfo;
 import com.intellij.ui.tabs.impl.JBTabsImpl;
 import com.intellij.util.ui.JBUI;
@@ -56,6 +57,8 @@ public class RequestTabs extends JBTabsImpl {
     private ParameterTable parameterTable;
     @Description("请求体标签页面")
     private transient TabInfo bodyTabInfo;
+    @Description("请求体面板")
+    private JPanel bodyPanel;
     @Description("请求体编辑区")
     private CustomEditor bodyEditor;
     @Description("请求体类型")
@@ -66,6 +69,8 @@ public class RequestTabs extends JBTabsImpl {
     private transient TabInfo fileTabInfo;
     @Description("文件上传选择器")
     private transient FileUploadTable fileUploadTable;
+    @Description("响应体面板")
+    private JPanel respPanel;
     @Description("响应体标签页面")
     private transient TabInfo responseTabInfo;
     @Description("响应体类型")
@@ -99,6 +104,8 @@ public class RequestTabs extends JBTabsImpl {
         responseTab();
     }
 
+
+
     @Description("请求头标签页")
     private void requestHeaderTab() {
         this.headerTable = new EnvHeaderTable(this.project, false, this.serviceTool.getSelectedEnv());
@@ -119,11 +126,9 @@ public class RequestTabs extends JBTabsImpl {
 
     @Description("请求体标签页")
     private void requestBodyTab() {
-        JPanel bodyPanel = new JPanel(new BorderLayout(0, 0));
+        bodyPanel = new JPanel(new BorderLayout(0, 0));
         this.bodyEditor = new CustomEditor(project);
         this.bodyEditor.setName("BODY");
-
-        bodyPanel.setBorder(JBUI.Borders.customLine(UIConstant.EDITOR_BORDER_COLOR, 0, 3, 0, 0));
         bodyPanel.add(this.bodyEditor, BorderLayout.CENTER);
 
         JLabel label = new JLabel(Bundle.get("http.api.tab.body.type.label"));
@@ -174,8 +179,7 @@ public class RequestTabs extends JBTabsImpl {
 
     @Description("响应体标签页")
     private void responseTab() {
-        JPanel respPanel = new JPanel(new BorderLayout(0, 0));
-        respPanel.setBorder(JBUI.Borders.customLine(UIConstant.EDITOR_BORDER_COLOR, 0, 3, 0, 0));
+        respPanel = new JPanel(new BorderLayout(0, 0));
         responseEditor = new CustomEditor(project);
         respPanel.add(responseEditor, BorderLayout.CENTER);
         JPanel respExpandPanel = new JPanel(new BorderLayout(0, 0));
@@ -288,5 +292,9 @@ public class RequestTabs extends JBTabsImpl {
             // 错误
             requestResult.setForeground(JBColor.RED);
         }
+    }
+
+    private JBScrollPane editorPanel(CustomEditor editor) {
+        return new JBScrollPane(editor);
     }
 }

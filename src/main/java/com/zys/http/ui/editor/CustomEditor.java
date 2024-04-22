@@ -1,9 +1,13 @@
 package com.zys.http.ui.editor;
 
+import com.intellij.openapi.application.Application;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorSettings;
+import com.intellij.openapi.editor.colors.EditorColorsListener;
+import com.intellij.openapi.editor.colors.EditorColorsManager;
 import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.project.Project;
@@ -14,10 +18,7 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiFileFactory;
 import com.intellij.psi.codeStyle.CodeStyleManager;
 import com.intellij.ui.EditorTextField;
-import com.intellij.ui.Gray;
-import com.intellij.ui.JBColor;
 import com.intellij.util.LocalTimeCounter;
-import com.intellij.util.ui.JBUI;
 import com.intellij.util.xmlb.Constants;
 import com.zys.http.tool.ui.ComboBoxTool;
 import jdk.jfr.Description;
@@ -38,10 +39,19 @@ public class CustomEditor extends EditorTextField {
 
     public CustomEditor(Project project, FileType fileType) {
         super(null, project, fileType, false, false);
-        super.setBorder(JBUI.Borders.empty());
-        super.setBackground(new JBColor(Gray._255, new Color(30, 31, 34)));
+        Color color = EditorColorsManager.getInstance().getGlobalScheme().getDefaultBackground();
+        super.setBackground(color);
+        initTopic();
     }
 
+    private void initTopic() {
+        final Application application = ApplicationManager.getApplication();
+        application.getMessageBus().connect().subscribe(EditorColorsManager.TOPIC, (EditorColorsListener) editorColorsScheme -> {
+            if (editorColorsScheme != null) {
+                application.invokeLater(() -> setBackground(editorColorsScheme.getDefaultBackground()));
+            }
+        });
+    }
 
     public static void setupTextFieldEditor(@NotNull EditorEx editor) {
         EditorSettings settings = editor.getSettings();
