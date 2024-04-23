@@ -3,8 +3,6 @@ package com.zys.http.ui.dialog;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
-import com.intellij.util.ui.JBUI;
-import com.zys.http.constant.UIConstant;
 import com.zys.http.extension.service.Bundle;
 import com.zys.http.ui.editor.CustomEditor;
 import jdk.jfr.Description;
@@ -33,7 +31,6 @@ public class EditorDialog extends DialogWrapper {
         super(project);
         this.customEditor = new CustomEditor(project, fileType);
         this.customEditor.setText(editorText);
-        this.customEditor.setBorder(JBUI.Borders.customLine(UIConstant.EDITOR_BORDER_COLOR, 1));
         init();
         getRootPane().setMinimumSize(new Dimension(800, 600));
         getRootPane().setMaximumSize(new Dimension(800, 600));

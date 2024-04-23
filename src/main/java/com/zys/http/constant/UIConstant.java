@@ -16,7 +16,4 @@ import java.awt.*;
 public final class UIConstant {
     @Description("边框颜色")
     public static final JBColor BORDER_COLOR = new JBColor(Gray._214, new Color(30, 31, 34));
-
-    @Description("编辑器边框颜色")
-    public static final JBColor EDITOR_BORDER_COLOR = new JBColor(new Color(247, 248, 250), new Color(43, 45, 48));
 }
