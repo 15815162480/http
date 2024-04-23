@@ -1,7 +1,14 @@
 package com.zys.http.constant;
 
+import com.intellij.psi.PsiAnnotation;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Arrays;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.zys.http.constant.HttpEnum.HttpMethod;
 import static com.zys.http.constant.HttpEnum.ParamUsage;
@@ -23,6 +30,30 @@ public interface SpringEnum {
 
         private final String clazz;
         private final HttpMethod httpMethod;
+
+        private static final Map<String, HttpMethod> METHOD_MAP;
+
+        static {
+            METHOD_MAP = Arrays.stream(SpringEnum.Method.values())
+                    .collect(Collectors.toMap(SpringEnum.Method::getClazz, SpringEnum.Method::getHttpMethod));
+        }
+
+        public static boolean contains(@NotNull PsiAnnotation annotation) {
+            String qualifiedName = annotation.getQualifiedName();
+            return METHOD_MAP.containsKey(qualifiedName);
+        }
+
+        public static @Nullable HttpMethod get(@NotNull PsiAnnotation annotation) {
+            String qualifiedName = annotation.getQualifiedName();
+            if (!METHOD_MAP.containsKey(qualifiedName)) {
+                return null;
+            }
+            HttpEnum.HttpMethod httpMethod = METHOD_MAP.get(qualifiedName);
+            if (HttpEnum.HttpMethod.REQUEST.equals(httpMethod)) {
+                httpMethod = HttpEnum.HttpMethod.requestMappingConvert(annotation);
+            }
+            return httpMethod;
+        }
     }
 
     @Getter

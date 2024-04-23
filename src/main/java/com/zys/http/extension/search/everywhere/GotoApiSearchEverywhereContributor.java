@@ -21,7 +21,6 @@ import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @author zys
@@ -36,11 +35,10 @@ public class GotoApiSearchEverywhereContributor extends AbstractGotoSEContributo
         this.apiModel = new GotoApiModel(project, new GotoApiChooseByNameContributor(methodNodeDataList(project)));
     }
 
-    private static List<MethodNodeData> methodNodeDataList(Project project) {
+    private static @NotNull List<MethodNodeData> methodNodeDataList(Project project) {
         Collection<Module> moduleList = ProjectTool.moduleList(project);
         List<MethodNodeData> methodNodeDataList = new ArrayList<>();
-        Map<String, HttpEnum.HttpMethod> httpMethodMap = Arrays.stream(SpringEnum.Method.values())
-                .collect(Collectors.toMap(SpringEnum.Method::getClazz, SpringEnum.Method::getHttpMethod));
+
         for (Module m : moduleList) {
             List<PsiClass> controllers = ProjectTool.getModuleControllers(project, m).stream()
                     .filter(c -> c.getAllMethods().length > 0)
@@ -53,17 +51,14 @@ public class GotoApiSearchEverywhereContributor extends AbstractGotoSEContributo
                 for (PsiMethod method : xxxMappingMethods) {
                     PsiAnnotation[] annotations = method.getAnnotations();
                     for (PsiAnnotation annotation : annotations) {
-                        String qualifiedName = annotation.getQualifiedName();
-                        if (httpMethodMap.containsKey(qualifiedName)) {
-                            HttpEnum.HttpMethod httpMethod = httpMethodMap.get(qualifiedName);
-                            if (HttpEnum.HttpMethod.REQUEST.equals(httpMethod)) {
-                                httpMethod = HttpEnum.HttpMethod.requestMappingConvert(annotation);
-                            }
-                            String name = PsiTool.Annotation.getAnnotationValue(annotation, new String[]{"value", "path"});
-                            MethodNodeData data = new MethodNodeData(httpMethod, name, controllerPath, contextPath);
-                            data.setPsiElement(method);
-                            methodNodeDataList.add(data);
+                        HttpEnum.HttpMethod httpMethod = SpringEnum.Method.get(annotation);
+                        if (Objects.isNull(httpMethod)) {
+                            continue;
                         }
+                        String name = PsiTool.Annotation.getAnnotationValue(annotation, new String[]{"value", "path"});
+                        MethodNodeData data = new MethodNodeData(httpMethod, name, controllerPath, contextPath);
+                        data.setPsiElement(method);
+                        methodNodeDataList.add(data);
                     }
                 }
             }
@@ -71,6 +66,7 @@ public class GotoApiSearchEverywhereContributor extends AbstractGotoSEContributo
 
         return methodNodeDataList;
     }
+
 
     @Override
     public boolean isShownInSeparateTab() {

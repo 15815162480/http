@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @author zhou ys
@@ -47,9 +46,6 @@ public class VelocityTool {
     private static final String EXPORT_ENV_FILE_NAME = "apiTool.export.postman.env.{}.json";
     @Description("接口导出文件名模板, {}-模块名")
     private static final String EXPORT_API_FILE_NAME = "api.tool.export.postman.api.{}.json";
-
-    private static final Map<String, HttpEnum.HttpMethod> HTTP_METHOD_MAP = Arrays.stream(SpringEnum.Method.values())
-            .collect(Collectors.toMap(SpringEnum.Method::getClazz, SpringEnum.Method::getHttpMethod));
 
     static {
         Properties p = new Properties();
@@ -143,25 +139,21 @@ public class VelocityTool {
 
         // 请求方式、请求uri、请求头类型
         for (PsiAnnotation annotation : annotations) {
-            String qualifiedName = annotation.getQualifiedName();
-            if (HTTP_METHOD_MAP.containsKey(qualifiedName)) {
-                // 请求方式
-                HttpEnum.HttpMethod httpMethod = HTTP_METHOD_MAP.get(qualifiedName);
-                if (httpMethod.equals(HttpEnum.HttpMethod.REQUEST)) {
-                    httpMethod = HttpEnum.HttpMethod.requestMappingConvert(annotation);
-                }
-                item.setMethod(httpMethod.name());
-
-                // 请求 uri
-                String path = PsiTool.Annotation.getAnnotationValue(annotation, new String[]{"value", "path"});
-                item.setUri(UrlTool.buildMethodUri(contextPath, controllerPath, path));
-
-                // 请求头类型
-
-                // 请求参数类型
-                buildParamProperty(method, item);
-                return item;
+            HttpEnum.HttpMethod httpMethod = SpringEnum.Method.get(annotation);
+            if (Objects.isNull(httpMethod)) {
+                continue;
             }
+            item.setMethod(httpMethod.name());
+
+            // 请求 uri
+            String path = PsiTool.Annotation.getAnnotationValue(annotation, new String[]{"value", "path"});
+            item.setUri(UrlTool.buildMethodUri(contextPath, controllerPath, path));
+
+            // 请求头类型
+
+            // 请求参数类型
+            buildParamProperty(method, item);
+            return item;
         }
         return null;
     }

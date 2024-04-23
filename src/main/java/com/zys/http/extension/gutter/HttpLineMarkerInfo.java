@@ -50,17 +50,18 @@ public class HttpLineMarkerInfo extends LineMarkerInfo<PsiIdentifier> {
         commonAction.setAction(event -> {
             ToolWindowManager manager = ToolWindowManager.getInstance(Objects.requireNonNull(event.getProject()));
             ToolWindow toolWindow = manager.getToolWindow(HttpConstant.PLUGIN_NAME);
-            if (Objects.nonNull(toolWindow)) {
-                toolWindow.show();
-                ContentManager contentManager = toolWindow.getContentManager();
-                Content content = contentManager.getContent(0);
+            if (Objects.isNull(toolWindow)) {
+                return;
+            }
+            toolWindow.show();
+            ContentManager contentManager = toolWindow.getContentManager();
+            Content content = contentManager.getContent(0);
 
-                if (Objects.nonNull(content) && content.getComponent() instanceof RequestWindow) {
-                    MessageBus messageBus = event.getProject().getMessageBus();
-                    messageBus.syncPublisher(TreeTopic.REFRESH_TOPIC).refresh(false);
-                    messageBus.syncPublisher(TreeTopic.SELECTED_TOPIC).selected(psiMethod);
-                    contentManager.setSelectedContent(content);
-                }
+            if (Objects.nonNull(content) && content.getComponent() instanceof RequestWindow) {
+                MessageBus messageBus = event.getProject().getMessageBus();
+                messageBus.syncPublisher(TreeTopic.REFRESH_TOPIC).refresh(false);
+                messageBus.syncPublisher(TreeTopic.SELECTED_TOPIC).selected(psiMethod);
+                contentManager.setSelectedContent(content);
             }
         });
         return new HttpGutterIconRenderer(this, commonAction);

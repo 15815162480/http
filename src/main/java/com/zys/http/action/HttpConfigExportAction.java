@@ -35,7 +35,7 @@ public class HttpConfigExportAction extends ExportAction {
     public void initAction(@Nullable String selectedEnv) {
         this.setAction(e -> {
             Project project = e.getProject();
-            if (null == project) {
+            if (Objects.isNull(project)) {
                 return;
             }
             VirtualFile selectedFile = null;

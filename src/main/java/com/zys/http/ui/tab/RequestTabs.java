@@ -8,7 +8,6 @@ import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.ui.JBColor;
-import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.tabs.TabInfo;
 import com.intellij.ui.tabs.impl.JBTabsImpl;
 import com.intellij.util.ui.JBUI;
@@ -28,6 +27,7 @@ import com.zys.http.ui.table.FileUploadTable;
 import com.zys.http.ui.table.ParameterTable;
 import jdk.jfr.Description;
 import lombok.Getter;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -103,8 +103,6 @@ public class RequestTabs extends JBTabsImpl {
         requestFileTab();
         responseTab();
     }
-
-
 
     @Description("请求头标签页")
     private void requestHeaderTab() {
@@ -262,7 +260,8 @@ public class RequestTabs extends JBTabsImpl {
         }
     }
 
-    private ItemListener itemListener(CustomEditor customEditor) {
+    @Contract(pure = true)
+    private @NotNull ItemListener itemListener(CustomEditor customEditor) {
         return e -> {
             ItemSelectable item = e.getItemSelectable();
             if (Objects.isNull(item)) {
@@ -292,9 +291,5 @@ public class RequestTabs extends JBTabsImpl {
             // 错误
             requestResult.setForeground(JBColor.RED);
         }
-    }
-
-    private JBScrollPane editorPanel(CustomEditor editor) {
-        return new JBScrollPane(editor);
     }
 }

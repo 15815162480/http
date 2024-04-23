@@ -16,7 +16,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -181,13 +180,12 @@ public class PsiTool {
             if (methods.length == 0) {
                 return Collections.emptyList();
             }
-            Map<String, HttpEnum.HttpMethod> httpMethodMap = Arrays.stream(SpringEnum.Method.values())
-                    .collect(Collectors.toMap(SpringEnum.Method::getClazz, SpringEnum.Method::getHttpMethod));
+
             List<PsiMethod> target = new ArrayList<>();
             for (PsiMethod method : methods) {
                 PsiAnnotation[] annotations = method.getAnnotations();
                 for (PsiAnnotation annotation : annotations) {
-                    if (httpMethodMap.containsKey(annotation.getQualifiedName())) {
+                    if (SpringEnum.Method.contains(annotation)) {
                         target.add(method);
                         break;
                     }

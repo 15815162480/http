@@ -264,16 +264,10 @@ final class ApiTreePanel extends AbstractListTreePanel {
     }
 
     private List<MethodNode> createMethodNodes(@NotNull PsiMethod method, String controllerPath, String contextPath) {
-        Map<String, HttpEnum.HttpMethod> httpMethodMap = Arrays.stream(SpringEnum.Method.values())
-                .collect(Collectors.toMap(SpringEnum.Method::getClazz, SpringEnum.Method::getHttpMethod));
         PsiAnnotation[] annotations = method.getAnnotations();
-        return Stream.of(annotations).filter(annotation -> httpMethodMap.containsKey(annotation.getQualifiedName()))
+        return Stream.of(annotations).filter(SpringEnum.Method::contains)
                 .map(annotation -> {
-                    String qualifiedName = annotation.getQualifiedName();
-                    HttpEnum.HttpMethod httpMethod = httpMethodMap.get(qualifiedName);
-                    if (HttpEnum.HttpMethod.REQUEST.equals(httpMethod)) {
-                        httpMethod = HttpEnum.HttpMethod.requestMappingConvert(annotation);
-                    }
+                    HttpEnum.HttpMethod httpMethod = SpringEnum.Method.get(annotation);
                     String name = PsiTool.Annotation.getAnnotationValue(annotation, new String[]{"value", "path"});
                     MethodNodeData data = new MethodNodeData(httpMethod, name, controllerPath, contextPath);
                     data.setDescription(PsiTool.Annotation.getSwaggerAnnotation(method, HttpEnum.AnnotationPlace.METHOD));
