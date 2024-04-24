@@ -94,7 +94,7 @@
     <depends>com.intellij.modules.vcs</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <intentionAction order="first" >
+        <intentionAction>
             <language>JAVA</language>
             <bundleName>messages.http</bundleName>
             <categoryKey>http.extension.intention.category</categoryKey>
