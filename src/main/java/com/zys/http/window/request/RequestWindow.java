@@ -6,6 +6,10 @@ import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionPlaces;
 import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
+import com.intellij.openapi.application.Application;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.editor.colors.EditorColorsListener;
+import com.intellij.openapi.editor.colors.EditorColorsManager;
 import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.SimpleToolWindowPanel;
@@ -26,7 +30,6 @@ import com.zys.http.window.request.panel.RequestPanel;
 import jdk.jfr.Description;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -46,10 +49,7 @@ public class RequestWindow extends SimpleToolWindowPanel implements Disposable {
     }
 
     private void init() {
-        List<HttpEnum.HttpMethod> methods = Arrays.stream(HttpEnum.HttpMethod.values())
-                .filter(o -> !o.equals(HttpEnum.HttpMethod.REQUEST))
-                .toList();
-        this.methodFilterPopup = new MethodFilterPopup(project, methods);
+        this.methodFilterPopup = new MethodFilterPopup(project);
         this.nodeShowFilterPopup = new NodeShowFilterPopup(project);
         this.requestPanel = new RequestPanel(project);
         DumbService.getInstance(project).smartInvokeLater(() -> loadNodes(false));
@@ -132,6 +132,17 @@ public class RequestWindow extends SimpleToolWindowPanel implements Disposable {
 
     @Description("监听事件通知")
     private void initTopic() {
+        final Application application = ApplicationManager.getApplication();
+        application.getMessageBus().connect().subscribe(EditorColorsManager.TOPIC, (EditorColorsListener) editorColorsScheme -> {
+            if (editorColorsScheme != null) {
+                application.invokeLater(() -> {
+                    List<HttpEnum.HttpMethod> selectedValues = methodFilterPopup.getSelectedValues();
+                    methodFilterPopup = new MethodFilterPopup(project, selectedValues);
+                    List<String> selectedValues1 = nodeShowFilterPopup.getSelectedValues();
+                    nodeShowFilterPopup = new NodeShowFilterPopup(project, selectedValues1);
+                });
+            }
+        });
         MessageBus messageBus = project.getMessageBus();
         MessageBusConnection connect = messageBus.connect();
         connect.subscribe(TreeTopic.REFRESH_TOPIC, (TreeTopic.Refresh) b -> {

@@ -20,4 +20,8 @@ public class NodeShowFilterPopup extends AbstractFilterPopup<String> {
     public NodeShowFilterPopup(Project project) {
         super(project, SETTING_VALUES);
     }
+
+    public NodeShowFilterPopup(Project project, List<String> selectedSettingValues) {
+        super(project, SETTING_VALUES, selectedSettingValues);
+    }
 }

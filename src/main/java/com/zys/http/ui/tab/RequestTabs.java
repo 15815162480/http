@@ -125,6 +125,7 @@ public class RequestTabs extends JBTabsImpl {
     @Description("请求体标签页")
     private void requestBodyTab() {
         bodyPanel = new JPanel(new BorderLayout(0, 0));
+        bodyPanel.setBorder(JBUI.Borders.customLine(JBColor.PanelBackground, 0, 3, 0, 0));
         this.bodyEditor = new CustomEditor(project);
         this.bodyEditor.setName("BODY");
         bodyPanel.add(this.bodyEditor, BorderLayout.CENTER);
@@ -178,6 +179,7 @@ public class RequestTabs extends JBTabsImpl {
     @Description("响应体标签页")
     private void responseTab() {
         respPanel = new JPanel(new BorderLayout(0, 0));
+        respPanel.setBorder(JBUI.Borders.customLine(JBColor.PanelBackground, 0, 3, 0, 0));
         responseEditor = new CustomEditor(project);
         respPanel.add(responseEditor, BorderLayout.CENTER);
         JPanel respExpandPanel = new JPanel(new BorderLayout(0, 0));

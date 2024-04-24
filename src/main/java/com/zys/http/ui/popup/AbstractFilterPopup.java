@@ -1,6 +1,7 @@
 package com.zys.http.ui.popup;
 
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.JBPopupMenu;
 import com.intellij.ui.components.JBCheckBox;
 import com.intellij.util.ui.JBUI;
 import com.zys.http.constant.UIConstant;
@@ -16,7 +17,7 @@ import java.util.List;
  * @author zhou ys
  * @since 2023-09-21
  */
-public abstract class AbstractFilterPopup<T> extends JPopupMenu {
+public abstract class AbstractFilterPopup<T> extends JBPopupMenu {
     protected final transient List<JBCheckBox> checkBoxList = new ArrayList<>();
 
     protected final transient List<T> values;
@@ -25,9 +26,13 @@ public abstract class AbstractFilterPopup<T> extends JPopupMenu {
     protected final transient Project project;
 
     protected AbstractFilterPopup(Project project, List<T> values) {
+        this(project, values, values);
+    }
+
+    protected AbstractFilterPopup(Project project, List<T> values, List<T> defaultValues) {
         this.project = project;
         this.values = values;
-        this.defaultValues = values;
+        this.defaultValues = defaultValues;
         init();
     }
 
