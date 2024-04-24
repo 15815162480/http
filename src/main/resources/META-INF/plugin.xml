@@ -59,6 +59,9 @@
                 improve: All icons will automatically change according to the project theme, including the icon for
                 opening the window (installing Extra ToolWindow Colorful Icons will only display colored icons)
             </li>
+            <li>
+                feature: Alt+Enter at the method added a menu - Copy Api
+            </li>
         </ul>
         <br>
         <p>If you find it useful, please go to the plugin <a
@@ -71,6 +74,9 @@
             <li>
                 优化: 所有图标会根据项目主题自动变化, 包括打开窗口的图标(安装 Extra ToolWindow Colorful Icons
                 才会展示彩色图标)
+            </li>
+            <li>
+                新功能: 在方法处的 Alt + Enter 添加了一个菜单 —— 复制 Api
             </li>
         </ul>
         <br>
@@ -88,6 +94,14 @@
     <depends>com.intellij.modules.vcs</depends>
 
     <extensions defaultExtensionNs="com.intellij">
+        <intentionAction order="first" >
+            <language>JAVA</language>
+            <bundleName>messages.http</bundleName>
+            <categoryKey>http.extension.intention.category</categoryKey>
+            <className>com.zys.http.extension.intention.CopyApiIntentionAction</className>
+            <skipBeforeAfter>false</skipBeforeAfter>
+        </intentionAction>
+
         <!-- Settings > Tools -> ApiTool -->
         <applicationConfigurable parentId="tools"
                                  instance="com.zys.http.extension.setting.HttpSettingConfigurable"
