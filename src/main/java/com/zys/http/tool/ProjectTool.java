@@ -146,15 +146,15 @@ public class ProjectTool {
             Optional<GlobalSearchScope> globalSearchScope = Optional.of(module)
                     .map(Module::getModuleScope);
             Stream<KtAnnotationEntry> s1 = globalSearchScope.map(moduleScope -> ApplicationManager.getApplication().runReadAction((Computable<Collection<KtAnnotationEntry>>) () ->
-                            KotlinAnnotationsIndex.Helper.get(SpringEnum.Controller.CONTROLLER.getShortClassName(), project, moduleScope)))
+                            KotlinAnnotationsIndex.getInstance().get(SpringEnum.Controller.CONTROLLER.getShortClassName(), project, moduleScope)))
                     .orElse(new ArrayList<>()).stream();
 
             Stream<KtAnnotationEntry> s2 = globalSearchScope.map(moduleScope -> ApplicationManager.getApplication().runReadAction((Computable<Collection<KtAnnotationEntry>>) () ->
-                            KotlinAnnotationsIndex.Helper.get(SpringEnum.Controller.REST_CONTROLLER.getShortClassName(), project, moduleScope)))
+                            KotlinAnnotationsIndex.getInstance().get(SpringEnum.Controller.REST_CONTROLLER.getShortClassName(), project, moduleScope)))
                     .orElse(new ArrayList<>()).stream();
             if (CharSequenceUtil.isNotEmpty(customAnno) && !customAnno.endsWith(".")) {
                 s2 = Stream.concat(s2, globalSearchScope.map(moduleScope -> ApplicationManager.getApplication().runReadAction((Computable<Collection<KtAnnotationEntry>>) () ->
-                                KotlinAnnotationsIndex.Helper.get(customAnno.substring(customAnno.lastIndexOf('.') + 1), project, moduleScope)))
+                                KotlinAnnotationsIndex.getInstance().get(customAnno.substring(customAnno.lastIndexOf('.') + 1), project, moduleScope)))
                         .orElse(new ArrayList<>()).stream());
             }
             return Stream.concat(s1, s2)

@@ -244,7 +244,7 @@ public class DataTypeTool {
             return null;
         }
 
-        String typeText = typeReference.getTypeText();
+        String typeText = typeReference.getText();
 
         // 基元类型对应的包装类
         Object value = BASIC_DATA_TYPE_OBJECT_MAP.get(typeText);
@@ -273,7 +273,7 @@ public class DataTypeTool {
 
         GlobalSearchScope scope = typeReference.getResolveScope();
         // 应该只有一个才对, 没法获取到 fqName
-        List<KtClassOrObject> elements = KotlinClassShortNameIndex.Helper.getAllElements(typeReference.getTypeText(), project, scope, ktClassOrObject -> true);
+        List<KtClassOrObject> elements = (List<KtClassOrObject>) KotlinClassShortNameIndex.getInstance().get(typeReference.getText(), project, scope);
         if (elements.isEmpty()) {
             return null;
         }
@@ -309,7 +309,7 @@ public class DataTypeTool {
         if (Objects.isNull(typeReference)) {
             typeReference = parameter.getTypeReference();
         }
-        String typeText = typeReference.getTypeText();
+        String typeText = typeReference.getText();
         if (typeText.contains("Map")) {
             return Collections.emptyMap();
         }
@@ -355,7 +355,7 @@ public class DataTypeTool {
         if (Objects.isNull(typeReference)) {
             return EMPTY_ARRAY;
         }
-        String typeText = typeReference.getTypeText();
+        String typeText = typeReference.getText();
         if ("Date".equals(typeText) || "LocalDateTime".equals(typeText)) {
             return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime());
         }

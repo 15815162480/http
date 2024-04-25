@@ -167,7 +167,7 @@ public class ParamConvert {
         return map;
     }
 
-    private static void parseKtParameter(Map<String, ParamProperty> map, KtParameter parameter, boolean isJsonPretty) {
+    private static void parseKtParameter(Map<String, ParamProperty> map, @NotNull KtParameter parameter, boolean isJsonPretty) {
         String parameterName = parameter.getName();
         List<KtAnnotationEntry> entries = parameter.getAnnotationEntries().stream().filter(entry -> Objects.nonNull(entry.getShortName())).toList();
 
