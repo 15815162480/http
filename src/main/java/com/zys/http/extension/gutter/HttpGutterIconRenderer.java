@@ -2,7 +2,7 @@ package com.zys.http.extension.gutter;
 
 import com.intellij.codeInsight.daemon.LineMarkerInfo;
 import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.psi.PsiIdentifier;
+import com.intellij.psi.PsiElement;
 import com.zys.http.action.CommonAction;
 import com.zys.http.extension.service.Bundle;
 import com.zys.http.ui.icon.HttpIcons;
@@ -15,10 +15,10 @@ import javax.swing.*;
  * @author zhou ys
  * @since 2023-10-12
  */
-public class HttpGutterIconRenderer extends LineMarkerInfo.LineMarkerGutterIconRenderer<PsiIdentifier> {
+public class HttpGutterIconRenderer extends LineMarkerInfo.LineMarkerGutterIconRenderer<PsiElement> {
     public final CommonAction generateRequestAction;
 
-    public HttpGutterIconRenderer(@NotNull LineMarkerInfo<PsiIdentifier> info, CommonAction generateRequestAction) {
+    public HttpGutterIconRenderer(@NotNull LineMarkerInfo<PsiElement> info, CommonAction generateRequestAction) {
         super(info);
         this.generateRequestAction = generateRequestAction;
     }

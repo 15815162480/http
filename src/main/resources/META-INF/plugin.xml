@@ -124,6 +124,8 @@
 
         <codeInsight.lineMarkerProvider language="JAVA"
                                         implementationClass="com.zys.http.extension.gutter.HttpLineMarkerProvider"/>
+        <codeInsight.lineMarkerProvider language="kotlin"
+                                        implementationClass="com.zys.http.extension.gutter.HttpLineMarkerProvider"/>
         <itemPresentationProvider forClass="com.zys.http.extension.search.everywhere.GotoApiItem"
                                   implementationClass="com.zys.http.extension.search.everywhere.GotoApiPresentationProvider"/>
     </extensions>

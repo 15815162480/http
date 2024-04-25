@@ -1,11 +1,15 @@
 package com.zys.http.constant;
 
 import com.intellij.psi.PsiAnnotation;
-import com.zys.http.tool.PsiTool;
+import com.zys.http.tool.JavaTool;
+import com.zys.http.tool.KotlinTool;
 import jdk.jfr.Description;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.kotlin.psi.KtAnnotationEntry;
 
 /**
  * @author zys
@@ -36,7 +40,17 @@ public interface HttpEnum {
         REQUEST, GET, POST, PUT, DELETE, PATCH;
 
         public static HttpMethod requestMappingConvert(PsiAnnotation annotation) {
-            String value = PsiTool.Annotation.getAnnotationValue(annotation, new String[]{"method"});
+            String value = JavaTool.Annotation.getAnnotationValue(annotation, new String[]{"method"});
+            return requestMappingConvert(value);
+        }
+
+        public static HttpMethod requestMappingConvert(KtAnnotationEntry entry) {
+            String value = KotlinTool.Annotation.getAnnotationValue(entry, new String[]{"method"});
+            return requestMappingConvert(value);
+        }
+
+        @Contract(pure = true)
+        private static HttpMethod requestMappingConvert(@NotNull String value) {
             return switch (value) {
                 case "RequestMethod.POST" -> POST;
                 case "RequestMethod.PUT" -> PUT;

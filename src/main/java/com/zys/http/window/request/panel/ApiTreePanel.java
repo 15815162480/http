@@ -1,6 +1,7 @@
 package com.zys.http.window.request.panel;
 
 import com.intellij.icons.AllIcons;
+import com.intellij.lang.java.JavaLanguage;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.application.ReadAction;
@@ -8,10 +9,7 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.NavigatablePsiElement;
-import com.intellij.psi.PsiAnnotation;
-import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiMethod;
+import com.intellij.psi.*;
 import com.intellij.ui.treeStructure.SimpleTree;
 import com.zys.http.action.CommonAction;
 import com.zys.http.action.CopyAction;
@@ -36,6 +34,9 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.kotlin.idea.KotlinLanguage;
+import org.jetbrains.kotlin.psi.*;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -60,10 +61,10 @@ final class ApiTreePanel extends AbstractListTreePanel {
     private final transient Map<String, ModuleNode> moduleNodeMap = new HashMap<>();
 
     @Description("模块名, controller")
-    private final transient Map<String, List<PsiClass>> moduleControllerMap = new HashMap<>();
+    private final transient Map<String, List<? extends PsiElement>> moduleControllerMap = new HashMap<>();
 
     @Description("controller, 方法列表")
-    private final transient Map<PsiClass, List<MethodNode>> methodNodeMap = new HashMap<>();
+    private final transient Map<PsiElement, List<MethodNode>> methodNodeMap = new HashMap<>();
 
     @Setter
     @Description("节点选中回调")
@@ -123,36 +124,53 @@ final class ApiTreePanel extends AbstractListTreePanel {
     }
 
     private void loadClassNodes(Module module, String contextPath, List<HttpEnum.HttpMethod> methods, List<String> nodeShowValues) {
-        List<PsiClass> controllers = ProjectTool.getModuleControllers(project, module);
-        if (controllers.isEmpty()) {
+        List<PsiClass> controllers = ProjectTool.getModuleJavaControllers(project, module);
+        List<KtClass> ktControllers = ProjectTool.getModuleKtControllers(project, module);
+        if (controllers.isEmpty() && ktControllers.isEmpty()) {
             return;
         }
-        moduleControllerMap.put(module.getName(), controllers);
+        List<PsiElement> allControllers = new ArrayList<>(controllers);
+        allControllers.addAll(ktControllers);
+        moduleControllerMap.put(module.getName(), allControllers);
         isGenerateDefaultEnv(module);
-        controllers.forEach(controller -> loadMethodNodes(controller, contextPath));
+        allControllers.forEach(controller -> loadMethodNodes(controller, contextPath));
         loadPackageNodes(module, methods, nodeShowValues);
     }
 
     @SneakyThrows
-    private void loadMethodNodes(@NotNull PsiClass psiClass, String contextPath) {
-        if (psiClass.isAnnotationType() || psiClass.isInterface() || psiClass.isEnum()) {
-            return;
+    private void loadMethodNodes(@NotNull PsiElement psiElement, String contextPath) {
+        if (psiElement.getLanguage().equals(JavaLanguage.INSTANCE)) {
+            PsiClass psiClass = (PsiClass) psiElement;
+            if (psiClass.isAnnotationType() || psiClass.isInterface() || psiClass.isEnum()) {
+                return;
+            }
+
+            List<MethodNode> methodNodes = ReadAction.nonBlocking(() -> {
+                PsiMethod[] methods = psiClass.getAllMethods();
+                String controllerPath = JavaTool.Class.getControllerPath(psiClass);
+                return Arrays.stream(methods)
+                        .map(method -> createMethodNode(method, controllerPath, contextPath)).filter(Objects::nonNull).toList();
+            }).submit(ThreadTool.getExecutor()).get();
+
+            methodNodeMap.put(psiClass, methodNodes);
+        } else if (psiElement.getLanguage().equals(KotlinLanguage.INSTANCE)) {
+            KtClass ktClass = (KtClass) psiElement;
+            if (ktClass.isEnum() || ktClass.isInterface() || ktClass.isAnnotation()) {
+                return;
+            }
+            List<MethodNode> list = ReadAction.nonBlocking(() -> {
+                List<KtNamedFunction> functions = ktClass.getDeclarations().stream().filter(KtNamedFunction.class::isInstance).map(KtNamedFunction.class::cast).toList();
+                String controllerPath = KotlinTool.Class.getKtControllerPath(ktClass);
+                return functions.stream().map(f -> createMethodNode(f, controllerPath, contextPath)).toList();
+            }).submit(ThreadTool.getExecutor()).get();
+            methodNodeMap.put(ktClass, list);
         }
-
-        List<MethodNode> methodNodes = ReadAction.nonBlocking(() -> {
-            PsiMethod[] methods = psiClass.getAllMethods();
-            String controllerPath = PsiTool.Annotation.getControllerPath(psiClass);
-            return Arrays.stream(methods)
-                    .map(method -> createMethodNodes(method, controllerPath, contextPath)).flatMap(List::stream).toList();
-        }).submit(ThreadTool.getExecutor()).get();
-
-        methodNodeMap.put(psiClass, methodNodes);
     }
 
     private void loadPackageNodes(@NotNull Module module, List<HttpEnum.HttpMethod> methods, @NotNull List<String> nodeShowValues) {
         // 获取当前模块的所有 controller
         String moduleName = module.getName();
-        List<PsiClass> controllers = moduleControllerMap.get(moduleName);
+        List<? extends PsiElement> controllers = moduleControllerMap.get(moduleName);
         boolean isFilterPackage = nodeShowValues.contains(SETTING_VALUES.get(0));
         boolean isFilterClass = nodeShowValues.contains(SETTING_VALUES.get(1));
 
@@ -164,15 +182,18 @@ final class ApiTreePanel extends AbstractListTreePanel {
         List<BaseNode<?>> children = new ArrayList<>();
         List<BaseNode<?>> unKnownPackage = new ArrayList<>(0);
 
-        for (Map.Entry<PsiClass, List<MethodNode>> e : methodNodeMap.entrySet()) {
-            PsiClass k = e.getKey();
+        for (Map.Entry<? extends PsiElement, List<MethodNode>> e : methodNodeMap.entrySet()) {
+            PsiElement k = e.getKey();
             List<MethodNode> v = e.getValue();
             if (!controllers.contains(k)) {
                 continue;
             }
             ClassNodeData data = new ClassNodeData(k);
-            String s = PsiTool.Annotation.getSwaggerAnnotation(k, HttpEnum.AnnotationPlace.CLASS);
-            data.setDescription(s);
+            if (k instanceof PsiClass psiClass) {
+                String s = JavaTool.Annotation.getSwaggerAnnotation(psiClass, HttpEnum.AnnotationPlace.CLASS);
+                data.setDescription(s);
+            }
+
             ClassNode classNode = new ClassNode(data);
             v.stream().filter(m -> methods.contains(m.getValue().getHttpMethod())).forEach(classNode::add);
 
@@ -180,7 +201,13 @@ final class ApiTreePanel extends AbstractListTreePanel {
                 // 不显示包名则直接添加到 module 节点
                 children.addAll(filterClass(classNode, isFilterClass));
             } else {
-                String packageName = PsiTool.Class.packageName(k);
+                String packageName = null;
+                if (k instanceof PsiClass psiClass) {
+                    packageName = JavaTool.Class.packageName(psiClass);
+                } else if (k instanceof KtClass ktClass) {
+                    packageName = ktClass.getContainingKtFile().getPackageFqName().asString();
+                }
+
                 if (classNode.getChildCount() > 0) {
                     if (Objects.isNull(packageName)) {
                         // 没有包名则直接添加到 module 节点
@@ -263,17 +290,48 @@ final class ApiTreePanel extends AbstractListTreePanel {
         }
     }
 
-    private List<MethodNode> createMethodNodes(@NotNull PsiMethod method, String controllerPath, String contextPath) {
+    private MethodNode createMethodNode(@NotNull PsiMethod method, String controllerPath, String contextPath) {
         PsiAnnotation[] annotations = method.getAnnotations();
         return Stream.of(annotations).filter(SpringEnum.Method::contains)
                 .map(annotation -> {
                     HttpEnum.HttpMethod httpMethod = SpringEnum.Method.get(annotation);
-                    String name = PsiTool.Annotation.getAnnotationValue(annotation, new String[]{"value", "path"});
+                    String name = JavaTool.Annotation.getAnnotationValue(annotation, new String[]{"value", "path"});
                     MethodNodeData data = new MethodNodeData(httpMethod, name, controllerPath, contextPath);
-                    data.setDescription(PsiTool.Annotation.getSwaggerAnnotation(method, HttpEnum.AnnotationPlace.METHOD));
+                    data.setDescription(JavaTool.Annotation.getSwaggerAnnotation(method, HttpEnum.AnnotationPlace.METHOD));
                     data.setPsiElement(method);
                     return new MethodNode(data);
-                }).toList();
+                }).findFirst().orElse(null);
+    }
+
+    private @Nullable MethodNode createMethodNode(@NotNull KtNamedFunction function, String controllerPath, String contextPath) {
+        // 过滤某个符合的要求的注解
+        KtModifierList modifierList = function.getModifierList();
+        if (Objects.isNull(modifierList)) {
+            return null;
+        }
+        String path = "";
+        HttpEnum.HttpMethod httpMethod = null;
+        List<KtAnnotationEntry> entries = function.getAnnotationEntries();
+        for (KtAnnotationEntry o : entries) {
+            httpMethod = SpringEnum.Method.get(Objects.requireNonNull(o.getShortName()).asString());
+            if (Objects.isNull(httpMethod)) {
+                httpMethod = SpringEnum.Method.get("org.springframework.web.bind.annotation." + Objects.requireNonNull(o.getShortName()).asString());
+                if (HttpEnum.HttpMethod.REQUEST.equals(httpMethod)) {
+                    httpMethod = HttpEnum.HttpMethod.requestMappingConvert(o);
+                }
+            }
+            if (Objects.nonNull(httpMethod)) {
+                path = KotlinTool.Annotation.getAnnotationValue(o, new String[]{"value", "path"});
+                break;
+            }
+        }
+        if (Objects.isNull(path) || Objects.isNull(httpMethod)) {
+            return null;
+        }
+
+        MethodNodeData data = new MethodNodeData(httpMethod, path, controllerPath, contextPath);
+        data.setPsiElement(function);
+        return new MethodNode(data);
     }
 
     private void removeEmptyModule() {
@@ -289,10 +347,21 @@ final class ApiTreePanel extends AbstractListTreePanel {
         }
     }
 
-    public MethodNode getMethodNode(@NotNull PsiMethod psiMethod) {
-        PsiClass containingClass = psiMethod.getContainingClass();
-        return methodNodeMap.getOrDefault(containingClass, new ArrayList<>()).stream()
-                .filter(v -> v.getValue().getPsiElement().equals(psiMethod)).findFirst().orElse(null);
+    public @Nullable MethodNode getMethodNode(@NotNull NavigatablePsiElement element) {
+        if (element instanceof PsiMethod psiMethod) {
+            PsiClass containingClass = psiMethod.getContainingClass();
+            return methodNodeMap.getOrDefault(containingClass, new ArrayList<>()).stream()
+                    .filter(v -> v.getValue().getPsiElement().equals(psiMethod)).findFirst().orElse(null);
+        } else if (element instanceof KtNamedFunction function) {
+            PsiElement parent = function.getParent();
+            if (Objects.isNull(parent)) {
+                return null;
+            }
+            parent = parent.getParent();
+            return methodNodeMap.getOrDefault(parent, new ArrayList<>()).stream()
+                    .filter(v -> v.getValue().getPsiElement().equals(function)).findFirst().orElse(null);
+        }
+        return null;
     }
 
     @Override

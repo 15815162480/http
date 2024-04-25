@@ -89,7 +89,7 @@ public class HttpSettingConfigurable implements Configurable {
                         HttpConfig config = new HttpConfig();
                         config.setProtocol(HttpEnum.Protocol.HTTP);
                         config.setHostValue("127.0.0.1:" + port + contextPath);
-                        if (!ProjectTool.getModuleControllers(project, module).isEmpty()) {
+                        if (!ProjectTool.getModuleJavaControllers(project, module).isEmpty()) {
                             project.getMessageBus().syncPublisher(EnvironmentTopic.LIST_TOPIC).save(name, config);
                         }
                     } else {

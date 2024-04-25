@@ -21,6 +21,10 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.kotlin.idea.stubindex.KotlinAnnotationsIndex;
+import org.jetbrains.kotlin.psi.KtAnnotationEntry;
+import org.jetbrains.kotlin.psi.KtClass;
+import org.jetbrains.kotlin.psi.KtDeclarationModifierList;
 import org.jetbrains.yaml.YAMLUtil;
 import org.jetbrains.yaml.psi.YAMLFile;
 
@@ -107,7 +111,7 @@ public class ProjectTool {
     @SneakyThrows
     @SuppressWarnings("deprecation")
     @Description("获取模块所有的 Controller, 使用弃用API的原因是兼容低版本")
-    public static List<PsiClass> getModuleControllers(Project project, Module module) {
+    public static List<PsiClass> getModuleJavaControllers(Project project, Module module) {
         return ReadAction.nonBlocking(() -> {
             String customAnno = HttpSetting.getInstance().getCustomAnno();
             Optional<GlobalSearchScope> globalSearchScope = Optional.of(module)
@@ -130,6 +134,35 @@ public class ProjectTool {
                     .map(PsiModifierList::getParent)
                     .filter(PsiClass.class::isInstance)
                     .map(PsiClass.class::cast)
+                    .toList();
+        }).submit(ThreadTool.getExecutor()).get();
+    }
+
+
+    @SneakyThrows
+    public static List<KtClass> getModuleKtControllers(Project project, Module module) {
+        return ReadAction.nonBlocking(() -> {
+            String customAnno = HttpSetting.getInstance().getCustomAnno();
+            Optional<GlobalSearchScope> globalSearchScope = Optional.of(module)
+                    .map(Module::getModuleScope);
+            Stream<KtAnnotationEntry> s1 = globalSearchScope.map(moduleScope -> ApplicationManager.getApplication().runReadAction((Computable<Collection<KtAnnotationEntry>>) () ->
+                            KotlinAnnotationsIndex.Helper.get(SpringEnum.Controller.CONTROLLER.getShortClassName(), project, moduleScope)))
+                    .orElse(new ArrayList<>()).stream();
+
+            Stream<KtAnnotationEntry> s2 = globalSearchScope.map(moduleScope -> ApplicationManager.getApplication().runReadAction((Computable<Collection<KtAnnotationEntry>>) () ->
+                            KotlinAnnotationsIndex.Helper.get(SpringEnum.Controller.REST_CONTROLLER.getShortClassName(), project, moduleScope)))
+                    .orElse(new ArrayList<>()).stream();
+            if (CharSequenceUtil.isNotEmpty(customAnno) && !customAnno.endsWith(".")) {
+                s2 = Stream.concat(s2, globalSearchScope.map(moduleScope -> ApplicationManager.getApplication().runReadAction((Computable<Collection<KtAnnotationEntry>>) () ->
+                                KotlinAnnotationsIndex.Helper.get(customAnno.substring(customAnno.lastIndexOf('.') + 1), project, moduleScope)))
+                        .orElse(new ArrayList<>()).stream());
+            }
+            return Stream.concat(s1, s2)
+                    .map(PsiElement::getParent)
+                    .map(KtDeclarationModifierList.class::cast)
+                    .map(KtDeclarationModifierList::getParent)
+                    .filter(KtClass.class::isInstance)
+                    .map(KtClass.class::cast)
                     .toList();
         }).submit(ThreadTool.getExecutor()).get();
     }

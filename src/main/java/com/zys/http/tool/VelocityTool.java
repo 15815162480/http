@@ -79,7 +79,7 @@ public class VelocityTool {
     public static void exportAllModuleApi(Project project, String exportPath) throws IOException {
         VelocityContext context = new VelocityContext();
         Collection<Module> moduleList = ProjectTool.moduleList(project).stream()
-                .filter(v -> !ProjectTool.getModuleControllers(project, v).isEmpty())
+                .filter(v -> !ProjectTool.getModuleJavaControllers(project, v).isEmpty())
                 .toList();
 
         for (Module m : moduleList) {
@@ -89,14 +89,14 @@ public class VelocityTool {
             context.put("moduleName", moduleName);
 
             // Controller
-            List<PsiClass> controllers = ProjectTool.getModuleControllers(project, m);
+            List<PsiClass> controllers = ProjectTool.getModuleJavaControllers(project, m);
             List<String> controllerItems = new ArrayList<>();
 
             // Method
             Map<String, List<MethodItem>> methodMap = new HashMap<>();
 
             for (PsiClass c : controllers) {
-                String classSwagger = PsiTool.Annotation.getSwaggerAnnotation(c, HttpEnum.AnnotationPlace.CLASS);
+                String classSwagger = JavaTool.Annotation.getSwaggerAnnotation(c, HttpEnum.AnnotationPlace.CLASS);
                 classSwagger = CharSequenceUtil.isEmpty(classSwagger) ? c.getName() : classSwagger;
                 List<MethodItem> methodItemList = createMethodItems(c, contextPath);
                 if (!methodItemList.isEmpty()) {
@@ -113,7 +113,7 @@ public class VelocityTool {
 
     @Description("创建 Postman API 渲染数据列表")
     private static List<MethodItem> createMethodItems(PsiClass c, String contextPath) {
-        String controllerPath = PsiTool.Annotation.getControllerPath(c);
+        String controllerPath = JavaTool.Class.getControllerPath(c);
         PsiMethod[] methods = c.getAllMethods();
         if (methods.length < 1) {
             return Collections.emptyList();
@@ -133,7 +133,7 @@ public class VelocityTool {
         PsiAnnotation[] annotations = method.getAnnotations();
         MethodItem item = new MethodItem();
         // 方法名
-        String methodSwagger = PsiTool.Annotation.getSwaggerAnnotation(method, HttpEnum.AnnotationPlace.METHOD);
+        String methodSwagger = JavaTool.Annotation.getSwaggerAnnotation(method, HttpEnum.AnnotationPlace.METHOD);
         methodSwagger = CharSequenceUtil.isEmpty(methodSwagger) ? method.getName() : methodSwagger;
         item.setName(methodSwagger);
 
@@ -146,7 +146,7 @@ public class VelocityTool {
             item.setMethod(httpMethod.name());
 
             // 请求 uri
-            String path = PsiTool.Annotation.getAnnotationValue(annotation, new String[]{"value", "path"});
+            String path = JavaTool.Annotation.getAnnotationValue(annotation, new String[]{"value", "path"});
             item.setUri(UrlTool.buildMethodUri(contextPath, controllerPath, path));
 
             // 请求头类型

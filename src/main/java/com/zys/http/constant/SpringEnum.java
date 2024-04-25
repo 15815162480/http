@@ -43,6 +43,10 @@ public interface SpringEnum {
             return METHOD_MAP.containsKey(qualifiedName);
         }
 
+        public static boolean contains(@NotNull String name) {
+            return METHOD_MAP.containsKey(name);
+        }
+
         public static @Nullable HttpMethod get(@NotNull PsiAnnotation annotation) {
             String qualifiedName = annotation.getQualifiedName();
             if (!METHOD_MAP.containsKey(qualifiedName)) {
@@ -54,6 +58,14 @@ public interface SpringEnum {
             }
             return httpMethod;
         }
+
+        public static @Nullable HttpMethod get(@NotNull String qualifiedName) {
+            if (!METHOD_MAP.containsKey(qualifiedName)) {
+                return null;
+            }
+            return METHOD_MAP.get(qualifiedName);
+        }
+
     }
 
     @Getter
@@ -86,5 +98,9 @@ public interface SpringEnum {
 
         private final String clazz;
         private final ParamUsage paramUsage;
+
+        public String getShortName() {
+            return this.clazz.substring(this.clazz.lastIndexOf('.') + 1);
+        }
     }
 }

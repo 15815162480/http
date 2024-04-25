@@ -11,13 +11,16 @@ import com.zys.http.constant.SpringEnum;
 import com.zys.http.extension.service.Bundle;
 import com.zys.http.extension.setting.HttpSetting;
 import com.zys.http.ui.icon.HttpIcons;
-import jdk.jfr.Description;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.kotlin.name.Name;
+import org.jetbrains.kotlin.psi.KtAnnotationEntry;
+import org.jetbrains.kotlin.psi.KtClass;
+import org.jetbrains.kotlin.psi.KtClassBody;
+import org.jetbrains.kotlin.psi.KtNamedFunction;
 
 import javax.swing.*;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -33,50 +36,60 @@ public class HttpLineMarkerProvider extends LineMarkerProviderDescriptor {
         if (!httpGenerate.isEnabled()) {
             return null;
         }
-        if (!(element instanceof PsiMethod psiMethod)) {
-            return null;
+        if (element instanceof PsiMethod psiMethod) {
+            if (Objects.isNull(psiMethod.getNameIdentifier())) {
+                return null;
+            }
+            PsiClass psiClass = (PsiClass) psiMethod.getParent();
+            if (Objects.isNull(psiClass)) {
+                return null;
+            }
+            String customAnno = HttpSetting.getInstance().getCustomAnno();
+
+            boolean hasController = Arrays.stream(psiClass.getAnnotations()).anyMatch(a ->
+                    SpringEnum.Controller.CONTROLLER.getClazz().equals(a.getQualifiedName()) ||
+                    SpringEnum.Controller.REST_CONTROLLER.getClazz().equals(a.getQualifiedName()) ||
+                    (CharSequenceUtil.isNotBlank(customAnno) && customAnno.equals(a.getQualifiedName()))
+            );
+            if (!hasController) {
+                return null;
+            }
+
+            return new HttpLineMarkerInfo(psiMethod.getNameIdentifier());
         }
 
-        if (Objects.isNull(psiMethod.getNameIdentifier())) {
-            return null;
+        if (element instanceof KtNamedFunction function) {
+            if (Objects.isNull(function.getNameIdentifier())) {
+                return null;
+            }
+            PsiElement parent = function.getParent();
+            if (!(parent instanceof KtClassBody classBody)) {
+                return null;
+            }
+            parent = classBody.getParent();
+            if (!(parent instanceof KtClass ktClass)) {
+                return null;
+            }
+            String customAnno = HttpSetting.getInstance().getCustomAnno();
+
+            List<String> annotations = ktClass.getAnnotationEntries().stream().map(KtAnnotationEntry::getShortName).filter(Objects::nonNull).map(Name::asString).toList();
+
+            boolean hasController = annotations.stream().anyMatch(o ->
+                    SpringEnum.Controller.CONTROLLER.getClazz().equals(o) || SpringEnum.Controller.CONTROLLER.getShortClassName().equals(o) ||
+                    SpringEnum.Controller.REST_CONTROLLER.getClazz().equals(o) || SpringEnum.Controller.REST_CONTROLLER.getShortClassName().equals(o) ||
+                    (CharSequenceUtil.isNotBlank(customAnno) && customAnno.equals(o) || customAnno.substring(customAnno.lastIndexOf('.') + 1).equals(o))
+            );
+
+            if (!hasController) {
+                return null;
+            }
+
+            return new HttpLineMarkerInfo(function.getNameIdentifier());
         }
 
-        PsiClass psiClass = (PsiClass) psiMethod.getParent();
-        if (Objects.isNull(psiClass)) {
-            return null;
-        }
-
-        String customAnno = HttpSetting.getInstance().getCustomAnno();
-
-        boolean hasController = Arrays.stream(psiClass.getAnnotations()).anyMatch(a ->
-                SpringEnum.Controller.CONTROLLER.getClazz().equals(a.getQualifiedName()) ||
-                SpringEnum.Controller.REST_CONTROLLER.getClazz().equals(a.getQualifiedName()) ||
-                (CharSequenceUtil.isNotBlank(customAnno) && customAnno.equals(a.getQualifiedName()))
-        );
-        if (!hasController) {
-            return null;
-        }
-
-        return new HttpLineMarkerInfo(psiMethod.getNameIdentifier());
+        return null;
     }
 
-    @Override
-    @Description("收集所有符合要求的")
-    public void collectSlowLineMarkers(
-            @NotNull List<? extends PsiElement> elements,
-            @NotNull Collection<? super LineMarkerInfo<?>> result
-    ) {
-        for (PsiElement element : elements) {
-            if (!(element instanceof PsiMethod psiMethod)) {
-                return;
-            }
-            for (SpringEnum.Method value : SpringEnum.Method.values()) {
-                if (psiMethod.hasAnnotation(value.getClazz())) {
-                    result.add(getLineMarkerInfo(Objects.requireNonNull(psiMethod)));
-                }
-            }
-        }
-    }
 
     @Override
     public @Nullable("null means disabled") @GutterName String getName() {

@@ -15,7 +15,7 @@ import com.zys.http.constant.SpringEnum;
 import com.zys.http.extension.service.Bundle;
 import com.zys.http.extension.service.NotifyService;
 import com.zys.http.tool.ProjectTool;
-import com.zys.http.tool.PsiTool;
+import com.zys.http.tool.JavaTool;
 import com.zys.http.tool.SystemTool;
 import com.zys.http.tool.UrlTool;
 import org.jetbrains.annotations.NotNull;
@@ -89,13 +89,13 @@ public class CopyApiIntentionAction extends PsiElementBaseIntentionAction {
             return null;
         }
         String contextPath = ProjectTool.getModuleContextPath(project, module);
-        String controllerPath = PsiTool.Annotation.getControllerPath(containingClass);
+        String controllerPath = JavaTool.Class.getControllerPath(containingClass);
         PsiAnnotation[] annotations = psiMethod.getAnnotations();
         if (annotations.length == 0) {
             return null;
         }
         String methodPath = Stream.of(annotations).filter(SpringEnum.Method::contains)
-                .map(annotation -> PsiTool.Annotation.getAnnotationValue(annotation, new String[]{"value", "path"}))
+                .map(annotation -> JavaTool.Annotation.getAnnotationValue(annotation, new String[]{"value", "path"}))
                 .findFirst().orElse(null);
 
         return UrlTool.buildMethodUri(contextPath, controllerPath, methodPath);

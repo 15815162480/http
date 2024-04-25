@@ -1,6 +1,6 @@
 package com.zys.http.extension.topic;
 
-import com.intellij.psi.PsiMethod;
+import com.intellij.psi.NavigatablePsiElement;
 import com.intellij.util.messages.Topic;
 
 /**
@@ -19,6 +19,6 @@ public interface TreeTopic {
     }
 
     interface Selected {
-        void selected(PsiMethod psiMethod);
+        void selected(NavigatablePsiElement psiMethod);
     }
 }

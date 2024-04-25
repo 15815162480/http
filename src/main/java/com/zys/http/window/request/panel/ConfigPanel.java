@@ -8,6 +8,7 @@ import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
+import com.intellij.psi.NavigatablePsiElement;
 import com.intellij.psi.PsiMethod;
 import com.intellij.ui.components.JBPanel;
 import com.intellij.util.ui.JBUI;
@@ -32,6 +33,7 @@ import jdk.jfr.Description;
 import org.apache.http.HttpHeaders;
 import org.jdesktop.swingx.JXButton;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.kotlin.psi.KtNamedFunction;
 
 import javax.swing.*;
 import java.awt.*;
@@ -187,11 +189,12 @@ final class ConfigPanel extends JBPanel<ConfigPanel> {
         httpMethod = httpMethod.equals(HttpEnum.HttpMethod.REQUEST) ? HttpEnum.HttpMethod.GET : httpMethod;
         methodCb.setSelectedItem(httpMethod);
         // 获取选中节点的参数类型
-        PsiMethod psiMethod = (PsiMethod) methodNode.getValue().getPsiElement();
+        NavigatablePsiElement element = methodNode.getValue().getPsiElement();
         HttpEnum.HttpMethod finalHttpMethod = httpMethod;
 
-        ReadAction.nonBlocking(() -> ParamConvert.parsePsiMethodParams(psiMethod, true))
-                .finishOnUiThread(ModalityState.defaultModalityState(), map -> {
+        ReadAction.nonBlocking(() -> element instanceof PsiMethod psiMethod ?
+                        ParamConvert.parsePsiMethodParams(psiMethod, true) : ParamConvert.parseFunctionParams((KtNamedFunction) element, true)
+                ).finishOnUiThread(ModalityState.defaultModalityState(), map -> {
                     paramPropertyMap = map;
                     this.requestTabs.reset();
                     HttpEnum.ContentType type = (HttpEnum.ContentType) map.get(ParamConvert.REQUEST_TYPE_KEY).getDefaultValue();

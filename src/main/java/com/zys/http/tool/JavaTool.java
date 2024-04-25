@@ -10,6 +10,7 @@ import jdk.jfr.Description;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,9 +23,10 @@ import java.util.stream.Stream;
  * @author zhou ys
  * @since 2023-09-07
  */
+@Slf4j
 @Description("读取项目的文件 Psi 工具类")
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class PsiTool {
+public class JavaTool {
 
     @Description("是否有 static 修饰")
     public static boolean hasStaticModifier(@Nullable PsiModifierList target) {
@@ -60,20 +62,7 @@ public class PsiTool {
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class Annotation {
 
-        @Description("获取 Controller 上 RequestMapping 的请求路径")
-        public static String getControllerPath(@NotNull PsiClass psiClass) {
-            PsiModifierList modifierList = psiClass.getModifierList();
-            if (Objects.isNull(modifierList)) {
-                return "";
-            }
-            PsiAnnotation requestMapping = Stream.of(modifierList.getAnnotations())
-                    .filter(o -> SpringEnum.Method.REQUEST.getClazz().equals(o.getQualifiedName()))
-                    .findFirst().orElse(null);
-            if (Objects.isNull(requestMapping)) {
-                return "";
-            }
-            return getAnnotationValue(requestMapping, new String[]{"value", "path"});
-        }
+
 
         @Description("获取指定注解上指定属性中的值")
         public static String getAnnotationValue(PsiAnnotation annotation, String[] attributeNames) {
@@ -97,7 +86,7 @@ public class PsiTool {
             PsiAnnotationMemberValue memberValue = initializerList.get(0);
             // 是否是常量值引用, 不作多次引用判断
             if (memberValue instanceof PsiReferenceExpression expression && expression.resolve() instanceof PsiFieldImpl field) {
-                String text = stringConstantValue(field);
+                String text = Field.stringConstantValue(field);
                 if (Objects.nonNull(text)) {
                     return text;
                 }
@@ -105,15 +94,6 @@ public class PsiTool {
 
             String text = memberValue.getText();
             return text.startsWith("\"") && text.endsWith("\"") ? text.substring(1, text.length() - 1) : text;
-        }
-
-        private static String stringConstantValue(PsiFieldImpl field) {
-            PsiExpression initializer = field.getInitializer();
-            if (Objects.nonNull(initializer)) {
-                String text = initializer.getText();
-                return text.startsWith("\"") && text.endsWith("\"") ? text.substring(1, text.length() - 1) : text;
-            }
-            return null;
         }
 
         @SneakyThrows
@@ -194,6 +174,22 @@ public class PsiTool {
 
             return target.stream().sorted(Comparator.comparing(PsiMethod::getName)).toList();
         }
+
+        @Description("获取 Controller 上 RequestMapping 的请求路径")
+        public static String getControllerPath(@NotNull PsiClass psiClass) {
+            PsiModifierList modifierList = psiClass.getModifierList();
+            if (Objects.isNull(modifierList)) {
+                return "";
+            }
+            PsiAnnotation requestMapping = Stream.of(modifierList.getAnnotations())
+                    .filter(o -> SpringEnum.Method.REQUEST.getClazz().equals(o.getQualifiedName()))
+                    .findFirst().orElse(null);
+            if (Objects.isNull(requestMapping)) {
+                return "";
+            }
+            return Annotation.getAnnotationValue(requestMapping, new String[]{"value", "path"});
+        }
+
     }
 
     @Description("方法操作工具类")
@@ -220,6 +216,15 @@ public class PsiTool {
                     .filter(field -> !hasStaticModifier(field.getModifierList()))
                     .filter(field -> !hasPublicModifier(field.getModifierList()))
                     .toList();
+        }
+
+        private static String stringConstantValue(PsiFieldImpl field) {
+            PsiExpression initializer = field.getInitializer();
+            if (Objects.nonNull(initializer)) {
+                String text = initializer.getText();
+                return text.startsWith("\"") && text.endsWith("\"") ? text.substring(1, text.length() - 1) : text;
+            }
+            return null;
         }
     }
 

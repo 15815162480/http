@@ -16,7 +16,7 @@ import com.zys.http.constant.SpringEnum;
 import com.zys.http.entity.tree.MethodNodeData;
 import com.zys.http.extension.setting.HttpSetting;
 import com.zys.http.tool.ProjectTool;
-import com.zys.http.tool.PsiTool;
+import com.zys.http.tool.JavaTool;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 
@@ -40,13 +40,13 @@ public class GotoApiSearchEverywhereContributor extends AbstractGotoSEContributo
         List<MethodNodeData> methodNodeDataList = new ArrayList<>();
 
         for (Module m : moduleList) {
-            List<PsiClass> controllers = ProjectTool.getModuleControllers(project, m).stream()
+            List<PsiClass> controllers = ProjectTool.getModuleJavaControllers(project, m).stream()
                     .filter(c -> c.getAllMethods().length > 0)
-                    .filter(c -> !PsiTool.Class.springMvcAnnoRequests(c).isEmpty())
+                    .filter(c -> !JavaTool.Class.springMvcAnnoRequests(c).isEmpty())
                     .toList();
             for (PsiClass c : controllers) {
-                List<PsiMethod> xxxMappingMethods = PsiTool.Class.springMvcAnnoRequests(c);
-                String controllerPath = PsiTool.Annotation.getControllerPath(c);
+                List<PsiMethod> xxxMappingMethods = JavaTool.Class.springMvcAnnoRequests(c);
+                String controllerPath = JavaTool.Class.getControllerPath(c);
                 String contextPath = ProjectTool.getModuleContextPath(project, m);
                 for (PsiMethod method : xxxMappingMethods) {
                     PsiAnnotation[] annotations = method.getAnnotations();
@@ -55,7 +55,7 @@ public class GotoApiSearchEverywhereContributor extends AbstractGotoSEContributo
                         if (Objects.isNull(httpMethod)) {
                             continue;
                         }
-                        String name = PsiTool.Annotation.getAnnotationValue(annotation, new String[]{"value", "path"});
+                        String name = JavaTool.Annotation.getAnnotationValue(annotation, new String[]{"value", "path"});
                         MethodNodeData data = new MethodNodeData(httpMethod, name, controllerPath, contextPath);
                         data.setPsiElement(method);
                         methodNodeDataList.add(data);
