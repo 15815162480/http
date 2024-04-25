@@ -52,18 +52,17 @@
 
     <!-- 更新公告 -->
     <change-notes><![CDATA[
-        <h3>1.7.0</h3>
+        <h3>1.7.1</h3>
         <h4>En</h4>
         <ul>
             <li>
-                improve: All icons will automatically change according to the project theme, including the icon for
-                opening the window (installing Extra ToolWindow Colorful Icons will only display colored icons)
+                fix bugs: Alt+Enter copy Api function lost at Kotlin method
             </li>
             <li>
-                feature: Alt+Enter at the method added a menu - Copy Api
+                fix bugs: Export all Api functions without exporting Kotlin method related interfaces
             </li>
             <li>
-                feature: supported Kotlin
+                fix bugs: Kotlin Swagger annotation prompt missing
             </li>
         </ul>
         <br>
@@ -75,14 +74,13 @@
         <h4>中文</h4>
         <ul>
             <li>
-                优化: 所有图标会根据项目主题自动变化, 包括打开窗口的图标(安装 Extra ToolWindow Colorful Icons
-                才会展示彩色图标)
+                bug 修复: Kotlin 方法处 Alt+Enter 复制Api 功能丢失
             </li>
             <li>
-                新功能: 在方法处的 Alt + Enter 添加了一个菜单 —— 复制 Api
+                bug 修复: 导出所有 Api 功能没有导出 Kotlin 方法相关的接口
             </li>
             <li>
-                新功能: 支持 Kotlin
+                bug 修复: Kotlin Swagger 注解提示丢失
             </li>
         </ul>
         <br>
@@ -102,6 +100,14 @@
     <extensions defaultExtensionNs="com.intellij">
         <intentionAction>
             <language>JAVA</language>
+            <bundleName>messages.http</bundleName>
+            <categoryKey>http.extension.intention.category</categoryKey>
+            <className>com.zys.http.extension.intention.CopyApiIntentionAction</className>
+            <skipBeforeAfter>false</skipBeforeAfter>
+        </intentionAction>
+
+        <intentionAction>
+            <language>kotlin</language>
             <bundleName>messages.http</bundleName>
             <categoryKey>http.extension.intention.category</categoryKey>
             <className>com.zys.http.extension.intention.CopyApiIntentionAction</className>

@@ -21,6 +21,7 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
+import org.jetbrains.kotlin.psi.KtClass;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -79,7 +80,7 @@ public class VelocityTool {
     public static void exportAllModuleApi(Project project, String exportPath) throws IOException {
         VelocityContext context = new VelocityContext();
         Collection<Module> moduleList = ProjectTool.moduleList(project).stream()
-                .filter(v -> !ProjectTool.getModuleJavaControllers(project, v).isEmpty())
+                .filter(v -> (!ProjectTool.getModuleJavaControllers(project, v).isEmpty()) || (!ProjectTool.getModuleKtControllers(project, v).isEmpty()))
                 .toList();
 
         for (Module m : moduleList) {
@@ -90,6 +91,7 @@ public class VelocityTool {
 
             // Controller
             List<PsiClass> controllers = ProjectTool.getModuleJavaControllers(project, m);
+            List<KtClass> ktControllers = ProjectTool.getModuleKtControllers(project, m);
             List<String> controllerItems = new ArrayList<>();
 
             // Method
@@ -104,6 +106,11 @@ public class VelocityTool {
                     methodMap.put(classSwagger, methodItemList);
                 }
             }
+
+            for (KtClass ktClass : ktControllers) {
+                // TODO 添加方法
+            }
+
             context.put("methodMap", methodMap);
             context.put("controllerItems", controllerItems);
 

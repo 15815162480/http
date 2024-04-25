@@ -62,10 +62,8 @@ public class JavaTool {
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class Annotation {
 
-
-
         @Description("获取指定注解上指定属性中的值")
-        public static String getAnnotationValue(PsiAnnotation annotation, String[] attributeNames) {
+        public static String getAnnotationValue(PsiAnnotation annotation, String @NotNull [] attributeNames) {
             List<PsiAnnotationMemberValue> initializerList = new ArrayList<>();
             for (String attributeName : attributeNames) {
                 PsiAnnotationMemberValue annoValue = annotation.findAttributeValue(attributeName);

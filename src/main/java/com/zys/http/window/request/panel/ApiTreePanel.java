@@ -193,7 +193,7 @@ final class ApiTreePanel extends AbstractListTreePanel {
                 String s = JavaTool.Annotation.getSwaggerAnnotation(psiClass, HttpEnum.AnnotationPlace.CLASS);
                 data.setDescription(s);
             }
-
+            // TODO 添加 Kotlin Swagger 注解提示
             ClassNode classNode = new ClassNode(data);
             v.stream().filter(m -> methods.contains(m.getValue().getHttpMethod())).forEach(classNode::add);
 
@@ -331,6 +331,7 @@ final class ApiTreePanel extends AbstractListTreePanel {
 
         MethodNodeData data = new MethodNodeData(httpMethod, path, controllerPath, contextPath);
         data.setPsiElement(function);
+        // TODO 添加 Swagger 注解提示
         return new MethodNode(data);
     }
 
