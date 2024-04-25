@@ -1,8 +1,9 @@
-### 1.6.3
+### 1.7.0
 
 * improve: All icons will automatically change according to the project theme, including the icon for opening the
   window (installing Extra ToolWindow Colorful Icons will only display colored icons)
 * feature: Alt+Enter at the method added a menu - Copy Api
+* feature: supported Kotlin
 
 ### 1.6.2
 

@@ -12,7 +12,7 @@ IDEA 版本 >= 222<br>
 
 #### 一个请求服务开发辅助工具插件
 
-1. 只支持 java 语言
+1. 只支持 java 语言和 Kotlin 语言
 2. 语言支持: 英语、中文
 3. 支持 Spring 注解体系(Spring MVC / Spring Boot)
 4. 提供了一块区域展示 API 接口

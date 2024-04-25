@@ -52,7 +52,7 @@
 
     <!-- 更新公告 -->
     <change-notes><![CDATA[
-        <h3>1.6.3</h3>
+        <h3>1.7.0</h3>
         <h4>En</h4>
         <ul>
             <li>
@@ -61,6 +61,9 @@
             </li>
             <li>
                 feature: Alt+Enter at the method added a menu - Copy Api
+            </li>
+            <li>
+                feature: supported Kotlin
             </li>
         </ul>
         <br>
@@ -77,6 +80,9 @@
             </li>
             <li>
                 新功能: 在方法处的 Alt + Enter 添加了一个菜单 —— 复制 Api
+            </li>
+            <li>
+                新功能: 支持 Kotlin
             </li>
         </ul>
         <br>

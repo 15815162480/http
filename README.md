@@ -12,7 +12,7 @@ version view way: IDEA top menu --> Help --> About --> Build
 
 #### A request service development aid plugin.
 
-1. Only Java language is supported.
+1. Supported Java and Kotlin.
 2. Language Supported: English, Chinese.
 3. Support for Spring annotation system (Spring MVC / Spring Boot).
 4. Provides a regional display API interface.
