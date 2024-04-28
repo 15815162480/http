@@ -24,6 +24,7 @@ import com.zys.http.extension.setting.HttpSetting;
 import com.zys.http.extension.topic.EnvironmentTopic;
 import com.zys.http.extension.topic.TreeTopic;
 import com.zys.http.ui.dialog.EnvAddOrEditDialog;
+import com.zys.http.ui.popup.LanguageFilterPopup;
 import com.zys.http.ui.popup.MethodFilterPopup;
 import com.zys.http.ui.popup.NodeShowFilterPopup;
 import com.zys.http.window.request.panel.RequestPanel;
@@ -41,6 +42,7 @@ public class RequestWindow extends SimpleToolWindowPanel implements Disposable {
     private RequestPanel requestPanel;
     private MethodFilterPopup methodFilterPopup;
     private NodeShowFilterPopup nodeShowFilterPopup;
+    private LanguageFilterPopup languageFilterPopup;
 
     public RequestWindow(Project project) {
         super(true, true);
@@ -51,6 +53,7 @@ public class RequestWindow extends SimpleToolWindowPanel implements Disposable {
     private void init() {
         this.methodFilterPopup = new MethodFilterPopup(project);
         this.nodeShowFilterPopup = new NodeShowFilterPopup(project);
+        this.languageFilterPopup = new LanguageFilterPopup(project);
         this.requestPanel = new RequestPanel(project);
         DumbService.getInstance(project).smartInvokeLater(() -> loadNodes(false));
         this.setContent(requestPanel);
@@ -101,7 +104,9 @@ public class RequestWindow extends SimpleToolWindowPanel implements Disposable {
         FilterAction filterAction = new FilterAction(Bundle.get("http.api.icon.node.filter.action.method"));
         filterAction.setAction(e -> methodFilterPopup.show(requestPanel, methodFilterPopup.getX(), methodFilterPopup.getY()));
         filterActionGroup.add(filterAction);
-
+        FilterAction languageAction = new FilterAction(Bundle.get("http.api.icon.node.filter.action.language"));
+        languageAction.setAction(e -> languageFilterPopup.show(requestPanel, methodFilterPopup.getX(), methodFilterPopup.getY()));
+        filterActionGroup.add(languageAction);
         group.add(filterActionGroup);
 
         ActionToolbar topToolBar = ActionManager.getInstance().createActionToolbar(ActionPlaces.TOOLBAR, group, true);
@@ -140,6 +145,8 @@ public class RequestWindow extends SimpleToolWindowPanel implements Disposable {
                     methodFilterPopup = new MethodFilterPopup(project, selectedValues);
                     List<String> selectedValues1 = nodeShowFilterPopup.getSelectedValues();
                     nodeShowFilterPopup = new NodeShowFilterPopup(project, selectedValues1);
+                    List<HttpEnum.Language> selectedValues2 = languageFilterPopup.getSelectedValues();
+                    languageFilterPopup = new LanguageFilterPopup(project, selectedValues2);
                 });
             }
         });
@@ -179,7 +186,8 @@ public class RequestWindow extends SimpleToolWindowPanel implements Disposable {
     private void loadNodes(boolean isExpand) {
         List<HttpEnum.HttpMethod> selectedValues = methodFilterPopup.getSelectedValues();
         List<String> nodeShowValues = nodeShowFilterPopup.getSelectedValues();
-        this.requestPanel.loadNodes(selectedValues, nodeShowValues);
+        List<HttpEnum.Language> languageValues = languageFilterPopup.getSelectedValues();
+        this.requestPanel.loadNodes(selectedValues, nodeShowValues, languageValues);
         if (isExpand) {
             requestPanel.treeExpandAll();
         }

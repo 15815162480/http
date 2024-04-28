@@ -14,11 +14,12 @@ public class MethodFilterPopup extends AbstractFilterPopup<HttpEnum.HttpMethod> 
     private static final List<HttpEnum.HttpMethod> METHODS = Arrays.stream(HttpEnum.HttpMethod.values())
             .filter(o -> !o.equals(HttpEnum.HttpMethod.REQUEST))
             .toList();
+
     public MethodFilterPopup(Project project) {
         super(project, METHODS);
     }
 
-    public MethodFilterPopup(Project project,List<HttpEnum.HttpMethod> selectedValues) {
+    public MethodFilterPopup(Project project, List<HttpEnum.HttpMethod> selectedValues) {
         super(project, METHODS, selectedValues);
     }
 }

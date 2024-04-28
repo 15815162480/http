@@ -17,8 +17,8 @@ import org.jetbrains.annotations.Nullable;
 @Getter
 @State(name = "HttpSetting", storages = @Storage(HttpConstant.PLUGIN_SETTING_FILE_NAME))
 public class HttpSetting implements PersistentStateComponent<HttpSetting.State> {
-    private State state = new State();
     public static final int DEFAULT_TIMEOUT = 5000;
+    private State state = new State();
 
     public static HttpSetting getInstance() {
         return ApplicationManager.getApplication().getService(HttpSetting.class);

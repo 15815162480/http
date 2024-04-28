@@ -302,7 +302,7 @@ public class DataTypeTool {
         return result;
     }
 
-    public static @Nullable Object processArrayOrCollectionType(Map<KtTypeReference, Integer> recursionMap, KtParameter parameter, Project project, KtTypeReference typeReference) {
+    private static @Nullable Object processArrayOrCollectionType(Map<KtTypeReference, Integer> recursionMap, KtParameter parameter, Project project, KtTypeReference typeReference) {
         if (Objects.isNull(parameter) && Objects.isNull(typeReference)) {
             return EMPTY_ARRAY;
         }

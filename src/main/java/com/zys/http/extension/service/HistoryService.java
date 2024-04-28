@@ -23,9 +23,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Description("历史记录列表")
 @State(name = "HttpHistory", storages = @Storage(HttpConstant.PLUGIN_HIS_FILE_NAME))
 public class HistoryService implements PersistentStateComponent<HistoryService.State> {
-    private State state = new State();
-
     private static final int MAX_SIZE = 50;
+    private State state = new State();
 
     public static HistoryService getInstance(Project project) {
         return project.getService(HistoryService.class);

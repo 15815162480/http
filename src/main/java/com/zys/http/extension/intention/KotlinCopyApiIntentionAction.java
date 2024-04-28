@@ -1,6 +1,5 @@
 package com.zys.http.extension.intention;
 
-import com.intellij.codeInsight.intention.FileModifier;
 import com.intellij.codeInsight.intention.PsiElementBaseIntentionAction;
 import com.intellij.codeInspection.util.IntentionFamilyName;
 import com.intellij.codeInspection.util.IntentionName;
@@ -8,14 +7,17 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.project.Project;
-import com.intellij.psi.*;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
 import com.zys.http.constant.HttpEnum;
 import com.zys.http.constant.SpringEnum;
 import com.zys.http.extension.service.Bundle;
 import com.zys.http.extension.service.NotifyService;
-import com.zys.http.tool.*;
+import com.zys.http.tool.KotlinTool;
+import com.zys.http.tool.ProjectTool;
+import com.zys.http.tool.SystemTool;
+import com.zys.http.tool.UrlTool;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.kotlin.name.Name;
@@ -25,65 +27,44 @@ import org.jetbrains.kotlin.psi.KtNamedFunction;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Stream;
 
 /**
  * @author zhou ys
- * @since 2024-04-24
+ * @since 2024-04-28
  */
-public class CopyApiIntentionAction extends PsiElementBaseIntentionAction {
-
+public class KotlinCopyApiIntentionAction extends PsiElementBaseIntentionAction {
     @Override
     public void invoke(@NotNull Project project, Editor editor, @NotNull PsiElement psiElement) throws IncorrectOperationException {
-        PsiMethod psiMethod = PsiTreeUtil.getParentOfType(psiElement, PsiMethod.class);
         KtNamedFunction function = PsiTreeUtil.getParentOfType(psiElement, KtNamedFunction.class);
-        if (Objects.isNull(psiMethod) && Objects.isNull(function)) {
+        if (Objects.isNull(function)) {
             return;
         }
-        if (Objects.nonNull(psiMethod)) {
-            String apiPath = apiPath(project, psiMethod);
-            if (Objects.isNull(apiPath)) {
-                return;
-            }
-            SystemTool.copy2Clipboard(apiPath);
-        } else {
-            List<String> annotations = function.getAnnotationEntries().stream().map(KtAnnotationEntry::getShortName).filter(Objects::nonNull).map(Name::asString).toList();
-            if (annotations.isEmpty()) {
-                return;
-            }
-            String apiPath = apiPath(project, function);
-            SystemTool.copy2Clipboard(apiPath);
+        List<String> annotations = function.getAnnotationEntries().stream().map(KtAnnotationEntry::getShortName).filter(Objects::nonNull).map(Name::asString).toList();
+        if (annotations.isEmpty()) {
+            return;
         }
-
+        String apiPath = apiPath(project, function);
+        SystemTool.copy2Clipboard(apiPath);
         NotifyService.instance(project).info(Bundle.get("http.api.tree.method.right.menu.action.copy.api.msg"));
     }
 
     @Override
-    public @NotNull @IntentionName String getText() {
-        return Bundle.get("http.api.tree.method.right.menu.action.copy.api");
-    }
-
-    @Override
     public boolean isAvailable(@NotNull Project project, Editor editor, @NotNull PsiElement psiElement) {
-        PsiMethod psiMethod = PsiTreeUtil.getParentOfType(psiElement, PsiMethod.class);
         KtNamedFunction function = PsiTreeUtil.getParentOfType(psiElement, KtNamedFunction.class);
-        if (Objects.isNull(psiMethod) && Objects.isNull(function)) {
+        if (Objects.isNull(function)) {
             return false;
         }
-        if (Objects.nonNull(psiMethod)) {
-            PsiAnnotation[] annotations = psiMethod.getAnnotations();
-            if (annotations.length == 0) {
-                return false;
-            }
-            return Stream.of(annotations).anyMatch(SpringEnum.Method::contains);
-        }
-
         List<String> annotations = function.getAnnotationEntries().stream().map(KtAnnotationEntry::getShortName).filter(Objects::nonNull).map(Name::asString).toList();
         if (annotations.isEmpty()) {
             return false;
         }
 
         return annotations.stream().anyMatch(o -> SpringEnum.Method.contains(o) || SpringEnum.Method.contains("org.springframework.web.bind.annotation." + o));
+    }
+
+    @Override
+    public @NotNull @IntentionName String getText() {
+        return Bundle.get("http.api.tree.method.right.menu.action.copy.api");
     }
 
     @Override
@@ -96,33 +77,6 @@ public class CopyApiIntentionAction extends PsiElementBaseIntentionAction {
         return false;
     }
 
-    @Override
-    public @Nullable FileModifier getFileModifierForPreview(@NotNull PsiFile target) {
-        return super.getFileModifierForPreview(target);
-    }
-
-    static @Nullable String apiPath(Project project, @NotNull PsiMethod psiMethod) {
-        PsiClass containingClass = psiMethod.getContainingClass();
-        if (Objects.isNull(containingClass)) {
-            return null;
-        }
-
-        Module module = ModuleUtilCore.findModuleForPsiElement(containingClass);
-        if (Objects.isNull(module)) {
-            return null;
-        }
-        String contextPath = ProjectTool.getModuleContextPath(project, module);
-        String controllerPath = JavaTool.Class.getControllerPath(containingClass);
-        PsiAnnotation[] annotations = psiMethod.getAnnotations();
-        if (annotations.length == 0) {
-            return null;
-        }
-        String methodPath = Stream.of(annotations).filter(SpringEnum.Method::contains)
-                .map(annotation -> JavaTool.Annotation.getAnnotationValue(annotation, new String[]{"value", "path"}))
-                .findFirst().orElse(null);
-
-        return UrlTool.buildMethodUri(contextPath, controllerPath, methodPath);
-    }
 
     static @Nullable String apiPath(Project project, @NotNull KtNamedFunction function) {
         PsiElement parent = function.getParent();

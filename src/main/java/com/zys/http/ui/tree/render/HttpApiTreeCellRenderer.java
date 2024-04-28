@@ -5,7 +5,6 @@ import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
 import com.zys.http.entity.tree.NodeData;
 import com.zys.http.ui.tree.node.BaseNode;
-import jdk.jfr.Description;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;

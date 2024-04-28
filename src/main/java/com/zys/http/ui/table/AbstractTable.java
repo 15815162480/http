@@ -48,6 +48,7 @@ public abstract class AbstractTable extends JPanel {
     protected AbstractTable(Project project, boolean cellEditable, boolean headerCanResized) {
         this(project, cellEditable, headerCanResized, true);
     }
+
     protected AbstractTable(Project project, boolean cellEditable, boolean headerCanResized, boolean needBorder) {
         super(new BorderLayout(0, 0));
         this.project = project;
@@ -99,7 +100,7 @@ public abstract class AbstractTable extends JPanel {
         JBScrollPane scrollPane = new JBScrollPane(valueTable);
         if (needBorder) {
             scrollPane.setBorder(JBUI.Borders.customLine(UIConstant.BORDER_COLOR, 1, 1, 1, 1));
-        }else {
+        } else {
             scrollPane.setBorder(JBUI.Borders.empty());
         }
         valueTable.getModel().addTableModelListener(initTableModelListener());

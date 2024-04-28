@@ -16,7 +16,9 @@ import jdk.jfr.Description;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.kotlin.psi.*;
+import org.jetbrains.kotlin.psi.KtAnnotationEntry;
+import org.jetbrains.kotlin.psi.KtNamedFunction;
+import org.jetbrains.kotlin.psi.KtParameter;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;

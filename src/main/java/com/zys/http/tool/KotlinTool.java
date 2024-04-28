@@ -1,10 +1,12 @@
 package com.zys.http.tool;
 
+import com.zys.http.constant.HttpEnum;
 import com.zys.http.constant.SpringEnum;
 import jdk.jfr.Description;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.kotlin.name.Name;
 import org.jetbrains.kotlin.psi.*;
 
 import java.util.ArrayList;
@@ -29,11 +31,11 @@ public class KotlinTool {
             // 确保有引用 RequestMapping, 找不到解析引用的方法, 先这样吧
             boolean hasRequest = ktClass.getContainingKtFile().getImportDirectives().stream()
                     .anyMatch(i -> i.getText().equals("import " + SpringEnum.Method.REQUEST.getClazz()) ||
-                               "import org.springframework.web.bind.annotation.*".equals(i.getText())
+                                   "import org.springframework.web.bind.annotation.*".equals(i.getText())
                     );
 
             List<KtAnnotationEntry> entries = modifierList.getAnnotationEntries();
-            KtAnnotationEntry entry = entries.stream().filter(e ->
+            KtAnnotationEntry entry = entries.stream().filter(o -> Objects.nonNull(o.getShortName())).filter(e ->
                     (hasRequest && SpringEnum.Method.REQUEST.getClazz().endsWith(Objects.requireNonNull(e.getShortName()).toString())) ||
                     SpringEnum.Method.REQUEST.getClazz().equals(e.getShortName().toString())
             ).findFirst().orElse(null);
@@ -47,8 +49,6 @@ public class KotlinTool {
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class Annotation {
-
-
         public static String getAnnotationValue(@NotNull KtAnnotationEntry entry, String[] attributeNames) {
             List<? extends ValueArgument> valueArguments = entry.getValueArguments();
             if (valueArguments.isEmpty()) {
@@ -86,12 +86,52 @@ public class KotlinTool {
 
             return "";
         }
+
+        public static String getSwaggerAnnotation(KtNamedDeclaration element, HttpEnum.AnnotationPlace place) {
+            if (Objects.isNull(element)) {
+                return "";
+            }
+
+            if (!(element instanceof KtClass) && !(element instanceof KtNamedFunction)) {
+                return "";
+            }
+            KtModifierList modifierList = element.getModifierList();
+            if (Objects.isNull(modifierList)) {
+                return "";
+            }
+
+            List<HttpEnum.Swagger> swagger = new ArrayList<>(List.of(HttpEnum.Swagger.values())).stream()
+                    .filter(o -> o.getAnnotationPlace().equals(place))
+                    .toList();
+
+            List<KtAnnotationEntry> entries = modifierList.getAnnotationEntries();
+            KtAnnotationEntry entry = entries.stream()
+                    .filter(e -> {
+                        if (Objects.isNull(e.getShortName())) {
+                            return false;
+                        }
+                        String anno = e.getShortName().asString();
+                        return swagger.stream().map(HttpEnum.Swagger::getClazz).anyMatch(o -> o.equals(anno) || o.endsWith(anno));
+                    }).findFirst().orElse(null);
+            if (Objects.isNull(entry)) {
+                return "";
+            }
+            Name shortName = entry.getShortName();
+            if (Objects.isNull(shortName)) {
+                return "";
+            }
+            String anno = shortName.asString();
+
+            HttpEnum.Swagger operation = swagger.stream().filter(o -> o.getClazz().equals(anno) || o.getClazz().endsWith(anno)).findFirst().orElse(null);
+            if (Objects.isNull(operation)) {
+                return "";
+            }
+            return getAnnotationValue(entry, new String[]{operation.getValue()});
+        }
     }
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class Function {
-
-
 
     }
 }

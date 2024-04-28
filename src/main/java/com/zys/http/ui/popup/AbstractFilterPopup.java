@@ -21,9 +21,8 @@ public abstract class AbstractFilterPopup<T> extends JBPopupMenu {
     protected final transient List<JBCheckBox> checkBoxList = new ArrayList<>();
 
     protected final transient List<T> values;
-    protected transient List<T> defaultValues;
-
     protected final transient Project project;
+    protected transient List<T> defaultValues;
 
     protected AbstractFilterPopup(Project project, List<T> values) {
         this(project, values, values);

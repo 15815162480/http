@@ -37,15 +37,14 @@ public class EnvAddOrEditDialog extends DialogWrapper {
     private final Project project;
     @Description("环境配置工具类")
     private final HttpServiceTool serviceTool;
-
+    @Description("数据表格")
+    private final EnvHeaderTable envAddOrEditTable;
     @Description("配置名称")
     private JTextField configNameTF;
     @Description("IP:PORT/域名")
     private JTextField hostTF;
     @Description("协议选择框")
     private ComboBox<Protocol> protocolCB;
-    @Description("数据表格")
-    private final EnvHeaderTable envAddOrEditTable;
 
     public EnvAddOrEditDialog(Project project, boolean isAdd, String selectEnv) {
         super(project, true);

@@ -43,10 +43,14 @@ import java.util.Objects;
 @Getter
 @Description("API 页面的标签选项栏")
 public class RequestTabs extends JBTabsImpl {
+    private static final String REQUEST_RESULT_TEXT = "STATUS: {}";
     @Description("项目对象")
     private final transient Project project;
     private final transient HttpServiceTool serviceTool;
-
+    @Description("请求结果文本")
+    private final JLabel requestResult = new JLabel();
+    @Description("是否需要选择响应体的类型")
+    private final boolean resTabNeedFileType;
     @Description("参数标签页面")
     private transient TabInfo headerTabInfo;
     @Description("请求头表格")
@@ -75,14 +79,6 @@ public class RequestTabs extends JBTabsImpl {
     private transient TabInfo responseTabInfo;
     @Description("响应体类型")
     private CustomEditor responseEditor;
-
-    @Description("请求结果文本")
-    private final JLabel requestResult = new JLabel();
-
-    @Description("是否需要选择响应体的类型")
-    private final boolean resTabNeedFileType;
-
-    private static final String REQUEST_RESULT_TEXT = "STATUS: {}";
 
     public RequestTabs(@NotNull Project project) {
         this(project, false);

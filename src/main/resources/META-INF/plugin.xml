@@ -64,6 +64,9 @@
             <li>
                 fix bugs: Kotlin Swagger annotation prompt missing
             </li>
+            <li>
+                feature: Language Filter, Optional options include Java and Kotlin
+            </li>
         </ul>
         <br>
         <p>If you find it useful, please go to the plugin <a
@@ -81,6 +84,9 @@
             </li>
             <li>
                 bug 修复: Kotlin Swagger 注解提示丢失
+            </li>
+            <li>
+                新功能: 语言过滤, 可选项 Java、Kotlin
             </li>
         </ul>
         <br>
@@ -102,7 +108,7 @@
             <language>JAVA</language>
             <bundleName>messages.http</bundleName>
             <categoryKey>http.extension.intention.category</categoryKey>
-            <className>com.zys.http.extension.intention.CopyApiIntentionAction</className>
+            <className>com.zys.http.extension.intention.JavaCopyApiIntentionAction</className>
             <skipBeforeAfter>false</skipBeforeAfter>
         </intentionAction>
 
@@ -110,7 +116,7 @@
             <language>kotlin</language>
             <bundleName>messages.http</bundleName>
             <categoryKey>http.extension.intention.category</categoryKey>
-            <className>com.zys.http.extension.intention.CopyApiIntentionAction</className>
+            <className>com.zys.http.extension.intention.KotlinCopyApiIntentionAction</className>
             <skipBeforeAfter>false</skipBeforeAfter>
         </intentionAction>
 

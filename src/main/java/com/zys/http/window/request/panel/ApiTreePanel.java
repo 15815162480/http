@@ -36,7 +36,10 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.kotlin.idea.KotlinLanguage;
-import org.jetbrains.kotlin.psi.*;
+import org.jetbrains.kotlin.psi.KtAnnotationEntry;
+import org.jetbrains.kotlin.psi.KtClass;
+import org.jetbrains.kotlin.psi.KtModifierList;
+import org.jetbrains.kotlin.psi.KtNamedFunction;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -54,18 +57,14 @@ import static com.zys.http.ui.popup.NodeShowFilterPopup.SETTING_VALUES;
  */
 @Description("API 标签页面-API 树形展示组件")
 final class ApiTreePanel extends AbstractListTreePanel {
-    private transient ModuleNode root;
     private final transient Project project;
-
     @Description("模块名, 模块结点")
     private final transient Map<String, ModuleNode> moduleNodeMap = new HashMap<>();
-
     @Description("模块名, controller")
     private final transient Map<String, List<? extends PsiElement>> moduleControllerMap = new HashMap<>();
-
     @Description("controller, 方法列表")
     private final transient Map<PsiElement, List<MethodNode>> methodNodeMap = new HashMap<>();
-
+    private transient ModuleNode root;
     @Setter
     @Description("节点选中回调")
     private transient Consumer<MethodNode> chooseCallback;
@@ -75,12 +74,12 @@ final class ApiTreePanel extends AbstractListTreePanel {
         this.project = project;
     }
 
-    public void loadNodes(List<HttpEnum.HttpMethod> methods, List<String> nodeShowValues) {
-        loadModuleNodes(methods, nodeShowValues);
+    public void loadNodes(List<HttpEnum.HttpMethod> methods, List<String> nodeShowValues, List<HttpEnum.Language> languageValues) {
+        loadModuleNodes(methods, nodeShowValues, languageValues);
         getTreeModel().setRoot(root);
     }
 
-    private void loadModuleNodes(@NotNull List<HttpEnum.HttpMethod> methods, List<String> nodeShowValues) {
+    private void loadModuleNodes(@NotNull List<HttpEnum.HttpMethod> methods, List<String> nodeShowValues, List<HttpEnum.Language> languages) {
         Collection<Module> modules = ProjectTool.moduleList(project);
         String projectName = project.getName();
 
@@ -99,7 +98,7 @@ final class ApiTreePanel extends AbstractListTreePanel {
             return moduleNode;
         });
 
-        if (methods.isEmpty()) {
+        if (methods.isEmpty() || languages.isEmpty()) {
             getTreeModel().setRoot(root);
             return;
         }
@@ -118,19 +117,25 @@ final class ApiTreePanel extends AbstractListTreePanel {
                 parentNode.add(moduleNode);
             }
             String contextPath = moduleContextPathMap.get(moduleName);
-            loadClassNodes(module, contextPath, methods, nodeShowValues);
+            loadClassNodes(module, contextPath, methods, nodeShowValues, languages);
         }
         removeEmptyModule();
     }
 
-    private void loadClassNodes(Module module, String contextPath, List<HttpEnum.HttpMethod> methods, List<String> nodeShowValues) {
+    private void loadClassNodes(Module module, String contextPath, List<HttpEnum.HttpMethod> methods, List<String> nodeShowValues, List<HttpEnum.Language> languages) {
         List<PsiClass> controllers = ProjectTool.getModuleJavaControllers(project, module);
         List<KtClass> ktControllers = ProjectTool.getModuleKtControllers(project, module);
+
         if (controllers.isEmpty() && ktControllers.isEmpty()) {
             return;
         }
-        List<PsiElement> allControllers = new ArrayList<>(controllers);
-        allControllers.addAll(ktControllers);
+        List<PsiElement> allControllers = new ArrayList<>();
+        if (languages.contains(HttpEnum.Language.JAVA)) {
+            allControllers.addAll(controllers);
+        }
+        if (languages.contains(HttpEnum.Language.KOTLIN)) {
+            allControllers.addAll(ktControllers);
+        }
         moduleControllerMap.put(module.getName(), allControllers);
         isGenerateDefaultEnv(module);
         allControllers.forEach(controller -> loadMethodNodes(controller, contextPath));
@@ -192,8 +197,10 @@ final class ApiTreePanel extends AbstractListTreePanel {
             if (k instanceof PsiClass psiClass) {
                 String s = JavaTool.Annotation.getSwaggerAnnotation(psiClass, HttpEnum.AnnotationPlace.CLASS);
                 data.setDescription(s);
+            } else if (k instanceof KtClass ktClass) {
+                String s = KotlinTool.Annotation.getSwaggerAnnotation(ktClass, HttpEnum.AnnotationPlace.CLASS);
+                data.setDescription(s);
             }
-            // TODO 添加 Kotlin Swagger 注解提示
             ClassNode classNode = new ClassNode(data);
             v.stream().filter(m -> methods.contains(m.getValue().getHttpMethod())).forEach(classNode::add);
 
@@ -331,7 +338,7 @@ final class ApiTreePanel extends AbstractListTreePanel {
 
         MethodNodeData data = new MethodNodeData(httpMethod, path, controllerPath, contextPath);
         data.setPsiElement(function);
-        // TODO 添加 Swagger 注解提示
+        data.setDescription(KotlinTool.Annotation.getSwaggerAnnotation(function, HttpEnum.AnnotationPlace.METHOD));
         return new MethodNode(data);
     }
 

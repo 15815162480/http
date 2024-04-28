@@ -44,15 +44,6 @@ public class CustomEditor extends EditorTextField {
         initTopic();
     }
 
-    private void initTopic() {
-        final Application application = ApplicationManager.getApplication();
-        application.getMessageBus().connect().subscribe(EditorColorsManager.TOPIC, (EditorColorsListener) editorColorsScheme -> {
-            if (editorColorsScheme != null) {
-                application.invokeLater(() -> setBackground(editorColorsScheme.getDefaultBackground()));
-            }
-        });
-    }
-
     public static void setupTextFieldEditor(@NotNull EditorEx editor) {
         EditorSettings settings = editor.getSettings();
         settings.setFoldingOutlineShown(true);
@@ -60,6 +51,15 @@ public class CustomEditor extends EditorTextField {
         settings.setIndentGuidesShown(true);
         editor.setHorizontalScrollbarVisible(true);
         editor.setVerticalScrollbarVisible(true);
+    }
+
+    private void initTopic() {
+        final Application application = ApplicationManager.getApplication();
+        application.getMessageBus().connect().subscribe(EditorColorsManager.TOPIC, (EditorColorsListener) editorColorsScheme -> {
+            if (editorColorsScheme != null) {
+                application.invokeLater(() -> setBackground(editorColorsScheme.getDefaultBackground()));
+            }
+        });
     }
 
     public void setText(@Nullable final String text, @NotNull final FileType fileType) {

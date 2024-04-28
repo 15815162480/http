@@ -82,6 +82,10 @@ public interface HttpEnum {
         @Description("注解上说明功能的属性")
         private final String value;
         private final AnnotationPlace annotationPlace;
+
+        public @NotNull String getShortClassName() {
+            return clazz.substring(clazz.lastIndexOf('.') + 1);
+        }
     }
 
 
@@ -94,5 +98,14 @@ public interface HttpEnum {
 
     enum AnnotationPlace {
         CLASS, METHOD, PARAMETER, FIELD
+    }
+
+    enum Language {
+        JAVA, KOTLIN;
+
+        @Override
+        public String toString() {
+            return name().charAt(0) + name().substring(1).toLowerCase();
+        }
     }
 }

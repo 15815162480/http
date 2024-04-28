@@ -6,6 +6,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.ClassLoaderUtil;
 import com.intellij.psi.PsiAnnotation;
 import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiMethod;
 import com.zys.http.constant.HttpEnum;
 import com.zys.http.constant.SpringEnum;
@@ -21,7 +22,10 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
+import org.jetbrains.kotlin.psi.KtAnnotationEntry;
 import org.jetbrains.kotlin.psi.KtClass;
+import org.jetbrains.kotlin.psi.KtModifierList;
+import org.jetbrains.kotlin.psi.KtNamedFunction;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -107,8 +111,15 @@ public class VelocityTool {
                 }
             }
 
-            for (KtClass ktClass : ktControllers) {
-                // TODO 添加方法
+            for (KtClass kt : ktControllers) {
+                String classSwagger = KotlinTool.Annotation.getSwaggerAnnotation(kt, HttpEnum.AnnotationPlace.CLASS);
+                classSwagger = CharSequenceUtil.isEmpty(classSwagger) ? kt.getName() : classSwagger;
+
+                List<MethodItem> methodItemList = createMethodItems(kt, contextPath);
+                if (!methodItemList.isEmpty()) {
+                    controllerItems.add(classSwagger);
+                    methodMap.put(classSwagger, methodItemList);
+                }
             }
 
             context.put("methodMap", methodMap);
@@ -116,6 +127,69 @@ public class VelocityTool {
 
             renderApiTemplate(context, moduleName, exportPath);
         }
+    }
+
+    private static List<MethodItem> createMethodItems(KtClass kt, String contextPath) {
+        String controllerPath = KotlinTool.Class.getKtControllerPath(kt);
+        List<KtNamedFunction> functions = kt.getDeclarations().stream().filter(KtNamedFunction.class::isInstance).map(KtNamedFunction.class::cast).toList();
+        if (functions.isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<MethodItem> methodItems = new ArrayList<>();
+        for (KtNamedFunction function : functions) {
+            MethodItem methodItem = createMethodItem(function, contextPath, controllerPath);
+            System.out.println(function.getName());
+            System.out.println("methodItem = " + methodItem);
+            if (Objects.nonNull(methodItem)) {
+                methodItems.add(methodItem);
+            }
+        }
+        return methodItems;
+    }
+
+    private static MethodItem createMethodItem(KtNamedFunction function, String contextPath, String controllerPath) {
+        KtModifierList modifierList = function.getModifierList();
+        if (Objects.isNull(modifierList)) {
+            return null;
+        }
+        List<KtAnnotationEntry> entries = function.getAnnotationEntries();
+        MethodItem item = new MethodItem();
+        // 方法名
+        String methodSwagger = KotlinTool.Annotation.getSwaggerAnnotation(function, HttpEnum.AnnotationPlace.METHOD);
+        methodSwagger = CharSequenceUtil.isEmpty(methodSwagger) ? function.getName() : methodSwagger;
+        item.setName(methodSwagger);
+
+        // 请求方式、请求uri、请求头类型
+        String path;
+        HttpEnum.HttpMethod httpMethod;
+        for (KtAnnotationEntry entry : entries) {
+            httpMethod = SpringEnum.Method.get(Objects.requireNonNull(entry.getShortName()).asString());
+            if (Objects.isNull(httpMethod)) {
+                httpMethod = SpringEnum.Method.get("org.springframework.web.bind.annotation." + Objects.requireNonNull(entry.getShortName()).asString());
+                if (HttpEnum.HttpMethod.REQUEST.equals(httpMethod)) {
+                    httpMethod = HttpEnum.HttpMethod.requestMappingConvert(entry);
+                }
+            }
+            if (Objects.isNull(httpMethod)) {
+                continue;
+            }
+
+            item.setMethod(httpMethod.name());
+
+            // 请求 uri
+            path = KotlinTool.Annotation.getAnnotationValue(entry, new String[]{"value", "path"});
+            item.setUri(UrlTool.buildMethodUri(contextPath, controllerPath, path));
+
+            // 请求头类型
+
+            // 请求参数类型
+            buildParamProperty(function, item);
+
+
+            return item;
+        }
+
+        return null;
     }
 
     @Description("创建 Postman API 渲染数据列表")
@@ -166,8 +240,15 @@ public class VelocityTool {
     }
 
     @Description("处理参数类型")
-    private static void buildParamProperty(PsiMethod method, MethodItem item) {
-        Map<String, ParamProperty> paramPropertyMap = ParamConvert.parsePsiMethodParams(method, false);
+    private static void buildParamProperty(PsiElement element, MethodItem item) {
+        Map<String, ParamProperty> paramPropertyMap;
+        if (element instanceof PsiMethod psiMethod) {
+            paramPropertyMap = ParamConvert.parsePsiMethodParams(psiMethod, false);
+        } else if (element instanceof KtNamedFunction function) {
+            paramPropertyMap = ParamConvert.parseFunctionParams(function, false);
+        } else {
+            return;
+        }
         HttpEnum.ContentType type = (HttpEnum.ContentType) paramPropertyMap.get(ParamConvert.REQUEST_TYPE_KEY).getDefaultValue();
         item.setContentType(type.getValue());
 

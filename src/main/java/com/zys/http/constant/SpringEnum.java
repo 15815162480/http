@@ -28,15 +28,15 @@ public interface SpringEnum {
         REQUEST("org.springframework.web.bind.annotation.RequestMapping", HttpMethod.REQUEST),
         PATCH("org.springframework.web.bind.annotation.PatchMapping", HttpMethod.PATCH);
 
-        private final String clazz;
-        private final HttpMethod httpMethod;
-
         private static final Map<String, HttpMethod> METHOD_MAP;
 
         static {
             METHOD_MAP = Arrays.stream(SpringEnum.Method.values())
                     .collect(Collectors.toMap(SpringEnum.Method::getClazz, SpringEnum.Method::getHttpMethod));
         }
+
+        private final String clazz;
+        private final HttpMethod httpMethod;
 
         public static boolean contains(@NotNull PsiAnnotation annotation) {
             String qualifiedName = annotation.getQualifiedName();

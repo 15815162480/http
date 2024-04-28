@@ -38,8 +38,8 @@ public class RequestPanel extends JBSplitter {
         });
     }
 
-    public void loadNodes(List<HttpEnum.HttpMethod> methods, List<String> nodeShowValues) {
-        this.apiTreePanel.loadNodes(methods, nodeShowValues);
+    public void loadNodes(List<HttpEnum.HttpMethod> methods, List<String> nodeShowValues, List<HttpEnum.Language> languageValues) {
+        this.apiTreePanel.loadNodes(methods, nodeShowValues, languageValues);
     }
 
     public void treeExpand() {
