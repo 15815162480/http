@@ -77,7 +77,6 @@ public class KotlinCopyApiIntentionAction extends PsiElementBaseIntentionAction 
         return false;
     }
 
-
     static @Nullable String apiPath(Project project, @NotNull KtNamedFunction function) {
         PsiElement parent = function.getParent();
         if (Objects.isNull(parent)) {

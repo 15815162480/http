@@ -11,7 +11,7 @@
                 <a href="https://gitee.com/zhou-sheng1/http">gitee</a>|
                 <a href="https://github.com/15815162480/http">github</a>
             </li>
-            <li>Only Java language is supported.</li>
+            <li>Supported Java and Kotlin</li>
             <li>Language Supported: English, Chinese</li>
             <li>Support for Spring annotation system (Spring MVC / Spring Boot)</li>
             <li>Provides a regional display API interface</li>
@@ -29,7 +29,7 @@
                 <a href="https://gitee.com/zhou-sheng1/http">gitee</a>|
                 <a href="https://github.com/15815162480/http">github</a>
             </li>
-            <li>只支持 java 语言</li>
+            <li>支持 Java 和 Kotlin 语言</li>
             <li>语言支持: 英语、中文</li>
             <li>支持 Spring 注解体系(Spring MVC / Spring Boot)</li>
             <li>提供了一块区域展示 API 接口</li>

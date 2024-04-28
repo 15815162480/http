@@ -1,3 +1,10 @@
+### 1.7.1
+
+* bug 修复: Kotlin 方法处 Alt+Enter 复制Api 功能丢失
+* bug 修复: 导出所有 Api 功能没有导出 Kotlin 方法相关的接口
+* bug 修复: Kotlin Swagger 注解提示丢失
+* 新功能: 语言过滤, 可选项 Java、Kotlin
+
 ### 1.7.0
 
 * 优化: 所有图标会根据项目主题自动变化, 包括打开窗口的图标(安装 Extra ToolWindow Colorful Icons 才会展示彩色图标)

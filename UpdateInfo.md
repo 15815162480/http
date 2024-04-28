@@ -1,3 +1,10 @@
+### 1.7.1
+
+* fix bugs: Alt+Enter copy Api function lost at Kotlin method 
+* fix bugs: Export all Api functions without exporting Kotlin method related interfaces 
+* fix bugs: Kotlin Swagger annotation prompt missing 
+* feature: Language Filter, Optional options include Java and Kotlin
+
 ### 1.7.0
 
 * improve: All icons will automatically change according to the project theme, including the icon for opening the
