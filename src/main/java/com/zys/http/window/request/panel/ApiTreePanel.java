@@ -11,6 +11,7 @@ import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
 import com.intellij.ui.treeStructure.SimpleTree;
+import com.zys.http.action.CollapseAction;
 import com.zys.http.action.CommonAction;
 import com.zys.http.action.CopyAction;
 import com.zys.http.action.ExpandAction;
@@ -348,8 +349,10 @@ final class ApiTreePanel extends AbstractListTreePanel {
             if (!value.isRoot() && value.isLeaf()) {
                 DefaultMutableTreeNode parent = (DefaultMutableTreeNode) value.getParent();
                 getTreeModel().removeNodeFromParent(value);
+                moduleNodeMap.remove(value.getFragment());
                 if (Objects.nonNull(parent) && parent.isLeaf() && !parent.isRoot()) {
                     getTreeModel().removeNodeFromParent(parent);
+                    moduleNodeMap.remove(((ModuleNode) parent).getFragment());
                 }
             }
         }
@@ -404,6 +407,9 @@ final class ApiTreePanel extends AbstractListTreePanel {
             ExpandAction expandAction = new ExpandAction();
             expandAction.setAction(event -> treeExpand());
             group.add(expandAction);
+            CollapseAction collapseAction = new CollapseAction();
+            collapseAction.setAction(event -> treeCollapse());
+            group.add(collapseAction);
         } else {
             CommonAction navigation = new CommonAction(Bundle.get("http.api.tree.method.right.menu.action.navigation"), "", AllIcons.General.Locate);
             navigation.setAction(event -> mn.getValue().getPsiElement().navigate(true));
