@@ -55,6 +55,24 @@ public class KotlinTool {
                 return "";
             }
 
+            List<KtExpression> expressions = getKtExpressions(attributeNames, valueArguments);
+            if (expressions.isEmpty()) {
+                return "";
+            }
+            KtExpression expression = expressions.get(0);
+            if (expression instanceof KtStringTemplateExpression) {
+                String text = expression.getText();
+                return text.startsWith("\"") && text.endsWith("\"") ? text.substring(1, text.length() - 1) : text;
+            } else if (expression instanceof KtCollectionLiteralExpression literalExpression) {
+                List<KtExpression> innerExpressions = literalExpression.getInnerExpressions();
+                String text = innerExpressions.get(0).getText();
+                return text.startsWith("\"") && text.endsWith("\"") ? text.substring(1, text.length() - 1) : text;
+            }
+
+            return "";
+        }
+
+        private static @NotNull List<KtExpression> getKtExpressions(String @NotNull [] attributeNames, List<? extends ValueArgument> valueArguments) {
             List<KtExpression> expressions = new ArrayList<>();
             for (String attributeName : attributeNames) {
                 for (ValueArgument argument : valueArguments) {
@@ -71,20 +89,7 @@ public class KotlinTool {
                     }
                 }
             }
-            if (expressions.isEmpty()) {
-                return "";
-            }
-            KtExpression expression = expressions.get(0);
-            if (expression instanceof KtStringTemplateExpression) {
-                String text = expression.getText();
-                return text.startsWith("\"") && text.endsWith("\"") ? text.substring(1, text.length() - 1) : text;
-            } else if (expression instanceof KtCollectionLiteralExpression literalExpression) {
-                List<KtExpression> innerExpressions = literalExpression.getInnerExpressions();
-                String text = innerExpressions.get(0).getText();
-                return text.startsWith("\"") && text.endsWith("\"") ? text.substring(1, text.length() - 1) : text;
-            }
-
-            return "";
+            return expressions;
         }
 
         public static String getSwaggerAnnotation(KtNamedDeclaration element, HttpEnum.AnnotationPlace place) {
@@ -128,10 +133,5 @@ public class KotlinTool {
             }
             return getAnnotationValue(entry, new String[]{operation.getValue()});
         }
-    }
-
-    @NoArgsConstructor(access = AccessLevel.PRIVATE)
-    public static class Function {
-
     }
 }

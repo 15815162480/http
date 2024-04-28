@@ -25,7 +25,7 @@ import java.util.Objects;
 public class HttpService implements PersistentStateComponent<HttpService.State> {
     private State state = new State();
 
-    public static HttpService getInstance(Project project) {
+    public static HttpService getInstance(@NotNull Project project) {
         return project.getService(HttpService.class);
     }
 

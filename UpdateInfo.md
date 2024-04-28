@@ -4,6 +4,7 @@
 * fix bugs: Export all Api functions without exporting Kotlin method related interfaces 
 * fix bugs: Kotlin Swagger annotation prompt missing 
 * feature: Language Filter, Optional options include Java and Kotlin
+* improve: Optimization of array and set data generation
 
 ### 1.7.0
 

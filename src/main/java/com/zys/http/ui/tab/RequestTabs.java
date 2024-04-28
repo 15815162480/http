@@ -226,7 +226,7 @@ public class RequestTabs extends JBTabsImpl {
                 case URL -> {
                     if (httpMethod.equals(HttpEnum.HttpMethod.POST)) {
                         // 将参数格式化成 username=a&password=a
-                        String s = ParamConvert.buildParamPropertyUrlParameters(paramPropertyMap);
+                        String s = ParamConvert.buildParamPropertyUrlParameters(paramPropertyMap, false);
                         bodyEditor.setText(s, ComboBoxTool.TEXT_FILE_TYPE);
                         this.select(bodyTabInfo, true);
                         bodyFileType.setSelectedItem(ComboBoxTool.TEXT_FILE_TYPE);

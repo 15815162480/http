@@ -47,10 +47,12 @@ public class Bundle extends DynamicBundle {
             @NotNull ResourceBundle.Control control
     ) {
         final String chineseLanguagePlugin = "com.intellij.zh";
-        if (!PluginManager.isPluginInstalled(PluginId.getId(chineseLanguagePlugin))) {
-            // 未安装 IDE中文语言包 插件则使用默认
-            return ResourceBundle.getBundle(pathToBundle, Locale.ROOT, loader, control);
+        if (PluginManager.isPluginInstalled(PluginId.getId(chineseLanguagePlugin))) {
+            return ResourceBundle.getBundle(pathToBundle, Locale.getDefault(), loader, control);
         }
-        return ResourceBundle.getBundle(pathToBundle, Locale.getDefault(), loader, control);
+
+        // 未安装 IDE中文语言包 插件则使用默认
+        return ResourceBundle.getBundle(pathToBundle, Locale.ROOT, loader, control);
+
     }
 }

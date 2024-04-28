@@ -26,7 +26,7 @@ public class HistoryService implements PersistentStateComponent<HistoryService.S
     private static final int MAX_SIZE = 50;
     private State state = new State();
 
-    public static HistoryService getInstance(Project project) {
+    public static HistoryService getInstance(@NotNull Project project) {
         return project.getService(HistoryService.class);
     }
 

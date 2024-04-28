@@ -57,7 +57,7 @@ public class HttpClient {
         }
 
         if (!parameters.isEmpty()) {
-            String s = ParamConvert.buildUrlParameters(parameters);
+            String s = ParamConvert.buildUrlParameters(parameters, true);
             url = url.endsWith("/") ? url.substring(0, url.lastIndexOf('/')) : url;
             req.setUrl(url + "?" + s);
         }

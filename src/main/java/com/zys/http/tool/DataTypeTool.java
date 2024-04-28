@@ -232,6 +232,7 @@ public class DataTypeTool {
         return getDefaultValueOfKtParameter(new HashMap<>(), parameter, project, null);
     }
 
+    @SuppressWarnings("deprecation")
     private static @Nullable Object getDefaultValueOfKtParameter(Map<KtTypeReference, Integer> recursionMap, KtParameter parameter, Project project, KtTypeReference typeReference) {
         if (Objects.isNull(typeReference) && Objects.isNull(parameter)) {
             return null;

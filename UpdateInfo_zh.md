@@ -4,6 +4,7 @@
 * bug 修复: 导出所有 Api 功能没有导出 Kotlin 方法相关的接口
 * bug 修复: Kotlin Swagger 注解提示丢失
 * 新功能: 语言过滤, 可选项 Java、Kotlin
+* 优化: 数组和集合数据生成优化
 
 ### 1.7.0
 

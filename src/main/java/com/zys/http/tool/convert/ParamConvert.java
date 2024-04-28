@@ -135,13 +135,13 @@ public class ParamConvert {
         }
     }
 
-    public static String buildParamPropertyUrlParameters(Map<String, ParamProperty> parameters) {
+    public static String buildParamPropertyUrlParameters(Map<String, ParamProperty> parameters, boolean needEncode) {
         Map<String, String> map = new HashMap<>();
         parameters.forEach((k, v) -> map.put(k, v.getDefaultValue() + ""));
-        return buildUrlParameters(map);
+        return buildUrlParameters(map, needEncode);
     }
 
-    public static String buildUrlParameters(Map<String, String> parameters) {
+    public static String buildUrlParameters(Map<String, String> parameters, boolean needEncode) {
         StringBuilder sb = new StringBuilder();
         for (Map.Entry<String, String> entry : parameters.entrySet()) {
             String key = entry.getKey();
@@ -149,7 +149,7 @@ public class ParamConvert {
             if (!sb.isEmpty()) {
                 sb.append("&");
             }
-            sb.append(key).append("=").append(URLEncoder.encode(String.valueOf(value), StandardCharsets.UTF_8));
+            sb.append(key).append("=").append(needEncode ? URLEncoder.encode(value, StandardCharsets.UTF_8) : value);
         }
         return sb.toString();
     }
@@ -201,7 +201,6 @@ public class ParamConvert {
             if (CharSequenceUtil.isNotEmpty(annotationValue)) {
                 parameterName = annotationValue;
             }
-
         }
 
         String canonicalText = Objects.requireNonNull(parameter.getTypeReference()).getText();
