@@ -5,6 +5,7 @@ import com.intellij.lang.java.JavaLanguage;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.application.ReadAction;
+import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ModuleRootManager;
@@ -392,7 +393,7 @@ final class ApiTreePanel extends AbstractListTreePanel {
             if (node instanceof MethodNode m) {
                 NavigatablePsiElement psiElement = m.getValue().getPsiElement();
                 if (Objects.nonNull(psiElement)) {
-                    psiElement.navigate(true);
+                    WriteAction.run(() -> psiElement.navigate(true));
                 }
             }
         };

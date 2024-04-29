@@ -1,9 +1,9 @@
 package com.zys.http.extension.setting;
 
-import cn.hutool.core.text.CharSequenceUtil;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.options.Configurable;
+import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.util.NlsContexts;
@@ -24,12 +24,7 @@ import java.util.Collection;
  * @since 2024-04-12
  */
 public class HttpSettingConfigurable implements Configurable {
-    private final boolean oldGenerateDefault = HttpSetting.getInstance().getGenerateDefault();
-    private final boolean oldRefreshWhenVcsChange = HttpSetting.getInstance().getRefreshWhenVcsChange();
-    private final boolean oldEnableSearchEverywhere = HttpSetting.getInstance().getEnableSearchEverywhere();
-    private final String oldCustomAnno = HttpSetting.getInstance().getCustomAnno();
-    private final long oldTimeout = HttpSetting.getInstance().getTimeout();
-    private final HttpSettingPanel httpSettingPanel = new HttpSettingPanel();
+    private HttpSettingPanel httpSettingPanel = new HttpSettingPanel();
 
     @Override
     public @NlsContexts.ConfigurableName String getDisplayName() {
@@ -43,36 +38,27 @@ public class HttpSettingConfigurable implements Configurable {
 
     @Override
     public boolean isModified() {
-        // 更新后的值
-        HttpSetting setting = HttpSetting.getInstance();
-        boolean generateDefault = setting.getGenerateDefault();
-        boolean refreshWhenVcsChange = setting.getRefreshWhenVcsChange();
-        boolean enableSearchEverywhere = setting.getEnableSearchEverywhere();
-        String customAnno = setting.getCustomAnno();
-        return generateDefault != oldGenerateDefault ||
-               refreshWhenVcsChange != oldRefreshWhenVcsChange ||
-               enableSearchEverywhere != oldEnableSearchEverywhere ||
-               !oldCustomAnno.equals(customAnno) ||
-               oldTimeout != setting.getTimeout();
+        return !httpSettingPanel.getState().equals(HttpSetting.getInstance().getState());
     }
 
     @Override
     public void reset() {
-        httpSettingPanel.reset(oldGenerateDefault, oldRefreshWhenVcsChange, oldEnableSearchEverywhere, oldCustomAnno, oldTimeout);
+        httpSettingPanel.reset();
     }
 
     @Override
     public void apply() {
         HttpSetting setting = HttpSetting.getInstance();
-        String customControllerAnnotation = setting.getCustomAnno();
+        HttpSetting.State state = httpSettingPanel.getState();
+        HttpSetting.State newState = new HttpSetting.State();
+        newState.setCustomAnno(state.getCustomAnno());
+        newState.setEnableSearchEverywhere(state.isEnableSearchEverywhere());
+        newState.setTimeout(state.getTimeout());
+        newState.setGenerateDefault(state.isGenerateDefault());
+        newState.setRefreshWhenVcsChange(state.isRefreshWhenVcsChange());
+        setting.loadState(newState);
         invokeGenerateDefaultEnv(setting.getGenerateDefault());
-        customControllerAnnotation = customControllerAnnotation.trim();
-        if (CharSequenceUtil.isBlank(customControllerAnnotation)) {
-            return;
-        }
-
-        invokeCustomControllerAnnotation();
-        HttpSetting.getInstance().setCustomAnno(customControllerAnnotation);
+        applySetting();
     }
 
     private void invokeGenerateDefaultEnv(boolean generateDefault) {
@@ -100,11 +86,15 @@ public class HttpSettingConfigurable implements Configurable {
         });
     }
 
-    private void invokeCustomControllerAnnotation() {
+    private void applySetting() {
         @NotNull Project[] openProjects = ProjectManager.getInstance().getOpenProjects();
         for (Project p : openProjects) {
-            p.getMessageBus().syncPublisher(TreeTopic.REFRESH_TOPIC).refresh(false);
+            DumbService.getInstance(p).smartInvokeLater(() -> p.getMessageBus().syncPublisher(TreeTopic.REFRESH_TOPIC).refresh(false));
         }
     }
 
+    @Override
+    public void disposeUIResources() {
+        httpSettingPanel = null;
+    }
 }

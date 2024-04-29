@@ -38,40 +38,20 @@ public class HttpSetting implements PersistentStateComponent<HttpSetting.State> 
         return state.generateDefault;
     }
 
-    public void setGenerateDefault(boolean status) {
-        state.generateDefault = status;
-    }
-
     public boolean getRefreshWhenVcsChange() {
         return state.refreshWhenVcsChange;
-    }
-
-    public void setRefreshWhenVcsChange(boolean status) {
-        state.refreshWhenVcsChange = status;
     }
 
     public boolean getEnableSearchEverywhere() {
         return state.enableSearchEverywhere;
     }
 
-    public void setEnableSearchEverywhere(boolean status) {
-        state.enableSearchEverywhere = status;
-    }
-
     public String getCustomAnno() {
         return state.customAnno;
     }
 
-    public void setCustomAnno(String customAnno) {
-        state.customAnno = customAnno;
-    }
-
     public int getTimeout() {
         return state.timeout;
-    }
-
-    public void setTimeout(String timeout) {
-        state.timeout = Integer.parseInt(timeout);
     }
 
     @Data
@@ -81,5 +61,39 @@ public class HttpSetting implements PersistentStateComponent<HttpSetting.State> 
         private boolean refreshWhenVcsChange = true;
         private boolean enableSearchEverywhere = true;
         private int timeout = DEFAULT_TIMEOUT;
+
+        @Override
+        public boolean equals(Object o) {
+            if (o == this) {
+                return true;
+            }
+
+            if (!(o instanceof State other)) {
+                return false;
+            }
+
+            if (this.isGenerateDefault() != other.isGenerateDefault()) {
+                return false;
+            } else if (this.isRefreshWhenVcsChange() != other.isRefreshWhenVcsChange()) {
+                return false;
+            } else if (this.isEnableSearchEverywhere() != other.isEnableSearchEverywhere()) {
+                return false;
+            } else if (this.getTimeout() != other.getTimeout()) {
+                return false;
+            } else {
+                return customAnno.equals(other.getCustomAnno());
+            }
+        }
+
+        @Override
+        public int hashCode() {
+            int result = 1;
+            result = result * 59 + (this.isGenerateDefault() ? 79 : 97);
+            result = result * 59 + (this.isRefreshWhenVcsChange() ? 79 : 97);
+            result = result * 59 + (this.isEnableSearchEverywhere() ? 79 : 97);
+            result = result * 59 + this.getTimeout();
+            result = result * 59 + (customAnno == null ? 43 : customAnno.hashCode());
+            return result;
+        }
     }
 }
