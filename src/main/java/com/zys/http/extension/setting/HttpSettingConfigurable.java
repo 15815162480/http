@@ -49,6 +49,9 @@ public class HttpSettingConfigurable implements Configurable {
     @Override
     public void apply() {
         HttpSetting setting = HttpSetting.getInstance();
+        boolean oldGenerateDefault = setting.getGenerateDefault();
+        String oldCustomAnno = setting.getCustomAnno();
+
         HttpSetting.State state = httpSettingPanel.getState();
         HttpSetting.State newState = new HttpSetting.State();
         newState.setCustomAnno(state.getCustomAnno());
@@ -56,13 +59,14 @@ public class HttpSettingConfigurable implements Configurable {
         newState.setTimeout(state.getTimeout());
         newState.setGenerateDefault(state.isGenerateDefault());
         newState.setRefreshWhenVcsChange(state.isRefreshWhenVcsChange());
-        if (!state.getCustomAnno().equals(setting.getCustomAnno())) {
+        setting.loadState(newState);
+        if (!state.getCustomAnno().equals(oldCustomAnno)) {
             applySetting();
         }
-        if (state.isGenerateDefault() != setting.getGenerateDefault()) {
-            invokeGenerateDefaultEnv(setting.getGenerateDefault());
+
+        if (state.isGenerateDefault() != oldGenerateDefault) {
+            invokeGenerateDefaultEnv(state.isGenerateDefault());
         }
-        setting.loadState(newState);
     }
 
     private void invokeGenerateDefaultEnv(boolean generateDefault) {
