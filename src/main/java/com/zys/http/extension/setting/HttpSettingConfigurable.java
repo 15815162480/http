@@ -56,9 +56,11 @@ public class HttpSettingConfigurable implements Configurable {
         newState.setTimeout(state.getTimeout());
         newState.setGenerateDefault(state.isGenerateDefault());
         newState.setRefreshWhenVcsChange(state.isRefreshWhenVcsChange());
+        if (!state.getCustomAnno().equals(setting.getCustomAnno())) {
+            applySetting();
+        }
         setting.loadState(newState);
         invokeGenerateDefaultEnv(setting.getGenerateDefault());
-        applySetting();
     }
 
     private void invokeGenerateDefaultEnv(boolean generateDefault) {
@@ -75,7 +77,7 @@ public class HttpSettingConfigurable implements Configurable {
                         HttpConfig config = new HttpConfig();
                         config.setProtocol(HttpEnum.Protocol.HTTP);
                         config.setHostValue("127.0.0.1:" + port + contextPath);
-                        if (!ProjectTool.getModuleJavaControllers(project, module).isEmpty()) {
+                        if (!ProjectTool.getModuleJavaControllers(project, module).isEmpty() || !ProjectTool.getModuleKtControllers(project, module).isEmpty()) {
                             project.getMessageBus().syncPublisher(EnvironmentTopic.LIST_TOPIC).save(name, config);
                         }
                     } else {
