@@ -35,7 +35,7 @@ public class HttpSettingPanel extends JBPanel<HttpSettingPanel> {
 
     public HttpSettingPanel() {
         super(new BorderLayout(0, 0));
-        init1();
+        init();
         copyState();
         addMouseListener(new MouseAdapter() {
             @Override
@@ -45,7 +45,7 @@ public class HttpSettingPanel extends JBPanel<HttpSettingPanel> {
         });
     }
 
-    public void init1() {
+    public void init() {
         FormBuilder formBuilder = FormBuilder.createFormBuilder();
         formBuilder.addComponent(createBasicSettingPanel());
         formBuilder.addComponent(createRequestSettingPanel());

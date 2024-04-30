@@ -17,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
 @Getter
 @State(name = "HttpSetting", storages = @Storage(HttpConstant.PLUGIN_SETTING_FILE_NAME))
 public class HttpSetting implements PersistentStateComponent<HttpSetting.State> {
-    public static final int DEFAULT_TIMEOUT = 5000;
+    static final int DEFAULT_TIMEOUT = 5000;
     private State state = new State();
 
     public static HttpSetting getInstance() {
@@ -67,11 +67,9 @@ public class HttpSetting implements PersistentStateComponent<HttpSetting.State> 
             if (o == this) {
                 return true;
             }
-
             if (!(o instanceof State other)) {
                 return false;
             }
-
             if (this.isGenerateDefault() != other.isGenerateDefault()) {
                 return false;
             } else if (this.isRefreshWhenVcsChange() != other.isRefreshWhenVcsChange()) {
