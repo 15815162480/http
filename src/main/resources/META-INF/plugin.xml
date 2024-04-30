@@ -119,7 +119,7 @@
         <intentionAction>
             <language>JAVA</language>
             <bundleName>messages.http</bundleName>
-            <categoryKey>http.extension.intention.category</categoryKey>
+            <categoryKey>http.extension.intention.java.category</categoryKey>
             <className>com.zys.http.extension.intention.JavaCopyApiIntentionAction</className>
             <skipBeforeAfter>false</skipBeforeAfter>
         </intentionAction>
@@ -127,7 +127,7 @@
         <intentionAction>
             <language>kotlin</language>
             <bundleName>messages.http</bundleName>
-            <categoryKey>http.extension.intention.category</categoryKey>
+            <categoryKey>http.extension.intention.kotlin.category</categoryKey>
             <className>com.zys.http.extension.intention.KotlinCopyApiIntentionAction</className>
             <skipBeforeAfter>false</skipBeforeAfter>
         </intentionAction>
