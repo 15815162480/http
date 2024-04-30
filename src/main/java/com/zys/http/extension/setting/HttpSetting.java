@@ -6,6 +6,7 @@ import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.zys.http.constant.HttpConstant;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -55,43 +56,12 @@ public class HttpSetting implements PersistentStateComponent<HttpSetting.State> 
     }
 
     @Data
+    @EqualsAndHashCode
     public static class State {
         private String customAnno = "";
         private boolean generateDefault = true;
         private boolean refreshWhenVcsChange = true;
         private boolean enableSearchEverywhere = true;
         private int timeout = DEFAULT_TIMEOUT;
-
-        @Override
-        public boolean equals(Object o) {
-            if (o == this) {
-                return true;
-            }
-            if (!(o instanceof State other)) {
-                return false;
-            }
-            if (this.isGenerateDefault() != other.isGenerateDefault()) {
-                return false;
-            } else if (this.isRefreshWhenVcsChange() != other.isRefreshWhenVcsChange()) {
-                return false;
-            } else if (this.isEnableSearchEverywhere() != other.isEnableSearchEverywhere()) {
-                return false;
-            } else if (this.getTimeout() != other.getTimeout()) {
-                return false;
-            } else {
-                return customAnno.equals(other.getCustomAnno());
-            }
-        }
-
-        @Override
-        public int hashCode() {
-            int result = 1;
-            result = result * 59 + (this.isGenerateDefault() ? 79 : 97);
-            result = result * 59 + (this.isRefreshWhenVcsChange() ? 79 : 97);
-            result = result * 59 + (this.isEnableSearchEverywhere() ? 79 : 97);
-            result = result * 59 + this.getTimeout();
-            result = result * 59 + (customAnno == null ? 43 : customAnno.hashCode());
-            return result;
-        }
     }
 }
