@@ -59,8 +59,10 @@ public class HttpSettingConfigurable implements Configurable {
         if (!state.getCustomAnno().equals(setting.getCustomAnno())) {
             applySetting();
         }
+        if (state.isGenerateDefault() != setting.getGenerateDefault()) {
+            invokeGenerateDefaultEnv(setting.getGenerateDefault());
+        }
         setting.loadState(newState);
-        invokeGenerateDefaultEnv(setting.getGenerateDefault());
     }
 
     private void invokeGenerateDefaultEnv(boolean generateDefault) {
