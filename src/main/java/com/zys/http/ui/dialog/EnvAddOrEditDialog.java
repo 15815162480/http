@@ -1,13 +1,13 @@
 package com.zys.http.ui.dialog;
 
+import cn.hutool.core.text.CharSequenceUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.ui.JBColor;
-import com.intellij.ui.SeparatorComponent;
-import com.intellij.ui.SeparatorOrientation;
+import com.intellij.ui.SeparatorFactory;
+import com.intellij.util.ui.FormBuilder;
 import com.intellij.util.ui.JBUI;
-import com.zys.http.constant.UIConstant;
 import com.zys.http.entity.HttpConfig;
 import com.zys.http.extension.service.Bundle;
 import com.zys.http.extension.topic.EnvironmentTopic;
@@ -72,7 +72,8 @@ public class EnvAddOrEditDialog extends DialogWrapper {
 
     @Override
     protected @NotNull JComponent createCenterPanel() {
-        JPanel main = new JPanel(new BorderLayout(0, 0));
+        JPanel all = new JPanel(new BorderLayout(0, 0));
+        FormBuilder main = FormBuilder.createFormBuilder();
         // 配置名字
         JPanel first = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -105,30 +106,12 @@ public class EnvAddOrEditDialog extends DialogWrapper {
         hostTF.setToolTipText(Bundle.get("http.env.action.add.dialog.ip.check"));
         first.add(hostTF, gbc);
 
-        // 请求头分割线
-        gbc.gridy = 3;
-        gbc.gridx = 0;
-        gbc.insets = JBUI.insetsBottom(5);
-        first.add(headerPanel(), gbc);
+        main.addComponent(first);
+        main.addComponent(SeparatorFactory.createSeparator(Bundle.get("http.env.action.add.dialog.header.separator"), envAddOrEditTable));
+        all.add(main.getPanel(), BorderLayout.NORTH);
+        all.add(envAddOrEditTable, BorderLayout.CENTER);
 
-        // 表格
-        main.add(first, BorderLayout.NORTH);
-        main.add(envAddOrEditTable, BorderLayout.CENTER);
-
-        return main;
-    }
-
-    private JPanel headerPanel() {
-        JPanel header = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        header.add(new JLabel(Bundle.get("http.env.action.add.dialog.header.separator") + " "), gbc);
-        gbc.gridx = 1;
-        gbc.weightx = 1.0;
-        gbc.gridwidth = GridBagConstraints.REMAINDER;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        SeparatorComponent separator = new SeparatorComponent(UIConstant.BORDER_COLOR, SeparatorOrientation.HORIZONTAL);
-        header.add(separator, gbc);
-        return header;
+        return all;
     }
 
     @Override
@@ -137,6 +120,11 @@ public class EnvAddOrEditDialog extends DialogWrapper {
         // 添加时需要检测是否存在
         if (serviceTool.getHttpConfig(configName) != null && envAddOrEditTable.isAdd()) {
             DialogTool.error(Bundle.get("http.env.action.add.dialog.name.existed"));
+            return;
+        }
+
+        if (envAddOrEditTable.isAdd() && CharSequenceUtil.isBlank(configName)) {
+            DialogTool.error(Bundle.get("http.env.action.add.dialog.name.empty"));
             return;
         }
         String host = hostTF.getText();

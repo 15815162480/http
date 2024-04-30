@@ -59,7 +59,7 @@
                 fix bugs: Alt+Enter copy Api function lost at Kotlin method
             </li>
             <li>
-                fix bugs: Export all Api functions without exporting Kotlin method related interfaces
+                fix bugs: Export all Api functions without exporting Kotlin function related interfaces
             </li>
             <li>
                 fix bugs: Kotlin Swagger annotation prompt missing
@@ -71,7 +71,7 @@
                 improve: Optimization of array and set data generation
             </li>
             <li>
-                feature:
+                improve: Global UI optimization settings
             </li>
         </ul>
         <br>
@@ -96,6 +96,9 @@
             </li>
             <li>
                 优化: 数组和集合数据生成优化
+            </li>
+            <li>
+                优化: 全局设置 UI 优化
             </li>
         </ul>
         <br>

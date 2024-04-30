@@ -5,6 +5,7 @@
 * fix bugs: Kotlin Swagger annotation prompt missing 
 * feature: Language Filter, Optional options include Java and Kotlin
 * improve: Optimization of array and set data generation
+* improve: Global UI optimization settings
 
 ### 1.7.0
 
