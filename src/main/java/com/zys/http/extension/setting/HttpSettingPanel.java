@@ -108,6 +108,7 @@ public class HttpSettingPanel extends JBPanel<HttpSettingPanel> {
 
         JPanel requestTimeoutPanel = new JPanel(new BorderLayout(0, 0));
         requestTimeoutPanel.add(new JLabel(Bundle.get("http.extension.setting.option.request.timeout") + " "), BorderLayout.WEST);
+        timeTf.setText(state.getTimeout() + "");
         timeTf.setDocument(new NumberDocument());
         timeTf.addFocusListener(new FocusAdapter() {
             @Override
